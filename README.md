@@ -151,6 +151,20 @@ If you are building your own app concept, this is usually the first pattern to c
 
 The build step also generates `static/client-metadata.json`.
 
+## Mirror to Tangled
+
+This repo also includes a GitHub Actions workflow that mirrors `main` to Tangled:
+
+- workflow: `.github/workflows/mirror-tangled.yml`
+- remote: `git@tangled.org:charlebois.info/sveltekit-atproto-starter`
+
+To enable it, add this GitHub Actions secret in your repository settings:
+
+- `TANGLED_SSH_KEY`
+  An SSH private key that has push access to the Tangled repo
+
+Once that secret is set, every push to `main` on GitHub will mirror the same commit to Tangled.
+
 ## Scripts
 
 - `npm run dev` start local dev server
