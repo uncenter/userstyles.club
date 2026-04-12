@@ -158,7 +158,11 @@ This repo also includes a GitHub Actions workflow that mirrors `main` to Tangled
 - workflow: `.github/workflows/mirror-tangled.yml`
 - remote: `git@tangled.org:charlebois.info/sveltekit-atproto-starter`
 
-To enable it, add this GitHub Actions secret in your repository settings:
+To enable it:
+
+- edit `.github/workflows/mirror-tangled.yml` and replace `charlebois.info` with your Tangled handle
+- keep the repo name or change it to your own Tangled repo path
+- add this GitHub Actions secret in your repository settings:
 
 - `TANGLED_SSH_KEY`
   An SSH private key that has push access to the Tangled repo
