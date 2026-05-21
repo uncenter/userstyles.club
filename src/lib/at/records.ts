@@ -80,7 +80,7 @@ export async function createRecord(collection: string, record: Record<string, un
   });
 
   if (!response.ok) {
-    throw new Error('Failed to create record');
+    throw new Error(`Failed to create record: ${response.data.error}: ${response.data.message}`);
   }
 
   return response.data as { uri?: string; cid?: string };

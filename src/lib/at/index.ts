@@ -7,6 +7,7 @@ export { listRecordsForRepo, getRecord, createRecord, putRecord, deleteRecord, t
 export { getProfile, getCachedProfile, clearCachedProfile } from './services/profiles';
 export { createPost } from './services/posts';
 export { listMyNotes, createNote, deleteNote, type ExampleNote, type ExampleNoteRecord } from './services/notes';
+export { listMyUserstyles, createUserstyle, deleteUserstyle, type Userstyle, type UserstyleRecord } from './services/userstyles';
 export { getFollowState, followActor, unfollowActor, type FollowState } from './services/follows';
 export {
   describeRepo,
@@ -15,4 +16,4 @@ export {
   type RepoCollectionPreview,
   type RepoPreviewRecord
 } from './services/repo';
-export { FOLLOW_COLLECTION, BSKY_POST_COLLECTION, EXAMPLE_NOTE_COLLECTION } from './settings';
+export { FOLLOW_COLLECTION, BSKY_POST_COLLECTION, EXAMPLE_NOTE_COLLECTION, USERSTYLE_COLLECTION } from './settings';

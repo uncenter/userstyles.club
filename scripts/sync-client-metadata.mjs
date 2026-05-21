@@ -11,13 +11,13 @@ const root = `${origin}${normalizedBase}`;
 
 const metadata = {
   client_id: `${root}/client-metadata.json`,
-  client_name: 'SvelteKit ATProto Static Starter',
+  client_name: 'userstyles.club',
   client_uri: root,
   logo_uri: `${root}/favicon.svg`,
   tos_uri: `${root}/`,
   policy_uri: `${root}/`,
   redirect_uris: [`${root}/`],
-  scope: 'atproto repo:app.bsky.graph.follow repo:app.bsky.feed.post repo:com.example.app.note',
+  scope: 'atproto repo:app.bsky.graph.follow repo:app.bsky.feed.post repo:club.userstyles.alpha.userstyle',
   grant_types: ['authorization_code', 'refresh_token'],
   response_types: ['code'],
   token_endpoint_auth_method: 'none',

@@ -1,0 +1,33 @@
+{
+	"lexicon": 1,
+	"id": "club.userstyles.alpha.userstyle",
+	"defs": {
+		"main": {
+			"type": "record",
+			"key": "tid",
+			"record": {
+				"type": "object",
+				"properties": {
+					"title": {
+						"type": "string",
+						"maxGraphemes": 140,
+						"minGraphemes": 1
+					},
+					"sourceCode": {
+						"type": "string"
+					},
+					"createdAt": {
+						"type": "string",
+						"format": "datetime"
+					},
+					"updatedAt": {
+						"type": "string",
+						"format": "datetime"
+					}
+				},
+				"required": ["name", "sourceCode", "createdAt", "updatedAt"]
+			},
+			"description": "Record declaring a userstyle's contents and metadata."
+		}
+	}
+}
