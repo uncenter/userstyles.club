@@ -7,7 +7,7 @@ export { listRecordsForRepo, getRecord, createRecord, putRecord, deleteRecord, t
 export { getProfile, getCachedProfile, clearCachedProfile } from './services/profiles';
 export { createPost } from './services/posts';
 export { listMyNotes, createNote, deleteNote, type ExampleNote, type ExampleNoteRecord } from './services/notes';
-export { listMyUserstyles, createUserstyle, deleteUserstyle, type Userstyle, type UserstyleRecord } from './services/userstyles';
+export { listUserstyles, listMyUserstyles, getUserstyle, createUserstyle, deleteUserstyle, type Userstyle, type UserstyleRecord } from './services/userstyles';
 export { getFollowState, followActor, unfollowActor, type FollowState } from './services/follows';
 export {
   describeRepo,

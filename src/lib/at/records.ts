@@ -83,7 +83,7 @@ export async function createRecord(collection: string, record: Record<string, un
     throw new Error(`Failed to create record: ${response.data.error}: ${response.data.message}`);
   }
 
-  return response.data as { uri?: string; cid?: string };
+  return response.data as { uri?: string; cid?: string, commit?: { cid: string, rev: string }};
 }
 
 export async function putRecord(collection: string, rkey: string, record: Record<string, unknown>) {

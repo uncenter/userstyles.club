@@ -49,14 +49,14 @@
 </script>
 
 <div style="position: relative;">
-  <input type="text" bind:value={query} oninput={handleInput} placeholder="Search by handle or name" />
+  <input type="text" bind:value={query} oninput={handleInput} placeholder="Handle or name" />
 
   {#if isSearching}
-    <p class="muted" style="margin: 0.45rem 0 0; font-size: 0.9rem;">Searching...</p>
+    <!-- <p class="muted" style="margin: 0.45rem 0 0; font-size: 0.9rem;">Searching...</p> -->
   {/if}
 
   {#if results.length > 0}
-    <div class="panel" style="margin-top: 0.5rem; overflow: hidden;">
+    <div class="panel" style="margin-top: 0.5rem; overflow: hidden; position: absolute; z-index: 999;">
       {#each results as actor}
         <button
           type="button"

@@ -1,5 +1,5 @@
 import { getSessionContext } from "../auth";
-import { createRecord, deleteRecord, listRecordsForRepo, type RepoRecord } from "../records";
+import { createRecord, deleteRecord, getRecord, listRecordsForRepo, type RepoRecord } from "../records";
 import { USERSTYLE_COLLECTION } from "../settings";
 
 export type Userstyle = {
@@ -17,8 +17,7 @@ function isUserstyle(value: Record<string, unknown>): value is Userstyle {
   return typeof value.title === 'string' && typeof value.sourceCode === 'string';
 }
 
-export async function listMyUserstyles() {
-  const { did } = getSessionContext('You must be logged in to read your userstyles.');
+export async function listUserstyles(did: string) {
   const response = await listRecordsForRepo({
     repo: did,
     collection: USERSTYLE_COLLECTION,
@@ -28,6 +27,11 @@ export async function listMyUserstyles() {
   return response.records
     .filter((record): record is UserstyleRecord => isUserstyle(record.value))
     .sort((a, b) => b.value.createdAt.localeCompare(a.value.createdAt));
+}
+
+export async function listMyUserstyles() {
+  const { did } = getSessionContext('You must be logged in to read your userstyles.');
+  return listUserstyles(did);
 }
 
 export async function createUserstyle(title: string, sourceCode: string) {
@@ -41,6 +45,14 @@ export async function createUserstyle(title: string, sourceCode: string) {
     sourceCode,
     createdAt: new Date().toISOString()
   });
+}
+
+export async function getUserstyle(did: string, rkey: string) {
+  return await getRecord({
+    repo: did,
+    collection: USERSTYLE_COLLECTION,
+    rkey,
+  }) as UserstyleRecord;
 }
 
 export async function deleteUserstyle(uri: string) {

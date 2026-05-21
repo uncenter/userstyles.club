@@ -1,28 +1,58 @@
 <script lang="ts">
+  import { goto } from '$app/navigation';
   import { base } from '$app/paths';
-  import { user, logout } from '$lib/at';
+  import { type UserstyleRecord, user, listMyUserstyles } from '$lib/at';
+
+  import UserstyleListing from '$components/UserstyleListing.svelte';
+
+  let userstyles = $state<UserstyleRecord[]>([]);
+
+  let loading = $state(false);
+  let error = $state<string | null>(null);
+
+  $effect(() => {
+    if (!user.isLoggedIn) {
+      goto('/login');
+      return;
+    }
+
+    loadUserstyles();
+  });
+
+  async function loadUserstyles() {
+    loading = true;
+    error = null;
+
+    try {
+      userstyles = await listMyUserstyles();
+    } catch (e) {
+      error = e instanceof Error ? e.message : 'Failed to load userstyles.';
+    } finally {
+      loading = false;
+    }
+  }
 </script>
 
-<main class="shell" style="padding: 2rem 0 3rem; display: grid; gap: 1rem;">
-  <header class="panel">
-    <h1 style="margin: 0.35rem 0 0;">userstyles.club</h1>
-  </header>
+<header class="panel">
+  <h1 class="section-title">Userstyles</h1>
+</header>
 
-  <section class="panel">
-    <nav class="actions">
-      <a href="{base}/search" class="btn">Search</a>
-      <a href="{base}/post" class="btn">Post</a>
-      <a href="{base}/notes" class="btn">Notes</a>
-      <a href="{base}/userstyles" class="btn">Userstyles</a>
-      {#if user.isLoggedIn}
-        <a href="{base}/repo" class="btn">Repo</a>
-      {/if}
-      {#if user.isLoggedIn && user.did}
-        <a href="{base}/profile/{user.did}" class="btn">Profile</a>
-        <button type="button" class="btn" onclick={logout}>Logout</button>
-      {:else}
-        <a href="{base}/login" class="btn primary">Login</a>
-      {/if}
-    </nav>
-  </section>
-</main>
+<section class="panel" style="display: grid; gap: 0.75rem;">
+  {#if loading}
+    <p style="margin: 0;">Loading userstyles...</p>
+  {:else if userstyles.length === 0}
+    <p class="muted" style="margin: 0;">No userstyles yet. <a href="{base}/new">Create a userstyle?</a></p>
+  {:else}
+    {#if error}
+      <p style="margin: 0; color: #fca5a5;">{error}</p>
+    {:else}
+      <ul class="plain">
+        {#each userstyles as userstyle}
+          <li style="margin-bottom: 0.9rem;">
+            <UserstyleListing record={userstyle} />
+          </li>
+        {/each}
+      </ul>
+    {/if}
+  {/if}
+</section>
