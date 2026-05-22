@@ -1,5 +1,6 @@
-import type { Did } from '@atcute/lexicons';
+import type { ActorIdentifier, Did, Nsid } from '@atcute/lexicons';
 import { getClientForDid } from '../client';
+import { ok } from '@atcute/client';
 
 export type RepoPreviewRecord = {
   uri: string;
@@ -18,47 +19,35 @@ export type RepoCollectionPreview = {
 export async function describeRepo(repo: Did) {
   const client = await getClientForDid(repo);
 
-  // @ts-expect-error - XRPC is valid but not available in current package typings.
-  const response = await client.get('com.atproto.repo.describeRepo', {
+  const response = await ok(client.get('com.atproto.repo.describeRepo', {
     params: { repo }
-  });
+  }));
 
-  if (!response.ok) {
-    throw new Error('Could not describe repo');
-  }
 
-  const data = response.data as { collections?: string[] } | null;
   return {
     client,
-    collections: (data?.collections ?? []).sort()
+    collections: response.collections.sort()
   };
 }
 
 export async function listRepoCollection(params: {
   repo: Did;
-  collection: string;
+  collection: Nsid;
   limit: number;
   cursor?: string;
 }) {
   const { repo, collection, limit, cursor } = params;
   const client = await getClientForDid(repo);
 
-  // @ts-expect-error - XRPC is valid but not available in current package typings.
-  const response = await client.get('com.atproto.repo.listRecords', {
+  const response = await ok(client.get('com.atproto.repo.listRecords', {
     params: { repo, collection, limit, cursor }
-  });
+  }));
 
-  if (!response.ok) {
-    throw new Error('Failed to fetch records for this collection.');
-  }
-
-  const data = response.data as { records?: RepoPreviewRecord[]; cursor?: string } | null;
-  const records = data?.records ?? [];
 
   return {
-    records,
-    cursor: data?.cursor,
-    hasMore: Boolean(data?.cursor) && records.length >= limit
+    records: response.records,
+    cursor: response.cursor,
+    hasMore: Boolean(response.cursor) && response.records.length >= limit
   };
 }
 

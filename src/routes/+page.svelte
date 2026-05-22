@@ -11,12 +11,9 @@
   let error = $state<string | null>(null);
 
   $effect(() => {
-    if (!user.isLoggedIn) {
-      goto('/login');
-      return;
+    if (user.isLoggedIn) {
+      loadUserstyles();
     }
-
-    loadUserstyles();
   });
 
   async function loadUserstyles() {
@@ -33,26 +30,30 @@
   }
 </script>
 
-<header class="panel">
-  <h1 class="section-title">Userstyles</h1>
-</header>
+{#if user.isLoggedIn}
+  <header class="panel">
+    <h1 class="section-title">Your userstyles</h1>
+  </header>
 
-<section class="panel" style="display: grid; gap: 0.75rem;">
-  {#if loading}
-    <p style="margin: 0;">Loading userstyles...</p>
-  {:else if userstyles.length === 0}
-    <p class="muted" style="margin: 0;">No userstyles yet. <a href="{base}/new">Create a userstyle?</a></p>
-  {:else}
-    {#if error}
-      <p style="margin: 0; color: #fca5a5;">{error}</p>
+  <section class="panel" style="display: grid; gap: 0.75rem;">
+    {#if loading}
+      <p style="margin: 0;">Loading userstyles...</p>
+    {:else if userstyles.length === 0}
+      <p class="muted" style="margin: 0;">No userstyles yet. <a href="{base}/new">Create a userstyle?</a></p>
     {:else}
-      <ul class="plain">
-        {#each userstyles as userstyle}
-          <li style="margin-bottom: 0.9rem;">
-            <UserstyleListing record={userstyle} />
-          </li>
-        {/each}
-      </ul>
+      {#if error}
+        <p style="margin: 0; color: #fca5a5;">{error}</p>
+      {:else}
+        <ul class="plain">
+          {#each userstyles as userstyle}
+            <li style="margin-bottom: 0.9rem;">
+              <UserstyleListing record={userstyle} />
+            </li>
+          {/each}
+        </ul>
+      {/if}
     {/if}
-  {/if}
-</section>
+  </section>
+{:else}
+<p>Welcome to userstyles.club!</p>
+{/if}

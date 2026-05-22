@@ -1,11 +1,21 @@
 <script lang="ts">
-  import { goto } from '$app/navigation';
-  import type { AppBskyActorDefs } from '@atcute/bluesky';
-  import { ActorSearch } from '$components';
+  import { PersistedState } from "runed";
 
-  function selectActor(actor: AppBskyActorDefs.ProfileViewBasic) {
-    goto(`/profile/${actor.did}`);
-  }
+  let appearance = new PersistedState("appearance", "system");
+  let appearances = [
+    {
+      value: 'system',
+      label: 'System'
+    },
+    {
+      value: 'dark',
+      label: 'Dark'
+    },
+    {
+      value: 'light',
+      label: 'Light'
+    }
+  ];
 </script>
 
 <header class="panel">
@@ -13,6 +23,16 @@
 </header>
 
 <section class="panel">
-  <!-- <ActorSearch onSelect={selectActor} /> -->
+  Appearance
+	<select
+    name="appearance"
+		bind:value={appearance.current}
+	>
+		{#each appearances as opt}
+			<option value={opt.value}>
+				{opt.label}
+			</option>
+		{/each}
+	</select>
 </section>
 

@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import { base } from '$app/paths';
+  import { base, resolve } from '$app/paths';
   import { goto } from '$app/navigation';
   import '../app.css';
   import { initClient, user, logout } from '$lib/at';
@@ -35,18 +35,18 @@
 
   <nav class="panel" style="display: flex; justify-content: space-between;">
     <div class="actions">
-      <a href="{base}/" class="btn">Home</a>
-      <a href="{base}/explore" class="btn">Explore</a>
-      <a href="{base}/new" class="btn">New</a>
+      <a href={resolve('/')} class="btn">Home</a>
+      <a href={resolve('/explore')} class="btn">Explore</a>
+      <a href={resolve('/new')} class="btn">New</a>
     </div>
     <div class="actions">
       <ActorSearch onSelect={selectActor} />
       {#if user.isLoggedIn && user.did}
-        <a href="{base}/profile/{user.did}" class="btn">Profile</a>
-        <a href="{base}/settings" class="btn">Settings</a>
+        <a href={resolve('/profile/[actor]', { actor: user.did })} class="btn">Profile</a>
+        <a href={resolve('/settings')} class="btn">Settings</a>
         <button type="button" class="btn" onclick={logout}>Logout</button>
       {:else}
-        <a href="{base}/login" class="btn primary">Login</a>
+        <a href={resolve('/login')} class="btn primary">Login</a>
       {/if}
     </div>
   </nav>

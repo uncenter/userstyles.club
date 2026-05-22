@@ -1,7 +1,9 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
-  import { createUserstyle, type UserstyleRecord, user } from '$lib/at';
+  import { createUserstyle, user } from '$lib/at';
+  import { parseResourceUri } from '@atcute/lexicons';
 
+  // TODO: Save form values locally in case of accidental reload / etc.
   let title = $state('');
   let sourceCode = $state('');
 
@@ -24,10 +26,10 @@
 
     try {
       let userstyle = await createUserstyle(title, sourceCode);
-      console.log(userstyle)
+      let uri = parseResourceUri(userstyle.uri);
       title = '';
       sourceCode = '';
-      goto(`/style/${user.did}/${userstyle.commit?.rev}`);
+      goto(`/style/${uri.repo}/${uri.rkey}`);
     } catch (e) {
       error = e instanceof Error ? e.message : 'Failed to create userstyle.';
     } finally {

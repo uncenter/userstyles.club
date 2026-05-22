@@ -1,17 +1,14 @@
 import type { AppBskyActorDefs } from '@atcute/bluesky';
 import type { ActorIdentifier, Did } from '@atcute/lexicons';
 import { getPublicClient } from '../client';
+import { ok } from '@atcute/client';
 
 export async function getProfile(actor: ActorIdentifier) {
-  const response = await getPublicClient().get('app.bsky.actor.getProfile', {
+  const response = await ok(getPublicClient().get('app.bsky.actor.getProfile', {
     params: { actor }
-  });
+  }));
 
-  if (!response.ok) {
-    throw new Error('Profile not found');
-  }
-
-  return response.data as AppBskyActorDefs.ProfileViewDetailed;
+  return response;
 }
 
 export async function getCachedProfile(actor: Did) {

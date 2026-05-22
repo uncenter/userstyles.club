@@ -6,7 +6,6 @@ export { createBskyPost } from './bsky';
 export { listRecordsForRepo, getRecord, createRecord, putRecord, deleteRecord, type RepoRecord } from './records';
 export { getProfile, getCachedProfile, clearCachedProfile } from './services/profiles';
 export { createPost } from './services/posts';
-export { listMyNotes, createNote, deleteNote, type ExampleNote, type ExampleNoteRecord } from './services/notes';
 export { listUserstyles, listMyUserstyles, getUserstyle, createUserstyle, deleteUserstyle, type Userstyle, type UserstyleRecord } from './services/userstyles';
 export { getFollowState, followActor, unfollowActor, type FollowState } from './services/follows';
 export {

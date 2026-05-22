@@ -1,5 +1,6 @@
+import type { ActorIdentifier, Did, RecordKey } from "@atcute/lexicons";
 import { getSessionContext } from "../auth";
-import { createRecord, deleteRecord, getRecord, listRecordsForRepo, type RepoRecord } from "../records";
+import { createRecord, deleteRecord, getRecord, listRecordsForCollection, listRecordsForRepo, type RepoRecord } from "../records";
 import { USERSTYLE_COLLECTION } from "../settings";
 
 export type Userstyle = {
@@ -17,9 +18,9 @@ function isUserstyle(value: Record<string, unknown>): value is Userstyle {
   return typeof value.title === 'string' && typeof value.sourceCode === 'string';
 }
 
-export async function listUserstyles(did: string) {
+export async function listUserstyles(repo: ActorIdentifier) {
   const response = await listRecordsForRepo({
-    repo: did,
+    repo,
     collection: USERSTYLE_COLLECTION,
     limit: 50
   });
@@ -47,20 +48,21 @@ export async function createUserstyle(title: string, sourceCode: string) {
   });
 }
 
-export async function getUserstyle(did: string, rkey: string) {
-  return await getRecord({
-    repo: did,
+export async function getUserstyle(repo: ActorIdentifier, rkey: RecordKey) {
+  const response = await getRecord({
+    repo,
     collection: USERSTYLE_COLLECTION,
     rkey,
   }) as UserstyleRecord;
+
+  return response.value;
 }
 
-export async function deleteUserstyle(uri: string) {
-  const rkey = uri.split('/').pop();
-  if (!rkey) {
-    throw new Error('Userstyle record key is missing.');
-  }
+export async function deleteUserstyle(rkey: RecordKey) {
+  return await deleteRecord(USERSTYLE_COLLECTION, rkey);
+}
 
-  await deleteRecord(USERSTYLE_COLLECTION, rkey);
-  return true;
+export async function listAllUserstyles() {
+  const response = await listRecordsForCollection({ collection: USERSTYLE_COLLECTION });
+  return response.records as UserstyleRecord[];
 }

@@ -15,6 +15,17 @@ export function getPublicClient(): Client {
   return client;
 }
 
+export function getRelayClient(): Client {
+  const key = 'relay';
+  if (clientCache.has(key)) return clientCache.get(key)!;
+
+  const client = new Client({
+    handler: simpleFetchHandler({ service: 'https://relay1.us-east.bsky.network' })
+  });
+  clientCache.set(key, client);
+  return client;
+}
+
 export async function getClientForDid(did: Did): Promise<Client> {
   if (clientCache.has(did)) return clientCache.get(did)!;
 

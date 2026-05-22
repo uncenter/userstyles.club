@@ -97,7 +97,6 @@ async function startAuthorization(identity?: ActorIdentifier) {
     target: identity
       ? { type: 'account', identifier: identity }
       : { type: 'pds', serviceUrl: getSignUpPds() },
-    // @ts-expect-error - prompt exists but may lag in types.
     prompt: identity ? undefined : 'create',
     scope: oauthScope
   });

@@ -1,34 +1,30 @@
 import { FOLLOW_COLLECTION } from '../settings';
 import { getSessionContext } from '../auth';
+import type { Did, RecordKey } from '@atcute/lexicons';
+import { ok } from '@atcute/client';
 
 export type FollowState = {
   isFollowing: boolean;
   followUri: string | null;
 };
 
-export async function getFollowState(subjectDid: string): Promise<FollowState> {
+export async function getFollowState(subjectDid: Did): Promise<FollowState> {
   const { client, did } = getSessionContext('You must be logged in to inspect follow state.');
   let cursor: string | undefined;
 
   do {
-    // @ts-expect-error - XRPC is valid but not available in current package typings.
-    const response = await client.get('com.atproto.repo.listRecords', {
+    const response = await ok(client.get('com.atproto.repo.listRecords', {
       params: {
         repo: did,
         collection: FOLLOW_COLLECTION,
         cursor,
         limit: 100
       }
-    });
+    }));
 
-    if (!response.ok) break;
 
-    const data = response.data as {
-      records?: Array<{ uri: string; value: { subject: string } }>;
-      cursor?: string;
-    } | null;
 
-    const match = (data?.records ?? []).find((record) => record.value.subject === subjectDid);
+    const match = response.records.find((record) => record.value.subject === subjectDid);
     if (match) {
       return {
         isFollowing: true,
@@ -36,7 +32,7 @@ export async function getFollowState(subjectDid: string): Promise<FollowState> {
       };
     }
 
-    cursor = data?.cursor;
+    cursor = response.cursor;
   } while (cursor);
 
   return {
@@ -45,11 +41,10 @@ export async function getFollowState(subjectDid: string): Promise<FollowState> {
   };
 }
 
-export async function followActor(subjectDid: string) {
+export async function followActor(subjectDid: Did) {
   const { client, did } = getSessionContext('You must be logged in to follow accounts.');
 
-  // @ts-expect-error - XRPC is valid but not available in current package typings.
-  const response = await client.post('com.atproto.repo.createRecord', {
+  const response = await ok(client.post('com.atproto.repo.createRecord', {
     input: {
       repo: did,
       collection: FOLLOW_COLLECTION,
@@ -59,34 +54,21 @@ export async function followActor(subjectDid: string) {
         createdAt: new Date().toISOString()
       }
     }
-  });
+  }));
 
-  if (!response.ok) {
-    throw new Error('Could not follow account');
-  }
-
-  return (response.data as { uri?: string }).uri ?? null;
+  return response;
 }
 
-export async function unfollowActor(followUri: string) {
+export async function unfollowActor(rkey: RecordKey) {
   const { client, did } = getSessionContext('You must be logged in to unfollow accounts.');
-  const rkey = followUri.split('/').pop();
-  if (!rkey) {
-    throw new Error('Follow URI is missing');
-  }
 
-  // @ts-expect-error - XRPC is valid but not available in current package typings.
-  const response = await client.post('com.atproto.repo.deleteRecord', {
+  await ok(client.post('com.atproto.repo.deleteRecord', {
     input: {
       repo: did,
       collection: FOLLOW_COLLECTION,
       rkey
     }
-  });
-
-  if (!response.ok) {
-    throw new Error('Could not unfollow account');
-  }
+  }));
 
   return true;
 }

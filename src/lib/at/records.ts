@@ -1,6 +1,8 @@
-import type { Did } from '@atcute/lexicons';
-import { getClientForDid, getPublicClient } from './client';
+import type { ActorIdentifier, Did, Nsid, RecordKey } from '@atcute/lexicons';
+import { getClientForDid, getPublicClient, getRelayClient } from './client';
 import { getSessionContext } from './auth';
+import { isDid } from '@atcute/lexicons/syntax';
+import { ok } from '@atcute/client';
 
 export type RepoRecord = {
   uri: string;
@@ -14,8 +16,8 @@ export type ListRecordsResult = {
 };
 
 export async function listRecordsForRepo(params: {
-  repo: string;
-  collection: string;
+  repo: ActorIdentifier;
+  collection: Nsid;
   limit?: number;
   cursor?: string;
 }): Promise<ListRecordsResult> {
@@ -25,102 +27,114 @@ export async function listRecordsForRepo(params: {
     ? await getClientForDid(repo as Did)
     : getPublicClient();
 
-  // @ts-expect-error - XRPC is valid but not available in current package typings.
-  const response = await client.get('com.atproto.repo.listRecords', {
+  const response = await ok(client.get('com.atproto.repo.listRecords', {
     params: { repo, collection, limit, cursor }
-  });
-
-  if (!response.ok) {
-    throw new Error('Failed to list records');
-  }
-
-  const data = response.data as { records?: RepoRecord[]; cursor?: string } | null;
+  }));
 
   return {
-    records: data?.records ?? [],
-    cursor: data?.cursor
+    records: response.records,
+    cursor: response.cursor
   };
+}
+
+export type ListReposResult = {
+  repos: { did: string }[];
+  cursor?: string;
+};
+
+export async function listReposByCollection(params: {
+  collection: Nsid;
+  limit?: number;
+  cursor?: string;
+}): Promise<ListReposResult> {
+  const { collection, limit = 50, cursor } = params;
+
+  const client = getRelayClient();
+
+  const response = await ok(client.get('com.atproto.sync.listReposByCollection', {
+    params: { collection, limit, cursor }
+  }));
+
+
+  return {
+    repos: response.repos,
+    cursor: response.cursor
+  };
+}
+
+export async function listRecordsForCollection(params: {
+  collection: Nsid;
+  limit?: number;
+}) {
+  const { repos } = await listReposByCollection(params);
+  console.log(repos);
+
+  const records: RepoRecord[] = [];
+  for (const repo of repos) {
+    records.push(...(await listRecordsForRepo({ repo: repo.did as Did, collection: params.collection })).records)
+  }
+
+  return { records };
 }
 
 export async function getRecord(params: {
-  repo: string;
-  collection: string;
-  rkey: string;
-}): Promise<RepoRecord | null> {
+  repo: ActorIdentifier;
+  collection: Nsid;
+  rkey: RecordKey;
+}): Promise<RepoRecord> {
   const { repo, collection, rkey } = params;
 
-  const client = repo.startsWith('did:')
-    ? await getClientForDid(repo as Did)
+  const client = isDid(repo)
+    ? await getClientForDid(repo)
     : getPublicClient();
 
-  // @ts-expect-error - XRPC is valid but not available in current package typings.
-  const response = await client.get('com.atproto.repo.getRecord', {
+  const response = await ok(client.get('com.atproto.repo.getRecord', {
     params: { repo, collection, rkey }
-  });
+  }));
 
-  if (!response.ok) return null;
 
-  return {
-    uri: (response.data as { uri?: string }).uri ?? '',
-    cid: (response.data as { cid?: string }).cid,
-    value: (response.data as { value: Record<string, unknown> }).value
-  };
+  return response;
 }
 
-export async function createRecord(collection: string, record: Record<string, unknown>) {
+export async function createRecord(collection: Nsid, record: Record<string, unknown>) {
   const { client, did } = getSessionContext('You must be logged in to write records.');
 
-  // @ts-expect-error - XRPC is valid but not available in current package typings.
-  const response = await client.post('com.atproto.repo.createRecord', {
+  const response = await ok(client.post('com.atproto.repo.createRecord', {
     input: {
       repo: did,
       collection,
       record
     }
-  });
+  }));
 
-  if (!response.ok) {
-    throw new Error(`Failed to create record: ${response.data.error}: ${response.data.message}`);
-  }
-
-  return response.data as { uri?: string; cid?: string, commit?: { cid: string, rev: string }};
+  return response;
 }
 
-export async function putRecord(collection: string, rkey: string, record: Record<string, unknown>) {
+export async function putRecord(collection: Nsid, rkey: RecordKey, record: Record<string, unknown>) {
   const { client, did } = getSessionContext('You must be logged in to write records.');
 
-  // @ts-expect-error - XRPC is valid but not available in current package typings.
-  const response = await client.post('com.atproto.repo.putRecord', {
+  const response = await ok(client.post('com.atproto.repo.putRecord', {
     input: {
       repo: did,
       collection,
       rkey,
       record
     }
-  });
+  }));
 
-  if (!response.ok) {
-    throw new Error('Failed to update record');
-  }
-
-  return response.data;
+  return response;
 }
 
-export async function deleteRecord(collection: string, rkey: string) {
+export async function deleteRecord(collection: Nsid, rkey: RecordKey) {
   const { client, did } = getSessionContext('You must be logged in to write records.');
 
-  // @ts-expect-error - XRPC is valid but not available in current package typings.
-  const response = await client.post('com.atproto.repo.deleteRecord', {
+  await ok(client.post('com.atproto.repo.deleteRecord', {
     input: {
       repo: did,
       collection,
       rkey
     }
-  });
-
-  if (!response.ok) {
-    throw new Error('Failed to delete record');
-  }
+  }));
 
   return true;
 }

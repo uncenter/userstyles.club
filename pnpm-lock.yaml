@@ -8,21 +8,24 @@ importers:
 
   .:
     devDependencies:
+      '@atcute/atproto':
+        specifier: ^4.0.0
+        version: 4.0.0(@atcute/lexicons@2.0.0)
       '@atcute/bluesky':
-        specifier: ^3.2.15
-        version: 3.3.3
+        specifier: ^4.0.1
+        version: 4.0.1(@atcute/lexicons@2.0.0)
       '@atcute/client':
-        specifier: ^4.2.1
-        version: 4.2.1
+        specifier: ^5.0.0
+        version: 5.0.0(@atcute/lexicons@2.0.0)(typescript@5.9.3)
       '@atcute/identity-resolver':
-        specifier: ^1.2.2
-        version: 1.2.2(@atcute/identity@1.1.4)
+        specifier: ^2.0.0
+        version: 2.0.0(@atcute/identity@2.0.0(@atcute/lexicons@2.0.0)(typescript@5.9.3))(@atcute/lexicons@2.0.0)(typescript@5.9.3)
       '@atcute/lexicons':
-        specifier: ^1.2.6
-        version: 1.3.0
+        specifier: ^2.0.0
+        version: 2.0.0
       '@atcute/oauth-browser-client':
-        specifier: ^2.0.3
-        version: 2.0.3(@atcute/identity@1.1.4)
+        specifier: ^4.0.0
+        version: 4.0.0(@atcute/identity-resolver@2.0.0(@atcute/identity@2.0.0(@atcute/lexicons@2.0.0)(typescript@5.9.3))(@atcute/lexicons@2.0.0)(typescript@5.9.3))(@atcute/lexicons@2.0.0)(typescript@5.9.3)
       '@sveltejs/adapter-static':
         specifier: ^3.0.10
         version: 3.0.10(@sveltejs/kit@2.57.1(@sveltejs/vite-plugin-svelte@6.2.4(svelte@5.55.4)(vite@7.3.2))(svelte@5.55.4)(typescript@5.9.3)(vite@7.3.2))
@@ -32,6 +35,9 @@ importers:
       '@sveltejs/vite-plugin-svelte':
         specifier: ^6.2.4
         version: 6.2.4(svelte@5.55.4)(vite@7.3.2)
+      runed:
+        specifier: ^0.37.1
+        version: 0.37.1(@sveltejs/kit@2.57.1(@sveltejs/vite-plugin-svelte@6.2.4(svelte@5.55.4)(vite@7.3.2))(svelte@5.55.4)(typescript@5.9.3)(vite@7.3.2))(svelte@5.55.4)
       svelte:
         specifier: ^5.48.2
         version: 5.55.4
@@ -47,44 +53,61 @@ importers:
 
 packages:
 
-  '@atcute/atproto@3.1.11':
-    resolution: {integrity: sha512-yh+ASvA+iHHQij6UeHEKp2+rwvFvQR8A6/5Dk/xvqDslIikWEFx9VlprNwm/clQIPl2bLuQg+LHS8uY9o5nFTA==}
-
-  '@atcute/bluesky@3.3.3':
-    resolution: {integrity: sha512-R1VyEmbvIUhub6ONnt7sm6FcRoKJISWf+I0qraXtk59KLmNCsJYMX8fLdIcdv5o1i9XtDg8/Um/wqLrl84IuFg==}
-
-  '@atcute/client@4.2.1':
-    resolution: {integrity: sha512-ZBFM2pW075JtgGFu5g7HHZBecrClhlcNH8GVP9Zz1aViWR+cjjBsTpeE63rJs+FCOHFYlirUyo5L8SGZ4kMINw==}
-
-  '@atcute/identity-resolver@1.2.2':
-    resolution: {integrity: sha512-eUh/UH4bFvuXS0X7epYCeJC/kj4rbBXfSRumLEH4smMVwNOgTo7cL/0Srty+P/qVPoZEyXdfEbS0PHJyzoXmHw==}
+  '@atcute/atproto@4.0.0':
+    resolution: {integrity: sha512-Rd21kW0tl/QEXhyPkJXRpUV8HYs7sMOmmXRu2z1sKMZbm1tqvHz1L3CQeTFcC/Xf/5cg7S6ITGIKRP0++zu0aw==}
     peerDependencies:
-      '@atcute/identity': ^1.0.0
+      '@atcute/lexicons': ^2.0.0
 
-  '@atcute/identity@1.1.4':
-    resolution: {integrity: sha512-RCw1IqflfuSYCxK5m0lZCm0UnvIzcUnuhngiBhJEJb9a9Mc2SEf1xP3H8N5r8pvEH1LoAYd6/zrvCNU+uy9esw==}
+  '@atcute/bluesky@4.0.1':
+    resolution: {integrity: sha512-fuxbAf+HVkwZBtEZbC2LinLG3l6ySiIEtiiAyrTKgR2s+NdpprdhXrTvUkDIhi3yIi9IJq8gel3ne48z5h2MJQ==}
+    peerDependencies:
+      '@atcute/lexicons': ^2.0.0
 
-  '@atcute/lexicons@1.3.0':
-    resolution: {integrity: sha512-Eq5y+9onnCXNVUlNiMf31beSXHKqptB7lUo/68YbhlmxdaR7ooywHmahya9goP5AsmlYEA1z+dRPXIDAa9O7cg==}
+  '@atcute/client@5.0.0':
+    resolution: {integrity: sha512-Dtrc1no1oAtpUTmkBxH0xKSgy8qcnk8orPf/PkEATW+MB3k8FPHtPH2fshiKd55rioZkb+xaN+7A29WtqPQHRA==}
+    peerDependencies:
+      '@atcute/lexicons': ^2.0.0
+
+  '@atcute/identity-resolver@2.0.0':
+    resolution: {integrity: sha512-IKg1BDQAF2bIdN10DL6KAXmTjK+3enTU2IRbuani9TsFahBwGZ7O5FiVmTiL6QlGfauGNW5S0xNCOxWXWMoR2Q==}
+    peerDependencies:
+      '@atcute/identity': ^2.0.0
+      '@atcute/lexicons': ^2.0.0
+
+  '@atcute/identity@2.0.0':
+    resolution: {integrity: sha512-YXFsggO7eJYifqkN85+kUXJE2a1iI9AyuzPTDjtS/4WE1Zs1/XiPkWmwZlAgtp+pYhVtjm3mJqy/h/mZ0OnIVw==}
+    peerDependencies:
+      '@atcute/lexicons': ^2.0.0
+
+  '@atcute/lexicons@2.0.0':
+    resolution: {integrity: sha512-fIlwP+TPEAGoF5aU5s+f8N5sOjOu8Mww/sQL1B57Dp2hj3G/EWG9XwOHPokzycBCgXx+UxIIrzZCGy8whsVDZw==}
 
   '@atcute/multibase@1.2.0':
     resolution: {integrity: sha512-ZK2GRra+qIYq9nNuQB52m2ul0hOmCQEtPobGfTSUxm7pF0OGEkWGkWHugFhNEDVzHzTwPxHp6VGotdZFue4lYQ==}
 
-  '@atcute/oauth-browser-client@2.0.3':
-    resolution: {integrity: sha512-rzUjwhjE4LRRKdQnCFQag/zXRZMEAB1hhBoLfnoQuHwWbmDUCL7fzwC3jRhDPp3om8XaYNDj8a/iqRip0wRqoQ==}
+  '@atcute/oauth-browser-client@4.0.0':
+    resolution: {integrity: sha512-rvxmRcA6WOZz5TfcKp1kVtxUioogMzQH5OdCrW3Fm+ldEPPe2ZEyP7x1PzRWo6Es3F8lm4Q7BCJJgJFkQp2a5Q==}
+    peerDependencies:
+      '@atcute/identity-resolver': ^2.0.0
+      '@atcute/lexicons': ^2.0.0
 
-  '@atcute/uint8array@1.1.1':
-    resolution: {integrity: sha512-3LsC8XB8TKe9q/5hOA5sFuzGaIFdJZJNewC5OKa3o/eU6+K7JR6see9Zy2JbQERNVnRl11EzbNov1efgLMAs4g==}
+  '@atcute/oauth-crypto@1.0.0':
+    resolution: {integrity: sha512-2UC1msk4PyUArk/5Pl8zgtz1T8O+LZdFfB8ENLHjQVYitpqzGj2ZpDJaWZvCF3Y8lly4KoeUHLpFPDzbP+3u+g==}
 
-  '@atcute/util-fetch@1.0.5':
-    resolution: {integrity: sha512-qjHj01BGxjSjIFdPiAjSARnodJIIyKxnCMMEcXMESo9TAyND6XZQqrie5fia+LlYWVXdpsTds8uFQwc9jdKTig==}
+  '@atcute/oauth-keyset@0.1.1':
+    resolution: {integrity: sha512-BpaaXSuMawxILhWTOR0YIpKzFSA0MQC1W5Hn0HGE+giTqYFAKcdf0oA+2RZG9ZLVIzfO2txBsTeMpxB5qL6lEQ==}
 
-  '@atcute/util-text@1.2.0':
-    resolution: {integrity: sha512-b8WSh+Z7K601eUFFmTFj8QPKDO8Ic0VDDj63sdKzpkm+ySQKsYT5nXekViGqFVKbyKj1V5FyvZvgXad6/aI4QQ==}
+  '@atcute/oauth-types@1.0.0':
+    resolution: {integrity: sha512-YOpjLU8H5PG6oKfgau+dx7rSmGsLxIA36MeGL7BDeopcyq80RqPSBAzOasEEsmbMRJ/nTsMRJhnmGkp3RCa/Zw==}
 
-  '@badrap/valita@0.4.6':
-    resolution: {integrity: sha512-4kdqcjyxo/8RQ8ayjms47HCWZIF5981oE5nIenbfThKDxWXtEHKipAOWlflpPJzZx9y/JWYQkp18Awr7VuepFg==}
-    engines: {node: '>= 18'}
+  '@atcute/uint8array@1.1.2':
+    resolution: {integrity: sha512-n+lutnbN9mKzSjSVdfsYfzJ40u2971H+iLSL46D6d7zcrA4delxusf/ftGFvj5oGW03OioaFgQOy3Lqa3JmTeA==}
+
+  '@atcute/util-fetch@2.0.0':
+    resolution: {integrity: sha512-v+4aFQ/tuBqTV+URDJaFgm3mASWdglKXiPaGutJ1bs7QtQKmPZeesPY5MzW/a+MtI8GWCEJk8X9wOfalPOFSlg==}
+
+  '@atcute/util-text@1.3.1':
+    resolution: {integrity: sha512-MRgJXkx67znuBXuoAYCJkBZyd3OApL7zZlNf5kXhuoCXcdiu1nblRDycYTADSkym4epBSQWxh26kmI9sewaq6A==}
 
   '@esbuild/aix-ppc64@0.27.7':
     resolution: {integrity: sha512-EKX3Qwmhz1eMdEJokhALr0YiD0lhQNwDqkPYyPhiSwKrh7/4KRjQc04sZ8db+5DVVnZ1LmbNDI1uAMPEUBnQPg==}
@@ -481,6 +504,10 @@ packages:
     resolution: {integrity: sha512-3sUqbMEc77XqpdNO7FRyRog+eW3ph+GYCbj+rK+uYyRMuwsVy0rMiVtPn+QJlKFvWP/1PYpapqYn0Me2knFn+A==}
     engines: {node: '>=0.10.0'}
 
+  dequal@2.0.3:
+    resolution: {integrity: sha512-0je+qPKHEMohvfRTCEo3CrPG6cAzAYgmzKyxRiYSSDkS6eGJdyVJm7WaYA5ECaAD9wLB2T4EEeymA5aFVcYXCA==}
+    engines: {node: '>=6'}
+
   devalue@5.7.1:
     resolution: {integrity: sha512-MUbZ586EgQqdRnC4yDrlod3BEdyvE4TapGYHMW2CiaW+KkkFmWEFqBUaLltEZCGi0iFXCEjRF0OjF0DV2QHjOA==}
 
@@ -524,6 +551,10 @@ packages:
   locate-character@3.0.0:
     resolution: {integrity: sha512-SW13ws7BjaeJ6p7Q6CO2nchbYEc3X3J6WrmTTDto7yMPqVSZTUyY5Tjbid+Ab8gLnATtygYtiDIJGQRRn2ZOiA==}
 
+  lz-string@1.5.0:
+    resolution: {integrity: sha512-h5bgJWpxJNswbU7qCrV0tIKQCaS3blPDrqKWx+QxzuzL1zGUzij9XCWLrSLsJPu5t+eWA/ycetzYAO5IOMcWAQ==}
+    hasBin: true
+
   magic-string@0.30.21:
     resolution: {integrity: sha512-vd2F4YUyEXKGcLHoq+TEyCjxueSeHnFxyyjNp80yg0XV4vUhnDer/lvvlqM/arB5bXQN5K2/3oinyCRyx8T2CQ==}
 
@@ -540,8 +571,8 @@ packages:
     engines: {node: ^10 || ^12 || ^13.7 || ^14 || >=15.0.1}
     hasBin: true
 
-  nanoid@5.1.9:
-    resolution: {integrity: sha512-ZUvP7KeBLe3OZ1ypw6dI/TzYJuvHP77IM4Ry73waSQTLn8/g8rpdjfyVAh7t1/+FjBtG4lCP42MEbDxOsRpBMw==}
+  nanoid@5.1.11:
+    resolution: {integrity: sha512-v+KEsUv2ps74PaSKv0gHTxTCgMXOIfBEbaqa6w6ISIGC7ZsvHN4N9oJ8d4cmf0n5oTzQz2SLmThbQWhjd/8eKg==}
     engines: {node: ^18 || >=20}
     hasBin: true
 
@@ -567,6 +598,18 @@ packages:
     resolution: {integrity: sha512-VmtB2rFU/GroZ4oL8+ZqXgSA38O6GR8KSIvWmEFv63pQ0G6KaBH9s07PO8XTXP4vI+3UJUEypOfjkGfmSBBR0w==}
     engines: {node: '>=18.0.0', npm: '>=8.0.0'}
     hasBin: true
+
+  runed@0.37.1:
+    resolution: {integrity: sha512-MeFY73xBW8IueWBm012nNFIGy19WUGPLtknavyUPMpnyt350M47PhGSGrGoSLbidwn+Zlt/O0cp8/OZE3LASWA==}
+    peerDependencies:
+      '@sveltejs/kit': ^2.21.0
+      svelte: ^5.7.0
+      zod: ^4.1.0
+    peerDependenciesMeta:
+      '@sveltejs/kit':
+        optional: true
+      zod:
+        optional: true
 
   sade@1.8.1:
     resolution: {integrity: sha512-xal3CZX1Xlo/k4ApwCFrHVACi9fBqJ7V+mwhBsuf/1IOKbBy098Fex+Wa/5QMubw09pSZ/u8EY8PWgevJsXp1A==}
@@ -610,6 +653,14 @@ packages:
 
   unicode-segmenter@0.14.5:
     resolution: {integrity: sha512-jHGmj2LUuqDcX3hqY12Ql+uhUTn8huuxNZGq7GvtF6bSybzH3aFgedYu/KTzQStEgt1Ra2F3HxadNXsNjb3m3g==}
+
+  valibot@1.4.0:
+    resolution: {integrity: sha512-iC/x7fVcSyOwlm/VSt7RlHnzNGLGvR9GnxdifUeWoCJo0q4ZZvrVkIHC6faTlkxG47I2Y4UrFquPuVHCrOnrLg==}
+    peerDependencies:
+      typescript: '>=5'
+    peerDependenciesMeta:
+      typescript:
+        optional: true
 
   vite@7.3.2:
     resolution: {integrity: sha512-Bby3NOsna2jsjfLVOHKes8sGwgl4TT0E6vvpYgnAYDIF/tie7MRaFthmKuHx1NSXjiTueXH3do80FMQgvEktRg==}
@@ -664,65 +715,96 @@ packages:
 
 snapshots:
 
-  '@atcute/atproto@3.1.11':
+  '@atcute/atproto@4.0.0(@atcute/lexicons@2.0.0)':
     dependencies:
-      '@atcute/lexicons': 1.3.0
+      '@atcute/lexicons': 2.0.0
 
-  '@atcute/bluesky@3.3.3':
+  '@atcute/bluesky@4.0.1(@atcute/lexicons@2.0.0)':
     dependencies:
-      '@atcute/atproto': 3.1.11
-      '@atcute/lexicons': 1.3.0
+      '@atcute/atproto': 4.0.0(@atcute/lexicons@2.0.0)
+      '@atcute/lexicons': 2.0.0
 
-  '@atcute/client@4.2.1':
+  '@atcute/client@5.0.0(@atcute/lexicons@2.0.0)(typescript@5.9.3)':
     dependencies:
-      '@atcute/identity': 1.1.4
-      '@atcute/lexicons': 1.3.0
+      '@atcute/identity': 2.0.0(@atcute/lexicons@2.0.0)(typescript@5.9.3)
+      '@atcute/lexicons': 2.0.0
+    transitivePeerDependencies:
+      - typescript
 
-  '@atcute/identity-resolver@1.2.2(@atcute/identity@1.1.4)':
+  '@atcute/identity-resolver@2.0.0(@atcute/identity@2.0.0(@atcute/lexicons@2.0.0)(typescript@5.9.3))(@atcute/lexicons@2.0.0)(typescript@5.9.3)':
     dependencies:
-      '@atcute/identity': 1.1.4
-      '@atcute/lexicons': 1.3.0
-      '@atcute/util-fetch': 1.0.5
-      '@badrap/valita': 0.4.6
+      '@atcute/identity': 2.0.0(@atcute/lexicons@2.0.0)(typescript@5.9.3)
+      '@atcute/lexicons': 2.0.0
+      '@atcute/util-fetch': 2.0.0(typescript@5.9.3)
+      valibot: 1.4.0(typescript@5.9.3)
+    transitivePeerDependencies:
+      - typescript
 
-  '@atcute/identity@1.1.4':
+  '@atcute/identity@2.0.0(@atcute/lexicons@2.0.0)(typescript@5.9.3)':
     dependencies:
-      '@atcute/lexicons': 1.3.0
-      '@badrap/valita': 0.4.6
+      '@atcute/lexicons': 2.0.0
+      valibot: 1.4.0(typescript@5.9.3)
+    transitivePeerDependencies:
+      - typescript
 
-  '@atcute/lexicons@1.3.0':
+  '@atcute/lexicons@2.0.0':
     dependencies:
-      '@atcute/uint8array': 1.1.1
-      '@atcute/util-text': 1.2.0
+      '@atcute/uint8array': 1.1.2
+      '@atcute/util-text': 1.3.1
       '@standard-schema/spec': 1.1.0
       esm-env: 1.2.2
 
   '@atcute/multibase@1.2.0':
     dependencies:
-      '@atcute/uint8array': 1.1.1
+      '@atcute/uint8array': 1.1.2
 
-  '@atcute/oauth-browser-client@2.0.3(@atcute/identity@1.1.4)':
+  '@atcute/oauth-browser-client@4.0.0(@atcute/identity-resolver@2.0.0(@atcute/identity@2.0.0(@atcute/lexicons@2.0.0)(typescript@5.9.3))(@atcute/lexicons@2.0.0)(typescript@5.9.3))(@atcute/lexicons@2.0.0)(typescript@5.9.3)':
     dependencies:
-      '@atcute/client': 4.2.1
-      '@atcute/identity-resolver': 1.2.2(@atcute/identity@1.1.4)
-      '@atcute/lexicons': 1.3.0
+      '@atcute/client': 5.0.0(@atcute/lexicons@2.0.0)(typescript@5.9.3)
+      '@atcute/identity-resolver': 2.0.0(@atcute/identity@2.0.0(@atcute/lexicons@2.0.0)(typescript@5.9.3))(@atcute/lexicons@2.0.0)(typescript@5.9.3)
+      '@atcute/lexicons': 2.0.0
       '@atcute/multibase': 1.2.0
-      '@atcute/uint8array': 1.1.1
-      nanoid: 5.1.9
+      '@atcute/oauth-crypto': 1.0.0(typescript@5.9.3)
+      '@atcute/oauth-types': 1.0.0(typescript@5.9.3)
+      nanoid: 5.1.11
     transitivePeerDependencies:
-      - '@atcute/identity'
+      - typescript
 
-  '@atcute/uint8array@1.1.1': {}
-
-  '@atcute/util-fetch@1.0.5':
+  '@atcute/oauth-crypto@1.0.0(typescript@5.9.3)':
     dependencies:
-      '@badrap/valita': 0.4.6
+      '@atcute/multibase': 1.2.0
+      '@atcute/uint8array': 1.1.2
+      nanoid: 5.1.11
+      valibot: 1.4.0(typescript@5.9.3)
+    transitivePeerDependencies:
+      - typescript
 
-  '@atcute/util-text@1.2.0':
+  '@atcute/oauth-keyset@0.1.1(typescript@5.9.3)':
+    dependencies:
+      '@atcute/oauth-crypto': 1.0.0(typescript@5.9.3)
+    transitivePeerDependencies:
+      - typescript
+
+  '@atcute/oauth-types@1.0.0(typescript@5.9.3)':
+    dependencies:
+      '@atcute/identity': 2.0.0(@atcute/lexicons@2.0.0)(typescript@5.9.3)
+      '@atcute/lexicons': 2.0.0
+      '@atcute/oauth-keyset': 0.1.1(typescript@5.9.3)
+      valibot: 1.4.0(typescript@5.9.3)
+    transitivePeerDependencies:
+      - typescript
+
+  '@atcute/uint8array@1.1.2': {}
+
+  '@atcute/util-fetch@2.0.0(typescript@5.9.3)':
+    dependencies:
+      valibot: 1.4.0(typescript@5.9.3)
+    transitivePeerDependencies:
+      - typescript
+
+  '@atcute/util-text@1.3.1':
     dependencies:
       unicode-segmenter: 0.14.5
-
-  '@badrap/valita@0.4.6': {}
 
   '@esbuild/aix-ppc64@0.27.7':
     optional: true
@@ -967,6 +1049,8 @@ snapshots:
 
   deepmerge@4.3.1: {}
 
+  dequal@2.0.3: {}
+
   devalue@5.7.1: {}
 
   esbuild@0.27.7:
@@ -1019,6 +1103,8 @@ snapshots:
 
   locate-character@3.0.0: {}
 
+  lz-string@1.5.0: {}
+
   magic-string@0.30.21:
     dependencies:
       '@jridgewell/sourcemap-codec': 1.5.5
@@ -1029,7 +1115,7 @@ snapshots:
 
   nanoid@3.3.11: {}
 
-  nanoid@5.1.9: {}
+  nanoid@5.1.11: {}
 
   obug@2.1.1: {}
 
@@ -1075,6 +1161,15 @@ snapshots:
       '@rollup/rollup-win32-x64-gnu': 4.60.1
       '@rollup/rollup-win32-x64-msvc': 4.60.1
       fsevents: 2.3.3
+
+  runed@0.37.1(@sveltejs/kit@2.57.1(@sveltejs/vite-plugin-svelte@6.2.4(svelte@5.55.4)(vite@7.3.2))(svelte@5.55.4)(typescript@5.9.3)(vite@7.3.2))(svelte@5.55.4):
+    dependencies:
+      dequal: 2.0.3
+      esm-env: 1.2.2
+      lz-string: 1.5.0
+      svelte: 5.55.4
+    optionalDependencies:
+      '@sveltejs/kit': 2.57.1(@sveltejs/vite-plugin-svelte@6.2.4(svelte@5.55.4)(vite@7.3.2))(svelte@5.55.4)(typescript@5.9.3)(vite@7.3.2)
 
   sade@1.8.1:
     dependencies:
@@ -1133,6 +1228,10 @@ snapshots:
   typescript@5.9.3: {}
 
   unicode-segmenter@0.14.5: {}
+
+  valibot@1.4.0(typescript@5.9.3):
+    optionalDependencies:
+      typescript: 5.9.3
 
   vite@7.3.2:
     dependencies:
