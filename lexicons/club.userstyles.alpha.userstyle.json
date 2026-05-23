@@ -25,7 +25,7 @@
 						"format": "datetime"
 					}
 				},
-				"required": ["name", "sourceCode", "createdAt", "updatedAt"]
+				"required": ["title", "sourceCode", "createdAt", "updatedAt"]
 			},
 			"description": "Record declaring a userstyle's contents and metadata."
 		}
