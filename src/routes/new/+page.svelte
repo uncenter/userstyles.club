@@ -7,9 +7,12 @@
   import { css } from "@codemirror/lang-css";
   import { hyperlink } from "$lib/codemirror/hyperlink";
 
-  // TODO: Save form values locally in case of accidental reload / etc.
-  let title = $state('');
-  let sourceCode = $state('');
+  import { PersistedState } from 'runed';
+
+  const fields = new PersistedState("new-userstyle-fields", { title: "", sourceCode: "", }, {
+    storage: "session",
+    syncTabs: false,
+  });
 
   let saving = $state(false);
   let error = $state<string | null>(null);
@@ -29,10 +32,10 @@
     error = null;
 
     try {
-      let userstyle = await createUserstyle(title, sourceCode);
+      let userstyle = await createUserstyle(fields.current.title, fields.current.sourceCode);
       let uri = parseResourceUri(userstyle.uri);
-      title = '';
-      sourceCode = '';
+      fields.current.title = '';
+      fields.current.sourceCode = '';
       goto(`/style/${uri.repo}/${uri.rkey}`);
     } catch (e) {
       error = e instanceof Error ? e.message : 'Failed to create userstyle.';
@@ -49,10 +52,10 @@
 <section class="panel">
   <form onsubmit={submit} style="display: grid; gap: 0.75rem;">
     <label for="userstyle-title">Title</label>
-    <input type="text" id="userstyle-title" bind:value={title} maxlength="140" class="field" placeholder="My wonderful theme for..." />
-    <CodeMirror bind:value={sourceCode} extensions={[hyperlink]} lang={css()} />
+    <input type="text" id="userstyle-title" bind:value={() => fields.current.title, (val) => fields.current.title = val} maxlength="140" class="field" placeholder="My wonderful theme for..." />
+    <CodeMirror bind:value={() => fields.current.sourceCode, (val) => fields.current.sourceCode = val} extensions={[hyperlink]} lang={css()} />
     <div style="display: flex; justify-content: space-between; align-items: center; gap: 1rem;">
-      <button type="submit" class="btn primary" disabled={saving || !title.trim() || !sourceCode.trim()}>
+      <button type="submit" class="btn primary" disabled={saving || !fields.current.title.trim() || !fields.current.sourceCode.trim()}>
         {saving ? 'Publishing...' : 'Publish'}
       </button>
     </div>
