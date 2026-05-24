@@ -64,6 +64,7 @@
 
 <style>
   :global .codemirror-wrapper {
+    /* https://discuss.codemirror.net/t/codemirror-6-setting-a-minimum-height-but-allow-the-editor-to-grow/2520/6 */
     display: flex;
 
     .cm-editor {
