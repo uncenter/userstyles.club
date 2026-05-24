@@ -74,6 +74,12 @@ importers:
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
+      usercss-meta:
+        specifier: ^0.12.0
+        version: 0.12.0
+      valibot:
+        specifier: ^1.4.0
+        version: 1.4.0(typescript@5.9.3)
       vite:
         specifier: ^7.3.1
         version: 7.3.2
@@ -764,6 +770,10 @@ packages:
 
   unicode-segmenter@0.14.5:
     resolution: {integrity: sha512-jHGmj2LUuqDcX3hqY12Ql+uhUTn8huuxNZGq7GvtF6bSybzH3aFgedYu/KTzQStEgt1Ra2F3HxadNXsNjb3m3g==}
+
+  usercss-meta@0.12.0:
+    resolution: {integrity: sha512-zKrXCKdpeIwtVe87omxGo9URf+7mbozduMZEg79dmT4KB3XJwfIkEi/Uk0PcTwR/nZLtAK1+k7isgbGB/g6E7Q==}
+    engines: {node: '>=8.3'}
 
   valibot@1.4.0:
     resolution: {integrity: sha512-iC/x7fVcSyOwlm/VSt7RlHnzNGLGvR9GnxdifUeWoCJo0q4ZZvrVkIHC6faTlkxG47I2Y4UrFquPuVHCrOnrLg==}
@@ -1468,6 +1478,8 @@ snapshots:
   typescript@5.9.3: {}
 
   unicode-segmenter@0.14.5: {}
+
+  usercss-meta@0.12.0: {}
 
   valibot@1.4.0(typescript@5.9.3):
     optionalDependencies:

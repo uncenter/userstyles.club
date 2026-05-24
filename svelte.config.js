@@ -15,6 +15,14 @@ const config = {
     },
     paths: {
       base
+    },
+    experimental: {
+      remoteFunctions: true
+    }
+  },
+  compilerOptions: {
+    experimental: {
+      async: true
     }
   }
 };
