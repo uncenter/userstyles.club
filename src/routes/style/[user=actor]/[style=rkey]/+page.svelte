@@ -7,7 +7,7 @@
   let deleting = $state(false);
   let error = $state<string | null>(null);
 
-  let { data }: PageProps = $props();
+  let { data, params }: PageProps = $props();
 
   function formatDate(value: string) {
     return new Date(value).toLocaleString();
@@ -57,5 +57,5 @@
 </section>
 
 <section class="panel" style="display: grid; gap: 0.75rem;">
-  <a href={resolve('/install/[actor]/[rkey].user.css')} class="btn">Install</a>
+  <a href={resolve('/install/[user=actor]/[style=rkey].user.css', { user: params.user, style: params.style })} class="btn">Install</a>
 </section>
