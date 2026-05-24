@@ -3,6 +3,7 @@
   import { resolve } from '$app/paths';
 
   import { user, deleteUserstyle } from '$lib/at';
+  import LezerCss from '$components/LezerCss.svelte';
 
   let deleting = $state(false);
   let error = $state<string | null>(null);
@@ -37,9 +38,7 @@
 
   <p class="muted" style="margin: 0 0 0.35rem;">{formatDate(data.userstyle.createdAt)}</p>
 
-  <pre>
-    <code>{data.userstyle.sourceCode}</code>
-  </pre>
+  <LezerCss source={data.userstyle.sourceCode} />
 
   {#if user.isLoggedIn && user.did == data.profile.did}
     <button
