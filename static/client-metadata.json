@@ -1,6 +1,6 @@
 {
   "client_id": "https://example.com/client-metadata.json",
-  "client_name": "SvelteKit ATProto Static Starter",
+  "client_name": "userstyles.club",
   "client_uri": "https://example.com",
   "logo_uri": "https://example.com/favicon.svg",
   "tos_uri": "https://example.com/",
@@ -8,7 +8,7 @@
   "redirect_uris": [
     "https://example.com/"
   ],
-  "scope": "atproto repo:app.bsky.graph.follow repo:app.bsky.feed.post repo:com.example.app.note repo:club.userstyles.alpha.userstyle",
+  "scope": "atproto repo:app.bsky.graph.follow repo:app.bsky.feed.post repo:club.userstyles.alpha.userstyle",
   "grant_types": [
     "authorization_code",
     "refresh_token"
