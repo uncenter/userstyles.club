@@ -18,7 +18,7 @@
     deleting = true;
 
     try {
-      await deleteUserstyle(data.rkey);
+      await deleteUserstyle(data.style);
     } catch (e) {
       error = e instanceof Error ? e.message : 'Failed to delete userstyle.';
     } finally {
@@ -57,5 +57,5 @@
 </section>
 
 <section class="panel" style="display: grid; gap: 0.75rem;">
-  <a href={resolve('/install/[actor]/[rkey]', { actor: data.actor, rkey: data.rkey })} class="btn">Install</a>
+  <a href={resolve('/install/[actor]/[rkey].user.css')} class="btn">Install</a>
 </section>

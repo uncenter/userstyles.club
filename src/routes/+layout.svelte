@@ -42,7 +42,7 @@
     <div class="actions">
       <ActorSearch onSelect={selectActor} />
       {#if user.isLoggedIn && user.did}
-        <a href={resolve('/profile/[actor]', { actor: user.did })} class="btn">Profile</a>
+        <a href={resolve('/profile/[user=actor]', { user: user.did })} class="btn">Profile</a>
         <a href={resolve('/settings')} class="btn">Settings</a>
         <button type="button" class="btn" onclick={logout}>Logout</button>
       {:else}
