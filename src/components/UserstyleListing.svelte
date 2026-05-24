@@ -17,7 +17,7 @@
 </script>
 
 <section class="panel">
-  <p style="margin: 0 0 0.25rem; line-height: 1.5;">{record.value.title}</p>
-  <p class="muted" style="margin: 0 0 0.35rem;">{formatDate(record.value.createdAt)}</p>
-  <p style="margin: 0 0 0.35rem; overflow-wrap: anywhere;"><a href={resolve('/style/[user=actor]/[style=rkey]', { user: uri.repo, style: uri.rkey! })}><code>{record.uri}</code></a></p>
+  <p style="margin: 0 0 0.25rem; line-height: 1.5;"><a href={resolve('/style/[user=actor]/[style=rkey]', { user: uri.repo, style: uri.rkey! })}>{record.value.title}</a></p>
+  <p class="muted" style="margin: 0 0 0.35rem;">Last updated {formatDate(record.value.updatedAt ?? record.value.createdAt)}</p>
+  <p class="muted" style="margin: 0 0 0.35rem;">{record.value.sourceCode.split('\n').length} lines</p>
 </section>

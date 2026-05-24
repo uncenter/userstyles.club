@@ -31,7 +31,7 @@
   <div style="display: flex; gap: 0.9rem; align-items: center;">
     <div>
       <h1 style="margin: 0; font-size: 1.25rem;">{data.userstyle.title}</h1>
-      <p class="muted" style="margin: 0.2rem 0 0;">@{data.profile.handle}</p>
+      <p class="muted" style="margin: 0.2rem 0 0;"><a href={resolve('/profile/[user=actor]', { user: params.user })}>@{data.profile.handle}</a></p>
     </div>
   </div>
 
