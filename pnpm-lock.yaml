@@ -7,6 +7,10 @@ settings:
 importers:
 
   .:
+    dependencies:
+      '@knadh/oat':
+        specifier: ^0.6.1
+        version: 0.6.1
     devDependencies:
       '@atcute/atproto':
         specifier: ^4.0.0
@@ -342,6 +346,9 @@ packages:
 
   '@jridgewell/trace-mapping@0.3.31':
     resolution: {integrity: sha512-zzNR+SdQSDJzc8joaeP8QQoCQr8NuYx2dIIytl1QeBEZHJ9uW6hebsrYgbz8hJwUQao3TWCMtmfV8Nu1twOLAw==}
+
+  '@knadh/oat@0.6.1':
+    resolution: {integrity: sha512-EfGcO5dNQMd0mITBf88Az6W6nyu+Q6xWHEGxvahxd/sLT1l+6wtOI6LQyjubpEuXGBc7EAXHwjt3ed/v6q4ALA==}
 
   '@lezer/common@1.5.2':
     resolution: {integrity: sha512-sxQE460fPZyU3sdc8lafxiPwJHBzZRy/udNFynGQky1SePYBdhkBl1kOagA9uT3pxR8K09bOrmTUqA9wb/PjSQ==}
@@ -1084,6 +1091,8 @@ snapshots:
     dependencies:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.5
+
+  '@knadh/oat@0.6.1': {}
 
   '@lezer/common@1.5.2': {}
 

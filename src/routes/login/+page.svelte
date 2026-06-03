@@ -32,24 +32,26 @@
   }
 </script>
 
-<main class="shell" style="padding: 2rem 0 3rem;">
-  <section class="panel" style="padding: 1.1rem; max-width: 520px; margin: 0 auto;">
+<div class="row">
+  <section class="card col-6 offset-3">
     <h1 style="margin: 0 0 0.3rem;">Sign in with ATProto</h1>
-    <p class="muted" style="margin: 0 0 1rem;">Enter `alice.bsky.social` or a DID.</p>
+    <p class="text-light">Enter `alice.bsky.social` or a DID.</p>
 
     <form onsubmit={submit} style="display: grid; gap: 0.75rem;">
       <input type="text" bind:value={handle} placeholder="alice.bsky.social" />
       {#if error}
-        <p style="margin: 0; color: #fca5a5;">{error}</p>
+        <div role="alert" data-variant="error">
+          <strong>Error!</strong> {error}
+        </div>
       {/if}
-      <button type="submit" class="btn primary" disabled={loading}>
+      <button type="submit" disabled={loading || !handle.trim()}>
         {loading ? 'Opening OAuth...' : 'Continue'}
       </button>
-      <button type="button" class="btn" onclick={signup}>Create account</button>
+      <button type="button" class="outline" onclick={signup}>Create account</button>
     </form>
 
     <p style="margin: 1rem 0 0;">
-      <a href="{base}/" class="muted">Back home</a>
+      <a href="{base}/" class="text-light">Back home</a>
     </p>
   </section>
-</main>
+</div>

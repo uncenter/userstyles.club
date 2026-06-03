@@ -105,7 +105,9 @@
     </div>
   </form>
   {#if error}
-    <p style="margin: 0.75rem 0 0; color: #b00020;">{error}</p>
+    <div role="alert" data-variant="error">
+      <strong>Error!</strong> {error}
+    </div>
   {/if}
 </section>
 

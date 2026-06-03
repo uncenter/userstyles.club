@@ -42,7 +42,9 @@
       <p class="muted" style="margin: 0;">No userstyles yet. <a href="{base}/new">Create a userstyle?</a></p>
     {:else}
       {#if error}
-        <p style="margin: 0; color: #fca5a5;">{error}</p>
+        <div role="alert" data-variant="error">
+          <strong>Error!</strong> {error}
+        </div>
       {:else}
         <ul class="plain">
           {#each userstyles as userstyle}
