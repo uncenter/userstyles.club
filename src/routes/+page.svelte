@@ -3,11 +3,7 @@
   import { type UserstyleRecord, user, listMyUserstyles } from '$lib/at';
   import { TAGLINE, joinPageTitle } from '$lib/constants';
 
-
-  import UserstyleListing from '$components/UserstyleListing.svelte';
-  import Alert from '$components/ui/Alert.svelte';
-  import Spinner from '$components/ui/Spinner.svelte';
-  import Logo from '$components/Logo.svelte';
+  import { Spinner, Alert, Logo, UserstyleListing } from '$components';
 
   let userstyles = $state<UserstyleRecord[]>([]);
 

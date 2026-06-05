@@ -7,10 +7,7 @@
 
   import { user, deleteUserstyle } from '$lib/at';
 
-  import CssPreview from '$components/CssPreview.svelte';
-  import Alert from '$components/ui/Alert.svelte';
-  import Spinner from '$components/ui/Spinner.svelte';
-  import ActorHandle from '$components/ActorHandle.svelte';
+  import { Spinner, Alert, ActorHandle, CssPreview } from '$components';
 
   import bytes from 'pretty-bytes';
 

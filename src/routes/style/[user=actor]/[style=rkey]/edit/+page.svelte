@@ -11,8 +11,7 @@
   import { css } from '@codemirror/lang-css';
   import { hyperlink } from '$lib/codemirror/hyperlink';
 
-  import Alert from '$components/ui/Alert.svelte';
-  import Spinner from '$components/ui/Spinner.svelte';
+  import { Spinner, Alert } from '$components';
 
   let { data }: PageProps = $props();
 

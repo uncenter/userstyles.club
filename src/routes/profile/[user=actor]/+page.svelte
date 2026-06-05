@@ -2,9 +2,7 @@
   import type { PageProps } from './$types';
   import { joinPageTitle } from '$lib/constants';
 
-  import UserstyleListing from '$components/UserstyleListing.svelte';
-  import Alert from '$components/ui/Alert.svelte';
-  import Avatar from '$components/ui/Avatar.svelte';
+  import { Alert, Avatar, UserstyleListing } from '$components';
 
   let error = $state<string | null>(null);
 

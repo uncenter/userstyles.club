@@ -3,9 +3,7 @@
 
   import { listAllUserstyles, type UserstyleRecord } from '$lib/at/services/userstyles';
 
-  import UserstyleListing from '$components/UserstyleListing.svelte';
-  import Alert from '$components/ui/Alert.svelte';
-  import Spinner from '$components/ui/Spinner.svelte';
+  import { Spinner, Alert, UserstyleListing } from '$components';
 
   let userstyles = $state<UserstyleRecord[]>([]);
 
