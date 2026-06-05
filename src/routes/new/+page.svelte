@@ -10,13 +10,14 @@
   import { css } from '@codemirror/lang-css';
   import { hyperlink } from '$lib/codemirror/hyperlink';
 
-  import Alert from '$components/ui/Alert.svelte';
-  import Spinner from '$components/ui/Spinner.svelte';
+  import { Spinner, Alert, Logo } from '$components';
   import ImportFromUrl from './ImportFromUrl.svelte';
 
   import { fields } from './fields.svelte';
 
-  let pending = $state(false);
+  let publishing = $state(false);
+  let importing = $state(false);
+  let pending = $derived(publishing || importing);
   let error = $state<string | null>(null);
 
   $effect(() => {
@@ -30,18 +31,25 @@
     event.preventDefault();
     if (pending) return;
 
-    pending = true;
+    publishing = true;
     error = null;
 
     try {
-      let userstyle = await createUserstyle(fields.current.title, fields.current.sourceCode);
+      let sourceCode = fields.current.sourceCode;
+      if (fields.current.removeUpdateUrl) {
+        sourceCode = sourceCode
+          .split('\n')
+          .filter(line => !/^\s*@updateURL\s/.test(line))
+          .join('\n');
+      }
+      let userstyle = await createUserstyle(fields.current.title, sourceCode);
       let uri = parseResourceUri(userstyle.uri);
       fields.disconnect();
       goto(`/style/${uri.repo}/${uri.rkey}`);
     } catch (e) {
       error = e instanceof Error ? e.message : 'Failed to create userstyle.';
     } finally {
-      pending = false;
+      publishing = false;
     }
   }
 </script>
@@ -56,31 +64,29 @@
   </div>
 
   <div class="page-section">
-    <ImportFromUrl {fields} bind:pending={pending} />
+    <ImportFromUrl {fields} bind:pending={importing} />
 
     <hr />
 
     <form onsubmit={submit} class="form-stack">
-      <div class="form-group">
-        <label for="userstyle-title">Title</label>
+      <label class="form-group">
+        Title
         <input
           type="text"
-          id="userstyle-title"
           bind:value={() => fields.current.title, (val) => (fields.current.title = val)}
           maxlength="140"
           placeholder="e.g. Tangled.org tweaks"
         />
-      </div>
+      </label>
 
-      <div class="form-group">
-        <label for="userstyle-desc">Description</label>
+      <label class="form-group">
+        Description
         <input
           type="text"
-          id="userstyle-desc"
           bind:value={() => fields.current.description, (val) => (fields.current.description = val)}
           maxlength="140"
         />
-      </div>
+      </label>
 
       <div class="form-group">
         <p class="editor-label">CSS</p>
@@ -91,13 +97,27 @@
         />
       </div>
 
-      <div>
+      <div class="form-group">
+        <label class="form-check">
+          <input
+            type="checkbox"
+            bind:checked={() => fields.current.removeUpdateUrl, (val) => (fields.current.removeUpdateUrl = val)}
+          />
+          Check for updates from <Logo height="1rem" /> instead of original update URL?
+        </label>
+        <p class="form-hint">
+          If there is a configured update URL within the userstyle source code, Stylus will check for updates from that URL instead of <strong>userstyles.club</strong>.
+          Removes the <code>@updateURL</code> field from the userstyle's metadata.
+        </p>
+      </div>
+
+      <div class="form-footer">
         <button
           type="submit"
           class="btn btn-primary"
           disabled={pending || !fields.current.title.trim() || !fields.current.sourceCode.trim()}
         >
-          {#if pending}<Spinner size="sm" /> Publishing…{:else}Publish{/if}
+          {#if publishing}<Spinner size="sm" /> Publishing…{:else}Publish{/if}
         </button>
       </div>
 

@@ -3,7 +3,7 @@
   import { fetchRawFile } from './github.remote';
   import usercss from 'usercss-meta';
 
-  import Alert from '$components/ui/Alert.svelte';
+  import { Spinner, Alert } from '$components';
 
   interface Props {
     fields: NewUserstyleFields;
@@ -12,6 +12,7 @@
 
   let { fields, pending = $bindable() }: Props = $props();
 
+  let warning = $state<string | null>(null);
   let error = $state<string | null>(null);
 
   async function importFromUrl(event: Event) {
@@ -19,6 +20,8 @@
     if (pending) return;
 
     error = null;
+    warning = null;
+    pending = true;
     let url = fields.current.importUrl;
 
     try {
@@ -39,7 +42,11 @@
       if (!fields.current.description.trim() && meta.metadata.description)
         fields.current.description = meta.metadata.description as string;
     } catch (e) {
-      error = e instanceof Error ? e.message : 'Failed to import userstyle from URL.';
+      if (e instanceof usercss.ParseError && e.code === 'missingMandatory') {
+        warning = e.message;
+      } else {
+        error = e instanceof Error ? e.message : 'Failed to import userstyle from URL.';
+      }
     } finally {
       pending = false;
     }
@@ -62,10 +69,13 @@
       class="btn btn-secondary"
       disabled={pending || !fields.current.importUrl.trim()}
     >
-      Import
+      {#if pending}<Spinner size="sm" /> Importing…{:else}Import{/if}
     </button>
   </div>
 
+  {#if warning}
+    <Alert variant="warning">{warning}</Alert>
+  {/if}
   {#if error}
     <Alert variant="error">{error}</Alert>
   {/if}

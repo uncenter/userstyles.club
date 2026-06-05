@@ -1,7 +1,5 @@
 declare namespace usercssMeta {
-  export const ParseError: ParseError;
-
-  export interface ParseError extends Error {
+  export class ParseError extends Error {
     code:
       | 'invalidCheckboxDefault'
       | 'invalidRange'
