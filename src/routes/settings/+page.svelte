@@ -1,5 +1,6 @@
 <script lang="ts">
   import { appearance } from '$lib/appearance.svelte';
+  import { joinPageTitle } from '$lib/constants';
 
   const appearances = [
     { value: 'system', label: 'System' },
@@ -7,6 +8,10 @@
     { value: 'light', label: 'Light' }
   ];
 </script>
+
+<svelte:head>
+	<title>{joinPageTitle('Settings')}</title>
+</svelte:head>
 
 <div class="narrow-col">
   <div class="page-section">

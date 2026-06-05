@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { joinPageTitle } from '$lib/constants';
+
   import { listAllUserstyles, type UserstyleRecord } from '$lib/at/services/userstyles';
 
   import UserstyleListing from '$components/UserstyleListing.svelte';
@@ -27,6 +29,10 @@
     }
   }
 </script>
+
+<svelte:head>
+	<title>{joinPageTitle('Explore')}</title>
+</svelte:head>
 
 <div class="narrow-col">
   <div class="page-section">

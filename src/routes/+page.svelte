@@ -1,7 +1,8 @@
 <script lang="ts">
   import { resolve } from '$app/paths';
   import { type UserstyleRecord, user, listMyUserstyles } from '$lib/at';
-  import { TAGLINE } from '$lib/constants';
+  import { TAGLINE, joinPageTitle } from '$lib/constants';
+
 
   import UserstyleListing from '$components/UserstyleListing.svelte';
   import Alert from '$components/ui/Alert.svelte';
@@ -32,6 +33,10 @@
     }
   }
 </script>
+
+<svelte:head>
+  <title>{joinPageTitle()}</title>
+</svelte:head>
 
 {#if user.isLoggedIn}
   <div class="narrow-col">

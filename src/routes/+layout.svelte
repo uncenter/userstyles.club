@@ -43,7 +43,7 @@
 
 <svelte:head>
   <title>userstyles.club</title>
-  <meta name="description" content="Decentralized userstyles publishing." />
+  <meta name="description" content={TAGLINE} />
   <link rel="icon" href="/favicon.svg" />
 </svelte:head>
 

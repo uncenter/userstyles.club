@@ -1,5 +1,6 @@
 <script lang="ts">
   import type { PageProps } from './$types';
+  import { joinPageTitle } from '$lib/constants';
 
   import UserstyleListing from '$components/UserstyleListing.svelte';
   import Alert from '$components/ui/Alert.svelte';
@@ -9,6 +10,10 @@
 
   let { data }: PageProps = $props();
 </script>
+
+<svelte:head>
+	<title>{joinPageTitle(`@${data.profile.handle}`)}</title>
+</svelte:head>
 
 <div class="narrow-col">
   <section class="page-section profile-header">

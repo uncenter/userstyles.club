@@ -1,8 +1,11 @@
 <script lang="ts">
   import { resolve } from '$app/paths';
   import { goto } from '$app/navigation';
-  import type { ActorIdentifier } from '@atcute/lexicons';
+  import { joinPageTitle } from '$lib/constants';
+
   import { login, signup, user } from '$lib/at';
+  import type { ActorIdentifier } from '@atcute/lexicons';
+
   import Alert from '$components/ui/Alert.svelte';
   import Spinner from '$components/ui/Spinner.svelte';
 
@@ -33,6 +36,10 @@
     }
   }
 </script>
+
+<svelte:head>
+	<title>{joinPageTitle('Login')}</title>
+</svelte:head>
 
 <div class="centered-col">
   <section class="page-section login-card">

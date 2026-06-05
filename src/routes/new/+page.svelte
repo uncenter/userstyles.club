@@ -4,6 +4,8 @@
   import { createUserstyle, user } from '$lib/at';
   import { parseResourceUri } from '@atcute/lexicons';
 
+  import { joinPageTitle } from '$lib/constants';
+
   import CodeMirror from 'svelte-codemirror-editor';
   import { css } from '@codemirror/lang-css';
   import { hyperlink } from '$lib/codemirror/hyperlink';
@@ -84,6 +86,10 @@
     }
   }
 </script>
+
+<svelte:head>
+	<title>{joinPageTitle('New Userstyle')}</title>
+</svelte:head>
 
 <div class="narrow-col">
   <div class="page-section">

@@ -3,7 +3,10 @@
   import { resolve } from '$app/paths';
   import { goto } from '$app/navigation';
 
+  import { joinPageTitle } from '$lib/constants';
+
   import { user, deleteUserstyle } from '$lib/at';
+
   import LezerCss from '$components/LezerCss.svelte';
   import Alert from '$components/ui/Alert.svelte';
   import Spinner from '$components/ui/Spinner.svelte';
@@ -45,6 +48,10 @@
     await removeUserstyle();
   }
 </script>
+
+<svelte:head>
+	<title>{joinPageTitle(data.userstyle.title)}</title>
+</svelte:head>
 
 <div class="narrow-col">
   {#if user.isLoggedIn && user.did === data.profile.did}

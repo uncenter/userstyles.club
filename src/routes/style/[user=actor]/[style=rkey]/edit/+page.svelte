@@ -1,12 +1,16 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
   import { resolve } from '$app/paths';
-  import { updateUserstyle, user } from '$lib/at';
   import type { PageProps } from './$types';
+
+  import { joinPageTitle } from '$lib/constants';
+
+  import { updateUserstyle, user } from '$lib/at';
 
   import CodeMirror from 'svelte-codemirror-editor';
   import { css } from '@codemirror/lang-css';
   import { hyperlink } from '$lib/codemirror/hyperlink';
+
   import Alert from '$components/ui/Alert.svelte';
   import Spinner from '$components/ui/Spinner.svelte';
 
@@ -45,6 +49,10 @@
     }
   }
 </script>
+
+<svelte:head>
+	<title>{joinPageTitle('Editing', data.userstyle.title)}</title>
+</svelte:head>
 
 <div class="narrow-col">
   <div class="page-section">
