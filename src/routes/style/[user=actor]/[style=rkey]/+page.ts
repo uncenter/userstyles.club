@@ -7,7 +7,6 @@ export const load: PageLoad = async ({ params }) => {
   let { user, style } = params;
   try {
     let userstyle = await getUserstyle(user, style);
-
     let profile = await getProfile(user);
     return { userstyle, profile, user, style };
   } catch (e) {
@@ -16,8 +15,10 @@ export const load: PageLoad = async ({ params }) => {
         case 'RecordNotFound':
           error(404, e.message);
         default:
-          error(500, e.message)
+          error(500, e.message);
       }
+    } else {
+      throw e;
     }
   }
 };
