@@ -10,23 +10,13 @@
   import { css } from '@codemirror/lang-css';
   import { hyperlink } from '$lib/codemirror/hyperlink';
 
-  import { PersistedState } from 'runed';
-
-  import { fetchRawFile } from './github.remote';
-  import usercss from 'usercss-meta';
   import Alert from '$components/ui/Alert.svelte';
   import Spinner from '$components/ui/Spinner.svelte';
+  import ImportFromUrl from './ImportFromUrl.svelte';
 
-  const fields = new PersistedState(
-    'new-userstyle-fields',
-    { title: '', description: '', sourceCode: '', importUrl: '' },
-    {
-      storage: 'session',
-      syncTabs: false
-    }
-  );
+  import { fields } from './fields.svelte';
 
-  let saving = $state(false);
+  let pending = $state(false);
   let error = $state<string | null>(null);
 
   $effect(() => {
@@ -38,9 +28,9 @@
 
   async function submit(event: Event) {
     event.preventDefault();
-    if (saving) return;
+    if (pending) return;
 
-    saving = true;
+    pending = true;
     error = null;
 
     try {
@@ -51,38 +41,7 @@
     } catch (e) {
       error = e instanceof Error ? e.message : 'Failed to create userstyle.';
     } finally {
-      saving = false;
-    }
-  }
-
-  async function importFromUrl(event: Event) {
-    event.preventDefault();
-    if (saving) return;
-
-    error = null;
-    let url = fields.current.importUrl;
-
-    try {
-      // TODO: Normalize GitHub file URLs into raw URLs.
-      // const pattern = new URLPattern("/:user/:repository/:type(blob|raw)/*", "https://github.com");
-      // const result = pattern.exec(url);
-      // if (result) {
-      //   if (result.pathname.groups.type == "blob")  {
-      //     url = result
-      //   }
-      // }
-      let userstyle = await fetchRawFile(url).run();
-      if (!userstyle) throw new Error('Unable to import from URL');
-      let meta = usercss.parse(userstyle);
-      if (!fields.current.title.trim() && meta.metadata.name)
-        fields.current.title = meta.metadata.name as string;
-      if (!fields.current.description.trim() && meta.metadata.description)
-        fields.current.description = meta.metadata.description as string;
-      if (!fields.current.sourceCode.trim()) fields.current.sourceCode = userstyle;
-    } catch (e) {
-      error = e instanceof Error ? e.message : 'Failed to import userstyle from URL.';
-    } finally {
-      saving = false;
+      pending = false;
     }
   }
 </script>
@@ -97,26 +56,7 @@
   </div>
 
   <div class="page-section">
-    <form onsubmit={importFromUrl} class="form-stack">
-      <div class="form-group">
-        <label for="userstyle-import-url">Import from URL</label>
-        <input
-          type="text"
-          id="userstyle-import-url"
-          bind:value={() => fields.current.importUrl, (val) => (fields.current.importUrl = val)}
-          placeholder="https://github.com/user/repo/blob/main/style.user.css"
-        />
-      </div>
-      <div>
-        <button
-          type="submit"
-          class="btn btn-secondary"
-          disabled={saving || !fields.current.importUrl.trim()}
-        >
-          Import
-        </button>
-      </div>
-    </form>
+    <ImportFromUrl {fields} bind:pending={pending} />
 
     <hr />
 
@@ -151,19 +91,19 @@
         />
       </div>
 
-      {#if error}
-        <Alert variant="error">{error}</Alert>
-      {/if}
-
       <div>
         <button
           type="submit"
           class="btn btn-primary"
-          disabled={saving || !fields.current.title.trim() || !fields.current.sourceCode.trim()}
+          disabled={pending || !fields.current.title.trim() || !fields.current.sourceCode.trim()}
         >
-          {#if saving}<Spinner size="sm" /> Publishing…{:else}Publish{/if}
+          {#if pending}<Spinner size="sm" /> Publishing…{:else}Publish{/if}
         </button>
       </div>
+
+      {#if error}
+        <Alert variant="error">{error}</Alert>
+      {/if}
     </form>
   </div>
 </div>
