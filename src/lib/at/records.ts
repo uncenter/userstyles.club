@@ -65,14 +65,15 @@ export async function listReposByCollection(params: {
 
 export async function listRecordsForCollection(params: { collection: Nsid; limit?: number }) {
   const { repos } = await listReposByCollection(params);
-  console.log(repos);
 
   const records: RepoRecord[] = [];
   for (const repo of repos) {
-    records.push(
-      ...(await listRecordsForRepo({ repo: repo.did as Did, collection: params.collection }))
-        .records
-    );
+    try {
+      const listed = await listRecordsForRepo({ repo: repo.did as Did, collection: params.collection });
+      records.push(
+        ...listed.records
+      );
+    } catch (e) {}
   }
 
   return { records };
