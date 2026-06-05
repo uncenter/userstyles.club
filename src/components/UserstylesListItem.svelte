@@ -23,22 +23,24 @@
   }
 </script>
 
-<article class="userstyle-card">
-  <header class="userstyle-card-header">
-    <h3 class="userstyle-title">
-      <a href={resolve('/style/[user=actor]/[style=rkey]', { user: uri.repo, style: uri.rkey! })}>
+<a class="userstyle-card-wrapper" href={resolve('/style/[user=actor]/[style=rkey]', { user: uri.repo, style: uri.rkey! })}>
+  <article class="userstyle-card">
+    <header class="userstyle-card-header">
+      <h3 class="userstyle-title">
         {record.value.title}
-      </a>
-    </h3>
-  </header>
-  <footer class="userstyle-card-footer">
-    <Badge variant="secondary">{formatDate(record.value.updatedAt ?? record.value.createdAt)}</Badge
-    >
-    <Badge variant="secondary">{record.value.sourceCode.split('\n').length} lines</Badge>
-  </footer>
-</article>
+      </h3>
+    </header>
+    <footer class="userstyle-card-footer">
+      <Badge variant="secondary">{formatDate(record.value.updatedAt ?? record.value.createdAt)}</Badge>
+      <Badge variant="secondary">{record.value.sourceCode.split('\n').length} lines</Badge>
+    </footer>
+  </article>
+</a>
 
 <style>
+  .userstyle-card-wrapper {
+    text-decoration: none;
+  }
   .userstyle-card {
     background: var(--card-bg);
     border: 2px solid var(--foreground);
@@ -62,14 +64,6 @@
         font-size: var(--text-base);
         font-weight: 600;
         margin: 0;
-
-        a {
-          color: var(--foreground);
-          text-decoration: none;
-          &:hover {
-            color: var(--accent);
-          }
-        }
       }
     }
 
