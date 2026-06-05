@@ -95,6 +95,7 @@
           user: params.user,
           style: params.style
         })}
+        target="_blank"
         class="btn btn-primary btn-lg"
       >
         Install
