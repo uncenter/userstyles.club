@@ -38,9 +38,10 @@ export async function initClient() {
 
   const runtime = new URL(window.location.href);
   const isLoopback = ['localhost', '127.0.0.1', '0.0.0.0', '::1'].includes(runtime.hostname);
-  const redirectOrigin = runtime.hostname === 'localhost'
-    ? `${runtime.protocol}//127.0.0.1${runtime.port ? `:${runtime.port}` : ''}`
-    : runtime.origin;
+  const redirectOrigin =
+    runtime.hostname === 'localhost'
+      ? `${runtime.protocol}//127.0.0.1${runtime.port ? `:${runtime.port}` : ''}`
+      : runtime.origin;
 
   const meta = getClientMetadata();
   const clientId = isLoopback
@@ -84,7 +85,10 @@ export async function login(handle: ActorIdentifier) {
   const trimmed = handle.trim();
   if (!trimmed) throw new Error('Please provide a handle or DID.');
   if (trimmed.startsWith('did:')) return startAuthorization(trimmed as ActorIdentifier);
-  if (trimmed.includes('.')) return startAuthorization((trimmed.startsWith('@') ? trimmed.slice(1) : trimmed) as ActorIdentifier);
+  if (trimmed.includes('.'))
+    return startAuthorization(
+      (trimmed.startsWith('@') ? trimmed.slice(1) : trimmed) as ActorIdentifier
+    );
   return startAuthorization(`${trimmed.replace(/^@/, '')}.bsky.social` as ActorIdentifier);
 }
 

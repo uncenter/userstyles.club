@@ -2,6 +2,8 @@
   import { listAllUserstyles, type UserstyleRecord } from '$lib/at/services/userstyles';
 
   import UserstyleListing from '$components/UserstyleListing.svelte';
+  import Alert from '$components/ui/Alert.svelte';
+  import Spinner from '$components/ui/Spinner.svelte';
 
   let userstyles = $state<UserstyleRecord[]>([]);
 
@@ -26,20 +28,23 @@
   }
 </script>
 
-<header class="panel">
-  <h1 class="section-title">Explore</h1>
-</header>
-
-<section class="panel" style="display: grid; gap: 0.75rem;">
-  {#if loading}
-      <p style="margin: 0;">Loading userstyles...</p>
-  {:else}
-    <ul class="plain">
-      {#each userstyles as userstyle}
-        <li style="margin-bottom: 0.9rem;">
-          <UserstyleListing record={userstyle} />
-        </li>
-      {/each}
-    </ul>
-  {/if}
-</section>
+<div class="narrow-col">
+  <div class="page-section">
+    <h1>Explore</h1>
+  </div>
+  <div class="page-section">
+    {#if loading}
+      <div class="loading-state"><Spinner /></div>
+    {:else if error}
+      <Alert variant="error">{error}</Alert>
+    {:else if userstyles.length === 0}
+      <p class="text-muted">No userstyles published yet.</p>
+    {:else}
+      <ul class="plain">
+        {#each userstyles as userstyle}
+          <li><UserstyleListing record={userstyle} /></li>
+        {/each}
+      </ul>
+    {/if}
+  </div>
+</div>

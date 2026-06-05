@@ -23,13 +23,13 @@ export async function listRecordsForRepo(params: {
 }): Promise<ListRecordsResult> {
   const { repo, collection, limit = 50, cursor } = params;
 
-  const client = repo.startsWith('did:')
-    ? await getClientForDid(repo as Did)
-    : getPublicClient();
+  const client = repo.startsWith('did:') ? await getClientForDid(repo as Did) : getPublicClient();
 
-  const response = await ok(client.get('com.atproto.repo.listRecords', {
-    params: { repo, collection, limit, cursor }
-  }));
+  const response = await ok(
+    client.get('com.atproto.repo.listRecords', {
+      params: { repo, collection, limit, cursor }
+    })
+  );
 
   return {
     records: response.records,
@@ -51,10 +51,11 @@ export async function listReposByCollection(params: {
 
   const client = getRelayClient();
 
-  const response = await ok(client.get('com.atproto.sync.listReposByCollection', {
-    params: { collection, limit, cursor }
-  }));
-
+  const response = await ok(
+    client.get('com.atproto.sync.listReposByCollection', {
+      params: { collection, limit, cursor }
+    })
+  );
 
   return {
     repos: response.repos,
@@ -62,16 +63,16 @@ export async function listReposByCollection(params: {
   };
 }
 
-export async function listRecordsForCollection(params: {
-  collection: Nsid;
-  limit?: number;
-}) {
+export async function listRecordsForCollection(params: { collection: Nsid; limit?: number }) {
   const { repos } = await listReposByCollection(params);
   console.log(repos);
 
   const records: RepoRecord[] = [];
   for (const repo of repos) {
-    records.push(...(await listRecordsForRepo({ repo: repo.did as Did, collection: params.collection })).records)
+    records.push(
+      ...(await listRecordsForRepo({ repo: repo.did as Did, collection: params.collection }))
+        .records
+    );
   }
 
   return { records };
@@ -84,14 +85,13 @@ export async function getRecord(params: {
 }): Promise<RepoRecord> {
   const { repo, collection, rkey } = params;
 
-  const client = isDid(repo)
-    ? await getClientForDid(repo)
-    : getPublicClient();
+  const client = isDid(repo) ? await getClientForDid(repo) : getPublicClient();
 
-  const response = await ok(client.get('com.atproto.repo.getRecord', {
-    params: { repo, collection, rkey }
-  }));
-
+  const response = await ok(
+    client.get('com.atproto.repo.getRecord', {
+      params: { repo, collection, rkey }
+    })
+  );
 
   return response;
 }
@@ -99,28 +99,36 @@ export async function getRecord(params: {
 export async function createRecord(collection: Nsid, record: Record<string, unknown>) {
   const { client, did } = getSessionContext('You must be logged in to write records.');
 
-  const response = await ok(client.post('com.atproto.repo.createRecord', {
-    input: {
-      repo: did,
-      collection,
-      record
-    }
-  }));
+  const response = await ok(
+    client.post('com.atproto.repo.createRecord', {
+      input: {
+        repo: did,
+        collection,
+        record
+      }
+    })
+  );
 
   return response;
 }
 
-export async function putRecord(collection: Nsid, rkey: RecordKey, record: Record<string, unknown>) {
+export async function putRecord(
+  collection: Nsid,
+  rkey: RecordKey,
+  record: Record<string, unknown>
+) {
   const { client, did } = getSessionContext('You must be logged in to write records.');
 
-  const response = await ok(client.post('com.atproto.repo.putRecord', {
-    input: {
-      repo: did,
-      collection,
-      rkey,
-      record
-    }
-  }));
+  const response = await ok(
+    client.post('com.atproto.repo.putRecord', {
+      input: {
+        repo: did,
+        collection,
+        rkey,
+        record
+      }
+    })
+  );
 
   return response;
 }
@@ -128,13 +136,15 @@ export async function putRecord(collection: Nsid, rkey: RecordKey, record: Recor
 export async function deleteRecord(collection: Nsid, rkey: RecordKey) {
   const { client, did } = getSessionContext('You must be logged in to write records.');
 
-  await ok(client.post('com.atproto.repo.deleteRecord', {
-    input: {
-      repo: did,
-      collection,
-      rkey
-    }
-  }));
+  await ok(
+    client.post('com.atproto.repo.deleteRecord', {
+      input: {
+        repo: did,
+        collection,
+        rkey
+      }
+    })
+  );
 
   return true;
 }

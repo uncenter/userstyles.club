@@ -19,10 +19,11 @@ export type RepoCollectionPreview = {
 export async function describeRepo(repo: Did) {
   const client = await getClientForDid(repo);
 
-  const response = await ok(client.get('com.atproto.repo.describeRepo', {
-    params: { repo }
-  }));
-
+  const response = await ok(
+    client.get('com.atproto.repo.describeRepo', {
+      params: { repo }
+    })
+  );
 
   return {
     client,
@@ -39,10 +40,11 @@ export async function listRepoCollection(params: {
   const { repo, collection, limit, cursor } = params;
   const client = await getClientForDid(repo);
 
-  const response = await ok(client.get('com.atproto.repo.listRecords', {
-    params: { repo, collection, limit, cursor }
-  }));
-
+  const response = await ok(
+    client.get('com.atproto.repo.listRecords', {
+      params: { repo, collection, limit, cursor }
+    })
+  );
 
   return {
     records: response.records,
@@ -73,7 +75,8 @@ export async function loadRepoCollectionPreviews(repo: Did, initialLimit: number
       previews.push({
         collection,
         records: [],
-        error: error instanceof Error ? error.message : 'Failed to fetch records for this collection.'
+        error:
+          error instanceof Error ? error.message : 'Failed to fetch records for this collection.'
       });
     }
   }

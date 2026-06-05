@@ -1,7 +1,15 @@
-import type { ActorIdentifier, Did, RecordKey } from "@atcute/lexicons";
-import { getSessionContext } from "../auth";
-import { createRecord, deleteRecord, getRecord, listRecordsForCollection, listRecordsForRepo, type RepoRecord } from "../records";
-import { USERSTYLE_COLLECTION } from "../settings";
+import type { ActorIdentifier, RecordKey } from '@atcute/lexicons';
+import { getSessionContext } from '../auth';
+import {
+  createRecord,
+  deleteRecord,
+  getRecord,
+  listRecordsForCollection,
+  listRecordsForRepo,
+  putRecord,
+  type RepoRecord
+} from '../records';
+import { USERSTYLE_COLLECTION } from '../settings';
 
 export type Userstyle = {
   title: string;
@@ -49,13 +57,32 @@ export async function createUserstyle(title: string, sourceCode: string) {
 }
 
 export async function getUserstyle(repo: ActorIdentifier, rkey: RecordKey) {
-  const response = await getRecord({
+  const response = (await getRecord({
     repo,
     collection: USERSTYLE_COLLECTION,
-    rkey,
-  }) as UserstyleRecord;
+    rkey
+  })) as UserstyleRecord;
 
   return response.value;
+}
+
+export async function updateUserstyle(
+  rkey: RecordKey,
+  title: string,
+  sourceCode: string,
+  createdAt: string
+) {
+  title = title.trim();
+  if (!title) throw new Error('Userstyle title is required.');
+  if (title.length > 140) throw new Error('Userstyle title must be 140 characters or fewer.');
+
+  return putRecord(USERSTYLE_COLLECTION, rkey, {
+    $type: USERSTYLE_COLLECTION,
+    title,
+    sourceCode,
+    createdAt,
+    updatedAt: new Date().toISOString()
+  });
 }
 
 export async function deleteUserstyle(rkey: RecordKey) {

@@ -17,7 +17,8 @@ const metadata = {
   tos_uri: `${root}/`,
   policy_uri: `${root}/`,
   redirect_uris: [`${root}/`],
-  scope: 'atproto repo:app.bsky.graph.follow repo:app.bsky.feed.post repo:club.userstyles.alpha.userstyle',
+  scope:
+    'atproto repo:app.bsky.graph.follow repo:app.bsky.feed.post repo:club.userstyles.alpha.userstyle',
   grant_types: ['authorization_code', 'refresh_token'],
   response_types: ['code'],
   token_endpoint_auth_method: 'none',
@@ -26,4 +27,8 @@ const metadata = {
 };
 
 mkdirSync(resolve('static'), { recursive: true });
-writeFileSync(resolve('static/client-metadata.json'), JSON.stringify(metadata, null, 2) + '\n', 'utf8');
+writeFileSync(
+  resolve('static/client-metadata.json'),
+  JSON.stringify(metadata, null, 2) + '\n',
+  'utf8'
+);

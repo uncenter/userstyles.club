@@ -1,38 +1,55 @@
 <script lang="ts">
-  import { PersistedState } from "runed";
+  import { appearance } from '$lib/appearance.svelte';
 
-  let appearance = new PersistedState("appearance", "system");
-  let appearances = [
-    {
-      value: 'system',
-      label: 'System'
-    },
-    {
-      value: 'dark',
-      label: 'Dark'
-    },
-    {
-      value: 'light',
-      label: 'Light'
-    }
+  const appearances = [
+    { value: 'system', label: 'System' },
+    { value: 'dark', label: 'Dark' },
+    { value: 'light', label: 'Light' }
   ];
 </script>
 
-<header class="panel">
-  <h1 class="section-title">Settings</h1>
-</header>
+<div class="narrow-col">
+  <div class="page-section">
+    <h1>Settings</h1>
+  </div>
 
-<section class="panel">
-  Appearance
-	<select
-    name="appearance"
-		bind:value={appearance.current}
-	>
-		{#each appearances as opt}
-			<option value={opt.value}>
-				{opt.label}
-			</option>
-		{/each}
-	</select>
-</section>
+  <div class="page-section">
+    <div class="settings-row">
+      <div class="settings-label">
+        <label for="appearance-select">Appearance</label>
+        <p class="text-muted">Choose your preferred color scheme.</p>
+      </div>
+      <select
+        id="appearance-select"
+        bind:value={appearance.current}
+        style="width: auto; min-width: 9rem;"
+      >
+        {#each appearances as opt}
+          <option value={opt.value}>{opt.label}</option>
+        {/each}
+      </select>
+    </div>
+  </div>
+</div>
 
+<style>
+  .settings-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-6);
+
+    .settings-label {
+      display: grid;
+      gap: var(--space-1);
+
+      label {
+        margin: 0;
+        font-size: var(--text-base);
+      }
+      p {
+        font-size: var(--text-sm);
+      }
+    }
+  }
+</style>

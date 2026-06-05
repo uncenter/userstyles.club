@@ -4,9 +4,11 @@ import { getPublicClient } from '../client';
 import { ok } from '@atcute/client';
 
 export async function getProfile(actor: ActorIdentifier) {
-  const response = await ok(getPublicClient().get('app.bsky.actor.getProfile', {
-    params: { actor }
-  }));
+  const response = await ok(
+    getPublicClient().get('app.bsky.actor.getProfile', {
+      params: { actor }
+    })
+  );
 
   return response;
 }

@@ -2,20 +2,19 @@
 <!-- See https://joelgustafson.com/posts/2022-05-31/syntax-highlighting-on-the-web/. -->
 <!-- TODO: Write about and/or release Svelte version! -->
 <script lang="ts">
-import { fromLezer } from "hast-util-from-lezer";
-import { components } from '@typematter/svelte-hast';
-import { Unist } from '@typematter/svelte-unist';
-import { parser } from "@lezer/css";
+  import { fromLezer } from 'hast-util-from-lezer';
+  import { components } from '@typematter/svelte-hast';
+  import { Unist } from '@typematter/svelte-unist';
+  import { parser } from '@lezer/css';
 
-interface Props {
-  source: string;
-}
+  interface Props {
+    source: string;
+  }
 
-const { source, ...rest }: Props = $props();
+  const { source, ...rest }: Props = $props();
 
-const ast = $derived(fromLezer(source, parser.parse(source)));
+  const ast = $derived(fromLezer(source, parser.parse(source)));
 </script>
-
 
 <pre>
   <code {...rest}><Unist {ast} {components} /></code>
@@ -25,97 +24,87 @@ const ast = $derived(fromLezer(source, parser.parse(source)));
   pre {
     display: flex;
     overflow: auto;
+    background: var(--bg-subtle);
+    border: 2px solid var(--foreground);
+    border-left: 5px solid var(--accent);
+    padding: var(--space-4);
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    line-height: 1.6;
 
     code {
       flex-grow: 1;
       width: 0;
-    }
-  }
 
-  /* Styles from https://github.com/joeltg/react-lezer-highlighter/blob/1a61b1b8a2bb226d328308d7303d5d5c911a72cd/styles/default.css. */
-  :global {
-    .tok-link {
-      text-decoration: underline;
-    }
+      :global {
+        .tok-link {
+          text-decoration: underline;
+        }
+        .tok-heading {
+          text-decoration: underline;
+          font-weight: bold;
+        }
+        .tok-emphasis {
+          font-style: italic;
+        }
+        .tok-strong {
+          font-weight: bold;
+        }
+        .tok-strikethrough {
+          text-decoration: line-through;
+        }
 
-    .tok-heading {
-      text-decoration: underline;
-      font-weight: bold;
-    }
-
-    .tok-emphasis {
-      font-size: italic;
-    }
-
-    .tok-strong {
-      font-weight: bold;
-    }
-
-    .tok-strikethrough {
-      text-decoration: line-through;
-    }
-
-    .tok-keyword {
-      color: #708;
-    }
-
-    .tok-atom,
-    .tok-bool,
-    .tok-url,
-    .tok-labelName {
-      color: #219;
-    }
-
-    .tok-literal,
-    .tok-inserted {
-      color: #164;
-    }
-
-    .tok-string,
-    .tok-deleted {
-      color: #a11;
-    }
-
-    .tok-string2 {
-      color: #e40;
-    }
-
-    .tok-variableName.tok-definition {
-      color: #00f;
-    }
-
-    .tok-variableName.tok-local {
-      color: #30a;
-    }
-
-    .tok-variableName2,
-    .tok-macroName {
-      color: #256;
-    }
-
-    .tok-typeName,
-    .tok-namespace {
-      color: #085;
-    }
-
-    .tok-className {
-      color: #167;
-    }
-
-    .tok-propertyName.tok-definition {
-      color: #00c;
-    }
-
-    .tok-comment {
-      color: #940;
-    }
-
-    .tok-meta {
-      color: #7a757a;
-    }
-
-    .tok-invalid {
-      color: #f00;
+        .tok-keyword {
+          color: var(--lavender-vivid);
+        }
+        .tok-atom,
+        .tok-bool,
+        .tok-url,
+        .tok-labelName {
+          color: var(--sky-vivid);
+        }
+        .tok-literal,
+        .tok-inserted {
+          color: var(--mint-vivid);
+        }
+        .tok-string,
+        .tok-deleted {
+          color: var(--rose-vivid);
+        }
+        .tok-string2 {
+          color: var(--peach-vivid);
+        }
+        .tok-variableName.tok-definition {
+          color: var(--sky-vivid);
+        }
+        .tok-variableName.tok-local {
+          color: var(--lavender-vivid);
+        }
+        .tok-variableName2,
+        .tok-macroName {
+          color: var(--sky-vivid);
+        }
+        .tok-typeName,
+        .tok-namespace {
+          color: var(--mint-vivid);
+        }
+        .tok-className {
+          color: var(--sky-vivid);
+        }
+        .tok-propertyName.tok-definition {
+          color: var(--butter-vivid);
+        }
+        .tok-comment {
+          color: var(--fg-muted);
+          font-style: italic;
+        }
+        .tok-meta {
+          color: var(--fg-muted);
+        }
+        .tok-invalid {
+          color: var(--danger);
+        }
+      }
     }
   }
 </style>

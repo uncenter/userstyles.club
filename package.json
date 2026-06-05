@@ -9,7 +9,9 @@
     "preview": "vite preview",
     "prepare": "svelte-kit sync || echo ''",
     "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
-    "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch"
+    "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
+    "lint": "prettier --check .",
+    "format": "prettier --write ."
   },
   "devDependencies": {
     "@atcute/atproto": "^4.0.0",
@@ -29,6 +31,8 @@
     "@typematter/svelte-unist": "^1.0.4",
     "@uiw/codemirror-extensions-hyper-link": "^4.25.9",
     "hast-util-from-lezer": "^0.5.4",
+    "prettier": "^3.8.1",
+    "prettier-plugin-svelte": "^3.5.1",
     "runed": "^0.37.1",
     "svelte": "^5.48.2",
     "svelte-check": "^4.3.5",
@@ -39,6 +43,6 @@
     "vite": "^7.3.1"
   },
   "dependencies": {
-    "@knadh/oat": "^0.6.1"
+    "pretty-bytes": "^7.1.0"
   }
 }

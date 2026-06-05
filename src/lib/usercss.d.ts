@@ -3,34 +3,34 @@ declare namespace usercssMeta {
 
   export interface ParseError extends Error {
     code:
-      | "invalidCheckboxDefault"
-      | "invalidRange"
-      | "invalidRangeMultipleUnits"
-      | "invalidRangeTooManyValues"
-      | "invalidRangeValue"
-      | "invalidRangeDefault"
-      | "invalidRangeMin"
-      | "invalidRangeMax"
-      | "invalidRangeStep"
-      | "invalidRangeUnits"
-      | "invalidNumber"
-      | "invalidSelect"
-      | "invalidSelectValue"
-      | "invalidSelectEmptyOptions"
-      | "invalidSelectLabel"
-      | "invalidSelectMultipleDefaults"
-      | "invalidSelectNameDuplicated"
-      | "invalidString"
-      | "invalidURLProtocol"
-      | "invalidVersion"
-      | "invalidWord"
-      | "missingChar"
-      | "missingEOT"
-      | "missingMandatory"
-      | "missingValue"
-      | "unknownJSONLiteral"
-      | "unknownMeta"
-      | "unknownVarType";
+      | 'invalidCheckboxDefault'
+      | 'invalidRange'
+      | 'invalidRangeMultipleUnits'
+      | 'invalidRangeTooManyValues'
+      | 'invalidRangeValue'
+      | 'invalidRangeDefault'
+      | 'invalidRangeMin'
+      | 'invalidRangeMax'
+      | 'invalidRangeStep'
+      | 'invalidRangeUnits'
+      | 'invalidNumber'
+      | 'invalidSelect'
+      | 'invalidSelectValue'
+      | 'invalidSelectEmptyOptions'
+      | 'invalidSelectLabel'
+      | 'invalidSelectMultipleDefaults'
+      | 'invalidSelectNameDuplicated'
+      | 'invalidString'
+      | 'invalidURLProtocol'
+      | 'invalidVersion'
+      | 'invalidWord'
+      | 'missingChar'
+      | 'missingEOT'
+      | 'missingMandatory'
+      | 'missingValue'
+      | 'unknownJSONLiteral'
+      | 'unknownMeta'
+      | 'unknownVarType';
 
     message: string;
 
@@ -52,10 +52,7 @@ declare namespace usercssMeta {
   /**
    * This is a shortcut of `createParser(options).parse(text);`
    */
-  export function parse(
-    content: string,
-    options?: ParserOptions,
-  ): ParseResult;
+  export function parse(content: string, options?: ParserOptions): ParseResult;
 
   /**
    * Create a metadata parser.
@@ -90,7 +87,7 @@ declare namespace usercssMeta {
      * - `throw`: Throw a `ParseError`.
      * @default "ignore"
      */
-    unknownKey?: "ignore" | "assign" | "throw";
+    unknownKey?: 'ignore' | 'assign' | 'throw';
 
     /**
      * mandatoryKeys marks multiple keys as mandatory. If some keys are missing then throw a ParseError
@@ -218,6 +215,6 @@ declare namespace usercssMeta {
   };
 }
 
-declare module "usercss-meta" {
+declare module 'usercss-meta' {
   export = usercssMeta;
 }

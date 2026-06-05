@@ -1,1 +1,9 @@
-export { default as ActorSearch } from './ActorSearch.svelte';
+export { default as ActorHandle } from './ActorHandle.svelte';
+export { default as Logo } from './Logo.svelte';
+export { default as Badge } from './ui/Badge.svelte';
+export { default as Button } from './ui/Button.svelte';
+export { default as Alert } from './ui/Alert.svelte';
+export { default as Avatar } from './ui/Avatar.svelte';
+export { default as Spinner } from './ui/Spinner.svelte';
+export { default as UserstyleListing } from './UserstyleListing.svelte';
+export { default as LezerCss } from './LezerCss.svelte';

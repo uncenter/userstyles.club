@@ -1,14 +1,6 @@
-import {
-  EditorView,
-  Decoration
-} from "@codemirror/view";
+import { EditorView, Decoration } from '@codemirror/view';
 
-import {
-  StateField,
-  RangeSetBuilder,
-  EditorState,
-  type Extension
-} from "@codemirror/state";
+import { StateField, RangeSetBuilder, EditorState, type Extension } from '@codemirror/state';
 
 // Via: https://github.com/uiwjs/react-codemirror/blob/e275fb67ec94a6bfe9f7f795fd4e867baeae770a/extensions/hyper-link/src/index.ts#L13.
 // MIT License
@@ -27,9 +19,9 @@ function buildDecorations(state: EditorState) {
     const to = from + url.length;
 
     const mark = Decoration.mark({
-      class: "cm-hyperlink",
+      class: 'cm-hyperlink',
       attributes: {
-        "data-url": url
+        'data-url': url
       }
     });
 
@@ -52,27 +44,27 @@ const urlField = StateField.define({
     return decorations;
   },
 
-  provide: f => EditorView.decorations.from(f)
-})
+  provide: (f) => EditorView.decorations.from(f)
+});
 
 const theme = EditorView.baseTheme({
-  ".cm-hyperlink": {
-    color: "#1a73e8",
-    textDecoration: "underline",
-    cursor: "text"
+  '.cm-hyperlink': {
+    color: '#1a73e8',
+    textDecoration: 'underline',
+    cursor: 'text'
   },
-  "&.meta-pressed .cm-hyperlink:hover": { cursor: "pointer" }
-})
+  '&.meta-pressed .cm-hyperlink:hover': { cursor: 'pointer' }
+});
 
 const clickHandler = EditorView.domEventHandlers({
   keydown(event, view) {
     if (event.metaKey || event.ctrlKey) {
-      view.dom.classList.add("meta-pressed");
+      view.dom.classList.add('meta-pressed');
     }
   },
   keyup(event, view) {
     if (!(event.metaKey || event.ctrlKey)) {
-      view.dom.classList.remove("meta-pressed");
+      view.dom.classList.remove('meta-pressed');
     }
   },
   click(event, view) {
@@ -80,19 +72,18 @@ const clickHandler = EditorView.domEventHandlers({
 
     if (!(target instanceof HTMLElement)) return false;
 
-    const el = target.closest(".cm-hyperlink");
+    const el = target.closest('.cm-hyperlink');
 
     if (!el) return false;
 
-    const url = el.getAttribute("data-url")
+    const url = el.getAttribute('data-url');
 
     if (!url || !(event.metaKey || event.ctrlKey)) return false;
 
-    window.open(url, "_blank", "noopener");
+    window.open(url, '_blank', 'noopener');
 
     return true;
   }
-})
-
+});
 
 export const hyperlink: Extension = [urlField, theme, clickHandler];

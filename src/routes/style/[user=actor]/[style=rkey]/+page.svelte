@@ -1,17 +1,29 @@
 <script lang="ts">
-	import type { PageProps } from './$types';
+  import type { PageProps } from './$types';
   import { resolve } from '$app/paths';
+  import { goto } from '$app/navigation';
 
   import { user, deleteUserstyle } from '$lib/at';
   import LezerCss from '$components/LezerCss.svelte';
+  import Alert from '$components/ui/Alert.svelte';
+  import Spinner from '$components/ui/Spinner.svelte';
+  import ActorHandle from '$components/ActorHandle.svelte';
+
+  import bytes from 'pretty-bytes';
 
   let deleting = $state(false);
   let error = $state<string | null>(null);
 
   let { data, params }: PageProps = $props();
 
+  let confirmDialog: HTMLDialogElement;
+
   function formatDate(value: string) {
-    return new Date(value).toLocaleString();
+    return new Date(value).toLocaleDateString(undefined, {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
   }
 
   async function removeUserstyle() {
@@ -20,47 +32,207 @@
 
     try {
       await deleteUserstyle(data.style);
+      goto(resolve('/'));
     } catch (e) {
       error = e instanceof Error ? e.message : 'Failed to delete userstyle.';
     } finally {
       deleting = false;
     }
   }
+
+  async function confirmDelete() {
+    confirmDialog.close();
+    await removeUserstyle();
+  }
 </script>
 
-<div class="row">
-  <section class="card">
-    <div style="display: flex; gap: 0.9rem; align-items: center;">
-      <div>
-        <h1 style="margin: 0; font-size: 1.25rem;">{data.userstyle.title}</h1>
-        <p class="muted" style="margin: 0.2rem 0 0;"><a href={resolve('/profile/[user=actor]', { user: params.user })}>@{data.profile.handle}</a></p>
+<div class="narrow-col">
+  {#if user.isLoggedIn && user.did === data.profile.did}
+    <div class="owner-toolbar">
+      <a
+        href={resolve('/style/[user=actor]/[style=rkey]/edit', {
+          user: params.user,
+          style: params.style
+        })}
+        class="btn btn-secondary btn-sm"
+      >
+        Edit
+      </a>
+      <button type="button" class="btn btn-danger btn-sm" onclick={() => confirmDialog.showModal()}>
+        Delete
+      </button>
+    </div>
+  {/if}
+
+  <section class="page-section">
+    <div class="style-header">
+      <h1 class="style-title">{data.userstyle.title}</h1>
+      <ActorHandle
+        profile={data.profile}
+        href={resolve('/profile/[user=actor]', { user: params.user })}
+        variant="lavender"
+      />
+    </div>
+
+    <div class="style-meta">
+      <div class="style-item">
+        <span class="style-item-label">Published</span>
+        <time>{formatDate(data.userstyle.createdAt)}</time>
+      </div>
+      <div class="style-item">
+        <span class="style-item-label">Size</span>
+        <time>{bytes(data.userstyle.sourceCode.length)}</time>
+      </div>
+      <div class="style-item">
+        <span class="style-item-label">Lines</span>
+        <time>{data.userstyle.sourceCode.split('\n').length}</time>
       </div>
     </div>
 
-    <p class="muted" style="margin: 0 0 0.35rem;">{formatDate(data.userstyle.createdAt)}</p>
-
-    <LezerCss source={data.userstyle.sourceCode} />
-
-    {#if user.isLoggedIn && user.did == data.profile.did}
-      <button
-        type="button"
-        class="btn"
-        onclick={() => removeUserstyle()}
-        disabled={deleting}
+    <div class="style-actions">
+      <a
+        href={resolve('/install/[user=actor]/[style=rkey].user.css', {
+          user: params.user,
+          style: params.style
+        })}
+        class="btn btn-primary btn-lg"
       >
-        {deleting ? 'Deleting...' : 'Delete'}
-      </button>
-      {#if error}
-        <div role="alert" data-variant="error">
-          <strong>Error!</strong> {error}
-        </div>
-      {/if}
-    {:else}
-      <!-- TODO: Add liking functionality for other non-author users. -->
+        Install
+      </a>
+    </div>
+
+    {#if error}
+      <Alert variant="error">{error}</Alert>
     {/if}
+
+    <div class="code-preview">
+      <LezerCss source={data.userstyle.sourceCode} />
+    </div>
   </section>
 </div>
 
-<section class="panel" style="display: grid; gap: 0.75rem;">
-  <a href={resolve('/install/[user=actor]/[style=rkey].user.css', { user: params.user, style: params.style })} class="btn">Install</a>
-</section>
+<dialog
+  bind:this={confirmDialog}
+  class="confirm-dialog"
+  onclick={(e) => {
+    if (e.target === e.currentTarget) confirmDialog.close();
+  }}
+>
+  <h2>Delete userstyle?</h2>
+  <p>
+    This will permanently delete userstyle <strong>{data.userstyle.title}</strong>. This cannot be
+    undone.
+  </p>
+  <div class="confirm-dialog-actions">
+    <button class="btn btn-outline" type="button" onclick={() => confirmDialog.close()}>
+      Cancel
+    </button>
+    <button class="btn btn-danger" type="button" onclick={confirmDelete} disabled={deleting}>
+      {#if deleting}<Spinner size="sm" /> Deleting…{:else}Yes, delete!{/if}
+    </button>
+  </div>
+</dialog>
+
+<style>
+  .owner-toolbar {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--space-2);
+    margin-bottom: var(--space-3);
+  }
+
+  .style-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--space-4);
+    flex-wrap: wrap;
+    margin-bottom: var(--space-4);
+  }
+
+  .style-title {
+    font-size: var(--text-4xl);
+  }
+
+  .style-meta {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    margin-bottom: var(--space-5);
+
+    .style-item {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      font-size: var(--text-sm);
+
+      .style-item-label {
+        background: var(--bg-faint);
+        border: 1px solid var(--border);
+        padding: 0.1rem var(--space-2);
+        font-size: var(--text-xs);
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--fg-muted);
+      }
+
+      time {
+        color: var(--fg-muted);
+      }
+    }
+  }
+
+  .style-actions {
+    display: flex;
+    align-items: center;
+    justify-content: end;
+    gap: var(--space-3);
+    padding-bottom: var(--space-5);
+    margin-bottom: var(--space-5);
+    border-bottom: 2px solid var(--border);
+  }
+
+  .code-preview {
+    isolation: isolate;
+    overflow: clip;
+
+    :global(pre) {
+      max-height: 14rem;
+      overflow-y: auto;
+    }
+  }
+
+  .confirm-dialog {
+    background: var(--card-bg);
+    color: var(--foreground);
+    border: 2px solid var(--foreground);
+    box-shadow: var(--shadow-lg);
+    filter: url('#rough');
+    padding: var(--space-6);
+    max-width: 28rem;
+    width: calc(100% - var(--space-8));
+    margin: auto;
+
+    &::backdrop {
+      background: rgb(0 0 0 / 0.6);
+    }
+
+    h2 {
+      font-size: var(--text-xl);
+      margin-bottom: var(--space-3);
+    }
+
+    p {
+      color: var(--fg-muted);
+      line-height: 1.6;
+      margin-bottom: var(--space-5);
+    }
+
+    .confirm-dialog-actions {
+      display: flex;
+      gap: var(--space-3);
+      justify-content: flex-end;
+    }
+  }
+</style>
