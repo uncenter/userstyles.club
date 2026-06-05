@@ -10,7 +10,7 @@
 </script>
 
 <svelte:head>
-	<title>{joinPageTitle(`@${data.profile.handle}`)}</title>
+  <title>{joinPageTitle(`@${data.profile.handle}`)}</title>
 </svelte:head>
 
 <div class="narrow-col">

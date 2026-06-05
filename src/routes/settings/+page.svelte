@@ -10,7 +10,7 @@
 </script>
 
 <svelte:head>
-	<title>{joinPageTitle('Settings')}</title>
+  <title>{joinPageTitle('Settings')}</title>
 </svelte:head>
 
 <div class="narrow-col">

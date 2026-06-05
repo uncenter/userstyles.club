@@ -37,7 +37,7 @@
 </script>
 
 <svelte:head>
-	<title>{joinPageTitle('Login')}</title>
+  <title>{joinPageTitle('Login')}</title>
 </svelte:head>
 
 <div class="centered-col">

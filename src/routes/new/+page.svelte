@@ -39,7 +39,7 @@
       if (fields.current.removeUpdateUrl) {
         sourceCode = sourceCode
           .split('\n')
-          .filter(line => !/^\s*@updateURL\s/.test(line))
+          .filter((line) => !/^\s*@updateURL\s/.test(line))
           .join('\n');
       }
       let userstyle = await createUserstyle(fields.current.title, sourceCode);
@@ -55,7 +55,7 @@
 </script>
 
 <svelte:head>
-	<title>{joinPageTitle('New Userstyle')}</title>
+  <title>{joinPageTitle('New Userstyle')}</title>
 </svelte:head>
 
 <div class="narrow-col">
@@ -101,13 +101,16 @@
         <label class="form-check">
           <input
             type="checkbox"
-            bind:checked={() => fields.current.removeUpdateUrl, (val) => (fields.current.removeUpdateUrl = val)}
+            bind:checked={
+              () => fields.current.removeUpdateUrl, (val) => (fields.current.removeUpdateUrl = val)
+            }
           />
           Check for updates from <Logo height="1rem" /> instead of original update URL?
         </label>
         <p class="form-hint">
-          If there is a configured update URL within the userstyle source code, Stylus will check for updates from that URL instead of <strong>userstyles.club</strong>.
-          Removes the <code>@updateURL</code> field from the userstyle's metadata.
+          If there is a configured update URL within the userstyle source code, Stylus will check
+          for updates from that URL instead of <strong>userstyles.club</strong>. Removes the
+          <code>@updateURL</code> field from the userstyle's metadata.
         </p>
       </div>
 

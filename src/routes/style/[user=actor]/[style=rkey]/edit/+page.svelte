@@ -50,7 +50,7 @@
 </script>
 
 <svelte:head>
-	<title>{joinPageTitle('Editing', data.userstyle.title)}</title>
+  <title>{joinPageTitle('Editing', data.userstyle.title)}</title>
 </svelte:head>
 
 <div class="narrow-col">

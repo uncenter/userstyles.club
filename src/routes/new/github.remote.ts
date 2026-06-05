@@ -4,7 +4,7 @@ import * as v from 'valibot';
 export const fetchRawFile = query(v.string(), async (url) => {
   const response = await fetch(url);
 
-  if (response.headers.get('Content-Type') !== "text/plain; charset=utf-8") {
+  if (response.headers.get('Content-Type') !== 'text/plain; charset=utf-8') {
     throw new Error('Invalid content type');
   }
 

@@ -35,8 +35,8 @@
       // }
       let userstyle = await fetchRawFile(url).run();
       if (!userstyle) throw new Error('Unable to import from URL');
-          if (!fields.current.sourceCode.trim()) fields.current.sourceCode = userstyle;
-      let meta = usercss.createParser({ mandatoryKeys: ['title', 'description']}).parse(userstyle);
+      if (!fields.current.sourceCode.trim()) fields.current.sourceCode = userstyle;
+      let meta = usercss.createParser({ mandatoryKeys: ['title', 'description'] }).parse(userstyle);
       if (!fields.current.title.trim() && meta.metadata.name)
         fields.current.title = meta.metadata.name as string;
       if (!fields.current.description.trim() && meta.metadata.description)

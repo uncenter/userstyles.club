@@ -557,7 +557,9 @@ label {
     background: var(--background);
     cursor: pointer;
     position: relative;
-    transition: background var(--ease-fast), border-color var(--ease-fast);
+    transition:
+      background var(--ease-fast),
+      border-color var(--ease-fast);
 
     &:checked {
       background: var(--accent);

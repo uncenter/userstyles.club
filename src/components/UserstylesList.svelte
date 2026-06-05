@@ -1,6 +1,6 @@
 <script lang="ts">
-  import type { UserstyleRecord } from "$lib/at";
-  import UserstylesListItem from "./UserstylesListItem.svelte";
+  import type { UserstyleRecord } from '$lib/at';
+  import UserstylesListItem from './UserstylesListItem.svelte';
 
   interface Props {
     userstyles: Array<UserstyleRecord>;

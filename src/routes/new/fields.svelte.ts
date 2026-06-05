@@ -1,4 +1,4 @@
-import { PersistedState } from "runed";
+import { PersistedState } from 'runed';
 
 export const fields = new PersistedState(
   'new-userstyle-fields',

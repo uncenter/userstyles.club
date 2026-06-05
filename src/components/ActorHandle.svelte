@@ -14,7 +14,7 @@
 </script>
 
 <a
-  href={href}
+  {href}
   class="actor-handle"
   style:--handle-bg="var(--{variant})"
   style:--handle-vivid="var(--{variant}-vivid)"

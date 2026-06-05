@@ -23,7 +23,10 @@
   }
 </script>
 
-<a class="userstyle-card-wrapper" href={resolve('/style/[user=actor]/[style=rkey]', { user: uri.repo, style: uri.rkey! })}>
+<a
+  class="userstyle-card-wrapper"
+  href={resolve('/style/[user=actor]/[style=rkey]', { user: uri.repo, style: uri.rkey! })}
+>
   <article class="userstyle-card">
     <header class="userstyle-card-header">
       <h3 class="userstyle-title">
@@ -31,7 +34,9 @@
       </h3>
     </header>
     <footer class="userstyle-card-footer">
-      <Badge variant="secondary">{formatDate(record.value.updatedAt ?? record.value.createdAt)}</Badge>
+      <Badge variant="secondary"
+        >{formatDate(record.value.updatedAt ?? record.value.createdAt)}</Badge
+      >
       <Badge variant="secondary">{record.value.sourceCode.split('\n').length} lines</Badge>
     </footer>
   </article>

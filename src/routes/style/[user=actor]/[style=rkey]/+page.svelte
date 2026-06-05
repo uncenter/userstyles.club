@@ -47,7 +47,7 @@
 </script>
 
 <svelte:head>
-	<title>{joinPageTitle(data.userstyle.title)}</title>
+  <title>{joinPageTitle(data.userstyle.title)}</title>
 </svelte:head>
 
 <div class="narrow-col">

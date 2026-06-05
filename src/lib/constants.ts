@@ -3,5 +3,5 @@ export const REPO_URL = 'https://github.com/uncenter/userstyles.club';
 
 export const joinPageTitle = (...parts: string[]) => {
   parts.push('userstyles.club');
-  return parts.join(' · ')
-}
+  return parts.join(' · ');
+};

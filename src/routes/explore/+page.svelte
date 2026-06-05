@@ -29,7 +29,7 @@
 </script>
 
 <svelte:head>
-	<title>{joinPageTitle('Explore')}</title>
+  <title>{joinPageTitle('Explore')}</title>
 </svelte:head>
 
 <div class="narrow-col">
@@ -44,7 +44,7 @@
     {:else if userstyles.length === 0}
       <p class="text-muted">No userstyles published yet.</p>
     {:else}
-        <UserstylesList {userstyles} />
+      <UserstylesList {userstyles} />
     {/if}
   </div>
 </div>
