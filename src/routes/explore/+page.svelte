@@ -3,7 +3,7 @@
 
   import { listAllUserstyles, type UserstyleRecord } from '$lib/at/services/userstyles';
 
-  import { Spinner, Alert, UserstyleListing } from '$components';
+  import { Spinner, Alert, UserstylesList } from '$components';
 
   let userstyles = $state<UserstyleRecord[]>([]);
 
@@ -44,11 +44,7 @@
     {:else if userstyles.length === 0}
       <p class="text-muted">No userstyles published yet.</p>
     {:else}
-      <ul class="plain">
-        {#each userstyles as userstyle}
-          <li><UserstyleListing record={userstyle} /></li>
-        {/each}
-      </ul>
+        <UserstylesList {userstyles} />
     {/if}
   </div>
 </div>

@@ -1,8 +1,10 @@
 <script lang="ts">
   import { resolve } from '$app/paths';
+
   import { type UserstyleRecord } from '$lib/at';
   import { parseResourceUri } from '@atcute/lexicons';
-  import Badge from './ui/Badge.svelte';
+
+  import { Badge } from '$components';
 
   interface Props {
     record: UserstyleRecord;

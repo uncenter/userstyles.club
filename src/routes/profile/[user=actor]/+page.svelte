@@ -2,7 +2,7 @@
   import type { PageProps } from './$types';
   import { joinPageTitle } from '$lib/constants';
 
-  import { Alert, Avatar, UserstyleListing } from '$components';
+  import { Alert, Avatar, UserstylesList } from '$components';
 
   let error = $state<string | null>(null);
 
@@ -36,11 +36,7 @@
     {:else if data.userstyles.length === 0}
       <p class="text-muted">No userstyles yet.</p>
     {:else}
-      <ul class="plain">
-        {#each data.userstyles as userstyle}
-          <li><UserstyleListing record={userstyle} /></li>
-        {/each}
-      </ul>
+      <UserstylesList userstyles={data.userstyles} />
     {/if}
   </section>
 </div>

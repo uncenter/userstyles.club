@@ -232,33 +232,6 @@ main.container {
   color: var(--fg-muted);
 }
 
-ul.plain {
-  list-style: none;
-  padding: 0;
-  display: grid;
-  gap: var(--space-4);
-}
-
-/* TODO: Relocate to relevant component/route page instead of global. */
-ul.plain > li:nth-child(6n + 1) {
-  --card-hover-color: var(--lavender-vivid);
-}
-ul.plain > li:nth-child(6n + 2) {
-  --card-hover-color: var(--mint-vivid);
-}
-ul.plain > li:nth-child(6n + 3) {
-  --card-hover-color: var(--peach-vivid);
-}
-ul.plain > li:nth-child(6n + 4) {
-  --card-hover-color: var(--butter-vivid);
-}
-ul.plain > li:nth-child(6n + 5) {
-  --card-hover-color: var(--sky-vivid);
-}
-ul.plain > li:nth-child(6n + 6) {
-  --card-hover-color: var(--rose-vivid);
-}
-
 /* Navbar */
 
 .navbar {

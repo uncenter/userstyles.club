@@ -3,7 +3,7 @@
   import { type UserstyleRecord, user, listMyUserstyles } from '$lib/at';
   import { TAGLINE, joinPageTitle } from '$lib/constants';
 
-  import { Spinner, Alert, Logo, UserstyleListing } from '$components';
+  import { Spinner, Alert, Logo, UserstylesList } from '$components';
 
   let userstyles = $state<UserstyleRecord[]>([]);
 
@@ -49,11 +49,7 @@
           No userstyles yet. <a href={resolve('/new')}>Create your first userstyle.</a>
         </p>
       {:else}
-        <ul class="plain">
-          {#each userstyles as userstyle}
-            <li><UserstyleListing record={userstyle} /></li>
-          {/each}
-        </ul>
+        <UserstylesList {userstyles} />
       {/if}
     </div>
   </div>
