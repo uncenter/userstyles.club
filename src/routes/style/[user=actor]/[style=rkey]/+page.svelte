@@ -7,7 +7,7 @@
 
   import { user, deleteUserstyle } from '$lib/at';
 
-  import LezerCss from '$components/LezerCss.svelte';
+  import CssPreview from '$components/CssPreview.svelte';
   import Alert from '$components/ui/Alert.svelte';
   import Spinner from '$components/ui/Spinner.svelte';
   import ActorHandle from '$components/ActorHandle.svelte';
@@ -114,7 +114,7 @@
     {/if}
 
     <div class="code-preview">
-      <LezerCss source={data.userstyle.sourceCode} />
+      <CssPreview source={data.userstyle.sourceCode} />
     </div>
   </section>
 </div>
