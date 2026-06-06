@@ -15,7 +15,7 @@
   let warning = $state<string | null>(null);
   let error = $state<string | null>(null);
 
-  const usercssParser = usercss.createParser({ mandatoryKeys: ['title', 'description'], allowErrors: true });
+  const usercssParser = usercss.createParser({ mandatoryKeys: ['name', 'description'], allowErrors: true });
   const USW_PATTERN = new URLPattern('/style/:id(\\d+){/:name}?{/}?', 'https://userstyles.world');
 
   function normalizeGitHubUrl(input: string): string {
