@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { NewUserstyleFields } from './fields.svelte';
-  import { fetchRawFile } from './github.remote';
+  import { fetchFromUserstylesWorld, fetchRawFile, type StyleImport } from './fetch.remote';
   import usercss from 'usercss-meta';
 
   import { Spinner, Alert } from '$components';
@@ -15,6 +15,40 @@
   let warning = $state<string | null>(null);
   let error = $state<string | null>(null);
 
+  const usercssParser = usercss.createParser({ mandatoryKeys: ['title', 'description'], allowErrors: true });
+  const USW_PATTERN = new URLPattern('/style/:id(\\d+){/:name}?{/}?', 'https://userstyles.world');
+
+  function normalizeGitHubUrl(input: string): string {
+    const pattern = new URLPattern('/:user/:repo/blob/:rest*', 'https://github.com');
+    const match = pattern.exec(input);
+    if (match) {
+      const { user, repo, rest } = match.pathname.groups;
+      return `https://github.com/${user}/${repo}/raw/${rest}`;
+    }
+    return input;
+  }
+
+  async function fetchFromUrl(url: string): Promise<StyleImport> {
+    const normalized = normalizeGitHubUrl(url);
+    const fetched = await fetchRawFile(normalized).run();
+    if (!fetched) throw new Error('Unable to import from URL');
+
+    let parsed = usercssParser.parse(fetched);
+    for (let err of parsed.errors) {
+      if (err.code === 'missingMandatory') {
+        warning = err.message;
+      } else {
+        error = err.message;
+      }
+    }
+
+    return {
+      name: parsed.metadata.name as string | undefined,
+      desc: parsed.metadata.description as string | undefined,
+      sourceCode: fetched,
+    };
+  }
+
   async function importFromUrl(event: Event) {
     event.preventDefault();
     if (pending) return;
@@ -22,31 +56,19 @@
     error = null;
     warning = null;
     pending = true;
-    let url = fields.current.importUrl;
 
     try {
-      // TODO: Normalize GitHub file URLs into raw URLs.
-      // const pattern = new URLPattern("/:user/:repository/:type(blob|raw)/*", "https://github.com");
-      // const result = pattern.exec(url);
-      // if (result) {
-      //   if (result.pathname.groups.type == "blob")  {
-      //     url = result
-      //   }
-      // }
-      let userstyle = await fetchRawFile(url).run();
-      if (!userstyle) throw new Error('Unable to import from URL');
-      if (!fields.current.sourceCode.trim()) fields.current.sourceCode = userstyle;
-      let meta = usercss.createParser({ mandatoryKeys: ['title', 'description'] }).parse(userstyle);
-      if (!fields.current.title.trim() && meta.metadata.name)
-        fields.current.title = meta.metadata.name as string;
-      if (!fields.current.description.trim() && meta.metadata.description)
-        fields.current.description = meta.metadata.description as string;
+      const url = fields.current.importUrl;
+      const uswMatch = USW_PATTERN.exec(url);
+      const result = uswMatch
+        ? await fetchFromUserstylesWorld(uswMatch.pathname.groups.id!).run()
+        : await fetchFromUrl(url);
+
+      if (!fields.current.sourceCode.trim()) fields.current.sourceCode = result.sourceCode;
+      if (!fields.current.title.trim() && result.name) fields.current.title = result.name;
+      if (!fields.current.description.trim() && result.desc) fields.current.description = result.desc;
     } catch (e) {
-      if (e instanceof usercss.ParseError && e.code === 'missingMandatory') {
-        warning = e.message;
-      } else {
-        error = e instanceof Error ? e.message : 'Failed to import userstyle from URL.';
-      }
+      error = e instanceof Error ? e.message : 'Failed to import userstyle from URL.';
     } finally {
       pending = false;
     }
