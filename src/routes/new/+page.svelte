@@ -104,10 +104,11 @@
             bind:checked={
               () => fields.current.removeUpdateUrl, (val) => (fields.current.removeUpdateUrl = val)
             }
+            aria-describedby="remove-update-url-desc"
           />
           Check for updates from <Logo height="1rem" /> instead of original update URL?
         </label>
-        <p class="form-hint">
+        <p class="form-hint" id="remove-update-url-desc">
           If there is a configured update URL within the userstyle source code, Stylus will check
           for updates from that URL instead of <strong>userstyles.club</strong>. Removes the
           <code>@updateURL</code> field from the userstyle's metadata.

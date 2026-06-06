@@ -83,9 +83,10 @@
         type="text"
         bind:value={() => fields.current.importUrl, (val) => (fields.current.importUrl = val)}
         placeholder="https://tangled.org/example.org/my-userstyle/raw/main/style.user.css"
+        aria-describedby="import-from-url-desc"
       />
     </label>
-    <p class="form-hint">
+    <p class="form-hint" id="import-from-url-desc">
       Import from Userstyles.world, Tangled, GitHub, or from any other raw CSS file on the internet.
     </p>
   </div>
