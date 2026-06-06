@@ -77,13 +77,17 @@
 
 <form onsubmit={importFromUrl} class="form-stack">
   <div class="form-group">
-    <label for="userstyle-import-url">Import from URL</label>
-    <input
-      type="text"
-      id="userstyle-import-url"
-      bind:value={() => fields.current.importUrl, (val) => (fields.current.importUrl = val)}
-      placeholder="https://github.com/user/repo/raw/main/style.user.css"
-    />
+    <label>
+      Import from URL
+      <input
+        type="text"
+        bind:value={() => fields.current.importUrl, (val) => (fields.current.importUrl = val)}
+        placeholder="https://tangled.org/example.org/my-userstyle/raw/main/style.user.css"
+      />
+    </label>
+    <p class="form-hint">
+      Import from Userstyles.world, Tangled, GitHub, or from any other raw CSS file on the internet.
+    </p>
   </div>
   <div>
     <button
