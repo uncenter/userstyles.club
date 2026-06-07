@@ -18,7 +18,7 @@ const metadata = {
   policy_uri: `${root}/`,
   redirect_uris: [`${root}/`],
   scope:
-    'atproto repo:app.bsky.graph.follow repo:app.bsky.feed.post repo:club.userstyles.alpha.userstyle',
+    'atproto blob:*/* repo:app.bsky.graph.follow repo:app.bsky.feed.post repo:club.userstyles.alpha.userstyle',
   grant_types: ['authorization_code', 'refresh_token'],
   response_types: ['code'],
   token_endpoint_auth_method: 'none',

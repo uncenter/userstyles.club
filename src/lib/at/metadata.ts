@@ -10,6 +10,7 @@ import {
 
 const scope = [
   'atproto',
+  'blob:*/*',
   `repo:${FOLLOW_COLLECTION}`,
   `repo:${BSKY_POST_COLLECTION}`,
   `repo:${EXAMPLE_NOTE_COLLECTION}`,
