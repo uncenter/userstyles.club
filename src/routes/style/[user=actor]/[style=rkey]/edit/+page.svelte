@@ -16,6 +16,7 @@
   let { data }: PageProps = $props();
 
   let title = $state(data.userstyle.title);
+  let description = $state(data.userstyle.description || '');
   let sourceCode = $state(data.userstyle.sourceCode);
   let saving = $state(false);
   let error = $state<string | null>(null);
@@ -45,6 +46,7 @@
       await updateUserstyle(
         data.style,
         title,
+        description,
         sourceCode,
         data.userstyle.createdAt,
         previewFile ?? (keepExistingPreview ? data.userstyle.previewImage : undefined)
@@ -77,6 +79,15 @@
           bind:value={title}
           maxlength="140"
           placeholder="e.g. Tangled.org tweaks"
+        />
+      </label>
+
+      <label class="form-group">
+        <span class="field-label">Description</span>
+        <input
+          type="text"
+          bind:value={description}
+          maxlength="300"
         />
       </label>
 

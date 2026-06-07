@@ -78,22 +78,27 @@
       />
     </div>
 
-    <div class="style-meta">
-      <div class="style-item">
-        <span class="style-item-label">Published</span>
-        <time>{formatDate(data.userstyle.createdAt)}</time>
-      </div>
-      <div class="style-item">
-        <span class="style-item-label">Size</span>
-        <time>{bytes(data.userstyle.sourceCode.length)}</time>
-      </div>
-      <div class="style-item">
-        <span class="style-item-label">Lines</span>
-        <time>{data.userstyle.sourceCode.split('\n').length}</time>
-      </div>
-    </div>
+    {#if data.userstyle.description}
+      <p class="style-description">{data.userstyle.description}</p>
+    {/if}
 
-    <div class="style-actions">
+
+    <div class="style-info">
+      <div class="style-meta">
+        <div class="style-item">
+          <span class="style-item-label">Published</span>
+          <time class="style-item-value">{formatDate(data.userstyle.createdAt)}</time>
+        </div>
+        <div class="style-item">
+          <span class="style-item-label">Size</span>
+          <span class="style-item-value">{bytes(data.userstyle.sourceCode.length)}</span>
+        </div>
+        <div class="style-item">
+          <span class="style-item-label">Lines</span>
+          <span class="style-item-value">{data.userstyle.sourceCode.split('\n').length}</span>
+        </div>
+      </div>
+
       <a
         href={resolve('/install/[user=actor]/[style=rkey].user.css', {
           user: params.user,
@@ -165,11 +170,20 @@
     font-size: var(--text-4xl);
   }
 
+  .style-info {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: var(--space-4);
+    padding-bottom: var(--space-5);
+    margin-bottom: var(--space-5);
+    border-bottom: 2px solid var(--border);
+  }
+
   .style-meta {
     display: flex;
     flex-direction: column;
     gap: var(--space-3);
-    margin-bottom: var(--space-5);
 
     .style-item {
       display: flex;
@@ -188,20 +202,16 @@
         color: var(--fg-muted);
       }
 
-      time {
+      .style-item-value {
         color: var(--fg-muted);
       }
     }
   }
 
-  .style-actions {
-    display: flex;
-    align-items: center;
-    justify-content: end;
-    gap: var(--space-3);
-    padding-bottom: var(--space-5);
+  .style-description {
+    color: var(--fg-muted);
+    line-height: 1.6;
     margin-bottom: var(--space-5);
-    border-bottom: 2px solid var(--border);
   }
 
   .style-preview {

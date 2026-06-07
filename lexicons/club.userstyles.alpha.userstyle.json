@@ -13,6 +13,10 @@
             "maxGraphemes": 140,
             "minGraphemes": 1
           },
+          "description": {
+            "type": "string",
+            "maxGraphemes": 300
+          },
           "sourceCode": {
             "type": "string"
           },
@@ -30,7 +34,7 @@
             "format": "datetime"
           }
         },
-        "required": ["title", "sourceCode", "createdAt", "updatedAt"]
+        "required": ["title", "sourceCode", "createdAt"]
       },
       "description": "Record declaring a userstyle's contents and metadata."
     }

@@ -44,7 +44,7 @@
           .filter((line) => !/^\s*@updateURL\s/.test(line))
           .join('\n');
       }
-      let userstyle = await createUserstyle(fields.current.title, sourceCode, previewImage ?? undefined);
+      let userstyle = await createUserstyle(fields.current.title, fields.current.description, sourceCode, previewImage ?? undefined);
       let uri = parseResourceUri(userstyle.uri);
       fields.disconnect();
       goto(`/style/${uri.repo}/${uri.rkey}`);
@@ -87,7 +87,7 @@
         <input
           type="text"
           bind:value={() => fields.current.description, (val) => (fields.current.description = val)}
-          maxlength="140"
+          maxlength="300"
         />
       </label>
 

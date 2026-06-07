@@ -14,9 +14,10 @@ import { USERSTYLE_COLLECTION } from '../settings';
 
 export type Userstyle = {
   title: string;
+  description?: string;
   sourceCode: string;
   createdAt: string;
-  updatedAt: string;
+  updatedAt?: string;
   previewImage?: BlobRef;
 };
 
@@ -45,7 +46,7 @@ export async function listMyUserstyles() {
   return listUserstyles(did);
 }
 
-export async function createUserstyle(title: string, sourceCode: string, previewImage?: File) {
+export async function createUserstyle(title: string, description: string, sourceCode: string, previewImage?: File) {
   title = title.trim();
   if (!title) throw new Error('Userstyle title is required.');
   if (title.length > 140) throw new Error('Userstyle title must be 140 characters or fewer.'); // TODO: Grapheme validation?
@@ -55,6 +56,7 @@ export async function createUserstyle(title: string, sourceCode: string, preview
   return createRecord(USERSTYLE_COLLECTION, {
     $type: USERSTYLE_COLLECTION,
     title,
+    ...(description.trim() && { description }),
     sourceCode,
     createdAt: new Date().toISOString(),
     ...(previewImageBlob && { previewImage: previewImageBlob })
@@ -74,6 +76,7 @@ export async function getUserstyle(repo: ActorIdentifier, rkey: RecordKey) {
 export async function updateUserstyle(
   rkey: RecordKey,
   title: string,
+  description: string,
   sourceCode: string,
   createdAt: string,
   previewImage?: File | BlobRef
@@ -89,6 +92,7 @@ export async function updateUserstyle(
   return putRecord(USERSTYLE_COLLECTION, rkey, {
     $type: USERSTYLE_COLLECTION,
     title,
+    ...(description.trim() && { description }),
     sourceCode,
     createdAt,
     updatedAt: new Date().toISOString(),
