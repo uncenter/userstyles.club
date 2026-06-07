@@ -10,7 +10,7 @@
   import { css } from '@codemirror/lang-css';
   import { hyperlink } from '$lib/codemirror/hyperlink';
 
-  import { Spinner, Alert, Logo } from '$components';
+  import { Spinner, Alert, Logo, PreviewImageUpload } from '$components';
   import ImportFromUrl from './ImportFromUrl.svelte';
 
   import { fields } from './fields.svelte';
@@ -19,6 +19,8 @@
   let importing = $state(false);
   let pending = $derived(publishing || importing);
   let error = $state<string | null>(null);
+
+  let previewImage = $state<File | null>(null);
 
   $effect(() => {
     if (!user.isLoggedIn) {
@@ -42,7 +44,7 @@
           .filter((line) => !/^\s*@updateURL\s/.test(line))
           .join('\n');
       }
-      let userstyle = await createUserstyle(fields.current.title, sourceCode);
+      let userstyle = await createUserstyle(fields.current.title, sourceCode, previewImage ?? undefined);
       let uri = parseResourceUri(userstyle.uri);
       fields.disconnect();
       goto(`/style/${uri.repo}/${uri.rkey}`);
@@ -70,9 +72,10 @@
 
     <form onsubmit={submit} class="form-stack">
       <label class="form-group">
-        Title
+        <span class="field-label">Title</span>
         <input
           type="text"
+          required
           bind:value={() => fields.current.title, (val) => (fields.current.title = val)}
           maxlength="140"
           placeholder="e.g. Tangled.org tweaks"
@@ -80,7 +83,7 @@
       </label>
 
       <label class="form-group">
-        Description
+        <span class="field-label">Description</span>
         <input
           type="text"
           bind:value={() => fields.current.description, (val) => (fields.current.description = val)}
@@ -88,8 +91,10 @@
         />
       </label>
 
+      <PreviewImageUpload bind:file={previewImage} />
+
       <div class="form-group">
-        <p class="editor-label">CSS</p>
+        <p class="field-label" data-required>CSS</p>
         <CodeMirror
           bind:value={() => fields.current.sourceCode, (val) => (fields.current.sourceCode = val)}
           extensions={[hyperlink]}

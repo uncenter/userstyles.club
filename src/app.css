@@ -28,7 +28,7 @@
 
   /* Foregrounds */
   --foreground: light-dark(#0a0a0b, #eeeaf8);
-  --fg-muted: light-dark(#52525b, #bbb0e8);
+  --fg-muted: light-dark(#52525b, #bfbbcd);
 
   /* Card */
   --card-bg: light-dark(#ffffff, #18181b);
@@ -400,6 +400,11 @@ main.container {
   padding: var(--space-3) var(--space-6);
 }
 
+.btn-icon {
+  font-size: var(--text-xs);
+  padding: var(--space-2) var(--space-2);
+}
+
 .btn-primary {
   background: var(--accent);
   color: var(--accent-fg);
@@ -484,6 +489,24 @@ main.container {
   }
 }
 
+.btn-outline-danger {
+  background: transparent;
+  color: var(--danger);
+  border-color: var(--danger);
+  box-shadow: 3px 3px 0 color-mix(in srgb, var(--danger) 70%, #000);
+
+  &:hover:not(:disabled) {
+    color: #fff;
+    background: var(--danger);
+    transform: translate(-1px, -1px);
+    box-shadow: 4px 4px 0 color-mix(in srgb, var(--danger) 70%, #000);
+  }
+  &:active:not(:disabled) {
+    transform: translate(2px, 2px);
+    box-shadow: 1px 1px 0 color-mix(in srgb, var(--danger) 70%, #000);
+  }
+}
+
 /* Forms */
 
 input[type='text'],
@@ -516,7 +539,7 @@ select:disabled {
   cursor: not-allowed;
 }
 
-label {
+.field-label {
   display: block;
   font-size: var(--text-sm);
   font-weight: 600;
@@ -531,6 +554,18 @@ label {
 .form-group {
   display: grid;
   gap: var(--space-1);
+
+  &:has(input:required, [data-required]) .field-label::after {
+    content: ' *';
+    color: var(--danger);
+  }
+
+  &:not(:has(input:required, [data-required])) .field-label::after {
+    content: ' (optional)';
+    font-size: var(--text-xs);
+    color: var(--fg-muted);
+    font-weight: 400;
+  }
 }
 
 .form-hint {
@@ -580,6 +615,45 @@ label {
     &:focus-visible {
       outline: 2px solid var(--ring);
       outline-offset: 2px;
+    }
+  }
+}
+
+.file-label {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  margin-bottom: 0;
+
+  .file-input-wrapper {
+    position: relative;
+    display: inline-flex;
+    width: fit-content;
+
+    .file-input {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      width: 100%;
+      cursor: pointer;
+    }
+
+    .file-input-text {
+      border: 2px solid var(--input-border);
+      padding: var(--space-1) var(--space-2);
+      background: var(--background);
+      font-size: var(--text-sm);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      cursor: pointer;
+      transition: border-color var(--ease-fast);
+
+      &:hover {
+        border-color: var(--ring);
+      }
     }
   }
 }

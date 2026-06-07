@@ -16,6 +16,11 @@
           "sourceCode": {
             "type": "string"
           },
+          "previewImage": {
+            "type": "blob",
+            "accept": ["image/*"],
+            "maxSize": 1000000
+          },
           "createdAt": {
             "type": "string",
             "format": "datetime"

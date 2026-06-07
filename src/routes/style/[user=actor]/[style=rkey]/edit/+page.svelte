@@ -11,7 +11,7 @@
   import { css } from '@codemirror/lang-css';
   import { hyperlink } from '$lib/codemirror/hyperlink';
 
-  import { Spinner, Alert } from '$components';
+  import { Spinner, Alert, PreviewImageUpload } from '$components';
 
   let { data }: PageProps = $props();
 
@@ -19,6 +19,9 @@
   let sourceCode = $state(data.userstyle.sourceCode);
   let saving = $state(false);
   let error = $state<string | null>(null);
+
+  let previewFile = $state<File | null>(null);
+  let keepExistingPreview = $state(!!data.userstyle.previewImage);
 
   $effect(() => {
     if (!user.isLoggedIn) {
@@ -39,7 +42,13 @@
     error = null;
 
     try {
-      await updateUserstyle(data.style, title, sourceCode, data.userstyle.createdAt);
+      await updateUserstyle(
+        data.style,
+        title,
+        sourceCode,
+        data.userstyle.createdAt,
+        previewFile ?? (keepExistingPreview ? data.userstyle.previewImage : undefined)
+      );
       goto(resolve('/style/[user=actor]/[style=rkey]', { user: data.user, style: data.style }));
     } catch (e) {
       error = e instanceof Error ? e.message : 'Failed to save userstyle.';
@@ -60,19 +69,25 @@
 
   <div class="page-section">
     <form onsubmit={submit} class="form-stack">
-      <div class="form-group">
-        <label for="userstyle-title">Title</label>
+      <label class="form-group">
+        <span class="field-label">Title</span>
         <input
           type="text"
-          id="userstyle-title"
+          required
           bind:value={title}
           maxlength="140"
           placeholder="e.g. Tangled.org tweaks"
         />
-      </div>
+      </label>
+
+      <PreviewImageUpload
+        bind:file={previewFile}
+        bind:keepExistingSavedImage={keepExistingPreview}
+        existingImageSrc={data.previewImageUrl}
+      />
 
       <div class="form-group">
-        <p class="editor-label">CSS</p>
+        <p class="field-label" data-required>CSS</p>
         <CodeMirror
           bind:value={() => sourceCode, (val) => (sourceCode = val)}
           extensions={[hyperlink]}
@@ -104,12 +119,6 @@
 </div>
 
 <style>
-  .editor-label {
-    font-size: var(--text-sm);
-    font-weight: 500;
-    margin-bottom: var(--space-1);
-  }
-
   .form-actions {
     display: flex;
     gap: var(--space-3);

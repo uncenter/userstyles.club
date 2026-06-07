@@ -1,9 +1,15 @@
 import type { PageLoad } from './$types';
-import { getProfile, getUserstyle } from '$lib/at';
+import { getBlobUrl, getProfile, getUserstyle } from '$lib/at';
 
 export const load: PageLoad = async ({ params }) => {
   const { user, style } = params;
   const userstyle = await getUserstyle(user, style);
   const profile = await getProfile(user);
-  return { userstyle, profile, user, style };
+
+  let previewImageUrl: string | null = null;
+  if (userstyle.previewImage) {
+    previewImageUrl = await getBlobUrl(profile.did, userstyle.previewImage.ref.$link);
+  }
+
+  return { userstyle, profile, user, style, previewImageUrl };
 };

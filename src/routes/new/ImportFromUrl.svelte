@@ -78,7 +78,7 @@
 <form onsubmit={importFromUrl} class="form-stack">
   <div class="form-group">
     <label>
-      Import from URL
+      <span class="field-label">Import from URL</span>
       <input
         type="text"
         bind:value={() => fields.current.importUrl, (val) => (fields.current.importUrl = val)}

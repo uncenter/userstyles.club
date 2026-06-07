@@ -27,6 +27,11 @@ export async function resolveHandle(handle: Handle): Promise<Did> {
   return handleResolver.resolve(handle);
 }
 
+export async function getBlobUrl(did: Did, cid: string): Promise<string> {
+  const pds = await getPdsForDid(did);
+  return `${pds}/xrpc/com.atproto.sync.getBlob?did=${encodeURIComponent(did)}&cid=${encodeURIComponent(cid)}`;
+}
+
 export async function getPdsForDid(did: Did): Promise<string> {
   const doc = await didResolver.resolve(did as Did<'plc'> | Did<'web'>);
   if (!doc.service) throw new Error('No DID services found');

@@ -1,5 +1,5 @@
 import type { PageLoad } from './$types';
-import { getProfile, getUserstyle } from '$lib/at';
+import { getBlobUrl, getProfile, getUserstyle } from '$lib/at';
 import { ClientResponseError } from '@atcute/client';
 import { error } from '@sveltejs/kit';
 
@@ -8,7 +8,13 @@ export const load: PageLoad = async ({ params }) => {
   try {
     let userstyle = await getUserstyle(user, style);
     let profile = await getProfile(user);
-    return { userstyle, profile, user, style };
+
+    let previewImageUrl: string | null = null;
+    if (userstyle.previewImage) {
+      previewImageUrl = await getBlobUrl(profile.did, userstyle.previewImage.ref.$link);
+    }
+
+    return { userstyle, profile, user, style, previewImageUrl };
   } catch (e) {
     if (e instanceof ClientResponseError) {
       switch (e.error) {

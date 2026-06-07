@@ -1,4 +1,4 @@
-import type { ActorIdentifier, RecordKey } from '@atcute/lexicons';
+import type { ActorIdentifier, RecordKey, Blob as BlobRef } from '@atcute/lexicons';
 import { getSessionContext } from '../auth';
 import {
   createRecord,
@@ -7,6 +7,7 @@ import {
   listRecordsForCollection,
   listRecordsForRepo,
   putRecord,
+  uploadBlob,
   type RepoRecord
 } from '../records';
 import { USERSTYLE_COLLECTION } from '../settings';
@@ -16,6 +17,7 @@ export type Userstyle = {
   sourceCode: string;
   createdAt: string;
   updatedAt: string;
+  previewImage?: BlobRef;
 };
 
 export type UserstyleRecord = RepoRecord & {
@@ -43,16 +45,19 @@ export async function listMyUserstyles() {
   return listUserstyles(did);
 }
 
-export async function createUserstyle(title: string, sourceCode: string) {
+export async function createUserstyle(title: string, sourceCode: string, previewImage?: File) {
   title = title.trim();
   if (!title) throw new Error('Userstyle title is required.');
   if (title.length > 140) throw new Error('Userstyle title must be 140 characters or fewer.'); // TODO: Grapheme validation?
+
+  const previewImageBlob = previewImage ? await uploadBlob(previewImage) : undefined;
 
   return createRecord(USERSTYLE_COLLECTION, {
     $type: USERSTYLE_COLLECTION,
     title,
     sourceCode,
-    createdAt: new Date().toISOString()
+    createdAt: new Date().toISOString(),
+    ...(previewImageBlob && { previewImage: previewImageBlob })
   });
 }
 
@@ -70,18 +75,24 @@ export async function updateUserstyle(
   rkey: RecordKey,
   title: string,
   sourceCode: string,
-  createdAt: string
+  createdAt: string,
+  previewImage?: File | BlobRef
 ) {
   title = title.trim();
   if (!title) throw new Error('Userstyle title is required.');
   if (title.length > 140) throw new Error('Userstyle title must be 140 characters or fewer.');
+
+  const previewImageBlob = previewImage instanceof File
+    ? await uploadBlob(previewImage)
+    : previewImage;
 
   return putRecord(USERSTYLE_COLLECTION, rkey, {
     $type: USERSTYLE_COLLECTION,
     title,
     sourceCode,
     createdAt,
-    updatedAt: new Date().toISOString()
+    updatedAt: new Date().toISOString(),
+    ...(previewImageBlob && { previewImage: previewImageBlob })
   });
 }
 

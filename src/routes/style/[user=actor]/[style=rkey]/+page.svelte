@@ -7,7 +7,7 @@
 
   import { user, deleteUserstyle } from '$lib/at';
 
-  import { Spinner, Alert, ActorHandle, CssPreview } from '$components';
+  import { Spinner, Alert, ActorHandle, CssPreview, PreviewImage } from '$components';
 
   import bytes from 'pretty-bytes';
 
@@ -110,6 +110,12 @@
       <Alert variant="error">{error}</Alert>
     {/if}
 
+    {#if data.previewImageUrl}
+      <div class="style-preview">
+        <PreviewImage src={data.previewImageUrl} alt={data.userstyle.title} />
+      </div>
+    {/if}
+
     <div class="code-preview">
       <CssPreview source={data.userstyle.sourceCode} />
     </div>
@@ -196,6 +202,10 @@
     padding-bottom: var(--space-5);
     margin-bottom: var(--space-5);
     border-bottom: 2px solid var(--border);
+  }
+
+  .style-preview {
+    margin-bottom: var(--space-5);
   }
 
   .code-preview {

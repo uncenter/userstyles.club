@@ -1,4 +1,4 @@
-import type { ActorIdentifier, Did, Nsid, RecordKey } from '@atcute/lexicons';
+import type { ActorIdentifier, Blob as BlobRef, Did, Nsid, RecordKey } from '@atcute/lexicons';
 import { getClientForDid, getPublicClient, getRelayClient } from './client';
 import { getSessionContext } from './auth';
 import { isDid } from '@atcute/lexicons/syntax';
@@ -133,6 +133,19 @@ export async function putRecord(
   );
 
   return response;
+}
+
+export async function uploadBlob(blob: Blob): Promise<BlobRef> {
+  const { client } = getSessionContext('You must be logged in to upload files.');
+
+  const response = await ok(
+    client.post('com.atproto.repo.uploadBlob', {
+      encoding: blob.type as `${string}/${string}`,
+      input: blob
+    })
+  );
+
+  return response.blob;
 }
 
 export async function deleteRecord(collection: Nsid, rkey: RecordKey) {
