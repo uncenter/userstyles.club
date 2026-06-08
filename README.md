@@ -11,6 +11,31 @@ pnpm run dev
 
 Open `http://127.0.0.1:4173`.
 
+## Roadmap
+
+- [ ] Userstyles.club Profiles
+  - [ ] Lexicon
+  - [ ] Service
+  - [ ] Editing
+  - [ ] Viewing
+- [ ] Userstyles Reviews
+  - [ ] Lexicon
+  - [ ] Service
+  - [ ] Editing
+  - [ ] Viewing
+  - [ ] Aggregating? Avg. Review
+- [ ] Userstyles Subscriptions/Installs/Bookmarks?
+  - [ ] Lexicon
+  - [ ] Service
+  - [ ] Creation
+  - [ ] Aggregation? (No. of installs/subscriptions/bookmarks datapoint?)
+- [ ] Userstyles.club Logo & Branding
+  - [ ] Logo
+  - [ ] Branding Page
+- [ ] Better Syntax Highlighting
+  - [ ] Lezer Grammar for Less
+  - [ ] Consistent CodeMirror Syntax Highlighting Colors
+
 ## Deploy
 
 1. Push to `main`.
