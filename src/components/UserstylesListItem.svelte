@@ -51,7 +51,6 @@
     border: 2px solid var(--foreground);
     padding: var(--space-4) var(--space-5);
     box-shadow: var(--shadow-sm);
-    filter: url('#rough');
     transition:
       transform var(--ease-fast),
       box-shadow var(--ease-fast);
