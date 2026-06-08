@@ -89,6 +89,12 @@
           <span class="style-item-label">Published</span>
           <time class="style-item-value">{formatDate(data.userstyle.createdAt)}</time>
         </div>
+        {#if data.userstyle.updatedAt}
+        <div class="style-item">
+          <span class="style-item-label">Last Updated</span>
+          <time class="style-item-value">{formatDate(data.userstyle.updatedAt)}</time>
+        </div>
+        {/if}
         <div class="style-item">
           <span class="style-item-label">Size</span>
           <span class="style-item-value">{bytes(data.userstyle.sourceCode.length)}</span>
