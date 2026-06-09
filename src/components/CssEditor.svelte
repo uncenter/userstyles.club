@@ -1,7 +1,12 @@
 <script lang="ts">
+  import { browser } from '$app/environment';
+
   import CodeMirror from 'svelte-codemirror-editor';
   import { css } from '@codemirror/lang-css';
   import { hyperlink } from '$lib/codemirror/hyperlink';
+  import { catppuccinLatte, catppuccinMocha } from '@catppuccin/codemirror';
+
+  import { appearance } from '$lib/appearance.svelte';
 
   interface Props {
     code: string;
@@ -9,12 +14,29 @@
 
   let { code = $bindable() }: Props = $props();
 
+  let prefersDark = $state(
+    browser ? window.matchMedia('(prefers-color-scheme: dark)').matches : false
+  );
+
+  $effect(() => {
+    const mq = window.matchMedia('(prefers-color-scheme: dark)');
+    const handler = (e: MediaQueryListEvent) => { prefersDark = e.matches; };
+    mq.addEventListener('change', handler);
+    return () => mq.removeEventListener('change', handler);
+  });
+
+  let theme = $derived(
+    (appearance.current === 'dark' || (appearance.current === 'system' && prefersDark))
+      ? catppuccinMocha
+      : catppuccinLatte
+  );
 </script>
 
 <CodeMirror
   bind:value={() => code, (val) => (code = val)}
   extensions={[hyperlink]}
   lang={css()}
+  {theme}
 />
 
 <style>

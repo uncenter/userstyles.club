@@ -58,12 +58,14 @@
           color: var(--lavender-vivid);
         }
         .tok-atom,
-        .tok-bool,
         .tok-url,
         .tok-labelName {
           color: var(--sky-vivid);
         }
-        .tok-literal,
+        .tok-bool,
+        .tok-literal {
+          color: var(--peach-vivid);
+        }
         .tok-inserted {
           color: var(--mint-vivid);
         }
@@ -72,13 +74,13 @@
           color: var(--rose-vivid);
         }
         .tok-string2 {
-          color: var(--peach-vivid);
+          color: var(--mint-vivid);
         }
         .tok-variableName.tok-definition {
           color: var(--sky-vivid);
         }
         .tok-variableName.tok-local {
-          color: var(--lavender-vivid);
+          color: var(--foreground);
         }
         .tok-variableName2,
         .tok-macroName {
@@ -86,13 +88,13 @@
         }
         .tok-typeName,
         .tok-namespace {
-          color: var(--mint-vivid);
+          color: var(--butter-vivid);
         }
         .tok-className {
           color: var(--sky-vivid);
         }
         .tok-propertyName.tok-definition {
-          color: var(--butter-vivid);
+          color: var(--lavender-vivid);
         }
         .tok-comment {
           color: var(--fg-muted);
