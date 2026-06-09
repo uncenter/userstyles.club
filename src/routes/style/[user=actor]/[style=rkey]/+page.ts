@@ -4,10 +4,9 @@ import { ClientResponseError } from '@atcute/client';
 import { error } from '@sveltejs/kit';
 
 export const load: PageLoad = async ({ params }) => {
-  let { user, style } = params;
+  const { user, style } = params;
   try {
-    let userstyle = await getUserstyle(user, style);
-    let profile = await getProfile(user);
+    const [userstyle, profile] = await Promise.all([getUserstyle(user, style), getProfile(user)]);
 
     let previewImageUrl: string | null = null;
     if (userstyle.previewImage) {

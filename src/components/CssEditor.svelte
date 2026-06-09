@@ -1,6 +1,4 @@
 <script lang="ts">
-  import { browser } from '$app/environment';
-
   import CodeMirror from 'svelte-codemirror-editor';
   import { css } from '@codemirror/lang-css';
   import { hyperlink } from '$lib/codemirror/hyperlink';
@@ -14,9 +12,7 @@
 
   let { code = $bindable() }: Props = $props();
 
-  let prefersDark = $state(
-    browser ? window.matchMedia('(prefers-color-scheme: dark)').matches : false
-  );
+  let prefersDark = $state(window.matchMedia('(prefers-color-scheme: dark)').matches);
 
   $effect(() => {
     const mq = window.matchMedia('(prefers-color-scheme: dark)');

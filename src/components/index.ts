@@ -5,7 +5,6 @@ export { default as Alert } from './ui/Alert.svelte';
 export { default as Avatar } from './ui/Avatar.svelte';
 export { default as Spinner } from './ui/Spinner.svelte';
 export { default as UserstylesList } from './UserstylesList.svelte';
-export { default as UserstylesListItem } from './UserstylesListItem.svelte';
 export { default as CssPreview } from './CssPreview.svelte';
 export { default as PreviewImage } from './ui/PreviewImage.svelte';
 export { default as PreviewImageUpload } from './ui/PreviewImageUpload.svelte';

@@ -3,8 +3,7 @@ import { getBlobUrl, getProfile, getUserstyle } from '$lib/at';
 
 export const load: PageLoad = async ({ params }) => {
   const { user, style } = params;
-  const userstyle = await getUserstyle(user, style);
-  const profile = await getProfile(user);
+  const [userstyle, profile] = await Promise.all([getUserstyle(user, style), getProfile(user)]);
 
   let previewImageUrl: string | null = null;
   if (userstyle.previewImage) {

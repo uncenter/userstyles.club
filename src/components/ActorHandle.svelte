@@ -1,11 +1,16 @@
 <script lang="ts">
-  import type { AppBskyActorDefs } from '@atcute/bluesky';
   import Avatar from './ui/Avatar.svelte';
 
   type PastelVariant = 'lavender' | 'mint' | 'peach' | 'butter' | 'sky' | 'rose';
 
+  interface ProfileLike {
+    handle: string;
+    displayName?: string;
+    avatar?: string;
+  }
+
   interface Props {
-    profile: AppBskyActorDefs.ProfileViewBasic | AppBskyActorDefs.ProfileViewDetailed;
+    profile: ProfileLike;
     href?: string;
     variant?: PastelVariant;
   }

@@ -1,20 +1,16 @@
 import { base } from '$app/paths';
 import {
-  BSKY_POST_COLLECTION,
-  EXAMPLE_NOTE_COLLECTION,
-  FOLLOW_COLLECTION,
+  CLUB_PROFILE_COLLECTION,
   REDIRECT_PATH,
-  USERSTYLE_COLLECTION,
+  CLUB_USERSTYLE_COLLECTION,
   getSiteOrigin
 } from './settings';
 
 const scope = [
   'atproto',
   'blob:*/*',
-  `repo:${FOLLOW_COLLECTION}`,
-  `repo:${BSKY_POST_COLLECTION}`,
-  `repo:${EXAMPLE_NOTE_COLLECTION}`,
-  `repo:${USERSTYLE_COLLECTION}`
+  `repo:${CLUB_USERSTYLE_COLLECTION}`,
+  `repo:${CLUB_PROFILE_COLLECTION}`
 ].join(' ');
 
 export function getClientMetadata() {

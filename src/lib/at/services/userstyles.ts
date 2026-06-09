@@ -10,7 +10,7 @@ import {
   uploadBlob,
   type RepoRecord
 } from '../records';
-import { USERSTYLE_COLLECTION } from '../settings';
+import { CLUB_USERSTYLE_COLLECTION } from '../settings';
 
 export type Userstyle = {
   title: string;
@@ -32,7 +32,7 @@ function isUserstyle(value: Record<string, unknown>): value is Userstyle {
 export async function listUserstyles(repo: ActorIdentifier) {
   const response = await listRecordsForRepo({
     repo,
-    collection: USERSTYLE_COLLECTION,
+    collection: CLUB_USERSTYLE_COLLECTION,
     limit: 50
   });
 
@@ -58,8 +58,8 @@ export async function createUserstyle(
 
   const previewImageBlob = previewImage ? await uploadBlob(previewImage) : undefined;
 
-  return createRecord(USERSTYLE_COLLECTION, {
-    $type: USERSTYLE_COLLECTION,
+  return createRecord(CLUB_USERSTYLE_COLLECTION, {
+    $type: CLUB_USERSTYLE_COLLECTION,
     title,
     ...(description.trim() && { description }),
     sourceCode,
@@ -71,7 +71,7 @@ export async function createUserstyle(
 export async function getUserstyle(repo: ActorIdentifier, rkey: RecordKey) {
   const response = (await getRecord({
     repo,
-    collection: USERSTYLE_COLLECTION,
+    collection: CLUB_USERSTYLE_COLLECTION,
     rkey
   })) as UserstyleRecord;
 
@@ -93,8 +93,8 @@ export async function updateUserstyle(
   const previewImageBlob =
     previewImage instanceof File ? await uploadBlob(previewImage) : previewImage;
 
-  return putRecord(USERSTYLE_COLLECTION, rkey, {
-    $type: USERSTYLE_COLLECTION,
+  return putRecord(CLUB_USERSTYLE_COLLECTION, rkey, {
+    $type: CLUB_USERSTYLE_COLLECTION,
     title,
     ...(description.trim() && { description }),
     sourceCode,
@@ -105,10 +105,10 @@ export async function updateUserstyle(
 }
 
 export async function deleteUserstyle(rkey: RecordKey) {
-  return await deleteRecord(USERSTYLE_COLLECTION, rkey);
+  return await deleteRecord(CLUB_USERSTYLE_COLLECTION, rkey);
 }
 
 export async function listAllUserstyles() {
-  const response = await listRecordsForCollection({ collection: USERSTYLE_COLLECTION });
+  const response = await listRecordsForCollection({ collection: CLUB_USERSTYLE_COLLECTION });
   return response.records as UserstyleRecord[];
 }

@@ -22,7 +22,7 @@ import type { ActorIdentifier, Did } from '@atcute/lexicons';
 import type { AppBskyActorDefs } from '@atcute/bluesky';
 import { DOH_RESOLVER, REDIRECT_PATH, getSignUpPds } from './settings';
 import { getClientMetadata, oauthScope } from './metadata';
-import { clearCachedProfile, getCachedProfile } from './services/profiles';
+import { getBskyProfile, invalidateProfileCaches } from './services/profiles';
 
 export const user = $state({
   agent: null as OAuthUserAgent | null,
@@ -114,7 +114,7 @@ export async function logout() {
 
   const did = currentAgent.session.info.sub;
   localStorage.removeItem('current-login');
-  clearCachedProfile(did);
+  invalidateProfileCaches(did);
 
   try {
     await currentAgent.signOut();
@@ -165,7 +165,7 @@ async function resumeSession(did: Did) {
 
 async function loadProfile(actor: Did) {
   try {
-    user.profile = await getCachedProfile(actor);
+    user.profile = await getBskyProfile(actor);
     return;
   } catch {
     // Ignore profile load failures.
