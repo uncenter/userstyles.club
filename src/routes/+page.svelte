@@ -39,19 +39,19 @@
     <div class="page-section">
       <h1>Your userstyles</h1>
     </div>
-    <div class="page-section">
-      {#if loading}
-        <div class="loading-state"><Spinner /></div>
-      {:else if error}
-        <Alert variant="error">{error}</Alert>
-      {:else if userstyles.length === 0}
-        <p class="text-muted">
-          No userstyles yet. <a href={resolve('/new')}>Create your first userstyle.</a>
-        </p>
-      {:else}
-        <UserstylesList {userstyles} />
-      {/if}
-    </div>
+  </div>
+  <div class="userstyles-section">
+    {#if loading}
+      <div class="loading-state"><Spinner /></div>
+    {:else if error}
+      <Alert variant="error">{error}</Alert>
+    {:else if userstyles.length === 0}
+      <p class="text-muted">
+        No userstyles yet. <a href={resolve('/new')}>Create your first userstyle.</a>
+      </p>
+    {:else}
+      <UserstylesList {userstyles} />
+    {/if}
   </div>
 {:else}
   <div class="welcome">
@@ -67,6 +67,11 @@
 {/if}
 
 <style>
+  .userstyles-section {
+    margin-top: var(--space-6);
+    margin-bottom: var(--space-5);
+  }
+
   .welcome {
     display: grid;
     gap: var(--space-6);

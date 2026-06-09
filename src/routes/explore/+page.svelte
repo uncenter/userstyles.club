@@ -36,15 +36,22 @@
   <div class="page-section">
     <h1>Explore</h1>
   </div>
-  <div class="page-section">
-    {#if loading}
-      <div class="loading-state"><Spinner /></div>
-    {:else if error}
-      <Alert variant="error">{error}</Alert>
-    {:else if userstyles.length === 0}
-      <p class="text-muted">No userstyles published yet.</p>
-    {:else}
-      <UserstylesList {userstyles} />
-    {/if}
-  </div>
 </div>
+<div class="userstyles-section">
+  {#if loading}
+    <div class="loading-state"><Spinner /></div>
+  {:else if error}
+    <Alert variant="error">{error}</Alert>
+  {:else if userstyles.length === 0}
+    <p class="text-muted">No userstyles published yet.</p>
+  {:else}
+    <UserstylesList {userstyles} />
+  {/if}
+</div>
+
+<style>
+  .userstyles-section {
+    margin-top: var(--space-6);
+    margin-bottom: var(--space-5);
+  }
+</style>

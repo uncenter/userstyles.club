@@ -29,19 +29,24 @@
       <p class="profile-bio">{data.profile.description}</p>
     {/if}
   </section>
-
-  <section class="page-section">
-    {#if error}
-      <Alert variant="error">{error}</Alert>
-    {:else if data.userstyles.length === 0}
-      <p class="text-muted">No userstyles yet.</p>
-    {:else}
-      <UserstylesList userstyles={data.userstyles} />
-    {/if}
-  </section>
 </div>
 
+<section class="profile-userstyles">
+  {#if error}
+    <Alert variant="error">{error}</Alert>
+  {:else if data.userstyles.length === 0}
+    <p class="text-muted">No userstyles yet.</p>
+  {:else}
+    <UserstylesList userstyles={data.userstyles} />
+  {/if}
+</section>
+
 <style>
+  .profile-userstyles {
+    margin-top: var(--space-6);
+    margin-bottom: var(--space-5);
+  }
+
   .profile-header {
     display: flex;
     flex-direction: column;

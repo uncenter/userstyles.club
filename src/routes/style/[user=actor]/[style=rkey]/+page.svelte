@@ -10,6 +10,7 @@
   import { Spinner, Alert, ActorHandle, CssPreview, PreviewImage } from '$components';
 
   import bytes from 'pretty-bytes';
+  import { CakeIcon, PenLineIcon, RulerDimensionLineIcon, WeightIcon } from '@lucide/svelte';
 
   let deleting = $state(false);
   let error = $state<string | null>(null);
@@ -82,25 +83,22 @@
       <p class="style-description">{data.userstyle.description}</p>
     {/if}
 
-
     <div class="style-info">
       <div class="style-meta">
         <div class="style-item">
-          <span class="style-item-label">Published</span>
+          <span class="style-item-label"><CakeIcon size={16} /> Published</span>
           <time class="style-item-value">{formatDate(data.userstyle.createdAt)}</time>
         </div>
-        {#if data.userstyle.updatedAt}
         <div class="style-item">
-          <span class="style-item-label">Last Updated</span>
-          <time class="style-item-value">{formatDate(data.userstyle.updatedAt)}</time>
+          <span class="style-item-label"><PenLineIcon size={16} /> Last Updated</span>
+          <time class="style-item-value">{data.userstyle.updatedAt ? formatDate(data.userstyle.updatedAt) : '-'}</time>
         </div>
-        {/if}
         <div class="style-item">
-          <span class="style-item-label">Size</span>
+          <span class="style-item-label"><WeightIcon size={16} /> Size</span>
           <span class="style-item-value">{bytes(data.userstyle.sourceCode.length)}</span>
         </div>
         <div class="style-item">
-          <span class="style-item-label">Lines</span>
+          <span class="style-item-label"><RulerDimensionLineIcon size={16} /> Lines</span>
           <span class="style-item-value">{data.userstyle.sourceCode.split('\n').length}</span>
         </div>
       </div>
@@ -198,6 +196,9 @@
       font-size: var(--text-sm);
 
       .style-item-label {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
         background: var(--bg-faint);
         border: 1px solid var(--border);
         padding: 0.1rem var(--space-2);

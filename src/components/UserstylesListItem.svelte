@@ -1,10 +1,13 @@
 <script lang="ts">
   import { resolve } from '$app/paths';
 
-  import { type UserstyleRecord } from '$lib/at';
+  import { type UserstyleRecord, getBlobUrl } from '$lib/at';
   import { parseResourceUri } from '@atcute/lexicons';
+  import type { Did } from '@atcute/lexicons';
 
   import { Badge } from '$components';
+  import bytes from 'pretty-bytes';
+  import { CakeIcon, PenLineIcon, RulerDimensionLineIcon, WeightIcon } from '@lucide/svelte';
 
   interface Props {
     record: UserstyleRecord;
@@ -13,6 +16,11 @@
   let { record }: Props = $props();
 
   let uri = $derived.by(() => parseResourceUri(record.uri));
+
+  let previewImageUrl: Promise<string> | null = $derived.by(() => {
+    if (!record.value.previewImage) return null;
+    return getBlobUrl(uri.repo as Did, record.value.previewImage.ref.$link);
+  });
 
   function formatDate(value: string) {
     return new Date(value).toLocaleDateString(undefined, {
@@ -28,17 +36,33 @@
   href={resolve('/style/[user=actor]/[style=rkey]', { user: uri.repo, style: uri.rkey! })}
 >
   <article class="userstyle-card">
-    <header class="userstyle-card-header">
-      <h3 class="userstyle-title">
-        {record.value.title}
-      </h3>
-    </header>
-    <footer class="userstyle-card-footer">
-      <Badge variant="secondary"
-        >{formatDate(record.value.updatedAt ?? record.value.createdAt)}</Badge
-      >
-      <Badge variant="secondary">{record.value.sourceCode.split('\n').length} lines</Badge>
-    </footer>
+    <div class="card-thumbnail">
+      {#if previewImageUrl}
+        {#await previewImageUrl then url}
+          <img src={url} alt={record.value.title} />
+        {/await}
+      {/if}
+    </div>
+    <div class="card-body">
+      <h3 class="userstyle-title">{record.value.title}</h3>
+      <p class="userstyle-description">{record.value.description ?? ''}</p>
+      <footer class="userstyle-card-footer">
+        <Badge variant="secondary"
+          ><CakeIcon size={16} /> {formatDate(record.value.createdAt)}</Badge
+        >
+        <Badge variant="secondary"
+          ><PenLineIcon size={16} />
+          {record.value.updatedAt ? formatDate(record.value.updatedAt) : '—'}</Badge
+        >
+        <Badge variant="secondary"
+          ><RulerDimensionLineIcon size={16} />
+          {record.value.sourceCode.split('\n').length} lines</Badge
+        >
+        <Badge variant="secondary"
+          ><WeightIcon size={16} /> {bytes(record.value.sourceCode.length)}</Badge
+        >
+      </footer>
+    </div>
   </article>
 </a>
 
@@ -46,14 +70,17 @@
   .userstyle-card-wrapper {
     text-decoration: none;
   }
+
   .userstyle-card {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
     background: var(--card-bg);
-    border: 2px solid var(--foreground);
-    padding: var(--space-4) var(--space-5);
-    box-shadow: var(--shadow-sm);
+    border: 2px solid var(--border);
     transition:
       transform var(--ease-fast),
-      box-shadow var(--ease-fast);
+      box-shadow var(--ease-fast),
+      border-color var(--ease-fast);
 
     &:hover {
       transform: translate(-2px, -2px);
@@ -61,21 +88,64 @@
       box-shadow: 6px 7px 0 var(--card-hover-color, var(--accent));
     }
 
-    .userstyle-card-header {
-      margin-bottom: var(--space-2);
+    .card-thumbnail {
+      height: 160px;
+      flex-shrink: 0;
+      overflow: hidden;
+      background: var(--bg-faint);
 
-      .userstyle-title {
-        font-size: var(--text-base);
-        font-weight: 600;
-        margin: 0;
+      img {
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
       }
     }
 
-    .userstyle-card-footer {
+    .card-body {
       display: flex;
-      align-items: center;
+      flex-direction: column;
       gap: var(--space-2);
-      flex-wrap: wrap;
+      padding: var(--space-3) var(--space-4);
+      min-width: 0;
+    }
+
+    .userstyle-title {
+      font-size: var(--text-xl);
+      font-weight: 700;
+      margin: 0;
+      line-height: 1.2;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .userstyle-description {
+      font-size: var(--text-sm);
+      color: var(--fg-muted);
+      line-height: 1.4;
+      min-height: 1.4em;
+      margin: 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .userstyle-card-footer {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-2);
+
+      :global(.badge) {
+        min-width: 0;
+        width: 100%;
+        justify-content: flex-start;
+      }
+
+      :global(.badge .lucide-icon) {
+        margin-right: 0.5rem;
+        flex-shrink: 0;
+      }
     }
   }
 </style>
