@@ -12,3 +12,4 @@ export { default as PreviewImage } from './ui/PreviewImage.svelte';
 export { default as PreviewImageUpload } from './ui/PreviewImageUpload.svelte';
 export { default as BlueskyIcon } from './ui/BlueskyIcon.svelte';
 export { default as Dialog } from './ui/Dialog.svelte';
+export { default as CssEditor } from './CssEditor.svelte'

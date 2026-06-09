@@ -7,11 +7,7 @@
   import { joinPageTitle } from '$lib/constants';
   import type { StyleImport } from './fetch.remote';
 
-  import CodeMirror from 'svelte-codemirror-editor';
-  import { css } from '@codemirror/lang-css';
-  import { hyperlink } from '$lib/codemirror/hyperlink';
-
-  import { Spinner, Alert, Logo, PreviewImageUpload, BlueskyIcon, Dialog } from '$components';
+  import { Spinner, Alert, Logo, PreviewImageUpload, BlueskyIcon, Dialog, CssEditor } from '$components';
   import ImportFromUrl from './ImportFromUrl.svelte';
 
   import { fields } from './fields.svelte';
@@ -148,11 +144,7 @@
           <p class="field-label" data-required>CSS</p>
           {@render importOverrideButton(Boolean(imported?.code && imported.code !== fields.current.sourceCode), () => fields.current.sourceCode = imported!.code!)}
         </div>
-        <CodeMirror
-          bind:value={() => fields.current.sourceCode, (val) => (fields.current.sourceCode = val)}
-          extensions={[hyperlink]}
-          lang={css()}
-        />
+        <CssEditor bind:code={fields.current.sourceCode} />
       </div>
 
       <div class="form-group">
@@ -214,59 +206,3 @@
     <button class="btn btn-danger" type="button" onclick={clearAll}>Clear</button>
   {/snippet}
 </Dialog>
-
-<style>
-  :global .codemirror-wrapper {
-    /* https://discuss.codemirror.net/t/codemirror-6-setting-a-minimum-height-but-allow-the-editor-to-grow/2520/6 */
-    display: flex;
-    border: 2px solid var(--input-border);
-    overflow: hidden;
-    transition:
-      border-color var(--ease-fast),
-      box-shadow var(--ease-fast);
-
-    &:focus-within {
-      border-color: var(--ring);
-      box-shadow: 3px 3px 0 var(--accent);
-    }
-
-    .cm-editor {
-      width: 0;
-      flex-grow: 1;
-      font-family: var(--font-mono);
-      font-size: var(--text-sm);
-      background: var(--bg-subtle) !important;
-      color: var(--foreground) !important;
-
-      .cm-content,
-      .cm-gutter {
-        min-height: 180px;
-      }
-      .cm-gutters {
-        margin: 0;
-        background: var(--bg-muted) !important;
-        color: var(--fg-muted) !important;
-        border-right: 2px solid var(--border) !important;
-      }
-      .cm-scroller {
-        overflow: auto;
-      }
-      .cm-activeLine {
-        background: color-mix(in srgb, var(--accent) 8%, transparent) !important;
-      }
-      .cm-activeLineGutter {
-        background: color-mix(in srgb, var(--accent) 12%, transparent) !important;
-      }
-      .cm-cursor,
-      .cm-dropCursor {
-        border-left-color: var(--accent) !important;
-      }
-      .cm-selectionBackground {
-        background: color-mix(in srgb, var(--accent) 25%, transparent) !important;
-      }
-      &.cm-focused .cm-selectionBackground {
-        background: color-mix(in srgb, var(--accent) 30%, transparent) !important;
-      }
-    }
-  }
-</style>
