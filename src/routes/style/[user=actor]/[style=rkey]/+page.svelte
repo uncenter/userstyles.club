@@ -86,20 +86,20 @@
     <div class="style-info">
       <div class="style-meta">
         <div class="style-item">
-          <span class="style-item-label"><CakeIcon size={16} /> Published</span>
           <time class="style-item-value">{formatDate(data.userstyle.createdAt)}</time>
+          <span class="style-item-label"><CakeIcon size={12} /> Published</span>
         </div>
         <div class="style-item">
-          <span class="style-item-label"><PenLineIcon size={16} /> Last Updated</span>
-          <time class="style-item-value">{data.userstyle.updatedAt ? formatDate(data.userstyle.updatedAt) : '-'}</time>
+          <time class="style-item-value">{data.userstyle.updatedAt ? formatDate(data.userstyle.updatedAt) : '—'}</time>
+          <span class="style-item-label"><PenLineIcon size={12} /> Last Updated</span>
         </div>
         <div class="style-item">
-          <span class="style-item-label"><WeightIcon size={16} /> Size</span>
           <span class="style-item-value">{bytes(data.userstyle.sourceCode.length)}</span>
+          <span class="style-item-label"><WeightIcon size={12} /> Size</span>
         </div>
         <div class="style-item">
-          <span class="style-item-label"><RulerDimensionLineIcon size={16} /> Lines</span>
           <span class="style-item-value">{data.userstyle.sourceCode.split('\n').length}</span>
+          <span class="style-item-label"><RulerDimensionLineIcon size={12} /> Lines</span>
         </div>
       </div>
 
@@ -186,30 +186,25 @@
 
   .style-meta {
     display: flex;
-    flex-direction: column;
-    gap: var(--space-3);
+    flex-direction: row;
+    gap: var(--space-6);
 
     .style-item {
       display: flex;
-      align-items: center;
-      gap: var(--space-2);
-      font-size: var(--text-sm);
+      flex-direction: column;
+      gap: 0.2rem;
+
+      .style-item-value {
+        font-size: var(--text-base);
+        font-weight: 700;
+        color: var(--foreground);
+      }
 
       .style-item-label {
         display: inline-flex;
         align-items: center;
-        gap: 0.3rem;
-        background: var(--bg-faint);
-        border: 1px solid var(--border);
-        padding: 0.1rem var(--space-2);
+        gap: 0.25rem;
         font-size: var(--text-xs);
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-        color: var(--fg-muted);
-      }
-
-      .style-item-value {
         color: var(--fg-muted);
       }
     }
