@@ -1,0 +1,31 @@
+{
+  "lexicon": 1,
+  "id": "club.userstyles.alpha.actor.profile",
+  "defs": {
+    "main": {
+      "key": "literal:self",
+      "type": "record",
+      "record": {
+        "type": "object",
+        "properties": {
+          "description": {
+            "type": "string",
+            "maxLength": 2560,
+            "description": "Free-form profile description text.",
+            "maxGraphemes": 256
+          },
+          "displayName": {
+            "type": "string",
+            "maxLength": 640,
+            "maxGraphemes": 64
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "datetime"
+          }
+        }
+      },
+      "description": "A declaration of a userstyles.club account profile."
+    }
+  }
+}
