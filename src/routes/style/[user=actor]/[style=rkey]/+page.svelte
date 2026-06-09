@@ -7,7 +7,7 @@
 
   import { user, deleteUserstyle } from '$lib/at';
 
-  import { Spinner, Alert, ActorHandle, CssPreview, PreviewImage } from '$components';
+  import { Spinner, Alert, ActorHandle, CssPreview, PreviewImage, Dialog } from '$components';
 
   import bytes from 'pretty-bytes';
   import { CakeIcon, PenLineIcon, RulerDimensionLineIcon, WeightIcon } from '@lucide/svelte';
@@ -17,7 +17,7 @@
 
   let { data, params }: PageProps = $props();
 
-  let confirmDialog: HTMLDialogElement;
+  let confirmDialogOpen = $state(false);
 
   function formatDate(value: string) {
     return new Date(value).toLocaleDateString(undefined, {
@@ -42,7 +42,7 @@
   }
 
   async function confirmDelete() {
-    confirmDialog.close();
+    confirmDialogOpen = false;
     await removeUserstyle();
   }
 </script>
@@ -63,7 +63,7 @@
       >
         Edit
       </a>
-      <button type="button" class="btn btn-danger btn-sm" onclick={() => confirmDialog.showModal()}>
+      <button type="button" class="btn btn-danger btn-sm" onclick={() => confirmDialogOpen = true}>
         Delete
       </button>
     </div>
@@ -131,27 +131,21 @@
   </section>
 </div>
 
-<dialog
-  bind:this={confirmDialog}
-  class="confirm-dialog"
-  onclick={(e) => {
-    if (e.target === e.currentTarget) confirmDialog.close();
-  }}
->
-  <h2>Delete userstyle?</h2>
-  <p>
-    This will permanently delete userstyle <strong>{data.userstyle.title}</strong>. This cannot be
-    undone.
-  </p>
-  <div class="confirm-dialog-actions">
-    <button class="btn btn-outline" type="button" onclick={() => confirmDialog.close()}>
+<Dialog bind:open={confirmDialogOpen} title="Delete userstyle?">
+  {#snippet children()}
+    <p class="text-muted">
+      This will permanently delete <strong>{data.userstyle.title}</strong>. This cannot be undone.
+    </p>
+  {/snippet}
+  {#snippet actions()}
+    <button class="btn btn-outline" type="button" onclick={() => confirmDialogOpen = false}>
       Cancel
     </button>
     <button class="btn btn-danger" type="button" onclick={confirmDelete} disabled={deleting}>
       {#if deleting}<Spinner size="sm" /> Deleting…{:else}Yes, delete!{/if}
     </button>
-  </div>
-</dialog>
+  {/snippet}
+</Dialog>
 
 <style>
   .owner-toolbar {
@@ -230,36 +224,4 @@
     }
   }
 
-  .confirm-dialog {
-    background: var(--card-bg);
-    color: var(--foreground);
-    border: 2px solid var(--foreground);
-    box-shadow: var(--shadow-lg);
-    filter: url('#rough');
-    padding: var(--space-6);
-    max-width: 28rem;
-    width: calc(100% - var(--space-8));
-    margin: auto;
-
-    &::backdrop {
-      background: rgb(0 0 0 / 0.6);
-    }
-
-    h2 {
-      font-size: var(--text-xl);
-      margin-bottom: var(--space-3);
-    }
-
-    p {
-      color: var(--fg-muted);
-      line-height: 1.6;
-      margin-bottom: var(--space-5);
-    }
-
-    .confirm-dialog-actions {
-      display: flex;
-      gap: var(--space-3);
-      justify-content: flex-end;
-    }
-  }
 </style>

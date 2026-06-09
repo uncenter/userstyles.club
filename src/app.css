@@ -20,6 +20,8 @@
   --rose: light-dark(#fce7f3, #3d1025);
   --rose-vivid: light-dark(#f472b6, #f9a8d4);
 
+  --bsky-blue: #1185fe;
+
   /* Backgrounds */
   --background: light-dark(#ffffff, #09090b);
   --bg-subtle: light-dark(#fafafa, #111113);
@@ -486,6 +488,24 @@ main.container {
   &:active:not(:disabled) {
     transform: translate(2px, 2px);
     box-shadow: 1px 1px 0 color-mix(in srgb, var(--danger) 70%, #000);
+  }
+}
+
+.btn-bsky {
+  background: var(--bsky-blue);
+  color: #fff;
+  border-color: color-mix(in srgb, var(--bsky-blue) 70%, #000);
+  box-shadow: 3px 3px 0 color-mix(in srgb, var(--bsky-blue) 70%, #000);
+
+  &:hover:not(:disabled) {
+    color: #fff;
+    background: color-mix(in srgb, var(--bsky-blue) 85%, #000);
+    transform: translate(-1px, -1px);
+    box-shadow: 4px 4px 0 color-mix(in srgb, var(--bsky-blue) 70%, #000);
+  }
+  &:active:not(:disabled) {
+    transform: translate(2px, 2px);
+    box-shadow: 1px 1px 0 color-mix(in srgb, var(--bsky-blue) 70%, #000);
   }
 }
 

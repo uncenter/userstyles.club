@@ -10,3 +10,5 @@ export { default as UserstylesListItem } from './UserstylesListItem.svelte';
 export { default as CssPreview } from './CssPreview.svelte';
 export { default as PreviewImage } from './ui/PreviewImage.svelte';
 export { default as PreviewImageUpload } from './ui/PreviewImageUpload.svelte';
+export { default as BlueskyIcon } from './ui/BlueskyIcon.svelte';
+export { default as Dialog } from './ui/Dialog.svelte';

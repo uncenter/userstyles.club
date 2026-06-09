@@ -10,7 +10,7 @@
   import { css } from '@codemirror/lang-css';
   import { hyperlink } from '$lib/codemirror/hyperlink';
 
-  import { Spinner, Alert, Logo, PreviewImageUpload } from '$components';
+  import { Spinner, Alert, Logo, PreviewImageUpload, BlueskyIcon, Dialog } from '$components';
   import ImportFromUrl from './ImportFromUrl.svelte';
 
   import { fields } from './fields.svelte';
@@ -21,6 +21,10 @@
   let error = $state<string | null>(null);
 
   let previewImage = $state<File | null>(null);
+
+  let shareDialogOpen = $state(false);
+  let publishedUrl = $state('');
+  let shareText = $state('');
 
   $effect(() => {
     if (!user.isLoggedIn) {
@@ -52,12 +56,29 @@
       );
       let uri = parseResourceUri(userstyle.uri);
       fields.disconnect();
-      goto(`/style/${uri.repo}/${uri.rkey}`);
+      publishedUrl = `/style/${uri.repo}/${uri.rkey}`;
+      shareText = `Just published "${fields.current.title}" on userstyles.club!\n\nhttps://userstyles.club${publishedUrl}`;
+      shareDialogOpen = true;
     } catch (e) {
       error = e instanceof Error ? e.message : 'Failed to create userstyle.';
     } finally {
       publishing = false;
     }
+  }
+
+  function skipShare() {
+    shareDialogOpen = false;
+    goto(publishedUrl);
+  }
+
+  function openInBluesky() {
+    window.open(
+      `https://bsky.app/intent/compose?text=${encodeURIComponent(shareText)}`,
+      '_blank',
+      'noopener,noreferrer'
+    );
+    shareDialogOpen = false;
+    goto(publishedUrl);
   }
 </script>
 
@@ -141,6 +162,18 @@
     </form>
   </div>
 </div>
+
+<Dialog bind:open={shareDialogOpen} title="Share to Bluesky?" maxWidth="32rem">
+  {#snippet children()}
+    <p class="text-muted">Congratulations on publishing! Let your friends know about your new userstyle.</p>
+  {/snippet}
+  {#snippet actions()}
+    <button class="btn btn-outline" type="button" onclick={skipShare}>Maybe later</button>
+    <button class="btn btn-bsky" type="button" onclick={openInBluesky}>
+      <BlueskyIcon size={16} /> Open in Bluesky
+    </button>
+  {/snippet}
+</Dialog>
 
 <style>
   .editor-label {
