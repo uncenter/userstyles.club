@@ -491,6 +491,24 @@ main.container {
   }
 }
 
+.btn-warning {
+  background: var(--warning);
+  color: light-dark(#fff, #1a1200);
+  border-color: color-mix(in srgb, var(--warning) 70%, #000);
+  box-shadow: 3px 3px 0 color-mix(in srgb, var(--warning) 70%, #000);
+
+  &:hover:not(:disabled) {
+    color: light-dark(#fff, #1a1200);
+    background: color-mix(in srgb, var(--warning) 85%, #000);
+    transform: translate(-1px, -1px);
+    box-shadow: 4px 4px 0 color-mix(in srgb, var(--warning) 70%, #000);
+  }
+  &:active:not(:disabled) {
+    transform: translate(2px, 2px);
+    box-shadow: 1px 1px 0 color-mix(in srgb, var(--warning) 70%, #000);
+  }
+}
+
 .btn-bsky {
   background: var(--bsky-blue);
   color: #fff;
@@ -537,7 +555,6 @@ select {
   width: 100%;
   padding: var(--space-2) var(--space-3);
   font: inherit;
-  font-size: var(--text-sm);
   background: var(--background);
   color: var(--foreground);
   border: 2px solid var(--input-border);
@@ -559,9 +576,16 @@ select:disabled {
   cursor: not-allowed;
 }
 
+.field-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
 .field-label {
   display: block;
-  font-size: var(--text-sm);
+  font-size: var(--text-lg);
   font-weight: 600;
   margin-bottom: var(--space-1);
 }
@@ -582,9 +606,43 @@ select:disabled {
 
   &:not(:has(input:required, [data-required])) .field-label::after {
     content: ' (optional)';
-    font-size: var(--text-xs);
+    font-size: var(--text-sm);
     color: var(--fg-muted);
     font-weight: 400;
+  }
+}
+
+.text-input-button-group {
+  display: flex;
+
+  input {
+    flex: 1;
+    min-width: 0;
+    width: auto;
+    border-right: none;
+  }
+
+  button {
+    border: 2px solid var(--input-border);
+    background: var(--bg-muted);
+    color: var(--foreground);
+    font: inherit;
+    font-weight: 700;
+    font-size: var(--text-sm);
+    padding: var(--space-2) var(--space-4);
+    cursor: pointer;
+    white-space: nowrap;
+    flex-shrink: 0;
+    transition: background-color var(--ease-fast);
+
+    &:hover:not(:disabled) {
+      background: var(--bg-faint);
+    }
+
+    &:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
   }
 }
 
@@ -679,6 +737,7 @@ select:disabled {
 }
 
 .form-footer {
-  justify-content: end;
   display: flex;
+  justify-content: end;
+  gap: var(--space-3);
 }

@@ -5,6 +5,7 @@
   import { parseResourceUri } from '@atcute/lexicons';
 
   import { joinPageTitle } from '$lib/constants';
+  import type { StyleImport } from './fetch.remote';
 
   import CodeMirror from 'svelte-codemirror-editor';
   import { css } from '@codemirror/lang-css';
@@ -21,8 +22,10 @@
   let error = $state<string | null>(null);
 
   let previewImage = $state<File | null>(null);
+  let imported = $state<StyleImport | null>(null);
 
   let shareDialogOpen = $state(false);
+  let clearDialogOpen = $state(false);
   let publishedUrl = $state('');
   let shareText = $state('');
 
@@ -66,6 +69,12 @@
     }
   }
 
+  function clearAll() {
+    fields.current = { title: '', description: '', sourceCode: '', importUrl: '', removeUpdateUrl: true };
+    imported = null;
+    clearDialogOpen = false;
+  }
+
   function skipShare() {
     shareDialogOpen = false;
     goto(publishedUrl);
@@ -92,35 +101,53 @@
   </div>
 
   <div class="page-section">
-    <ImportFromUrl {fields} bind:pending={importing} />
+    <ImportFromUrl {fields} bind:pending={importing} bind:imported />
 
-    <hr />
+  </div>
+
+  <div class="page-section">
+    {#snippet importOverrideButton(condition: boolean, apply: () => void)}
+      {#if condition}
+        <button type="button" class="btn btn-warning btn-sm" onclick={apply}>Import</button>
+      {/if}
+    {/snippet}
 
     <form onsubmit={submit} class="form-stack">
-      <label class="form-group">
-        <span class="field-label">Title</span>
+      <div class="form-group">
+        <div class="field-row">
+          <label for="title" class="field-label">Title</label>
+          {@render importOverrideButton(Boolean(imported?.title && imported.title !== fields.current.title), () => fields.current.title = imported!.title!)}
+        </div>
         <input
+          id="title"
           type="text"
           required
           bind:value={() => fields.current.title, (val) => (fields.current.title = val)}
           maxlength="140"
           placeholder="e.g. Tangled.org tweaks"
         />
-      </label>
+      </div>
 
-      <label class="form-group">
-        <span class="field-label">Description</span>
+      <div class="form-group">
+        <div class="field-row">
+          <label for="description" class="field-label">Description</label>
+          {@render importOverrideButton(Boolean(imported?.description && imported.description !== fields.current.description), () => fields.current.description = imported!.description!)}
+        </div>
         <input
+          id="description"
           type="text"
           bind:value={() => fields.current.description, (val) => (fields.current.description = val)}
           maxlength="300"
         />
-      </label>
+      </div>
 
       <PreviewImageUpload bind:file={previewImage} />
 
       <div class="form-group">
-        <p class="field-label" data-required>CSS</p>
+        <div class="field-row">
+          <p class="field-label" data-required>CSS</p>
+          {@render importOverrideButton(Boolean(imported?.code && imported.code !== fields.current.sourceCode), () => fields.current.sourceCode = imported!.code!)}
+        </div>
         <CodeMirror
           bind:value={() => fields.current.sourceCode, (val) => (fields.current.sourceCode = val)}
           extensions={[hyperlink]}
@@ -147,6 +174,9 @@
       </div>
 
       <div class="form-footer">
+        <button type="button" class="btn btn-danger" onclick={() => clearDialogOpen = true} disabled={pending || (!fields.current.title.trim() && !fields.current.description.trim() && !fields.current.sourceCode.trim())}>
+          Clear
+        </button>
         <button
           type="submit"
           class="btn btn-primary"
@@ -175,13 +205,17 @@
   {/snippet}
 </Dialog>
 
-<style>
-  .editor-label {
-    font-size: var(--text-sm);
-    font-weight: 500;
-    margin-bottom: var(--space-1);
-  }
+<Dialog bind:open={clearDialogOpen} title="Clear all fields?">
+  {#snippet children()}
+    <p class="text-muted">This will clear all form fields including any imported data. This cannot be undone.</p>
+  {/snippet}
+  {#snippet actions()}
+    <button class="btn btn-outline" type="button" onclick={() => clearDialogOpen = false}>Cancel</button>
+    <button class="btn btn-danger" type="button" onclick={clearAll}>Clear</button>
+  {/snippet}
+</Dialog>
 
+<style>
   :global .codemirror-wrapper {
     /* https://discuss.codemirror.net/t/codemirror-6-setting-a-minimum-height-but-allow-the-editor-to-grow/2520/6 */
     display: flex;

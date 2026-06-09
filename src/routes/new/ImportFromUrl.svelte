@@ -8,9 +8,10 @@
   interface Props {
     fields: NewUserstyleFields;
     pending: boolean;
+    imported?: StyleImport | null;
   }
 
-  let { fields, pending = $bindable() }: Props = $props();
+  let { fields, pending = $bindable(), imported = $bindable(null) }: Props = $props();
 
   let warning = $state<string | null>(null);
   let error = $state<string | null>(null);
@@ -46,9 +47,9 @@
     }
 
     return {
-      name: parsed.metadata.name as string | undefined,
-      desc: parsed.metadata.description as string | undefined,
-      sourceCode: fetched
+      title: parsed.metadata.name as string | undefined,
+      description: parsed.metadata.description as string | undefined,
+      code: fetched
     };
   }
 
@@ -67,10 +68,12 @@
         ? await fetchFromUserstylesWorld(uswMatch.pathname.groups.id!).run()
         : await fetchFromUrl(url);
 
-      if (!fields.current.sourceCode.trim()) fields.current.sourceCode = result.sourceCode;
-      if (!fields.current.title.trim() && result.name) fields.current.title = result.name;
-      if (!fields.current.description.trim() && result.desc)
-        fields.current.description = result.desc;
+      if (!fields.current.sourceCode.trim()) fields.current.sourceCode = result.code ?? '';
+      if (!fields.current.title.trim() && result.title) fields.current.title = result.title;
+      if (!fields.current.description.trim() && result.description)
+        fields.current.description = result.description;
+
+      imported = result;
     } catch (e) {
       error = e instanceof Error ? e.message : 'Failed to import userstyle from URL.';
     } finally {
@@ -79,35 +82,32 @@
   }
 </script>
 
-<form onsubmit={importFromUrl} class="form-stack">
-  <div class="form-group">
-    <label>
-      <span class="field-label">Import from URL</span>
+<form onsubmit={importFromUrl} class="form-group">
+  <label>
+    <span class="field-label">Import from URL</span>
+    <div class="text-input-button-group">
       <input
         type="text"
         bind:value={() => fields.current.importUrl, (val) => (fields.current.importUrl = val)}
         placeholder="https://tangled.org/example.org/my-userstyle/raw/main/style.user.css"
         aria-describedby="import-from-url-desc"
       />
-    </label>
-    <p class="form-hint" id="import-from-url-desc">
-      Import from Userstyles.world, Tangled, GitHub, or from any other raw CSS file on the internet.
-    </p>
-  </div>
-  <div>
-    <button
-      type="submit"
-      class="btn btn-secondary"
-      disabled={pending || !fields.current.importUrl.trim()}
-    >
-      {#if pending}<Spinner size="sm" /> Importing…{:else}Import{/if}
-    </button>
-  </div>
-
-  {#if warning}
-    <Alert variant="warning">{warning}</Alert>
-  {/if}
-  {#if error}
-    <Alert variant="error">{error}</Alert>
-  {/if}
+      <button
+        type="submit"
+        disabled={pending || !fields.current.importUrl.trim()}
+      >
+        {#if pending}<Spinner size="sm" /> Importing…{:else}Import{/if}
+      </button>
+    </div>
+  </label>
+  <p class="form-hint" id="import-from-url-desc">
+    Import from Userstyles.world, Tangled, GitHub, or from any other raw CSS file on the internet.
+  </p>
 </form>
+
+{#if warning}
+  <Alert variant="warning">{warning}</Alert>
+{/if}
+{#if error}
+  <Alert variant="error">{error}</Alert>
+{/if}
