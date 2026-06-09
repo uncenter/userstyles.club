@@ -95,7 +95,7 @@
             </div>
           </li>
         {:else}
-          <li class="nav-login"><a href={resolve('/login')} class="btn">Login</a></li>
+          <li class="nav-login"><a href={resolve('/login')} class="btn btn-outline">Login</a></li>
         {/if}
       </ul>
     </div>
@@ -172,24 +172,5 @@
 
   .nav-login {
     margin-left: var(--space-3);
-
-    a {
-      background: var(--sky);
-      color: var(--sky-vivid);
-      border: 2px solid var(--sky-vivid);
-      box-shadow: 3px 3px 0 var(--sky-vivid);
-      font-weight: 700;
-
-      &:hover {
-        color: var(--sky-vivid);
-        background: var(--sky);
-        transform: translate(-1px, -1px);
-        box-shadow: 4px 4px 0 var(--sky-vivid);
-      }
-      &:active {
-        transform: translate(2px, 2px);
-        box-shadow: 1px 1px 0 var(--sky-vivid);
-      }
-    }
   }
 </style>
