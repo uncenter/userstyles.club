@@ -15,7 +15,10 @@
   let warning = $state<string | null>(null);
   let error = $state<string | null>(null);
 
-  const usercssParser = usercss.createParser({ mandatoryKeys: ['name', 'description'], allowErrors: true });
+  const usercssParser = usercss.createParser({
+    mandatoryKeys: ['name', 'description'],
+    allowErrors: true
+  });
   const USW_PATTERN = new URLPattern('/style/:id(\\d+){/:name}?{/}?', 'https://userstyles.world');
 
   function normalizeGitHubUrl(input: string): string {
@@ -45,7 +48,7 @@
     return {
       name: parsed.metadata.name as string | undefined,
       desc: parsed.metadata.description as string | undefined,
-      sourceCode: fetched,
+      sourceCode: fetched
     };
   }
 
@@ -66,7 +69,8 @@
 
       if (!fields.current.sourceCode.trim()) fields.current.sourceCode = result.sourceCode;
       if (!fields.current.title.trim() && result.name) fields.current.title = result.name;
-      if (!fields.current.description.trim() && result.desc) fields.current.description = result.desc;
+      if (!fields.current.description.trim() && result.desc)
+        fields.current.description = result.desc;
     } catch (e) {
       error = e instanceof Error ? e.message : 'Failed to import userstyle from URL.';
     } finally {

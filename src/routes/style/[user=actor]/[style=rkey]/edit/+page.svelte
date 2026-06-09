@@ -84,11 +84,7 @@
 
       <label class="form-group">
         <span class="field-label">Description</span>
-        <input
-          type="text"
-          bind:value={description}
-          maxlength="300"
-        />
+        <input type="text" bind:value={description} maxlength="300" />
       </label>
 
       <PreviewImageUpload

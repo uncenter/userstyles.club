@@ -64,7 +64,12 @@
         <span class="file-input-text">{displayText}</span>
       </div>
       {#if canRemove}
-        <button type="button" class="btn btn-icon btn-outline-danger" onclick={handleRemove} aria-label="Remove file">✕</button>
+        <button
+          type="button"
+          class="btn btn-icon btn-outline-danger"
+          onclick={handleRemove}
+          aria-label="Remove file">✕</button
+        >
       {/if}
     </div>
   </label>

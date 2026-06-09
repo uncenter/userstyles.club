@@ -46,7 +46,12 @@ export async function listMyUserstyles() {
   return listUserstyles(did);
 }
 
-export async function createUserstyle(title: string, description: string, sourceCode: string, previewImage?: File) {
+export async function createUserstyle(
+  title: string,
+  description: string,
+  sourceCode: string,
+  previewImage?: File
+) {
   title = title.trim();
   if (!title) throw new Error('Userstyle title is required.');
   if (title.length > 140) throw new Error('Userstyle title must be 140 characters or fewer.'); // TODO: Grapheme validation?
@@ -85,9 +90,8 @@ export async function updateUserstyle(
   if (!title) throw new Error('Userstyle title is required.');
   if (title.length > 140) throw new Error('Userstyle title must be 140 characters or fewer.');
 
-  const previewImageBlob = previewImage instanceof File
-    ? await uploadBlob(previewImage)
-    : previewImage;
+  const previewImageBlob =
+    previewImage instanceof File ? await uploadBlob(previewImage) : previewImage;
 
   return putRecord(USERSTYLE_COLLECTION, rkey, {
     $type: USERSTYLE_COLLECTION,

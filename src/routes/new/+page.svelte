@@ -44,7 +44,12 @@
           .filter((line) => !/^\s*@updateURL\s/.test(line))
           .join('\n');
       }
-      let userstyle = await createUserstyle(fields.current.title, fields.current.description, sourceCode, previewImage ?? undefined);
+      let userstyle = await createUserstyle(
+        fields.current.title,
+        fields.current.description,
+        sourceCode,
+        previewImage ?? undefined
+      );
       let uri = parseResourceUri(userstyle.uri);
       fields.disconnect();
       goto(`/style/${uri.repo}/${uri.rkey}`);
