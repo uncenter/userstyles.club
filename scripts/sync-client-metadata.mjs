@@ -5,7 +5,7 @@ const basePath = (process.env.BASE_PATH ?? '').trim();
 const normalizedBase = basePath === '/' ? '' : basePath.replace(/\/$/, '');
 
 const explicitOrigin = (process.env.SITE_ORIGIN ?? '').trim();
-const fallbackOrigin = 'https://example.com';
+const fallbackOrigin = 'https://userstyles.club';
 const origin = explicitOrigin || fallbackOrigin;
 const root = `${origin}${normalizedBase}`;
 

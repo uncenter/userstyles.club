@@ -9,7 +9,7 @@ export function getSiteOrigin(): string {
   const envOrigin = import.meta.env.VITE_SITE_ORIGIN;
   if (envOrigin && envOrigin.trim()) return envOrigin.trim();
   if (typeof window !== 'undefined') return window.location.origin;
-  return 'https://example.com';
+  return 'https://userstyles.club';
 }
 
 export function getSignUpPds() {
