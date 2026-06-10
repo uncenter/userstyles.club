@@ -49,7 +49,7 @@
 {:else}
   <div class="welcome">
     <div class="welcome-logo">
-      <Wordmark height="clamp(2rem, 10vw, 5rem)" />
+      <Wordmark --height="clamp(2rem, 10vw, 5rem)" />
     </div>
     <div class="welcome-spinner">
       <Logomark size="10rem" withArm withSpin />

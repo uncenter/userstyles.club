@@ -9,7 +9,7 @@
 </script>
 
 <div class="logo-wrapper">
-  <Logomark {size} /><Wordmark height={size} />
+  <Logomark {size} /><Wordmark --height={size} />
 </div>
 
 <style>
