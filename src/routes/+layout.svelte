@@ -1,5 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
+  import { afterNavigate, goto } from '$app/navigation';
   import { resolve } from '$app/paths';
   import '../app.css';
 
@@ -9,6 +10,8 @@
 
   import { LogoCombo } from '$components/branding';
   import { Spinner, Avatar } from '$components/ui';
+
+  import { MenuIcon, XIcon } from '@lucide/svelte';
 
   let { children } = $props();
 
@@ -24,15 +27,32 @@
     }
   });
 
-  let menuPopover: HTMLElement | undefined = $state();
+  let profileDropdownEl: HTMLElement | undefined = $state();
   $effect(() => {
-    if (menuPopover) {
+    if (profileDropdownEl) {
       // Close popover if one of the popover menu items is clicked.
-      menuPopover.addEventListener('click', () => {
-        if (menuPopover!.matches(':popover-open')) {
-          menuPopover!.hidePopover();
+      profileDropdownEl.addEventListener('click', () => {
+        if (profileDropdownEl!.matches(':popover-open')) {
+          profileDropdownEl!.hidePopover();
         }
       });
+    }
+  });
+
+  let mobileNavEl: HTMLElement | undefined = $state();
+  $effect(() => {
+    if (mobileNavEl) {
+      mobileNavEl.addEventListener('click', () => {
+        if (mobileNavEl!.matches(':popover-open')) {
+          mobileNavEl!.hidePopover();
+        }
+      });
+    }
+  });
+
+  afterNavigate(() => {
+    if (mobileNavEl?.matches(':popover-open')) {
+      mobileNavEl.hidePopover();
     }
   });
 
@@ -55,9 +75,10 @@
   <nav class="navbar">
     <div class="navbar-inner">
       <a href={resolve('/')} class="navbar-logo"><LogoCombo /></a>
+
       <ul class="navbar-links" role="list">
-        <li><a href={resolve('/')}>Home</a></li>
-        <li><a href={resolve('/explore')}>Explore</a></li>
+        <li><a href={resolve('/')} class="nav-link">Home</a></li>
+        <li><a href={resolve('/explore')} class="nav-link">Explore</a></li>
         <li><a href={resolve('/new')} class="btn btn-primary">New</a></li>
         {#if user.isLoggedIn && user.did}
           <li class="user-menu">
@@ -77,7 +98,7 @@
             </button>
             <div
               id="user-menu-popover"
-              bind:this={menuPopover}
+              bind:this={profileDropdownEl}
               popover
               class="dropdown"
               role="menu"
@@ -90,9 +111,7 @@
                 type="button"
                 role="menuitem"
                 class="dropdown-danger"
-                onclick={() => {
-                  logout();
-                }}>Logout</button
+                onclick={() => logout()}>Logout</button
               >
             </div>
           </li>
@@ -100,8 +119,60 @@
           <li class="nav-login"><a href={resolve('/login')} class="btn btn-outline">Login</a></li>
         {/if}
       </ul>
+
+      <button
+        class="nav-toggle"
+        popovertarget="mobile-nav-popover"
+        popovertargetaction="toggle"
+        aria-haspopup="menu"
+        aria-label="Navigation menu"
+      >
+        <MenuIcon size={20} />
+      </button>
     </div>
   </nav>
+
+  <div
+    id="mobile-nav-popover"
+    bind:this={mobileNavEl}
+    popover
+    class="mobile-nav"
+    role="dialog"
+    aria-modal="true"
+    aria-label="Navigation menu"
+  >
+    <div class="mobile-nav-header">
+      <a href={resolve('/')} class="mobile-nav-logo"><LogoCombo /></a>
+      <button
+        class="nav-toggle"
+        popovertarget="mobile-nav-popover"
+        popovertargetaction="hide"
+        aria-label="Close menu"
+      >
+        <XIcon size={20} />
+      </button>
+    </div>
+    <a href={resolve('/')} class="nav-link">Home</a>
+    <a href={resolve('/explore')} class="nav-link">Explore</a>
+    <a href={resolve('/new')} class="nav-link">New</a>
+    {#if user.isLoggedIn && user.did}
+      <hr class="nav-divider" />
+      <a href={resolve('/profile/[user=actor]', { user: user.did })} class="nav-link" role="menuitem"
+        >Profile</a
+      >
+      <a href={resolve('/settings')} class="nav-link" role="menuitem">Settings</a>
+      <button
+        type="button"
+        role="menuitem"
+        class="nav-link nav-link-danger"
+        onclick={() => logout()}>Logout</button
+      >
+    {:else}
+      <hr class="nav-divider" />
+      <a href={resolve('/login')} class="nav-link" role="menuitem">Login</a>
+    {/if}
+  </div>
+
   <main class="container">
     {@render children()}
   </main>
@@ -122,6 +193,36 @@
     min-height: 100vh;
     display: grid;
     place-items: center;
+  }
+
+  .nav-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    background: none;
+    border: 2px solid var(--foreground);
+    cursor: pointer;
+    color: var(--foreground);
+    transition: background-color var(--ease-fast);
+
+    &:hover {
+      background: var(--bg-muted);
+    }
+  }
+
+  .nav-link {
+    color: var(--foreground);
+    text-decoration: none;
+    font-weight: 600;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+    transition:
+      color var(--ease-fast),
+      background-color var(--ease-fast);
   }
 
   .navbar {
@@ -147,32 +248,96 @@
       gap: var(--space-1);
       list-style: none;
       padding: 0;
-      flex-wrap: wrap;
 
       .nav-login {
         margin-left: var(--space-3);
       }
 
-      a:not(.btn),
-      button:not(.btn) {
+      .nav-link {
         padding: var(--space-2) var(--space-3);
-        color: var(--foreground);
-        text-decoration: none;
         font-size: var(--text-base);
-        font-weight: 600;
+        &:hover {
+          color: var(--accent);
+        }
+      }
+
+      .user-menu-trigger {
         background: none;
         border: none;
         cursor: pointer;
-        font-family: inherit;
-        transition:
-          color var(--ease-fast),
-          background-color var(--ease-fast);
+        padding: var(--space-1);
+        display: flex;
+        align-items: center;
       }
-      a:not(.btn):hover {
-        color: var(--accent);
+    }
+
+    /* Reveal toggle and hide links when appropriate. */
+    .nav-toggle {
+      display: none;
+      flex-shrink: 0;
+    }
+    @media (max-width: 639px) {
+      .navbar-links {
+        display: none;
       }
-      button:not(.btn):hover {
-        background: var(--bg-muted);
+
+      .nav-toggle {
+        display: flex;
+      }
+    }
+  }
+
+  .mobile-nav {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    border: none;
+    background: var(--background);
+    display: none;
+    flex-direction: column;
+    overflow-y: auto;
+
+    &:popover-open {
+      display: flex;
+    }
+
+    .mobile-nav-header {
+      height: 5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-inline: var(--container-pad);
+      flex-shrink: 0;
+    }
+
+    .nav-link {
+      padding: var(--space-4) var(--container-pad);
+      font-size: var(--text-xl);
+      width: 100%;
+      display: block;
+      text-align: left;
+
+      &:hover {
+        background: var(--lavender);
+        color: var(--lavender-vivid);
+      }
+    }
+
+    .nav-divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: var(--space-2) 0;
+    }
+
+    .nav-link-danger {
+      color: var(--danger);
+
+      &:hover {
+        background: var(--danger-bg) !important;
+        color: var(--danger) !important;
       }
     }
   }
@@ -221,6 +386,13 @@
       &:hover {
         color: var(--accent);
         text-decoration: underline;
+      }
+    }
+
+    @media (max-width: 639px) {
+      .container {
+        flex-direction: column;
+        gap: var(--space-4);
       }
     }
   }

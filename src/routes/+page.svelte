@@ -58,7 +58,7 @@
 {:else}
   <div class="welcome">
     <div class="welcome-logo">
-      <Wordmark height="5rem" />
+      <Wordmark height="clamp(2rem, 10vw, 5rem)" />
     </div>
     <div class="welcome-spinner">
       <Logomark size="10rem" withArm withSpin />
@@ -86,6 +86,11 @@
     box-shadow: var(--shadow-md);
     filter: url('#rough');
     margin-top: var(--space-6);
+
+    @media (max-width: 639px) {
+      padding: var(--space-8) var(--space-4);
+      gap: var(--space-4);
+    }
 
     .welcome-logo {
       display: flex;

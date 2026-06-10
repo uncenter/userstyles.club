@@ -96,8 +96,8 @@
 <style>
   .wordmark {
     width: auto;
-    display: block;
+    display: inline-block;
+    vertical-align: middle;
     --fg-muted: light-dark(#9ca3af, #bbb0e8);
-    transform: translateY(10%);
   }
 </style>

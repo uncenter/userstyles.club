@@ -159,7 +159,7 @@
             }
             aria-describedby="remove-update-url-desc"
           />
-          Check for updates from <Wordmark height="1rem" /> instead of original update URL?
+          <span>Check for updates from <Wordmark height="1rem" /> instead of original update URL?</span>
         </label>
         <p class="form-hint" id="remove-update-url-desc">
           If there is a configured update URL within the userstyle source code, Stylus will check

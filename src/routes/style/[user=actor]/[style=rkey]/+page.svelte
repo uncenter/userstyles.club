@@ -178,12 +178,22 @@
     padding-bottom: var(--space-5);
     margin-bottom: var(--space-5);
     border-bottom: 2px solid var(--border);
+
+    @media (max-width: 639px) {
+      flex-direction: column;
+      align-items: stretch;
+
+      .btn {
+        justify-content: center;
+      }
+    }
   }
 
   .style-meta {
     display: flex;
     flex-direction: row;
-    gap: var(--space-6);
+    flex-wrap: wrap;
+    gap: var(--space-5) var(--space-6);
 
     .style-item {
       display: flex;
