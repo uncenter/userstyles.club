@@ -18,7 +18,7 @@ export function getClientMetadata() {
   const normalizedBase = base || '';
   const root = `${origin}${normalizedBase}`;
   return {
-    client_id: `${root}/client-metadata.json`,
+    client_id: `${root}/oauth-client-metadata.json`,
     redirect_uri: `${root}${REDIRECT_PATH}`,
     scope
   };

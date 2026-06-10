@@ -10,7 +10,7 @@ const origin = explicitOrigin || fallbackOrigin;
 const root = `${origin}${normalizedBase}`;
 
 const metadata = {
-  client_id: `${root}/client-metadata.json`,
+  client_id: `${root}/oauth-client-metadata.json`,
   client_name: 'userstyles.club',
   client_uri: root,
   logo_uri: `${root}/favicon.svg`,
@@ -28,7 +28,7 @@ const metadata = {
 
 mkdirSync(resolve('static'), { recursive: true });
 writeFileSync(
-  resolve('static/client-metadata.json'),
+  resolve('static/oauth-client-metadata.json'),
   JSON.stringify(metadata, null, 2) + '\n',
   'utf8'
 );
