@@ -22,18 +22,28 @@
   });
   const USW_PATTERN = new URLPattern('/style/:id(\\d+){/:name}?{/}?', 'https://userstyles.world');
 
-  function normalizeGitHubUrl(input: string): string {
-    const pattern = new URLPattern('/:user/:repo/blob/:rest*', 'https://github.com');
-    const match = pattern.exec(input);
-    if (match) {
-      const { user, repo, rest } = match.pathname.groups;
-      return `https://github.com/${user}/${repo}/raw/${rest}`;
+  function normalizeForgeUrl(input: string): string {
+    const hosts = ['github.com', 'tangled.org'];
+
+    for (const host of hosts) {
+      const pattern = new URLPattern(
+        '/:user/:repo/blob/:rest*',
+        `https://${host}`
+      );
+
+      const match = pattern.exec(input);
+
+      if (match) {
+        const { user, repo, rest } = match.pathname.groups;
+        return `https://${host}/${user}/${repo}/raw/${rest}`;
+      }
     }
+
     return input;
   }
 
   async function fetchFromUrl(url: string): Promise<StyleImport> {
-    const normalized = normalizeGitHubUrl(url);
+    const normalized = normalizeForgeUrl(url);
     const fetched = await fetchRawFile(normalized).run();
     if (!fetched) throw new Error('Unable to import from URL');
 
@@ -64,7 +74,6 @@
     try {
       const url = fields.current.importUrl;
       const uswMatch = USW_PATTERN.exec(url);
-      console.log('Fetching for ' + uswMatch?.pathname.groups.id!)
       const result = uswMatch
         ? await fetchFromUserstylesWorld(uswMatch.pathname.groups.id!).run()
         : await fetchFromUrl(url);
@@ -77,7 +86,6 @@
       imported = result;
     } catch (e) {
       error = e instanceof Error ? e.message : 'Failed to import userstyle from URL.';
-      console.error(e);
     } finally {
       pending = false;
     }
