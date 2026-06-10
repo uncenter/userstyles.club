@@ -11,7 +11,7 @@
   import { LogoCombo } from '$components/branding';
   import { Spinner, Avatar } from '$components/ui';
 
-  import { MenuIcon, XIcon } from '@lucide/svelte';
+  import { MenuIcon, MoveUpRightIcon, XIcon } from '@lucide/svelte';
 
   let { children } = $props();
 
@@ -182,8 +182,9 @@
         <a href={resolve('/')} class="footer-logo"><LogoCombo /></a>
         <p class="footer-tagline">{TAGLINE}</p>
       </div>
-      <a href={REPO_URL} target="_blank" rel="noopener noreferrer" class="footer-source">Source ↗</a
-      >
+      <div class="footer-links">
+        <a href={REPO_URL} target="_blank" rel="noopener noreferrer">Source <MoveUpRightIcon /></a>
+      </div>
     </div>
   </footer>
 {/if}
@@ -377,12 +378,21 @@
       }
     }
 
-    .footer-source {
+    .footer-links a {
       flex-shrink: 0;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25em;
       font-size: var(--text-sm);
       font-weight: 600;
       color: var(--fg-muted);
       text-decoration: none;
+
+      :global(svg) {
+        width: 1em;
+        height: 1em;
+      }
+
       &:hover {
         color: var(--accent);
         text-decoration: underline;
