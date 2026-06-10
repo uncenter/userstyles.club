@@ -1,7 +1,7 @@
 <script lang="ts">
   import { resolve } from '$app/paths';
 
-  import { type UserstyleRecord, getBlobUrl } from '$lib/at';
+  import { type UserstyleRecord, getBlobCdnUrl } from '$lib/at';
   import { parseResourceUri } from '@atcute/lexicons';
   import type { Did } from '@atcute/lexicons';
 
@@ -19,11 +19,6 @@
 
   let uri = $derived.by(() => parseResourceUri(record.uri));
 
-  let previewImageUrl: Promise<string> | null = $derived.by(() => {
-    if (!record.value.previewImage) return null;
-    return getBlobUrl(uri.repo as Did, record.value.previewImage.ref.$link);
-  });
-
   function formatDate(value: string) {
     return new Date(value).toLocaleDateString(undefined, {
       year: 'numeric',
@@ -39,10 +34,8 @@
 >
   <article class="userstyle-card">
     <div class="card-thumbnail">
-      {#if previewImageUrl}
-        {#await previewImageUrl then url}
-          <img src={url} alt={record.value.title} />
-        {/await}
+      {#if record.value.previewImage}
+        <img src={getBlobCdnUrl(uri.repo as Did, record.value.previewImage.ref.$link, 'feed_thumbnail')} alt={record.value.title} />
       {/if}
     </div>
     <div class="card-body">

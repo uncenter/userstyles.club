@@ -5,7 +5,7 @@
 
   import { joinPageTitle } from '$lib/constants';
 
-  import { updateUserstyle, user } from '$lib/at';
+  import { getBlobCdnUrl, updateUserstyle, user } from '$lib/at';
 
   import { Spinner, Alert } from '$components/ui';
   import { PreviewImageUpload, CssEditor } from '$components';
@@ -87,7 +87,7 @@
       <PreviewImageUpload
         bind:file={previewFile}
         bind:keepExistingSavedImage={keepExistingPreview}
-        existingImageSrc={data.previewImageUrl}
+        existingImageSrc={data.userstyle.previewImage ? getBlobCdnUrl(data.profile.did, data.userstyle.previewImage.ref.$link, 'feed_fullsize') : null}
       />
 
       <div class="form-group">

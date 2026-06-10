@@ -5,7 +5,7 @@
 
   import { joinPageTitle } from '$lib/constants';
 
-  import { user, deleteUserstyle } from '$lib/at';
+  import { user, deleteUserstyle, getBlobCdnUrl } from '$lib/at';
 
   import { Spinner, Alert, Dialog } from '$components/ui';
   import { ActorHandle, CssPreview, PreviewImage } from '$components';
@@ -121,9 +121,9 @@
       <Alert variant="error">{error}</Alert>
     {/if}
 
-    {#if data.previewImageUrl}
+    {#if data.userstyle.previewImage}
       <div class="style-preview">
-        <PreviewImage src={data.previewImageUrl} alt={data.userstyle.title} />
+        <PreviewImage src={getBlobCdnUrl(data.profile.did, data.userstyle.previewImage.ref.$link, 'feed_fullsize')} alt={data.userstyle.title} />
       </div>
     {/if}
 

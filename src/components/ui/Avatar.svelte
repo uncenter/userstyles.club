@@ -8,13 +8,13 @@
 
   let { src, alt = '', name, size = 'md' }: Props = $props();
 
-  let imgError = $state(false);
+  let error = $state(false);
   const initial = $derived((name ?? alt).trim().charAt(0).toUpperCase() || '?');
 </script>
 
 <span class="avatar avatar-{size}" aria-label={alt || name || undefined}>
-  {#if src && !imgError}
-    <img {src} {alt} onerror={() => (imgError = true)} />
+  {#if src && !error}
+    <img src={size !== 'lg' ? src.replace('https://cdn.bsky.app/img/avatar', 'https://cdn.bsky.app/img/avatar_thumbnail') : src} {alt} onerror={() => (error = true)} />
   {:else}
     <span aria-hidden="true">{initial}</span>
   {/if}
