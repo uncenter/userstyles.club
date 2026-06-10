@@ -1,6 +1,8 @@
 <script lang="ts">
   import PreviewImage from './PreviewImage.svelte';
 
+  import { XIcon } from '@lucide/svelte';
+
   interface Props {
     file?: File | null;
     keepExistingSavedImage?: boolean;
@@ -68,7 +70,7 @@
           type="button"
           class="btn btn-icon btn-outline-danger"
           onclick={handleRemove}
-          aria-label="Remove file">✕</button
+          aria-label="Remove file"><XIcon size={20} /></button
         >
       {/if}
     </div>
