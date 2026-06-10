@@ -4,8 +4,7 @@
   import { TAGLINE, joinPageTitle } from '$lib/constants';
 
   import { Wordmark, Logomark } from '$components/branding';
-  import { Spinner, Alert } from '$components/ui';
-  import { UserstylesList } from '$components';
+  import { UserstylesSection } from '$components';
 
   let userstyles = $state<UserstyleRecord[]>([]);
 
@@ -42,19 +41,11 @@
       <h1>Your userstyles</h1>
     </div>
   </div>
-  <div class="userstyles-section">
-    {#if loading}
-      <div class="loading-state"><Spinner /></div>
-    {:else if error}
-      <Alert variant="error">{error}</Alert>
-    {:else if userstyles.length === 0}
-      <p class="text-muted">
-        No userstyles yet. <a href={resolve('/new')}>Create your first userstyle.</a>
-      </p>
-    {:else}
-      <UserstylesList {userstyles} />
-    {/if}
-  </div>
+  <UserstylesSection {userstyles} {loading} {error}>
+    {#snippet empty()}
+      No userstyles yet. <a href={resolve('/new')}>Create your first userstyle.</a>
+    {/snippet}
+  </UserstylesSection>
 {:else}
   <div class="welcome">
     <div class="welcome-logo">
@@ -72,11 +63,6 @@
 {/if}
 
 <style>
-  .userstyles-section {
-    margin-top: var(--space-6);
-    margin-bottom: var(--space-5);
-  }
-
   .welcome {
     display: grid;
     gap: var(--space-6);

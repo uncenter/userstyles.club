@@ -1,5 +1,5 @@
 export { default as ActorHandle } from './ActorHandle.svelte';
-export { default as UserstylesList } from './UserstylesList.svelte';
+export { default as UserstylesSection } from './UserstylesSection.svelte';
 export { default as CssPreview } from './CssPreview.svelte';
 export { default as CssEditor } from './CssEditor.svelte'
 export { default as PreviewImage } from './PreviewImage.svelte';

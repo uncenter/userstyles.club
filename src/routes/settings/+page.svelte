@@ -27,7 +27,7 @@
       <select
         id="appearance-select"
         bind:value={appearance.current}
-        style="width: auto; min-width: 9rem;"
+        class="appearance-select"
       >
         {#each appearances as opt}
           <option value={opt.value}>{opt.label}</option>
@@ -56,5 +56,10 @@
         font-size: var(--text-sm);
       }
     }
+  }
+
+  .appearance-select {
+    width: auto;
+    min-width: 9rem;
   }
 </style>

@@ -99,7 +99,7 @@
         <Alert variant="error">{error}</Alert>
       {/if}
 
-      <div class="form-actions">
+      <div class="form-footer">
         <button
           type="submit"
           class="btn btn-primary"
@@ -117,11 +117,3 @@
     </form>
   </div>
 </div>
-
-<style>
-  .form-actions {
-    display: flex;
-    gap: var(--space-3);
-    align-items: center;
-  }
-</style>

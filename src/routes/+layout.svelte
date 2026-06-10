@@ -27,28 +27,7 @@
     }
   });
 
-  let profileDropdownEl: HTMLElement | undefined = $state();
-  $effect(() => {
-    if (profileDropdownEl) {
-      // Close popover if one of the popover menu items is clicked.
-      profileDropdownEl.addEventListener('click', () => {
-        if (profileDropdownEl!.matches(':popover-open')) {
-          profileDropdownEl!.hidePopover();
-        }
-      });
-    }
-  });
-
   let mobileNavEl: HTMLElement | undefined = $state();
-  $effect(() => {
-    if (mobileNavEl) {
-      mobileNavEl.addEventListener('click', () => {
-        if (mobileNavEl!.matches(':popover-open')) {
-          mobileNavEl!.hidePopover();
-        }
-      });
-    }
-  });
 
   afterNavigate(() => {
     if (mobileNavEl?.matches(':popover-open')) {
@@ -98,10 +77,10 @@
             </button>
             <div
               id="user-menu-popover"
-              bind:this={profileDropdownEl}
               popover
               class="dropdown"
               role="menu"
+              onclick={(e) => { const el = e.currentTarget as HTMLElement; if (el.matches(':popover-open')) el.hidePopover(); }}
             >
               <a href={resolve('/profile/[user=actor]', { user: user.did })} role="menuitem"
                 >Profile</a
@@ -140,6 +119,7 @@
     role="dialog"
     aria-modal="true"
     aria-label="Navigation menu"
+    onclick={(e) => { const el = e.currentTarget as HTMLElement; if (el.matches(':popover-open')) el.hidePopover(); }}
   >
     <div class="mobile-nav-header">
       <a href={resolve('/')} class="mobile-nav-logo"><LogoCombo /></a>
@@ -213,6 +193,72 @@
     }
   }
 
+  .user-menu-trigger {
+    display: flex;
+    align-items: center;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: var(--space-1);
+    transition: transform var(--ease-fast);
+
+    &:hover {
+      transform: translate(-1px, -1px);
+    }
+  }
+
+  .dropdown {
+    position: fixed;
+    inset: unset;
+    right: var(--container-pad);
+    top: calc(5rem + var(--space-2));
+    margin: 0;
+    background: var(--card-bg);
+    border: 2px solid var(--foreground);
+    box-shadow: var(--shadow-md);
+    min-width: 12rem;
+    filter: url('#rough');
+
+    a,
+    button {
+      padding: var(--space-3) var(--space-5);
+      color: var(--foreground);
+      text-decoration: none;
+      font-size: var(--text-lg);
+      font-weight: 600;
+      background: none;
+      border: none;
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+      font-family: inherit;
+      text-align: left;
+      transition:
+        background-color var(--ease-fast),
+        color var(--ease-fast);
+      display: block;
+      width: 100%;
+
+      &:last-child {
+        border-bottom: none;
+      }
+
+      &:hover {
+        background: var(--lavender);
+        color: var(--lavender-vivid);
+      }
+    }
+
+    .dropdown-danger {
+      color: var(--danger);
+      border-top: 1px solid var(--danger-bg);
+
+      &:hover {
+        background: var(--danger-bg) !important;
+        color: var(--danger) !important;
+      }
+    }
+  }
+
   .nav-link {
     color: var(--foreground);
     text-decoration: none;
@@ -260,15 +306,6 @@
         &:hover {
           color: var(--accent);
         }
-      }
-
-      .user-menu-trigger {
-        background: none;
-        border: none;
-        cursor: pointer;
-        padding: var(--space-1);
-        display: flex;
-        align-items: center;
       }
     }
 

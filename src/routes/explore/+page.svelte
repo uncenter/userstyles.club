@@ -3,8 +3,7 @@
 
   import { listAllUserstyles, type UserstyleRecord } from '$lib/at/services/userstyles';
 
-  import { Spinner, Alert } from '$components/ui'
-  import { UserstylesList } from '$components';
+  import { UserstylesSection } from '$components';
 
   let userstyles = $state<UserstyleRecord[]>([]);
 
@@ -38,21 +37,7 @@
     <h1>Explore</h1>
   </div>
 </div>
-<div class="userstyles-section">
-  {#if loading}
-    <div class="loading-state"><Spinner /></div>
-  {:else if error}
-    <Alert variant="error">{error}</Alert>
-  {:else if userstyles.length === 0}
-    <p class="text-muted">No userstyles published yet.</p>
-  {:else}
-    <UserstylesList {userstyles} />
-  {/if}
-</div>
+<UserstylesSection {userstyles} {loading} {error}>
+  {#snippet empty()}No userstyles published yet.{/snippet}
+</UserstylesSection>
 
-<style>
-  .userstyles-section {
-    margin-top: var(--space-6);
-    margin-bottom: var(--space-5);
-  }
-</style>

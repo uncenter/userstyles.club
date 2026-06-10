@@ -226,81 +226,8 @@ main.container {
 
 /* Utilities */
 
-.loading-state {
-  display: flex;
-  justify-content: center;
-  padding: var(--space-6) 0;
-}
-
 .text-muted {
   color: var(--fg-muted);
-}
-
-/* User Menu and Dropdown */
-
-.user-menu-trigger {
-  display: flex;
-  align-items: center;
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 2px;
-  transition: transform var(--ease-fast);
-}
-.user-menu-trigger:hover {
-  transform: translate(-1px, -1px);
-}
-
-.dropdown {
-  position: fixed;
-  inset: unset;
-  right: var(--container-pad);
-  top: calc(5rem + var(--space-2));
-  margin: 0;
-  background: var(--card-bg);
-  border: 2px solid var(--foreground);
-  box-shadow: var(--shadow-md);
-  min-width: 12rem;
-  filter: url('#rough');
-  flex-direction: column;
-}
-
-.dropdown a,
-.dropdown button {
-  padding: var(--space-3) var(--space-5);
-  color: var(--foreground);
-  text-decoration: none;
-  font-size: var(--text-lg);
-  font-weight: 600;
-  background: none;
-  border: none;
-  border-bottom: 1px solid var(--border);
-  cursor: pointer;
-  font-family: inherit;
-  text-align: left;
-  transition:
-    background-color var(--ease-fast),
-    color var(--ease-fast);
-  display: block;
-  width: 100%;
-}
-.dropdown a:last-child,
-.dropdown button:last-child {
-  border-bottom: none;
-}
-.dropdown a:hover,
-.dropdown button:hover {
-  background: var(--lavender);
-  color: var(--lavender-vivid);
-}
-
-.dropdown-danger {
-  color: var(--danger);
-  border-top: 1px solid var(--danger-bg);
-}
-.dropdown-danger:hover {
-  background: var(--danger-bg) !important;
-  color: var(--danger) !important;
 }
 
 /* Buttons */

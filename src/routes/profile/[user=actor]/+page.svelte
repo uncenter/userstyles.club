@@ -7,7 +7,7 @@
   import { user, setClubProfile } from '$lib/at';
 
   import { Alert, Avatar, Spinner } from '$components/ui';
-  import { UserstylesList, BlueskyIcon } from '$components';
+  import { UserstylesSection, BlueskyIcon } from '$components';
 
   import { PencilIcon } from '@lucide/svelte';
 
@@ -124,20 +124,9 @@
   </section>
 </div>
 
-<section class="profile-userstyles">
-  {#if data.userstyles.length === 0}
-    <p class="text-muted">No userstyles yet.</p>
-  {:else}
-    <UserstylesList userstyles={data.userstyles} />
-  {/if}
-</section>
+<UserstylesSection userstyles={data.userstyles} />
 
 <style>
-  .profile-userstyles {
-    margin-top: var(--space-6);
-    margin-bottom: var(--space-5);
-  }
-
   .profile-header {
     --card-border: var(--border);
     position: relative;
