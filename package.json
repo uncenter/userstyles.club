@@ -1,5 +1,5 @@
 {
-  "name": "sveltekit-atproto-static-starter",
+  "name": "userstyles.club",
   "private": true,
   "version": "0.1.0",
   "type": "module",
@@ -41,7 +41,8 @@
     "typescript": "^5.9.3",
     "usercss-meta": "^0.12.0",
     "valibot": "^1.4.0",
-    "vite": "^7.3.1"
+    "vite": "^7.3.1",
+    "wrangler": "^4.98.0"
   },
   "dependencies": {
     "@catppuccin/codemirror": "^1.0.3",
