@@ -1,4 +1,6 @@
 allowBuilds:
   esbuild: true
+  sharp: true
+  workerd: true
 trustPolicyExclude:
   - chokidar@4.0.3
