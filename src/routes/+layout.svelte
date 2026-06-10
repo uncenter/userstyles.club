@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import { afterNavigate, goto } from '$app/navigation';
+  import { afterNavigate } from '$app/navigation';
   import { resolve } from '$app/paths';
   import '../app.css';
 
@@ -27,11 +27,14 @@
     }
   });
 
-  let mobileNavEl: HTMLElement | undefined = $state();
+  let userMenuPopover: HTMLElement | undefined = $state();
+  let mobileNavPopover: HTMLElement | undefined = $state();
 
   afterNavigate(() => {
-    if (mobileNavEl?.matches(':popover-open')) {
-      mobileNavEl.hidePopover();
+    if (mobileNavPopover?.matches(':popover-open')) {
+      mobileNavPopover.hidePopover();
+    } else if (userMenuPopover?.matches(':popover-open')) {
+      userMenuPopover.hidePopover();
     }
   });
 
@@ -77,10 +80,10 @@
             </button>
             <div
               id="user-menu-popover"
+              bind:this={userMenuPopover}
               popover
-              class="dropdown"
+              class="user-menu-dropdown"
               role="menu"
-              onclick={(e) => { const el = e.currentTarget as HTMLElement; if (el.matches(':popover-open')) el.hidePopover(); }}
             >
               <a href={resolve('/profile/[user=actor]', { user: user.did })} role="menuitem"
                 >Profile</a
@@ -89,7 +92,8 @@
               <button
                 type="button"
                 role="menuitem"
-                class="dropdown-danger"
+                class="menu-item-danger"
+                popovertarget="user-menu-popover" popovertargetaction="hide"
                 onclick={() => logout()}>Logout</button
               >
             </div>
@@ -113,13 +117,12 @@
 
   <div
     id="mobile-nav-popover"
-    bind:this={mobileNavEl}
+    bind:this={mobileNavPopover}
     popover
     class="mobile-nav"
     role="dialog"
     aria-modal="true"
     aria-label="Navigation menu"
-    onclick={(e) => { const el = e.currentTarget as HTMLElement; if (el.matches(':popover-open')) el.hidePopover(); }}
   >
     <div class="mobile-nav-header">
       <a href={resolve('/')} class="mobile-nav-logo"><LogoCombo /></a>
@@ -135,8 +138,10 @@
     <a href={resolve('/')} class="nav-link">Home</a>
     <a href={resolve('/explore')} class="nav-link">Explore</a>
     <a href={resolve('/new')} class="nav-link">New</a>
+
+    <hr class="nav-divider" />
+
     {#if user.isLoggedIn && user.did}
-      <hr class="nav-divider" />
       <a href={resolve('/profile/[user=actor]', { user: user.did })} class="nav-link" role="menuitem"
         >Profile</a
       >
@@ -145,10 +150,10 @@
         type="button"
         role="menuitem"
         class="nav-link nav-link-danger"
+        popovertarget="mobile-nav-popover" popovertargetaction="hide"
         onclick={() => logout()}>Logout</button
       >
     {:else}
-      <hr class="nav-divider" />
       <a href={resolve('/login')} class="nav-link" role="menuitem">Login</a>
     {/if}
   </div>
@@ -207,7 +212,7 @@
     }
   }
 
-  .dropdown {
+  .user-menu-dropdown {
     position: fixed;
     inset: unset;
     right: var(--container-pad);
@@ -248,7 +253,7 @@
       }
     }
 
-    .dropdown-danger {
+    .menu-item-danger {
       color: var(--danger);
       border-top: 1px solid var(--danger-bg);
 
