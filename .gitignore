@@ -1,8 +1,7 @@
-node_modules
-.svelte-kit
-build
+node_modules/
+.svelte-kit/
+.wrangler/
+build/
 .DS_Store
 .env
 .env.*
-.codex
-.github/keys
