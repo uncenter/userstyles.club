@@ -1,0 +1,30 @@
+<svg width="204" height="166.986" viewBox="0 0 204 166.986" aria-label="userstyles.club color-wheel record on a turntable with tonearm" xmlns="http://www.w3.org/2000/svg">
+  <g class="wheel">
+    <path d="M82 85h82a82 82 0 0 1-41 71z" fill="#f472b6"/>
+    <path d="m82 85 41 71a82 82 0 0 1-82 0z" fill="#fb923c"/>
+    <path d="m82 85-41 71A82 82 0 0 1 0 85Z" fill="#fbbf24"/>
+    <path d="M82 85H0a82 82 0 0 1 41-71Z" fill="#34d399"/>
+    <path d="M82 85 41 14a82 82 0 0 1 82 0z" fill="#60a5fa"/>
+    <path d="m82 85 41-71a82 82 0 0 1 41 71z" fill="#a78bfa"/>
+    <circle cx="82" cy="85" r="75" fill="none" stroke="#0d0d0d" stroke-opacity=".3" stroke-width="1.4"/>
+    <circle cx="82" cy="85" r="66" fill="none" stroke="#0d0d0d" stroke-opacity=".3" stroke-width="1.4"/>
+    <circle cx="82" cy="85" r="57" fill="none" stroke="#0d0d0d" stroke-opacity=".3" stroke-width="1.4"/>
+    <circle cx="82" cy="85" r="48" fill="none" stroke="#0d0d0d" stroke-opacity=".3" stroke-width="1.4"/>
+    <circle cx="82" cy="85" r="39" fill="none" stroke="#0d0d0d" stroke-opacity=".3" stroke-width="1.4"/>
+    <circle cx="82" cy="85" r="78" fill="none" stroke="#0d0d0d" stroke-opacity=".55" stroke-width="3.5" stroke-dasharray="2, 8"/>
+    <circle cx="82" cy="85" r="34" fill="none" stroke="#f4eef8" stroke-opacity=".35" stroke-width="1.4"/>
+    <circle cx="82" cy="85" r="27" fill="none" stroke="#f4eef8" stroke-opacity=".35" stroke-width="1.4"/>
+  </g>
+  <g class="center">
+    <circle cx="82" cy="85" r="20" fill="#161616"/>
+    <circle cx="82" cy="85" r="4" fill="#0a0a0a"/>
+    <circle cx="82" cy="85" r="2" fill="#d7dbe0"/>
+  </g>
+  <g class="arm">
+    <path stroke="#c9ccd2" stroke-width="5" stroke-linecap="round" d="m194 9-80 50"/>
+    <circle cx="197" cy="7" r="7" fill="#6b7078"/>
+    <rect x="158" y="17" width="18" height="18" rx="4" fill="#9aa0a8"/>
+    <rect x="61.227" y="103.096" width="16" height="10" rx="2" transform="rotate(-30)" fill="#9aa0a8"/>
+    <path stroke="#d7dbe0" stroke-width="2" stroke-linecap="round" d="m113 65 3 7"/>
+  </g>
+</svg>

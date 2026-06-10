@@ -1,5 +1,7 @@
 export { default as ActorHandle } from './ActorHandle.svelte';
-export { default as Logo } from './Logo.svelte';
+export { default as Wordmark } from './Wordmark.svelte';
+export { default as Logomark } from './Logomark.svelte';
+export { default as LogoCombo } from './LogoCombo.svelte';
 export { default as Badge } from './ui/Badge.svelte';
 export { default as Alert } from './ui/Alert.svelte';
 export { default as Avatar } from './ui/Avatar.svelte';

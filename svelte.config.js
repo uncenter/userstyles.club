@@ -11,7 +11,8 @@ const config = {
       fallback: '404.html'
     }),
     alias: {
-      $components: 'src/components'
+      $components: 'src/components',
+      $assets: 'assets'
     },
     paths: {
       base

@@ -1,0 +1,23 @@
+<svg width="168" height="167.908" viewBox="0 0 168 167.908" xmlns="http://www.w3.org/2000/svg">
+  <g class="wheel">
+    <path d="M84 83.954h84a84 84 0 0 1-42 72.7z" fill="#f472b6"/>
+    <path d="m84 83.954 42 72.7a84 84 0 0 1-84 0z" fill="#fb923c"/>
+    <path d="m84 83.954-42 72.7a84 84 0 0 1-42-72.7Z" fill="#fbbf24"/>
+    <path d="M84 83.954H0a84 84 0 0 1 42-72.7z" fill="#34d399"/>
+    <path d="m84 83.954-42-72.7a84 84 0 0 1 84 0z" fill="#60a5fa"/>
+    <path d="m84 83.954 42-72.7a84 84 0 0 1 42 72.7z" fill="#a78bfa"/>
+    <circle cx="84" cy="83.954" r="77" fill="none" stroke="#0d0d0d" stroke-opacity=".3" stroke-width="1.4"/>
+    <circle cx="84" cy="83.954" r="68" fill="none" stroke="#0d0d0d" stroke-opacity=".3" stroke-width="1.4"/>
+    <circle cx="84" cy="83.954" r="59" fill="none" stroke="#0d0d0d" stroke-opacity=".3" stroke-width="1.4"/>
+    <circle cx="84" cy="83.954" r="50" fill="none" stroke="#0d0d0d" stroke-opacity=".3" stroke-width="1.4"/>
+    <circle cx="84" cy="83.954" r="41" fill="none" stroke="#0d0d0d" stroke-opacity=".3" stroke-width="1.4"/>
+    <circle cx="84" cy="83.954" r="80" fill="none" stroke="#0d0d0d" stroke-opacity=".55" stroke-width="3.5" stroke-dasharray="2, 8"/>
+    <circle cx="84" cy="83.954" r="36" fill="none" stroke="#f4eef8" stroke-opacity=".35" stroke-width="1.4"/>
+    <circle cx="84" cy="83.954" r="29" fill="none" stroke="#f4eef8" stroke-opacity=".35" stroke-width="1.4"/>
+  </g>
+  <g class="center">
+    <circle cx="84" cy="83.954" r="21" fill="#161616"/>
+    <circle cx="84" cy="83.954" r="4" fill="#0a0a0a"/>
+    <circle cx="84" cy="83.954" r="2" fill="#d7dbe0"/>
+  </g>
+</svg>

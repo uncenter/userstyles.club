@@ -2,12 +2,12 @@
   interface Props {
     height?: string;
   }
-  let { height = '3rem' }: Props = $props();
+  let { height = '2rem' }: Props = $props();
 </script>
 
 <!-- Individual letter path elements are ordered in reverse as they appear (b → u), so fill colors are assigned in reverse. -->
 <svg
-  class="logo"
+  class="wordmark"
   style="height: {height}"
   viewBox="0 0 144.695 24.686"
   xmlns="http://www.w3.org/2000/svg"
@@ -94,9 +94,10 @@
 </svg>
 
 <style>
-  .logo {
+  .wordmark {
     width: auto;
     display: block;
     --fg-muted: light-dark(#9ca3af, #bbb0e8);
+    transform: translateY(10%);
   }
 </style>

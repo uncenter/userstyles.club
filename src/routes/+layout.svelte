@@ -6,7 +6,7 @@
   import { initClient, user, logout } from '$lib/at';
   import { appearance } from '$lib/appearance.svelte';
   import { TAGLINE, REPO_URL } from '$lib/constants';
-  import { Spinner, Avatar, Logo } from '$components';
+  import { Spinner, Avatar, LogoCombo } from '$components';
 
   let { children } = $props();
 
@@ -52,7 +52,7 @@
 {:else}
   <nav class="navbar">
     <div class="navbar-inner">
-      <a href={resolve('/')} class="navbar-logo"><Logo /></a>
+      <a href={resolve('/')} class="navbar-logo"><LogoCombo /></a>
       <ul class="navbar-links" role="list">
         <li><a href={resolve('/')}>Home</a></li>
         <li><a href={resolve('/explore')}>Explore</a></li>
@@ -106,7 +106,7 @@
   <footer class="site-footer">
     <div class="container">
       <div class="footer-brand">
-        <a href={resolve('/')} class="footer-logo"><Logo height="1.25rem" /></a>
+        <a href={resolve('/')} class="footer-logo"><LogoCombo /></a>
         <p class="footer-tagline">{TAGLINE}</p>
       </div>
       <a href={REPO_URL} target="_blank" rel="noopener noreferrer" class="footer-source">Source ↗</a
@@ -120,6 +120,59 @@
     min-height: 100vh;
     display: grid;
     place-items: center;
+  }
+
+  .navbar {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: var(--background);
+    height: 5rem;
+
+    .navbar-inner {
+      height: 100%;
+      width: 100%;
+      padding-inline: var(--container-pad);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-4);
+    }
+
+    .navbar-links {
+      display: flex;
+      align-items: center;
+      gap: var(--space-1);
+      list-style: none;
+      padding: 0;
+      flex-wrap: wrap;
+
+      .nav-login {
+        margin-left: var(--space-3);
+      }
+
+      a:not(.btn),
+      button:not(.btn) {
+        padding: var(--space-2) var(--space-3);
+        color: var(--foreground);
+        text-decoration: none;
+        font-size: var(--text-base);
+        font-weight: 600;
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-family: inherit;
+        transition:
+          color var(--ease-fast),
+          background-color var(--ease-fast);
+      }
+      a:not(.btn):hover {
+        color: var(--accent);
+      }
+      button:not(.btn):hover {
+        background: var(--bg-muted);
+      }
+    }
   }
 
   .site-footer {
@@ -168,9 +221,5 @@
         text-decoration: underline;
       }
     }
-  }
-
-  .nav-login {
-    margin-left: var(--space-3);
   }
 </style>

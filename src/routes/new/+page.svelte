@@ -7,7 +7,7 @@
   import { joinPageTitle } from '$lib/constants';
   import type { StyleImport } from './fetch.remote';
 
-  import { Spinner, Alert, Logo, PreviewImageUpload, BlueskyIcon, Dialog, CssEditor } from '$components';
+  import { Spinner, Alert, Wordmark, PreviewImageUpload, BlueskyIcon, Dialog, CssEditor } from '$components';
   import ImportFromUrl from './ImportFromUrl.svelte';
 
   import { fields } from './fields.svelte';
@@ -156,7 +156,7 @@
             }
             aria-describedby="remove-update-url-desc"
           />
-          Check for updates from <Logo height="1rem" /> instead of original update URL?
+          Check for updates from <Wordmark height="1rem" /> instead of original update URL?
         </label>
         <p class="form-hint" id="remove-update-url-desc">
           If there is a configured update URL within the userstyle source code, Stylus will check

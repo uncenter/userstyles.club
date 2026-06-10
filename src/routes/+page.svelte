@@ -3,7 +3,7 @@
   import { type UserstyleRecord, user, listMyUserstyles } from '$lib/at';
   import { TAGLINE, joinPageTitle } from '$lib/constants';
 
-  import { Spinner, Alert, Logo, UserstylesList } from '$components';
+  import { Spinner, Alert, Wordmark, Logomark, UserstylesList } from '$components';
 
   let userstyles = $state<UserstyleRecord[]>([]);
 
@@ -56,7 +56,10 @@
 {:else}
   <div class="welcome">
     <div class="welcome-logo">
-      <Logo height="5rem" />
+      <Wordmark height="5rem" />
+    </div>
+    <div class="welcome-spinner">
+      <Logomark size="10rem" withArm withSpin />
     </div>
     <p class="welcome-tagline">{TAGLINE}</p>
     <div class="welcome-actions">
@@ -80,7 +83,6 @@
     border: 2px solid var(--foreground);
     box-shadow: var(--shadow-md);
     filter: url('#rough');
-    background: var(--lavender);
     margin-top: var(--space-6);
 
     .welcome-logo {

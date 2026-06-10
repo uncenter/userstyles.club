@@ -234,67 +234,6 @@ main.container {
   color: var(--fg-muted);
 }
 
-/* Navbar */
-
-.navbar {
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  background: var(--background);
-  height: 5rem;
-}
-
-.navbar-inner {
-  height: 100%;
-  width: 100%;
-  padding-inline: var(--container-pad);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-4);
-}
-
-.navbar-logo {
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: var(--text-xl);
-  color: var(--foreground);
-  text-decoration: none;
-  letter-spacing: -0.01em;
-  flex-shrink: 0;
-}
-
-.navbar-links {
-  display: flex;
-  align-items: center;
-  gap: var(--space-1);
-  list-style: none;
-  padding: 0;
-  flex-wrap: wrap;
-}
-
-.navbar-links a:not(.btn),
-.navbar-links button:not(.btn) {
-  padding: var(--space-2) var(--space-3);
-  color: var(--foreground);
-  text-decoration: none;
-  font-size: var(--text-base);
-  font-weight: 600;
-  background: none;
-  border: none;
-  cursor: pointer;
-  font-family: inherit;
-  transition:
-    color var(--ease-fast),
-    background-color var(--ease-fast);
-}
-.navbar-links a:not(.btn):hover {
-  color: var(--accent);
-}
-.navbar-links button:not(.btn):hover {
-  background: var(--bg-muted);
-}
-
 /* User Menu and Dropdown */
 
 .user-menu-trigger {
