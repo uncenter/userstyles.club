@@ -76,6 +76,7 @@
       imported = result;
     } catch (e) {
       error = e instanceof Error ? e.message : 'Failed to import userstyle from URL.';
+      console.error(e);
     } finally {
       pending = false;
     }
