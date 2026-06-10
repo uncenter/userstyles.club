@@ -64,6 +64,7 @@
     try {
       const url = fields.current.importUrl;
       const uswMatch = USW_PATTERN.exec(url);
+      console.log('Fetching for ' + uswMatch?.pathname.groups.id!)
       const result = uswMatch
         ? await fetchFromUserstylesWorld(uswMatch.pathname.groups.id!).run()
         : await fetchFromUrl(url);
