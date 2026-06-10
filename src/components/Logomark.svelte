@@ -24,6 +24,7 @@
         animation: spin 2s linear infinite;
         transform-origin: center center;
         transform-box: fill-box;
+        transition: all 2s ease;
 
         &:hover {
           animation-play-state: paused;
