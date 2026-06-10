@@ -6,7 +6,9 @@
   import { initClient, user, logout } from '$lib/at';
   import { appearance } from '$lib/appearance.svelte';
   import { TAGLINE, REPO_URL } from '$lib/constants';
-  import { Spinner, Avatar, LogoCombo } from '$components';
+
+  import { LogoCombo } from '$components/branding';
+  import { Spinner, Avatar } from '$components/ui';
 
   let { children } = $props();
 

@@ -7,7 +7,10 @@
   import { joinPageTitle } from '$lib/constants';
   import type { StyleImport } from './fetch.remote';
 
-  import { Spinner, Alert, Wordmark, PreviewImageUpload, BlueskyIcon, Dialog, CssEditor } from '$components';
+  import { Wordmark } from '$components/branding';
+  import { Spinner, Alert, Dialog } from '$components/ui';
+  import { PreviewImageUpload, BlueskyIcon, CssEditor } from '$components';
+
   import ImportFromUrl from './ImportFromUrl.svelte';
 
   import { fields } from './fields.svelte';

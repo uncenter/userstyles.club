@@ -7,7 +7,8 @@
 
   import { updateUserstyle, user } from '$lib/at';
 
-  import { Spinner, Alert, PreviewImageUpload, CssEditor } from '$components';
+  import { Spinner, Alert } from '$components/ui';
+  import { PreviewImageUpload, CssEditor } from '$components';
 
   let { data }: PageProps = $props();
 

@@ -6,7 +6,7 @@
   import { login, signup, user } from '$lib/at';
   import type { ActorIdentifier } from '@atcute/lexicons';
 
-  import { Spinner, Alert } from '$components';
+  import { Spinner, Alert } from '$components/ui';
 
   let handle = $state('');
   let error = $state<string | null>(null);

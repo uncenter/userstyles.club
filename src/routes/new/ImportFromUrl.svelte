@@ -3,7 +3,7 @@
   import { fetchFromUserstylesWorld, fetchRawFile, type StyleImport } from './fetch.remote';
   import usercss from 'usercss-meta';
 
-  import { Spinner, Alert } from '$components';
+  import { Spinner, Alert } from '$components/ui';
 
   interface Props {
     fields: NewUserstyleFields;

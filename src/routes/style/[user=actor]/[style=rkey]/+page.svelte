@@ -7,10 +7,12 @@
 
   import { user, deleteUserstyle } from '$lib/at';
 
-  import { Spinner, Alert, ActorHandle, CssPreview, PreviewImage, Dialog } from '$components';
+  import { Spinner, Alert, Dialog } from '$components/ui';
+  import { ActorHandle, CssPreview, PreviewImage } from '$components';
+
+  import { CakeIcon, PenLineIcon, RulerDimensionLineIcon, WeightIcon } from '@lucide/svelte';
 
   import bytes from 'pretty-bytes';
-  import { CakeIcon, PenLineIcon, RulerDimensionLineIcon, WeightIcon } from '@lucide/svelte';
 
   let deleting = $state(false);
   let error = $state<string | null>(null);

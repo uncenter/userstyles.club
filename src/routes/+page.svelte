@@ -3,7 +3,9 @@
   import { type UserstyleRecord, user, listMyUserstyles } from '$lib/at';
   import { TAGLINE, joinPageTitle } from '$lib/constants';
 
-  import { Spinner, Alert, Wordmark, Logomark, UserstylesList } from '$components';
+  import { Wordmark, Logomark } from '$components/branding';
+  import { Spinner, Alert } from '$components/ui';
+  import { UserstylesList } from '$components';
 
   let userstyles = $state<UserstyleRecord[]>([]);
 

@@ -3,7 +3,8 @@
 
   import { listAllUserstyles, type UserstyleRecord } from '$lib/at/services/userstyles';
 
-  import { Spinner, Alert, UserstylesList } from '$components';
+  import { Spinner, Alert } from '$components/ui'
+  import { UserstylesList } from '$components';
 
   let userstyles = $state<UserstyleRecord[]>([]);
 

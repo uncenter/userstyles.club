@@ -6,7 +6,9 @@
 
   import { user, setClubProfile } from '$lib/at';
 
-  import { Alert, Avatar, UserstylesList, BlueskyIcon, Spinner } from '$components';
+  import { Alert, Avatar, Spinner } from '$components/ui';
+  import { UserstylesList, BlueskyIcon } from '$components';
+
   import { PencilIcon } from '@lucide/svelte';
 
   let { data }: PageProps = $props();

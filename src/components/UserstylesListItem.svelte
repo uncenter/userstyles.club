@@ -5,9 +5,11 @@
   import { parseResourceUri } from '@atcute/lexicons';
   import type { Did } from '@atcute/lexicons';
 
-  import { Badge } from '$components';
-  import bytes from 'pretty-bytes';
+  import { Badge } from '$components/ui';
+
   import { CakeIcon, PenLineIcon, RulerDimensionLineIcon, WeightIcon } from '@lucide/svelte';
+
+  import bytes from 'pretty-bytes';
 
   interface Props {
     record: UserstyleRecord;
