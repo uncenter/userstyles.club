@@ -1,5 +1,5 @@
 import type { AppBskyActorDefs } from '@atcute/bluesky';
-import type { ActorIdentifier, Did } from '@atcute/lexicons';
+import type { ActorIdentifier, Did, Handle } from '@atcute/lexicons';
 import { getPublicClient } from '../client';
 import { getSessionContext } from '../auth';
 import { ok } from '@atcute/client';
@@ -81,7 +81,7 @@ export async function getBskyProfile(actor: ActorIdentifier) {
 
 export type ProfileView = {
   did: Did;
-  handle: string;
+  handle: Handle;
   displayName: string | undefined;
   description: string | undefined;
   avatar: string | undefined;

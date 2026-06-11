@@ -19,6 +19,7 @@
 
   import bytes from 'pretty-bytes';
   import { formatDate } from '$lib/date';
+  import { getPreferredActorIdentifier } from '$lib/preferences.svelte';
 
   interface Props {
     userstyle: UserstyleRecord;
@@ -47,7 +48,7 @@
   <div class="card-body">
     <div class="card-title-row">
       <h3 class="userstyle-title">
-        <a href={resolve('/style/[user=actor]/[style=rkey]', { user: uri.repo, style: uri.rkey! })}
+        <a href={resolve('/style/[user=actor]/[style=rkey]', { user: getPreferredActorIdentifier(profile), style: uri.rkey! })}
           >{userstyle.value.title}</a
         >
       </h3>

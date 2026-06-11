@@ -1,24 +1,21 @@
 <script lang="ts">
   import { resolve } from '$app/paths';
-  import type { Did } from '@atcute/lexicons';
+
+  import type { ProfileView } from '$lib/at';
+
   import Avatar from './ui/Avatar.svelte';
 
-  interface ProfileLike {
-    handle: string;
-    displayName?: string;
-    avatar?: string;
-    did: Did;
-  }
+  import { getPreferredActorIdentifier } from '$lib/preferences.svelte';
 
   interface Props {
-    profile: ProfileLike;
+    profile: ProfileView;
     minimal?: boolean;
   }
 
   let { profile, minimal = false }: Props = $props();
 </script>
 
-<a href={resolve('/profile/[user=actor]', { user: profile.did })} class="actor-handle" class:minimal>
+<a href={resolve('/profile/[user=actor]', { user: getPreferredActorIdentifier(profile) })} class="actor-handle" class:minimal>
   {#if !minimal}
     <Avatar
       src={profile.avatar}

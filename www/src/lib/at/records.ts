@@ -10,6 +10,7 @@ import { getClientForDid, getPublicClient, getRelayClient } from './client';
 import { getSessionContext } from './auth';
 import { isDid } from '@atcute/lexicons/syntax';
 import { ok } from '@atcute/client';
+import { resolveHandle } from './did';
 
 export type RepoRecord = {
   uri: ResourceUri;
@@ -94,7 +95,8 @@ export async function getRecord(params: {
 }): Promise<RepoRecord> {
   const { repo, collection, rkey } = params;
 
-  const client = isDid(repo) ? await getClientForDid(repo) : getPublicClient();
+  const did = isDid(repo) ? repo : await resolveHandle(repo);
+  const client = await getClientForDid(did);
 
   const response = await ok(
     client.get('com.atproto.repo.getRecord', {

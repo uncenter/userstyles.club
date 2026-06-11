@@ -5,7 +5,7 @@
   import '../app.css';
 
   import { initClient, user, logout } from '$lib/at';
-  import { appearance } from '$lib/appearance.svelte';
+  import { preferences, getPreferredActorIdentifier } from '$lib/preferences.svelte';
   import { TAGLINE, REPO_URL, FEEDBACK_URL } from '$lib/constants';
 
   import { LogoCombo } from '$components/branding';
@@ -16,7 +16,7 @@
   let { children } = $props();
 
   $effect(() => {
-    const val = appearance.current;
+    const val = preferences.get("appearance");
     const html = document.documentElement;
     if (val === 'dark') {
       html.setAttribute('data-theme', 'dark');
@@ -85,7 +85,7 @@
               class="user-menu-dropdown"
               role="menu"
             >
-              <a href={resolve('/profile/[user=actor]', { user: user.did })} role="menuitem"
+              <a href={resolve('/profile/[user=actor]', { user: getPreferredActorIdentifier(user.profile) })} role="menuitem"
                 >Profile</a
               >
               <a href={resolve('/settings')} role="menuitem">Settings</a>
@@ -144,7 +144,7 @@
 
     {#if user.isLoggedIn && user.did}
       <a
-        href={resolve('/profile/[user=actor]', { user: user.did })}
+        href={resolve('/profile/[user=actor]', { user: getPreferredActorIdentifier(user.profile) })}
         class="nav-link"
         role="menuitem">Profile</a
       >

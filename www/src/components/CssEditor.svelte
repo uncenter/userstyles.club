@@ -4,7 +4,7 @@
   import { hyperlink } from '$lib/codemirror/hyperlink';
   import { catppuccinLatte, catppuccinMocha } from '@catppuccin/codemirror';
 
-  import { appearance } from '$lib/appearance.svelte';
+  import { preferences } from '$lib/preferences.svelte';
 
   interface Props {
     code: string;
@@ -24,7 +24,7 @@
   });
 
   let theme = $derived(
-    appearance.current === 'dark' || (appearance.current === 'system' && prefersDark)
+    preferences.get('appearance') === 'dark' || (preferences.get('appearance') === 'system' && prefersDark)
       ? catppuccinMocha
       : catppuccinLatte
   );

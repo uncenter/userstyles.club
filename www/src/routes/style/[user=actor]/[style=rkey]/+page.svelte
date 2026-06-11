@@ -6,6 +6,7 @@
   import { joinPageTitle } from '$lib/constants';
 
   import { user, deleteUserstyle, getBlobCdnUrl, computeAverageRating } from '$lib/at';
+  import { getPreferredActorIdentifier } from '$lib/preferences.svelte';
 
   import { Spinner, Alert, Dialog } from '$components/ui';
   import { ActorHandle, CssPreview, PreviewImage, StarRating } from '$components';
@@ -55,7 +56,7 @@
     <div class="owner-toolbar">
       <a
         href={resolve('/style/[user=actor]/[style=rkey]/edit', {
-          user: params.user,
+          user: getPreferredActorIdentifier(data.profile),
           style: params.style
         })}
         class="btn btn-secondary btn-sm"
@@ -115,8 +116,9 @@
       </div>
 
       <a
+        // Explicitly do not use getPreferredActorIdentifier given the install URL will be used for future updates and *should* be permanent.
         href={resolve('/install/[user=actor]/[style=rkey].user.css', {
-          user: params.user,
+          user: data.profile.did,
           style: params.style
         })}
         target="_blank"
