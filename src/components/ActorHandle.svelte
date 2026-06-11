@@ -3,7 +3,6 @@
   import type { Did } from '@atcute/lexicons';
   import Avatar from './ui/Avatar.svelte';
 
-
   interface ProfileLike {
     handle: string;
     displayName?: string;
@@ -18,10 +17,7 @@
   let { profile }: Props = $props();
 </script>
 
-<a
-  href={resolve('/profile/[user=actor]', { user: profile.did })}
-  class="actor-handle"
->
+<a href={resolve('/profile/[user=actor]', { user: profile.did })} class="actor-handle">
   <Avatar
     src={profile.avatar}
     name={profile.displayName ?? profile.handle}

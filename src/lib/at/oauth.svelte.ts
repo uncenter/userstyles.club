@@ -28,17 +28,20 @@ type LoggedOutUser = {
   client?: Client;
   profile?: ProfileView;
   did?: Did;
-}
+};
 
 type LoggedInUser = Required<LoggedOutUser>;
 
 export const user: {
   isInitializing: boolean;
-} & (({
-  isLoggedIn: false;
-} & LoggedOutUser) | ({
-  isLoggedIn: true;
-} & LoggedInUser)) = $state({
+} & (
+  | ({
+      isLoggedIn: false;
+    } & LoggedOutUser)
+  | ({
+      isLoggedIn: true;
+    } & LoggedInUser)
+) = $state({
   isInitializing: true,
   isLoggedIn: false
 });
@@ -136,7 +139,7 @@ export async function logout() {
     agent: undefined,
     client: undefined,
     profile: undefined,
-    did: undefined,
+    did: undefined
   });
 }
 

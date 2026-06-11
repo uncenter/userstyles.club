@@ -69,7 +69,13 @@
   }
 
   function clearAll() {
-    fields.current = { title: '', description: '', sourceCode: '', importUrl: '', removeUpdateUrl: true };
+    fields.current = {
+      title: '',
+      description: '',
+      sourceCode: '',
+      importUrl: '',
+      removeUpdateUrl: true
+    };
     imported = null;
     clearDialogOpen = false;
   }
@@ -101,7 +107,6 @@
 
   <div class="page-section">
     <ImportFromUrl {fields} bind:pending={importing} bind:imported />
-
   </div>
 
   <div class="page-section">
@@ -115,7 +120,10 @@
       <div class="form-group">
         <div class="field-row">
           <label for="title" class="field-label">Title</label>
-          {@render importOverrideButton(Boolean(imported?.title && imported.title !== fields.current.title), () => fields.current.title = imported!.title!)}
+          {@render importOverrideButton(
+            Boolean(imported?.title && imported.title !== fields.current.title),
+            () => (fields.current.title = imported!.title!)
+          )}
         </div>
         <input
           id="title"
@@ -130,7 +138,10 @@
       <div class="form-group">
         <div class="field-row">
           <label for="description" class="field-label">Description</label>
-          {@render importOverrideButton(Boolean(imported?.description && imported.description !== fields.current.description), () => fields.current.description = imported!.description!)}
+          {@render importOverrideButton(
+            Boolean(imported?.description && imported.description !== fields.current.description),
+            () => (fields.current.description = imported!.description!)
+          )}
         </div>
         <input
           id="description"
@@ -145,7 +156,10 @@
       <div class="form-group">
         <div class="field-row">
           <p class="field-label" data-required>CSS</p>
-          {@render importOverrideButton(Boolean(imported?.code && imported.code !== fields.current.sourceCode), () => fields.current.sourceCode = imported!.code!)}
+          {@render importOverrideButton(
+            Boolean(imported?.code && imported.code !== fields.current.sourceCode),
+            () => (fields.current.sourceCode = imported!.code!)
+          )}
         </div>
         <CssEditor bind:code={fields.current.sourceCode} />
       </div>
@@ -159,7 +173,9 @@
             }
             aria-describedby="remove-update-url-desc"
           />
-          <span>Check for updates from <Wordmark --height="1rem" /> instead of original update URL?</span>
+          <span
+            >Check for updates from <Wordmark --height="1rem" /> instead of original update URL?</span
+          >
         </label>
         <p class="form-hint" id="remove-update-url-desc">
           If there is a configured update URL within the userstyle source code, Stylus will check
@@ -169,7 +185,15 @@
       </div>
 
       <div class="form-footer">
-        <button type="button" class="btn btn-danger" onclick={() => clearDialogOpen = true} disabled={pending || (!fields.current.title.trim() && !fields.current.description.trim() && !fields.current.sourceCode.trim())}>
+        <button
+          type="button"
+          class="btn btn-danger"
+          onclick={() => (clearDialogOpen = true)}
+          disabled={pending ||
+            (!fields.current.title.trim() &&
+              !fields.current.description.trim() &&
+              !fields.current.sourceCode.trim())}
+        >
           Clear
         </button>
         <button
@@ -190,7 +214,9 @@
 
 <Dialog bind:open={shareDialogOpen} title="Share to Bluesky?" maxWidth="32rem">
   {#snippet children()}
-    <p class="text-muted">Congratulations on publishing! Let your friends know about your new userstyle.</p>
+    <p class="text-muted">
+      Congratulations on publishing! Let your friends know about your new userstyle.
+    </p>
   {/snippet}
   {#snippet actions()}
     <button class="btn btn-outline" type="button" onclick={skipShare}>Maybe later</button>
@@ -202,10 +228,14 @@
 
 <Dialog bind:open={clearDialogOpen} title="Clear all fields?">
   {#snippet children()}
-    <p class="text-muted">This will clear all form fields including any imported data. This cannot be undone.</p>
+    <p class="text-muted">
+      This will clear all form fields including any imported data. This cannot be undone.
+    </p>
   {/snippet}
   {#snippet actions()}
-    <button class="btn btn-outline" type="button" onclick={() => clearDialogOpen = false}>Cancel</button>
+    <button class="btn btn-outline" type="button" onclick={() => (clearDialogOpen = false)}
+      >Cancel</button
+    >
     <button class="btn btn-danger" type="button" onclick={clearAll}>Clear</button>
   {/snippet}
 </Dialog>

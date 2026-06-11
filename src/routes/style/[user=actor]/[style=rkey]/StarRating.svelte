@@ -17,7 +17,9 @@
         {name}
         value={n}
         bind:group={value}
-        onclick={() => { if (value === n) value = undefined; }}
+        onclick={() => {
+          if (value === n) value = undefined;
+        }}
       />
       ★
     </label>

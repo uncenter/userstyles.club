@@ -28,7 +28,14 @@
   <article class="userstyle-card">
     <div class="card-thumbnail">
       {#if record.value.previewImage}
-        <img src={getBlobCdnUrl(uri.repo as Did, record.value.previewImage.ref.$link, 'feed_thumbnail')} alt={record.value.title} />
+        <img
+          src={getBlobCdnUrl(
+            uri.repo as Did,
+            record.value.previewImage.ref.$link,
+            'feed_thumbnail'
+          )}
+          alt={record.value.title}
+        />
       {/if}
     </div>
     <div class="card-body">

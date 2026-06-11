@@ -66,7 +66,10 @@ export async function setClubProfile(
 }
 
 export async function getBskyProfile(actor: ActorIdentifier) {
-  const cached = getCacheEntry<AppBskyActorDefs.ProfileViewDetailed>(BSKY_CACHE_KEY(actor), BSKY_TTL);
+  const cached = getCacheEntry<AppBskyActorDefs.ProfileViewDetailed>(
+    BSKY_CACHE_KEY(actor),
+    BSKY_TTL
+  );
   if (cached) return cached;
 
   const profile = await ok(

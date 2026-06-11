@@ -60,7 +60,11 @@
       >
         Edit
       </a>
-      <button type="button" class="btn btn-danger btn-sm" onclick={() => confirmDialogOpen = true}>
+      <button
+        type="button"
+        class="btn btn-danger btn-sm"
+        onclick={() => (confirmDialogOpen = true)}
+      >
         Delete
       </button>
     </div>
@@ -69,9 +73,7 @@
   <section class="page-section">
     <div class="style-header">
       <h1 class="style-title">{data.userstyle.value.title}</h1>
-      <ActorHandle
-        profile={data.profile}
-      />
+      <ActorHandle profile={data.profile} />
     </div>
 
     {#if data.userstyle.value.description}
@@ -85,7 +87,11 @@
           <span class="style-item-label"><CakeIcon size={12} /> Published</span>
         </div>
         <div class="style-item">
-          <time class="style-item-value">{data.userstyle.value.updatedAt ? formatDate(data.userstyle.value.updatedAt) : '—'}</time>
+          <time class="style-item-value"
+            >{data.userstyle.value.updatedAt
+              ? formatDate(data.userstyle.value.updatedAt)
+              : '—'}</time
+          >
           <span class="style-item-label"><PenLineIcon size={12} /> Last Updated</span>
         </div>
         <div class="style-item">
@@ -116,7 +122,14 @@
 
     {#if data.userstyle.value.previewImage}
       <div class="style-preview">
-        <PreviewImage src={getBlobCdnUrl(data.profile.did, data.userstyle.value.previewImage.ref.$link, 'feed_fullsize')} alt={data.userstyle.value.title} />
+        <PreviewImage
+          src={getBlobCdnUrl(
+            data.profile.did,
+            data.userstyle.value.previewImage.ref.$link,
+            'feed_fullsize'
+          )}
+          alt={data.userstyle.value.title}
+        />
       </div>
     {/if}
 
@@ -136,11 +149,12 @@
 <Dialog bind:open={confirmDialogOpen} title="Delete userstyle?">
   {#snippet children()}
     <p class="text-muted">
-      This will permanently delete <strong>{data.userstyle.value.title}</strong>. This cannot be undone.
+      This will permanently delete <strong>{data.userstyle.value.title}</strong>. This cannot be
+      undone.
     </p>
   {/snippet}
   {#snippet actions()}
-    <button class="btn btn-outline" type="button" onclick={() => confirmDialogOpen = false}>
+    <button class="btn btn-outline" type="button" onclick={() => (confirmDialogOpen = false)}>
       Cancel
     </button>
     <button class="btn btn-danger" type="button" onclick={confirmDelete} disabled={deleting}>

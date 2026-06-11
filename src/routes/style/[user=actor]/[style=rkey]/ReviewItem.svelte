@@ -87,15 +87,19 @@
   {/if}
 
   {#if editing}
-    <form class="review-form" onsubmit={(e) => { e.preventDefault(); saveEdit(); }}>
+    <form
+      class="review-form"
+      onsubmit={(e) => {
+        e.preventDefault();
+        saveEdit();
+      }}
+    >
       <div class="form-group">
         <StarRating bind:value={editRating} />
       </div>
 
       <div class="form-group">
-        <label class="field-label" for="review-comment">
-          Comment
-        </label>
+        <label class="field-label" for="review-comment"> Comment </label>
         <textarea
           id="review-comment"
           class="review-textarea"
@@ -107,12 +111,14 @@
         ></textarea>
       </div>
       <div class="review-form-actions">
-        <button type="submit" class="btn btn-primary btn-sm" disabled={submitting || !editComment.trim()}>
+        <button
+          type="submit"
+          class="btn btn-primary btn-sm"
+          disabled={submitting || !editComment.trim()}
+        >
           {#if submitting}<Spinner size="sm" /> Saving…{:else}Save{/if}
         </button>
-        <button type="button" class="btn btn-outline btn-sm" onclick={cancelEdit}>
-          Cancel
-        </button>
+        <button type="button" class="btn btn-outline btn-sm" onclick={cancelEdit}> Cancel </button>
       </div>
     </form>
   {:else}
@@ -128,20 +134,20 @@
             {/each}
           </span>
         {/if}
-        <time class="review-date">{formatDate(review.value.updatedAt ?? review.value.createdAt)}</time>
+        <time class="review-date"
+          >{formatDate(review.value.updatedAt ?? review.value.createdAt)}</time
+        >
       </div>
     </div>
     <p class="review-comment">{review.value.comment}</p>
     {#if isMyReview}
       <div class="review-actions">
-        <button type="button" class="btn btn-secondary btn-sm" onclick={startEdit}>
-          Edit
-        </button>
+        <button type="button" class="btn btn-secondary btn-sm" onclick={startEdit}> Edit </button>
         <button
           type="button"
           class="btn btn-danger btn-sm"
           disabled={submitting}
-          onclick={() => confirmDeleteOpen = true}
+          onclick={() => (confirmDeleteOpen = true)}
         >
           {#if submitting}<Spinner size="sm" /> Deleting…{:else}Delete{/if}
         </button>
@@ -155,12 +161,10 @@
     <p class="text-muted">This will permanently delete your review. This cannot be undone.</p>
   {/snippet}
   {#snippet actions()}
-    <button class="btn btn-outline" type="button" onclick={() => confirmDeleteOpen = false}>
+    <button class="btn btn-outline" type="button" onclick={() => (confirmDeleteOpen = false)}>
       Cancel
     </button>
-    <button class="btn btn-danger" type="button" onclick={confirmDelete}>
-      Yes, delete!
-    </button>
+    <button class="btn btn-danger" type="button" onclick={confirmDelete}> Yes, delete! </button>
   {/snippet}
 </Dialog>
 

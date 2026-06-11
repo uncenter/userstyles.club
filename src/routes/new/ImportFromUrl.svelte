@@ -26,10 +26,7 @@
     const hosts = ['github.com', 'tangled.org'];
 
     for (const host of hosts) {
-      const pattern = new URLPattern(
-        '/:user/:repo/blob/:rest*',
-        `https://${host}`
-      );
+      const pattern = new URLPattern('/:user/:repo/blob/:rest*', `https://${host}`);
 
       const match = pattern.exec(input);
 
@@ -102,10 +99,7 @@
         placeholder="https://tangled.org/example.org/my-userstyle/raw/main/style.user.css"
         aria-describedby="import-from-url-desc"
       />
-      <button
-        type="submit"
-        disabled={pending || !fields.current.importUrl.trim()}
-      >
+      <button type="submit" disabled={pending || !fields.current.importUrl.trim()}>
         {#if pending}<Spinner size="sm" /> Importing…{:else}Import{/if}
       </button>
     </div>

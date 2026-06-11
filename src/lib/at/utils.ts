@@ -1,11 +1,15 @@
-import type { Did } from "@atcute/lexicons";
-import { getPdsForDid } from "./did";
+import type { Did } from '@atcute/lexicons';
+import { getPdsForDid } from './did';
 
 export async function getBlobPdsUrl(did: Did, cid: string): Promise<string> {
   const pds = await getPdsForDid(did);
   return `${pds}/xrpc/com.atproto.sync.getBlob?did=${encodeURIComponent(did)}&cid=${encodeURIComponent(cid)}`;
 }
 
-export function getBlobCdnUrl(did: Did, cid: string, type: 'avatar' | 'avatar_thumbnail' | 'feed_fullsize' | 'feed_thumbnail'): string {
+export function getBlobCdnUrl(
+  did: Did,
+  cid: string,
+  type: 'avatar' | 'avatar_thumbnail' | 'feed_fullsize' | 'feed_thumbnail'
+): string {
   return `https://cdn.bsky.app/img/${type}/plain/${did}/${cid}`;
 }

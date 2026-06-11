@@ -14,7 +14,16 @@
 
 <span class="avatar avatar-{size}" aria-label={alt || name || undefined}>
   {#if src && !error}
-    <img src={size !== 'lg' ? src.replace('https://cdn.bsky.app/img/avatar', 'https://cdn.bsky.app/img/avatar_thumbnail') : src} {alt} onerror={() => (error = true)} />
+    <img
+      src={size !== 'lg'
+        ? src.replace(
+            'https://cdn.bsky.app/img/avatar',
+            'https://cdn.bsky.app/img/avatar_thumbnail'
+          )
+        : src}
+      {alt}
+      onerror={() => (error = true)}
+    />
   {:else}
     <span aria-hidden="true">{initial}</span>
   {/if}

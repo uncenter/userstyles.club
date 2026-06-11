@@ -93,7 +93,8 @@
                 type="button"
                 role="menuitem"
                 class="menu-item-danger"
-                popovertarget="user-menu-popover" popovertargetaction="hide"
+                popovertarget="user-menu-popover"
+                popovertargetaction="hide"
                 onclick={() => logout()}>Logout</button
               >
             </div>
@@ -142,15 +143,18 @@
     <hr class="nav-divider" />
 
     {#if user.isLoggedIn && user.did}
-      <a href={resolve('/profile/[user=actor]', { user: user.did })} class="nav-link" role="menuitem"
-        >Profile</a
+      <a
+        href={resolve('/profile/[user=actor]', { user: user.did })}
+        class="nav-link"
+        role="menuitem">Profile</a
       >
       <a href={resolve('/settings')} class="nav-link" role="menuitem">Settings</a>
       <button
         type="button"
         role="menuitem"
         class="nav-link nav-link-danger"
-        popovertarget="mobile-nav-popover" popovertargetaction="hide"
+        popovertarget="mobile-nav-popover"
+        popovertargetaction="hide"
         onclick={() => logout()}>Logout</button
       >
     {:else}

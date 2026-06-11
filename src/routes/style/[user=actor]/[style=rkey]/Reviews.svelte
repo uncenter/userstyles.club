@@ -1,7 +1,14 @@
 <script lang="ts">
   import type { Did, ResourceUri } from '@atcute/lexicons';
 
-  import { user, createReview, getReviewAuthorDid, type ReviewRecord, type ProfileView, type Review } from '$lib/at';
+  import {
+    user,
+    createReview,
+    getReviewAuthorDid,
+    type ReviewRecord,
+    type ProfileView,
+    type Review
+  } from '$lib/at';
 
   import { Spinner, Alert } from '$components/ui';
   import StarRating from './StarRating.svelte';
@@ -28,7 +35,7 @@
   let isOwner = $derived(user.isLoggedIn && user.did === owner);
   let myReview = $derived(
     user.isLoggedIn && user.did
-      ? reviews.find((r) => getReviewAuthorDid(r.uri) === user.did) ?? null
+      ? (reviews.find((r) => getReviewAuthorDid(r.uri) === user.did) ?? null)
       : null
   );
 
@@ -57,15 +64,19 @@
   {#if user.isLoggedIn && !isOwner && !myReview}
     <div class="review-form-wrapper">
       <h3 class="review-form-heading">Write a Review</h3>
-      <form class="review-form" onsubmit={(e) => { e.preventDefault(); submitReview(); }}>
+      <form
+        class="review-form"
+        onsubmit={(e) => {
+          e.preventDefault();
+          submitReview();
+        }}
+      >
         <div class="form-group">
           <StarRating bind:value={reviewRating} />
         </div>
 
         <div class="form-group">
-          <label class="field-label" for="review-comment">
-            Comment
-          </label>
+          <label class="field-label" for="review-comment"> Comment </label>
           <textarea
             id="review-comment"
             class="review-textarea"
@@ -76,7 +87,11 @@
             required
           ></textarea>
         </div>
-        <button type="submit" class="btn btn-primary" disabled={submitting || !reviewComment.trim()}>
+        <button
+          type="submit"
+          class="btn btn-primary"
+          disabled={submitting || !reviewComment.trim()}
+        >
           {#if submitting}<Spinner size="sm" /> Submitting…{:else}Submit Review{/if}
         </button>
       </form>
@@ -93,7 +108,9 @@
           {review}
           reviewer={reviewers[author]}
           {subject}
-          ondeleted={() => { reviews = reviews.filter((r) => r.uri !== review.uri); }}
+          ondeleted={() => {
+            reviews = reviews.filter((r) => r.uri !== review.uri);
+          }}
         />
       {/each}
     </ul>

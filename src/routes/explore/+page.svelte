@@ -40,4 +40,3 @@
 <UserstylesSection {userstyles} {loading} {error}>
   {#snippet empty()}No userstyles published yet.{/snippet}
 </UserstylesSection>
-

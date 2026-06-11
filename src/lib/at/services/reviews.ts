@@ -63,11 +63,7 @@ export async function listReviewsForStyle(uri: ResourceUri): Promise<ReviewRecor
   return records.filter((r): r is ReviewRecord => r !== null && isReview(r.value));
 }
 
-export async function createReview(
-  subject: ResourceUri,
-  comment: string,
-  rating?: number
-) {
+export async function createReview(subject: ResourceUri, comment: string, rating?: number) {
   comment = comment.trim();
   if (!comment) throw new Error('Review comment is required.');
   if (rating !== undefined && (rating < 1 || rating > 5)) {

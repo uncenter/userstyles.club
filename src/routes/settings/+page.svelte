@@ -24,11 +24,7 @@
         <label for="appearance-select">Appearance</label>
         <p class="text-muted">Choose your preferred color scheme.</p>
       </div>
-      <select
-        id="appearance-select"
-        bind:value={appearance.current}
-        class="appearance-select"
-      >
+      <select id="appearance-select" bind:value={appearance.current} class="appearance-select">
         {#each appearances as opt}
           <option value={opt.value}>{opt.label}</option>
         {/each}

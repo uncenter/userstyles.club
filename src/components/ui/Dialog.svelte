@@ -9,13 +9,7 @@
     actions?: Snippet;
   }
 
-  let {
-    open = $bindable(false),
-    title,
-    maxWidth = '28rem',
-    children,
-    actions
-  }: Props = $props();
+  let { open = $bindable(false), title, maxWidth = '28rem', children, actions }: Props = $props();
 
   let dialogEl: HTMLDialogElement;
 
@@ -32,8 +26,12 @@
 <dialog
   bind:this={dialogEl}
   style:max-width={maxWidth}
-  onclick={(e) => { if (e.target === e.currentTarget) open = false; }}
-  onclose={() => { open = false; }}
+  onclick={(e) => {
+    if (e.target === e.currentTarget) open = false;
+  }}
+  onclose={() => {
+    open = false;
+  }}
 >
   <h2>{title}</h2>
   {@render children?.()}

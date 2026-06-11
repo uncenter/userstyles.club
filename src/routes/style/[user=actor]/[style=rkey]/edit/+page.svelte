@@ -87,12 +87,14 @@
       <PreviewImageUpload
         bind:file={previewFile}
         bind:keepExistingSavedImage={keepExistingPreview}
-        existingImageSrc={data.userstyle.previewImage ? getBlobCdnUrl(data.profile.did, data.userstyle.previewImage.ref.$link, 'feed_fullsize') : null}
+        existingImageSrc={data.userstyle.previewImage
+          ? getBlobCdnUrl(data.profile.did, data.userstyle.previewImage.ref.$link, 'feed_fullsize')
+          : null}
       />
 
       <div class="form-group">
         <p class="field-label" data-required>CSS</p>
-        <CssEditor bind:code={sourceCode}/>
+        <CssEditor bind:code={sourceCode} />
       </div>
 
       {#if error}

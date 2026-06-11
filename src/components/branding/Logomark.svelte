@@ -10,7 +10,11 @@
   let { size = '2.5rem', withArm, withSpin }: Props = $props();
 </script>
 
-<span class={["mark", withSpin && "mark-spin"]} style="height: {size}; width: {size}" aria-hidden="true" >
+<span
+  class={['mark', withSpin && 'mark-spin']}
+  style="height: {size}; width: {size}"
+  aria-hidden="true"
+>
   {@html withArm ? logomarkWithArm : logomark}
 </span>
 

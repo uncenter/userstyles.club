@@ -16,13 +16,15 @@
 
   $effect(() => {
     const mq = window.matchMedia('(prefers-color-scheme: dark)');
-    const handler = (e: MediaQueryListEvent) => { prefersDark = e.matches; };
+    const handler = (e: MediaQueryListEvent) => {
+      prefersDark = e.matches;
+    };
     mq.addEventListener('change', handler);
     return () => mq.removeEventListener('change', handler);
   });
 
   let theme = $derived(
-    (appearance.current === 'dark' || (appearance.current === 'system' && prefersDark))
+    appearance.current === 'dark' || (appearance.current === 'system' && prefersDark)
       ? catppuccinMocha
       : catppuccinLatte
   );

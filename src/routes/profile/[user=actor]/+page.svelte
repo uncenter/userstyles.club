@@ -57,12 +57,7 @@
 
 <div class="narrow-col">
   <section class="page-section profile-header">
-    <Avatar
-      src={data.profile.avatar}
-      alt={data.profile.handle}
-      name={displayName}
-      size="lg"
-    />
+    <Avatar src={data.profile.avatar} alt={data.profile.handle} name={displayName} size="lg" />
     {#if editing}
       <form onsubmit={saveProfile} class="form-stack profile-edit-form">
         <div class="form-group">
@@ -77,7 +72,8 @@
         </div>
         <div class="form-group">
           <label for="edit-description" class="field-label">Description</label>
-          <textarea id="edit-description" bind:value={editDescription} maxlength="256" rows="3"></textarea>
+          <textarea id="edit-description" bind:value={editDescription} maxlength="256" rows="3"
+          ></textarea>
         </div>
         {#if saveError}
           <Alert variant="error">{saveError}</Alert>

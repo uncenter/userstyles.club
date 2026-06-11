@@ -1,6 +1,6 @@
 <script lang="ts">
-  import Logomark from "./Logomark.svelte";
-  import Wordmark from "./Wordmark.svelte";
+  import Logomark from './Logomark.svelte';
+  import Wordmark from './Wordmark.svelte';
 
   interface Props {
     size?: string;
