@@ -43,7 +43,7 @@
   </div>
   <UserstylesSection {userstyles} {loading} {error}>
     {#snippet empty()}
-      No userstyles yet. <a href={resolve('/new')}>Create your first userstyle.</a>
+      <p>No userstyles yet. <a href={resolve('/new')}>Create your first userstyle.</a></p>
     {/snippet}
   </UserstylesSection>
 {:else}

@@ -20,9 +20,9 @@
   {:else if error}
     <Alert variant="error">{error}</Alert>
   {:else if userstyles.length === 0}
-    <p class="text-muted">
+    <div class="empty-state">
       {#if empty}{@render empty()}{:else}No userstyles yet.{/if}
-    </p>
+    </div>
   {:else}
     <ul>
       {#each userstyles as userstyle}
@@ -36,38 +36,31 @@
   .userstyles-section {
     margin-top: var(--space-6);
     margin-bottom: var(--space-5);
-  }
 
-  .loading-state {
-    display: flex;
-    justify-content: center;
-    padding: var(--space-6) 0;
-  }
+    .loading-state,
+    .empty-state {
+      display: flex;
+      justify-content: center;
+      padding: var(--space-6) 0;
+    }
 
-  ul {
-    list-style: none;
-    padding: 0;
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: var(--space-4);
-  }
+    .empty-state {
+      color: var(--fg-muted);
+    }
 
-  li:nth-child(6n + 1) {
-    --card-hover-color: var(--lavender-vivid);
-  }
-  li:nth-child(6n + 2) {
-    --card-hover-color: var(--mint-vivid);
-  }
-  li:nth-child(6n + 3) {
-    --card-hover-color: var(--peach-vivid);
-  }
-  li:nth-child(6n + 4) {
-    --card-hover-color: var(--butter-vivid);
-  }
-  li:nth-child(6n + 5) {
-    --card-hover-color: var(--sky-vivid);
-  }
-  li:nth-child(6n + 6) {
-    --card-hover-color: var(--rose-vivid);
+    ul {
+      list-style: none;
+      padding: 0;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: var(--space-4);
+
+      li:nth-child(6n + 1) { --card-hover-color: var(--lavender-vivid); }
+      li:nth-child(6n + 2) { --card-hover-color: var(--mint-vivid); }
+      li:nth-child(6n + 3) { --card-hover-color: var(--peach-vivid); }
+      li:nth-child(6n + 4) { --card-hover-color: var(--butter-vivid); }
+      li:nth-child(6n + 5) { --card-hover-color: var(--sky-vivid); }
+      li:nth-child(6n + 6) { --card-hover-color: var(--rose-vivid); }
+    }
   }
 </style>
