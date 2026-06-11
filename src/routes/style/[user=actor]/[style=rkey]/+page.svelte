@@ -71,7 +71,6 @@
       <h1 class="style-title">{data.userstyle.value.title}</h1>
       <ActorHandle
         profile={data.profile}
-        variant="lavender"
       />
     </div>
 
