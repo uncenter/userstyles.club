@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite dev",
-    "build": "node scripts/sync-client-metadata.mjs && vite build",
+    "build": "vite build",
     "preview": "pnpm build && wrangler dev .svelte-kit/cloudflare/_worker.js",
     "prepare": "svelte-kit sync || echo ''",
     "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
