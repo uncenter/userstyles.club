@@ -5,10 +5,10 @@
 
   import { joinPageTitle } from '$lib/constants';
 
-  import { user, deleteUserstyle, getBlobCdnUrl } from '$lib/at';
+  import { user, deleteUserstyle, getBlobCdnUrl, computeAverageRating } from '$lib/at';
 
   import { Spinner, Alert, Dialog } from '$components/ui';
-  import { ActorHandle, CssPreview, PreviewImage } from '$components';
+  import { ActorHandle, CssPreview, PreviewImage, StarRating } from '$components';
 
   import { CakeIcon, PenLineIcon, RulerDimensionLineIcon, WeightIcon } from '@lucide/svelte';
 
@@ -23,6 +23,8 @@
   let { data, params }: PageProps = $props();
 
   let confirmDialogOpen = $state(false);
+
+  let averageRating = $derived(computeAverageRating(data.reviews));
 
   async function removeUserstyle() {
     error = null;
@@ -102,6 +104,14 @@
           <span class="style-item-value">{data.userstyle.value.sourceCode.split('\n').length}</span>
           <span class="style-item-label"><RulerDimensionLineIcon size={12} /> Lines</span>
         </div>
+        {#if averageRating}
+          <div class="style-item">
+            <span class="style-item-value">
+              <StarRating rating={averageRating.average} count={averageRating.count} />
+            </span>
+            <span class="style-item-label">Rating</span>
+          </div>
+        {/if}
       </div>
 
       <a

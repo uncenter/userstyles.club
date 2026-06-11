@@ -1,15 +1,21 @@
 <script lang="ts">
   import { resolve } from '$app/paths';
 
-  import { type ProfileView, type UserstyleRecord, getBlobCdnUrl, getProfile } from '$lib/at';
+  import {
+    type ProfileView,
+    type UserstyleRecord,
+    getBlobCdnUrl,
+    getProfile,
+    listReviewsForStyle,
+    computeAverageRating
+  } from '$lib/at';
   import { parseResourceUri } from '@atcute/lexicons';
   import type { Did } from '@atcute/lexicons';
 
-  import { Badge } from '$components/ui';
-
-  import { CakeIcon, PenLineIcon, RulerDimensionLineIcon, WeightIcon } from '@lucide/svelte';
-
+  import StarRating from './StarRating.svelte';
   import ActorHandle from './ActorHandle.svelte';
+
+  import { CalendarIcon, WeightIcon } from '@lucide/svelte';
 
   import bytes from 'pretty-bytes';
   import { formatDate } from '$lib/date';
@@ -22,55 +28,56 @@
   let { userstyle, author }: Props = $props();
 
   let uri = $derived.by(() => parseResourceUri(userstyle.uri));
-  let profile = $derived(author || await getProfile(uri.repo));
+  let profile = $derived(author || (await getProfile(uri.repo)));
 </script>
 
-<a
-  class="userstyle-card-wrapper"
-  href={resolve('/style/[user=actor]/[style=rkey]', { user: uri.repo, style: uri.rkey! })}
->
-  <article class="userstyle-card">
-    <div class="card-thumbnail">
-      {#if userstyle.value.previewImage}
-        <img
-          src={getBlobCdnUrl(
-            uri.repo as Did,
-            userstyle.value.previewImage.ref.$link,
-            'feed_thumbnail'
-          )}
-          alt={userstyle.value.title}
-        />
-      {/if}
+<article class="userstyle-card">
+  <div class="card-thumbnail">
+    {#if userstyle.value.previewImage}
+      <img
+        src={getBlobCdnUrl(
+          uri.repo as Did,
+          userstyle.value.previewImage.ref.$link,
+          'feed_thumbnail'
+        )}
+        alt={userstyle.value.title}
+      />
+    {/if}
+  </div>
+  <div class="card-body">
+    <div class="card-title-row">
+      <h3 class="userstyle-title">
+        <a href={resolve('/style/[user=actor]/[style=rkey]', { user: uri.repo, style: uri.rkey! })}
+          >{userstyle.value.title}</a
+        >
+      </h3>
+      <ActorHandle {profile} showAvatar={false} />
     </div>
-    <div class="card-body">
-      <h3 class="userstyle-title">{userstyle.value.title}</h3>
-      <ActorHandle {profile} />
-      <p class="userstyle-description">{userstyle.value.description ?? ''}</p>
-      <footer class="userstyle-card-footer">
-        <Badge variant="secondary"
-          ><CakeIcon size={16} /> {formatDate(userstyle.value.createdAt)}</Badge
-        >
-        <Badge variant="secondary"
-          ><PenLineIcon size={16} />
-          {userstyle.value.updatedAt ? formatDate(userstyle.value.updatedAt) : '—'}</Badge
-        >
-        <Badge variant="secondary"
-          ><RulerDimensionLineIcon size={16} />
-          {userstyle.value.sourceCode.split('\n').length} lines</Badge
-        >
-        <Badge variant="secondary"
-          ><WeightIcon size={16} /> {bytes(userstyle.value.sourceCode.length)}</Badge
-        >
-      </footer>
-    </div>
-  </article>
-</a>
+    <p class="userstyle-description">{userstyle.value.description ?? ''}</p>
+    <footer class="card-meta">
+      <span class="meta-item">
+        <CalendarIcon size={12} />
+        {formatDate(userstyle.value.updatedAt ?? userstyle.value.createdAt)}
+      </span>
+      <span class="meta-item">
+        <WeightIcon size={12} />
+        {bytes(userstyle.value.sourceCode.length)}
+      </span>
+      {#await listReviewsForStyle(userstyle.uri) then reviews}
+        {@const avg = computeAverageRating(reviews)}
+        {#if avg}
+          <span class="meta-item meta-item-rating"
+            ><StarRating rating={avg.average} count={avg.count} /></span
+          >
+        {:else}
+          <span class="meta-item meta-item-rating meta-na">Unrated</span>
+        {/if}
+      {/await}
+    </footer>
+  </div>
+</article>
 
 <style>
-  .userstyle-card-wrapper {
-    text-decoration: none;
-  }
-
   .userstyle-card {
     display: flex;
     flex-direction: column;
@@ -108,43 +115,72 @@
       gap: var(--space-2);
       padding: var(--space-3) var(--space-4);
       min-width: 0;
-    }
 
-    .userstyle-title {
-      font-size: var(--text-xl);
-      font-weight: 700;
-      margin: 0;
-      line-height: 1.2;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-
-    .userstyle-description {
-      font-size: var(--text-sm);
-      color: var(--fg-muted);
-      line-height: 1.4;
-      min-height: 1.4em;
-      margin: 0;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .userstyle-card-footer {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: var(--space-2);
-
-      :global(.badge) {
+      .card-title-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: var(--space-2);
         min-width: 0;
-        width: 100%;
-        justify-content: flex-start;
+
+        :global .actor-handle {
+          padding: 0;
+          flex-shrink: 0;
+
+          .actor-handle-label {
+            color: var(--fg-muted);
+          }
+        }
       }
 
-      :global(.badge .lucide-icon) {
-        margin-right: 0.5rem;
-        flex-shrink: 0;
+      .userstyle-title {
+        font-size: var(--text-xl);
+        font-weight: 700;
+        margin: 0;
+        line-height: 1.2;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        min-width: 0;
+
+        a:not(:hover) {
+          text-decoration: none;
+        }
+      }
+
+      .userstyle-description {
+        font-size: var(--text-sm);
+        color: var(--fg-muted);
+        line-height: 1.4;
+        min-height: 1.4em;
+        margin: 0;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .card-meta {
+        display: flex;
+        align-items: center;
+        gap: var(--space-3);
+        font-size: var(--text-xs);
+        color: var(--fg-muted);
+        flex-wrap: wrap;
+        margin-top: var(--space-1);
+
+        .meta-item {
+          display: inline-flex;
+          align-items: center;
+          gap: 0.25rem;
+        }
+
+        .meta-item-rating {
+          margin-left: auto;
+        }
+
+        .meta-na {
+          font-style: italic;
+        }
       }
     }
   }

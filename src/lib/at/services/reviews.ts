@@ -105,3 +105,16 @@ export async function updateReview(
 export async function deleteReview(rkey: RecordKey) {
   return deleteRecord(CLUB_REVIEW_COLLECTION, rkey);
 }
+
+export function computeAverageRating(
+  reviews: ReviewRecord[]
+): { average: number; count: number } | undefined {
+  const rated = reviews.filter(
+    (r): r is ReviewRecord & { value: Review & { rating: number } } => r.value.rating !== undefined
+  );
+  if (rated.length === 0) return undefined;
+  return {
+    average: rated.reduce((sum, r) => sum + r.value.rating, 0) / rated.length,
+    count: rated.length
+  };
+}

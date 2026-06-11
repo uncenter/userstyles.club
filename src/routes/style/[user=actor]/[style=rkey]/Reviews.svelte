@@ -11,7 +11,7 @@
   } from '$lib/at';
 
   import { Spinner, Alert } from '$components/ui';
-  import StarRating from './StarRating.svelte';
+  import { StarRatingInput } from '$components';
   import ReviewItem from './ReviewItem.svelte';
 
   interface Props {
@@ -72,7 +72,7 @@
         }}
       >
         <div class="form-group">
-          <StarRating bind:value={reviewRating} />
+          <StarRatingInput bind:value={reviewRating} />
         </div>
 
         <div class="form-group">

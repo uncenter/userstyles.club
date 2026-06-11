@@ -12,18 +12,21 @@
 
   interface Props {
     profile: ProfileLike;
+    showAvatar?: boolean;
   }
 
-  let { profile }: Props = $props();
+  let { profile, showAvatar = true }: Props = $props();
 </script>
 
 <a href={resolve('/profile/[user=actor]', { user: profile.did })} class="actor-handle">
-  <Avatar
-    src={profile.avatar}
-    name={profile.displayName ?? profile.handle}
-    alt={profile.handle ?? ''}
-    size="sm"
-  />
+  {#if showAvatar}
+    <Avatar
+      src={profile.avatar}
+      name={profile.displayName ?? profile.handle}
+      alt={profile.handle ?? ''}
+      size="sm"
+    />
+  {/if}
   <span class="actor-handle-label">@{profile.handle}</span>
 </a>
 

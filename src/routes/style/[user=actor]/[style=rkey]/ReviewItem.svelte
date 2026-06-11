@@ -13,8 +13,7 @@
   } from '$lib/at';
 
   import { Spinner, Alert, Dialog } from '$components/ui';
-  import { ActorHandle } from '$components';
-  import StarRating from './StarRating.svelte';
+  import { ActorHandle, StarRating, StarRatingInput } from '$components';
 
   import { formatDate } from '$lib/date';
 
@@ -95,7 +94,7 @@
       }}
     >
       <div class="form-group">
-        <StarRating bind:value={editRating} />
+        <StarRatingInput bind:value={editRating} />
       </div>
 
       <div class="form-group">
@@ -128,11 +127,7 @@
       </div>
       <div class="review-meta">
         {#if review.value.rating !== undefined}
-          <span class="review-rating" aria-label="{review.value.rating} out of 5 stars">
-            {#each [1, 2, 3, 4, 5] as n}
-              <span class:filled={n <= review.value.rating}>★</span>
-            {/each}
-          </span>
+          <StarRating rating={review.value.rating} showValue={false} />
         {/if}
         <time class="review-date"
           >{formatDate(review.value.updatedAt ?? review.value.createdAt)}</time
@@ -218,19 +213,6 @@
         display: flex;
         align-items: center;
         gap: var(--space-3);
-      }
-
-      .review-rating {
-        font-size: var(--text-base);
-        letter-spacing: 0.05em;
-
-        span {
-          color: var(--border);
-
-          &.filled {
-            color: var(--butter-vivid, #d97706);
-          }
-        }
       }
 
       .review-date {

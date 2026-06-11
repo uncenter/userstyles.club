@@ -38,6 +38,7 @@ export {
   deleteReview,
   getReviewRkey,
   getReviewAuthorDid,
+  computeAverageRating,
   type Review,
   type ReviewRecord
 } from './services/reviews';
