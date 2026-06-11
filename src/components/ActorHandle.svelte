@@ -41,7 +41,7 @@
     .actor-handle-label {
       font-size: var(--text-sm);
       font-weight: 700;
-      color: var(--foreground);
+      color: var(--fg-muted);
       font-family: var(--font-display);
       line-height: 1;
 

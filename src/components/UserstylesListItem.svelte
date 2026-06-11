@@ -126,10 +126,6 @@
         :global .actor-handle {
           padding: 0;
           flex-shrink: 0;
-
-          .actor-handle-label {
-            color: var(--fg-muted);
-          }
         }
       }
 
