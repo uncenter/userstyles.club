@@ -18,7 +18,7 @@ const metadata = {
   policy_uri: `${root}/`,
   redirect_uris: [`${root}/`],
   scope:
-    'atproto blob:*/* repo:club.userstyles.alpha.userstyle repo:club.userstyles.alpha.actor.profile',
+    'atproto blob:*/* repo:club.userstyles.alpha.userstyle repo:club.userstyles.alpha.actor.profile repo:club.userstyles.alpha.graph.review',
   grant_types: ['authorization_code', 'refresh_token'],
   response_types: ['code'],
   token_endpoint_auth_method: 'none',

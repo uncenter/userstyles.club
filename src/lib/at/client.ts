@@ -1,5 +1,6 @@
 import { Client, simpleFetchHandler } from '@atcute/client';
 import type { Did } from '@atcute/lexicons';
+import type {} from '@atcute/microcosm';
 import { getPdsForDid } from './did';
 
 const clientCache = new Map<string, Client>();
@@ -21,6 +22,17 @@ export function getRelayClient(): Client {
 
   const client = new Client({
     handler: simpleFetchHandler({ service: 'https://relay1.us-east.bsky.network' })
+  });
+  clientCache.set(key, client);
+  return client;
+}
+
+export function getConstellationClient(): Client {
+  const key = 'constellation';
+  if (clientCache.has(key)) return clientCache.get(key)!;
+
+  const client = new Client({
+    handler: simpleFetchHandler({ service: 'https://constellation.microcosm.blue' })
   });
   clientCache.set(key, client);
   return client;

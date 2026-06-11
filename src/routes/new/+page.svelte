@@ -56,7 +56,7 @@
         sourceCode,
         previewImage ?? undefined
       );
-      let uri = parseResourceUri(userstyle.uri);
+      let uri = parseResourceUri(userstyle.response.uri);
       fields.disconnect();
       publishedUrl = `/style/${uri.repo}/${uri.rkey}`;
       shareText = `Just published "${fields.current.title}" on userstyles.club!\n\nhttps://userstyles.club${publishedUrl}`;

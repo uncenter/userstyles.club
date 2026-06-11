@@ -453,9 +453,9 @@ select:disabled {
 
 .field-label {
   display: block;
-  font-size: var(--text-lg);
   font-weight: 600;
   margin-bottom: var(--space-1);
+  padding: 0;
 }
 
 .form-stack {
@@ -467,12 +467,12 @@ select:disabled {
   display: grid;
   gap: var(--space-1);
 
-  &:has(input:required, [data-required]) .field-label::after {
+  &:has(:required, [data-required]) .field-label::after {
     content: ' *';
     color: var(--danger);
   }
 
-  &:not(:has(input:required, [data-required])) .field-label::after {
+  &:not(:has(:required, [data-required])) .field-label::after {
     content: ' (optional)';
     font-size: var(--text-sm);
     color: var(--fg-muted);

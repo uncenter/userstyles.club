@@ -10,6 +10,7 @@
   import { CakeIcon, PenLineIcon, RulerDimensionLineIcon, WeightIcon } from '@lucide/svelte';
 
   import bytes from 'pretty-bytes';
+  import { formatDate } from '$lib/date';
 
   interface Props {
     record: UserstyleRecord;
@@ -18,14 +19,6 @@
   let { record }: Props = $props();
 
   let uri = $derived.by(() => parseResourceUri(record.uri));
-
-  function formatDate(value: string) {
-    return new Date(value).toLocaleDateString(undefined, {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
-    });
-  }
 </script>
 
 <a

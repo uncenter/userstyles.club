@@ -32,6 +32,17 @@ export {
   type UserstyleRecord
 } from './services/userstyles';
 export {
+  listReviewsForStyle,
+  createReview,
+  updateReview,
+  deleteReview,
+  getReviewRkey,
+  getReviewAuthorDid,
+  type Review,
+  type ReviewRecord
+} from './services/reviews';
+export {
   CLUB_USERSTYLE_COLLECTION,
-  CLUB_PROFILE_COLLECTION
+  CLUB_PROFILE_COLLECTION,
+  CLUB_REVIEW_COLLECTION
 } from './settings';

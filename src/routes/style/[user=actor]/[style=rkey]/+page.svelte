@@ -13,6 +13,9 @@
   import { CakeIcon, PenLineIcon, RulerDimensionLineIcon, WeightIcon } from '@lucide/svelte';
 
   import bytes from 'pretty-bytes';
+  import { formatDate } from '$lib/date';
+
+  import Reviews from './Reviews.svelte';
 
   let deleting = $state(false);
   let error = $state<string | null>(null);
@@ -20,14 +23,6 @@
   let { data, params }: PageProps = $props();
 
   let confirmDialogOpen = $state(false);
-
-  function formatDate(value: string) {
-    return new Date(value).toLocaleDateString(undefined, {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    });
-  }
 
   async function removeUserstyle() {
     error = null;
@@ -50,7 +45,7 @@
 </script>
 
 <svelte:head>
-  <title>{joinPageTitle(data.userstyle.title)}</title>
+  <title>{joinPageTitle(data.userstyle.value.title)}</title>
 </svelte:head>
 
 <div class="narrow-col">
@@ -73,34 +68,33 @@
 
   <section class="page-section">
     <div class="style-header">
-      <h1 class="style-title">{data.userstyle.title}</h1>
+      <h1 class="style-title">{data.userstyle.value.title}</h1>
       <ActorHandle
         profile={data.profile}
-        href={resolve('/profile/[user=actor]', { user: params.user })}
         variant="lavender"
       />
     </div>
 
-    {#if data.userstyle.description}
-      <p class="style-description">{data.userstyle.description}</p>
+    {#if data.userstyle.value.description}
+      <p class="style-description">{data.userstyle.value.description}</p>
     {/if}
 
     <div class="style-info">
       <div class="style-meta">
         <div class="style-item">
-          <time class="style-item-value">{formatDate(data.userstyle.createdAt)}</time>
+          <time class="style-item-value">{formatDate(data.userstyle.value.createdAt)}</time>
           <span class="style-item-label"><CakeIcon size={12} /> Published</span>
         </div>
         <div class="style-item">
-          <time class="style-item-value">{data.userstyle.updatedAt ? formatDate(data.userstyle.updatedAt) : '—'}</time>
+          <time class="style-item-value">{data.userstyle.value.updatedAt ? formatDate(data.userstyle.value.updatedAt) : '—'}</time>
           <span class="style-item-label"><PenLineIcon size={12} /> Last Updated</span>
         </div>
         <div class="style-item">
-          <span class="style-item-value">{bytes(data.userstyle.sourceCode.length)}</span>
+          <span class="style-item-value">{bytes(data.userstyle.value.sourceCode.length)}</span>
           <span class="style-item-label"><WeightIcon size={12} /> Size</span>
         </div>
         <div class="style-item">
-          <span class="style-item-value">{data.userstyle.sourceCode.split('\n').length}</span>
+          <span class="style-item-value">{data.userstyle.value.sourceCode.split('\n').length}</span>
           <span class="style-item-label"><RulerDimensionLineIcon size={12} /> Lines</span>
         </div>
       </div>
@@ -121,22 +115,29 @@
       <Alert variant="error">{error}</Alert>
     {/if}
 
-    {#if data.userstyle.previewImage}
+    {#if data.userstyle.value.previewImage}
       <div class="style-preview">
-        <PreviewImage src={getBlobCdnUrl(data.profile.did, data.userstyle.previewImage.ref.$link, 'feed_fullsize')} alt={data.userstyle.title} />
+        <PreviewImage src={getBlobCdnUrl(data.profile.did, data.userstyle.value.previewImage.ref.$link, 'feed_fullsize')} alt={data.userstyle.value.title} />
       </div>
     {/if}
 
     <div class="code-preview">
-      <CssPreview source={data.userstyle.sourceCode} />
+      <CssPreview source={data.userstyle.value.sourceCode} />
     </div>
   </section>
+
+  <Reviews
+    subject={data.userstyle.uri}
+    owner={data.profile.did}
+    reviews={data.reviews}
+    reviewers={data.reviewers}
+  />
 </div>
 
 <Dialog bind:open={confirmDialogOpen} title="Delete userstyle?">
   {#snippet children()}
     <p class="text-muted">
-      This will permanently delete <strong>{data.userstyle.title}</strong>. This cannot be undone.
+      This will permanently delete <strong>{data.userstyle.value.title}</strong>. This cannot be undone.
     </p>
   {/snippet}
   {#snippet actions()}
@@ -235,5 +236,4 @@
       overflow-y: auto;
     }
   }
-
 </style>

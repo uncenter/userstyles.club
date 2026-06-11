@@ -19,6 +19,7 @@
     "@atcute/client": "^5.0.0",
     "@atcute/identity-resolver": "^2.0.0",
     "@atcute/lexicons": "^2.0.0",
+    "@atcute/microcosm": "^2.0.1",
     "@atcute/oauth-browser-client": "^4.0.0",
     "@catppuccin/codemirror": "^1.0.3",
     "@codemirror/lang-css": "^6.3.1",

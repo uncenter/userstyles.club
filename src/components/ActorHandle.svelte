@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { resolve } from '$app/paths';
+  import type { Did } from '@atcute/lexicons';
   import Avatar from './ui/Avatar.svelte';
 
   type PastelVariant = 'lavender' | 'mint' | 'peach' | 'butter' | 'sky' | 'rose';
@@ -7,19 +9,19 @@
     handle: string;
     displayName?: string;
     avatar?: string;
+    did: Did;
   }
 
   interface Props {
     profile: ProfileLike;
-    href?: string;
     variant?: PastelVariant;
   }
 
-  let { profile, href, variant = 'lavender' }: Props = $props();
+  let { profile, variant = 'lavender' }: Props = $props();
 </script>
 
 <a
-  {href}
+  href={resolve('/profile/[user=actor]', { user: profile.did })}
   class="actor-handle"
   style:--handle-bg="var(--{variant})"
   style:--handle-vivid="var(--{variant}-vivid)"

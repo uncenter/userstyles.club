@@ -1,11 +1,11 @@
-import type { ActorIdentifier, Blob as BlobRef, Did, Nsid, RecordKey } from '@atcute/lexicons';
+import type { ActorIdentifier, Blob as BlobRef, Did, Nsid, RecordKey, ResourceUri } from '@atcute/lexicons';
 import { getClientForDid, getPublicClient, getRelayClient } from './client';
 import { getSessionContext } from './auth';
 import { isDid } from '@atcute/lexicons/syntax';
 import { ok } from '@atcute/client';
 
 export type RepoRecord = {
-  uri: string;
+  uri: ResourceUri;
   cid?: string;
   value: Record<string, unknown>;
 };
@@ -111,7 +111,7 @@ export async function createRecord(collection: Nsid, record: Record<string, unkn
     })
   );
 
-  return response;
+  return { response, record };
 }
 
 export async function putRecord(
@@ -132,7 +132,7 @@ export async function putRecord(
     })
   );
 
-  return response;
+  return { response, record };
 }
 
 export async function uploadBlob(blob: Blob): Promise<BlobRef> {

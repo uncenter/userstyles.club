@@ -19,16 +19,26 @@ import { Client } from '@atcute/client';
 import { replaceState } from '$app/navigation';
 import { SvelteURLSearchParams } from 'svelte/reactivity';
 import type { ActorIdentifier, Did } from '@atcute/lexicons';
-import type { AppBskyActorDefs } from '@atcute/bluesky';
 import { DOH_RESOLVER, REDIRECT_PATH, getSignUpPds } from './settings';
 import { getClientMetadata, oauthScope } from './metadata';
-import { getBskyProfile, invalidateProfileCaches } from './services/profiles';
+import { getProfile, invalidateProfileCaches, type ProfileView } from './services/profiles';
 
-export const user = $state({
-  agent: null as OAuthUserAgent | null,
-  client: null as Client | null,
-  profile: null as AppBskyActorDefs.ProfileViewDetailed | null | undefined,
-  did: undefined as Did | undefined,
+type LoggedOutUser = {
+  agent?: OAuthUserAgent;
+  client?: Client;
+  profile?: ProfileView;
+  did?: Did;
+}
+
+type LoggedInUser = Required<LoggedOutUser>;
+
+export const user: {
+  isInitializing: boolean;
+} & (({
+  isLoggedIn: false;
+} & LoggedOutUser) | ({
+  isLoggedIn: true;
+} & LoggedInUser)) = $state({
   isInitializing: true,
   isLoggedIn: false
 });
@@ -109,24 +119,25 @@ async function startAuthorization(identity?: ActorIdentifier) {
 }
 
 export async function logout() {
-  const currentAgent = user.agent;
-  if (!currentAgent) return;
+  if (!user.isLoggedIn) return;
 
-  const did = currentAgent.session.info.sub;
+  const did = user.agent.session.info.sub;
   localStorage.removeItem('current-login');
   invalidateProfileCaches(did);
 
   try {
-    await currentAgent.signOut();
+    await user.agent.signOut();
   } catch {
     deleteStoredSession(did);
   }
 
-  user.agent = null;
-  user.client = null;
-  user.profile = null;
-  user.did = undefined;
-  user.isLoggedIn = false;
+  Object.assign(user, {
+    isLoggedIn: false,
+    agent: undefined,
+    client: undefined,
+    profile: undefined,
+    did: undefined,
+  });
 }
 
 async function finalizeLogin(params: SvelteURLSearchParams, fallbackDid?: Did) {
@@ -140,7 +151,7 @@ async function finalizeLogin(params: SvelteURLSearchParams, fallbackDid?: Did) {
     user.isLoggedIn = true;
 
     localStorage.setItem('current-login', session.info.sub);
-    await loadProfile(session.info.sub);
+    user.profile = await getProfile(session.info.sub);
   } catch {
     if (fallbackDid) {
       await resumeSession(fallbackDid);
@@ -156,20 +167,9 @@ async function resumeSession(did: Did) {
     user.did = session.info.sub;
     user.isLoggedIn = true;
 
-    await loadProfile(session.info.sub);
+    user.profile = await getProfile(session.info.sub);
   } catch {
     deleteStoredSession(did);
     localStorage.removeItem('current-login');
   }
-}
-
-async function loadProfile(actor: Did) {
-  try {
-    user.profile = await getBskyProfile(actor);
-    return;
-  } catch {
-    // Ignore profile load failures.
-  }
-
-  user.profile = { did: actor, handle: 'handle.invalid' };
 }

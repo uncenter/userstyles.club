@@ -23,6 +23,9 @@ importers:
       '@atcute/lexicons':
         specifier: ^2.0.0
         version: 2.0.0
+      '@atcute/microcosm':
+        specifier: ^2.0.1
+        version: 2.0.1(@atcute/lexicons@2.0.0)
       '@atcute/oauth-browser-client':
         specifier: ^4.0.0
         version: 4.0.0(@atcute/identity-resolver@2.0.0(@atcute/identity@2.0.0(@atcute/lexicons@2.0.0)(typescript@5.9.3))(@atcute/lexicons@2.0.0)(typescript@5.9.3))(@atcute/lexicons@2.0.0)(typescript@5.9.3)
@@ -138,6 +141,11 @@ packages:
 
   '@atcute/lexicons@2.0.0':
     resolution: {integrity: sha512-fIlwP+TPEAGoF5aU5s+f8N5sOjOu8Mww/sQL1B57Dp2hj3G/EWG9XwOHPokzycBCgXx+UxIIrzZCGy8whsVDZw==}
+
+  '@atcute/microcosm@2.0.1':
+    resolution: {integrity: sha512-mpIOMYgSPK6XbYxDyAexmOkIDCti4PS/Srrk/J8w2eUVKt0NbiPPrZiB/PYyf9F8f4uSZc8iLAyXLhc6NEBIBg==}
+    peerDependencies:
+      '@atcute/lexicons': ^2.0.0
 
   '@atcute/multibase@1.2.0':
     resolution: {integrity: sha512-ZK2GRra+qIYq9nNuQB52m2ul0hOmCQEtPobGfTSUxm7pF0OGEkWGkWHugFhNEDVzHzTwPxHp6VGotdZFue4lYQ==}
@@ -1399,6 +1407,10 @@ snapshots:
       '@atcute/util-text': 1.3.1
       '@standard-schema/spec': 1.1.0
       esm-env: 1.2.2
+
+  '@atcute/microcosm@2.0.1(@atcute/lexicons@2.0.0)':
+    dependencies:
+      '@atcute/lexicons': 2.0.0
 
   '@atcute/multibase@1.2.0':
     dependencies:

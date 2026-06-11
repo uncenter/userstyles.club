@@ -3,6 +3,7 @@ import {
   CLUB_PROFILE_COLLECTION,
   REDIRECT_PATH,
   CLUB_USERSTYLE_COLLECTION,
+  CLUB_REVIEW_COLLECTION,
   getSiteOrigin
 } from './settings';
 
@@ -10,7 +11,8 @@ const scope = [
   'atproto',
   'blob:*/*',
   `repo:${CLUB_USERSTYLE_COLLECTION}`,
-  `repo:${CLUB_PROFILE_COLLECTION}`
+  `repo:${CLUB_PROFILE_COLLECTION}`,
+  `repo:${CLUB_REVIEW_COLLECTION}`
 ].join(' ');
 
 export function getClientMetadata() {

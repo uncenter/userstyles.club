@@ -75,7 +75,7 @@ export async function getUserstyle(repo: ActorIdentifier, rkey: RecordKey) {
     rkey
   })) as UserstyleRecord;
 
-  return response.value;
+  return response;
 }
 
 export async function updateUserstyle(
