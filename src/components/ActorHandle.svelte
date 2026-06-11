@@ -12,14 +12,14 @@
 
   interface Props {
     profile: ProfileLike;
-    showAvatar?: boolean;
+    minimal?: boolean;
   }
 
-  let { profile, showAvatar = true }: Props = $props();
+  let { profile, minimal = false }: Props = $props();
 </script>
 
-<a href={resolve('/profile/[user=actor]', { user: profile.did })} class="actor-handle">
-  {#if showAvatar}
+<a href={resolve('/profile/[user=actor]', { user: profile.did })} class="actor-handle" class:minimal>
+  {#if !minimal}
     <Avatar
       src={profile.avatar}
       name={profile.displayName ?? profile.handle}
@@ -39,11 +39,20 @@
     text-decoration: none;
 
     .actor-handle-label {
-      font-size: var(--text-sm);
       font-weight: 700;
-      color: var(--fg-muted);
+      color: var(--foreground);
       font-family: var(--font-display);
       line-height: 1;
+
+      &:hover {
+        color: var(--accent);
+      }
+    }
+
+    &.minimal .actor-handle-label {
+      font-size: var(--text-sm);
+      color: var(--fg-muted);
+      font-weight: normal;
 
       &:hover {
         color: var(--accent);

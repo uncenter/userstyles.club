@@ -51,7 +51,7 @@
           >{userstyle.value.title}</a
         >
       </h3>
-      <ActorHandle {profile} showAvatar={false} />
+      <ActorHandle {profile} minimal={true} />
     </div>
     <p class="userstyle-description">{userstyle.value.description ?? ''}</p>
     <footer class="card-meta">
