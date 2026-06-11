@@ -1,7 +1,7 @@
 <script lang="ts">
   import { resolve } from '$app/paths';
 
-  import { type UserstyleRecord, getBlobCdnUrl } from '$lib/at';
+  import { type ProfileView, type UserstyleRecord, getBlobCdnUrl, getProfile } from '$lib/at';
   import { parseResourceUri } from '@atcute/lexicons';
   import type { Did } from '@atcute/lexicons';
 
@@ -9,16 +9,20 @@
 
   import { CakeIcon, PenLineIcon, RulerDimensionLineIcon, WeightIcon } from '@lucide/svelte';
 
+  import ActorHandle from './ActorHandle.svelte';
+
   import bytes from 'pretty-bytes';
   import { formatDate } from '$lib/date';
 
   interface Props {
-    record: UserstyleRecord;
+    userstyle: UserstyleRecord;
+    author?: ProfileView;
   }
 
-  let { record }: Props = $props();
+  let { userstyle, author }: Props = $props();
 
-  let uri = $derived.by(() => parseResourceUri(record.uri));
+  let uri = $derived.by(() => parseResourceUri(userstyle.uri));
+  let profile = $derived(author || await getProfile(uri.repo));
 </script>
 
 <a
@@ -27,34 +31,35 @@
 >
   <article class="userstyle-card">
     <div class="card-thumbnail">
-      {#if record.value.previewImage}
+      {#if userstyle.value.previewImage}
         <img
           src={getBlobCdnUrl(
             uri.repo as Did,
-            record.value.previewImage.ref.$link,
+            userstyle.value.previewImage.ref.$link,
             'feed_thumbnail'
           )}
-          alt={record.value.title}
+          alt={userstyle.value.title}
         />
       {/if}
     </div>
     <div class="card-body">
-      <h3 class="userstyle-title">{record.value.title}</h3>
-      <p class="userstyle-description">{record.value.description ?? ''}</p>
+      <h3 class="userstyle-title">{userstyle.value.title}</h3>
+      <ActorHandle {profile} />
+      <p class="userstyle-description">{userstyle.value.description ?? ''}</p>
       <footer class="userstyle-card-footer">
         <Badge variant="secondary"
-          ><CakeIcon size={16} /> {formatDate(record.value.createdAt)}</Badge
+          ><CakeIcon size={16} /> {formatDate(userstyle.value.createdAt)}</Badge
         >
         <Badge variant="secondary"
           ><PenLineIcon size={16} />
-          {record.value.updatedAt ? formatDate(record.value.updatedAt) : '—'}</Badge
+          {userstyle.value.updatedAt ? formatDate(userstyle.value.updatedAt) : '—'}</Badge
         >
         <Badge variant="secondary"
           ><RulerDimensionLineIcon size={16} />
-          {record.value.sourceCode.split('\n').length} lines</Badge
+          {userstyle.value.sourceCode.split('\n').length} lines</Badge
         >
         <Badge variant="secondary"
-          ><WeightIcon size={16} /> {bytes(record.value.sourceCode.length)}</Badge
+          ><WeightIcon size={16} /> {bytes(userstyle.value.sourceCode.length)}</Badge
         >
       </footer>
     </div>

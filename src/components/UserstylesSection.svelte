@@ -1,17 +1,18 @@
 <script lang="ts">
   import type { Snippet } from 'svelte';
-  import type { UserstyleRecord } from '$lib/at';
+  import type { ProfileView, UserstyleRecord } from '$lib/at';
   import { Spinner, Alert } from '$components/ui';
   import UserstylesListItem from './UserstylesListItem.svelte';
 
   interface Props {
     userstyles: UserstyleRecord[];
+    author?: ProfileView;
     loading?: boolean;
     error?: string | null;
     empty?: Snippet;
   }
 
-  let { userstyles, loading = false, error = null, empty }: Props = $props();
+  let { userstyles, author, loading = false, error = null, empty }: Props = $props();
 </script>
 
 <section class="userstyles-section">
@@ -26,7 +27,7 @@
   {:else}
     <ul>
       {#each userstyles as userstyle}
-        <li><UserstylesListItem record={userstyle} /></li>
+        <li><UserstylesListItem {userstyle} {author} /></li>
       {/each}
     </ul>
   {/if}

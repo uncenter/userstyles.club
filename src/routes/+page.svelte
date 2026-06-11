@@ -41,7 +41,7 @@
       <h1>Your userstyles</h1>
     </div>
   </div>
-  <UserstylesSection {userstyles} {loading} {error}>
+  <UserstylesSection {userstyles} author={user.profile} {loading} {error}>
     {#snippet empty()}
       <p>No userstyles yet. <a href={resolve('/new')}>Create your first userstyle.</a></p>
     {/snippet}

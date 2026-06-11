@@ -120,7 +120,7 @@
   </section>
 </div>
 
-<UserstylesSection userstyles={data.userstyles} />
+<UserstylesSection userstyles={data.userstyles} author={data.profile} />
 
 <style>
   .profile-header {
