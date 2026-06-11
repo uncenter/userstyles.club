@@ -6,7 +6,7 @@
 
   import { initClient, user, logout } from '$lib/at';
   import { appearance } from '$lib/appearance.svelte';
-  import { TAGLINE, REPO_URL } from '$lib/constants';
+  import { TAGLINE, REPO_URL, FEEDBACK_URL } from '$lib/constants';
 
   import { LogoCombo } from '$components/branding';
   import { Spinner, Avatar } from '$components/ui';
@@ -173,6 +173,7 @@
       </div>
       <div class="footer-links">
         <a href={REPO_URL} target="_blank" rel="noopener noreferrer">Source <MoveUpRightIcon /></a>
+        <a href={FEEDBACK_URL} target="_blank" rel="noopener noreferrer">Feedback <MoveUpRightIcon /></a>
       </div>
     </div>
   </footer>
