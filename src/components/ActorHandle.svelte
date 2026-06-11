@@ -34,11 +34,6 @@
     gap: var(--space-2);
     padding: var(--space-1) var(--space-3) var(--space-1) var(--space-1);
     text-decoration: none;
-    filter: url('#rough');
-    transition:
-      transform var(--ease-fast),
-      box-shadow var(--ease-fast),
-      border-color var(--ease-fast);
 
     .actor-handle-label {
       font-size: var(--text-sm);
