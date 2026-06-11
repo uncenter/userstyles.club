@@ -237,7 +237,7 @@ main.container {
   align-items: center;
   justify-content: center;
   gap: var(--space-2);
-  border: 2px solid transparent;
+  border: 2px solid var(--btn-border, var(--foreground));
   font-family: inherit;
   font-weight: 700;
   font-size: var(--text-sm);
@@ -246,7 +246,9 @@ main.container {
   text-decoration: none;
   cursor: pointer;
   white-space: nowrap;
-  box-shadow: 3px 3px 0 transparent;
+  background: var(--btn-bg, var(--bg-muted));
+  color: var(--btn-fg, var(--foreground));
+  box-shadow: 3px 3px 0 var(--btn-shadow, var(--foreground));
   transition:
     background-color var(--ease-fast),
     color var(--ease-fast),
@@ -254,162 +256,111 @@ main.container {
     transform var(--ease-fast),
     box-shadow var(--ease-fast);
 
+  &:hover:not(:disabled) {
+    background: var(--btn-hover-bg, var(--btn-bg, var(--bg-faint)));
+    color: var(--btn-hover-fg, var(--btn-fg, var(--foreground)));
+    border-color: var(--btn-hover-border, var(--btn-border, var(--foreground)));
+    transform: translate(-1px, -1px);
+    box-shadow: 4px 4px 0 var(--btn-hover-shadow, var(--btn-shadow, var(--foreground)));
+  }
+  &:active:not(:disabled) {
+    transform: translate(2px, 2px);
+    box-shadow: 1px 1px 0 var(--btn-shadow, var(--foreground));
+  }
   &:disabled {
     opacity: 0.45;
     cursor: not-allowed;
     box-shadow: none;
   }
-}
 
-.btn-sm {
-  font-size: var(--text-xs);
-  padding: calc(var(--space-1) + 1px) var(--space-3);
-}
-.btn-lg {
-  font-size: var(--text-base);
-  padding: var(--space-3) var(--space-6);
-}
 
-.btn-icon {
-  font-size: var(--text-xs);
-  padding: var(--space-1) var(--space-1);
-}
-
-.btn-primary {
-  background: var(--accent);
-  color: var(--accent-fg);
-  border-color: var(--accent-hover);
-  box-shadow: 3px 3px 0 var(--accent-hover);
-
-  &:hover:not(:disabled) {
-    background: var(--accent-hover);
-    color: var(--accent-fg); /* prevent a:hover from overriding */
-    border-color: var(--accent-hover);
-    transform: translate(-1px, -1px);
-    box-shadow: 4px 4px 0 var(--accent-hover);
+  &.btn-sm {
+    font-size: var(--text-xs);
+    padding: calc(var(--space-1) + 1px) var(--space-3);
   }
-  &:active:not(:disabled) {
-    transform: translate(2px, 2px);
-    box-shadow: 1px 1px 0 var(--accent-hover);
+  &.btn-lg {
+    font-size: var(--text-base);
+    padding: var(--space-3) var(--space-6);
   }
-}
 
-.btn-secondary {
-  background: var(--bg-muted);
-  color: var(--foreground);
-  border-color: var(--foreground);
-  box-shadow: 3px 3px 0 var(--foreground);
-
-  &:hover:not(:disabled) {
-    color: var(--foreground);
-    background: var(--bg-faint);
-    transform: translate(-1px, -1px);
-    box-shadow: 4px 4px 0 var(--foreground);
+  &.btn-icon {
+    font-size: var(--text-xs);
+    padding: var(--space-1) var(--space-1);
   }
-  &:active:not(:disabled) {
-    transform: translate(2px, 2px);
-    box-shadow: 1px 1px 0 var(--foreground);
+
+  &.btn-primary {
+    --btn-bg: var(--accent);
+    --btn-fg: var(--accent-fg);
+    --btn-outline-fg: var(--accent);
+    --btn-border: var(--accent-hover);
+    --btn-shadow: var(--accent-hover);
+    --btn-hover-bg: var(--accent-hover);
+    --btn-hover-fg: var(--accent-fg);
   }
-}
 
-.btn-outline {
-  background: transparent;
-  color: var(--foreground);
-  border-color: var(--foreground);
-  box-shadow: 3px 3px 0 var(--foreground);
-
-  &:hover:not(:disabled) {
-    color: var(--foreground);
-    background: var(--bg-muted);
-    transform: translate(-1px, -1px);
-    box-shadow: 4px 4px 0 var(--foreground);
+  &.btn-secondary {
+    --btn-bg: var(--bg-muted);
+    --btn-fg: var(--foreground);
+    --btn-border: var(--foreground);
+    --btn-shadow: var(--foreground);
+    --btn-hover-bg: var(--bg-faint);
   }
-  &:active:not(:disabled) {
-    transform: translate(2px, 2px);
-    box-shadow: 1px 1px 0 var(--foreground);
+
+  &.btn-danger {
+    --btn-bg: var(--danger);
+    --btn-fg: var(--accent-fg);
+    --btn-outline-fg: var(--danger);
+    --btn-border: color-mix(in srgb, var(--danger) 70%, #000);
+    --btn-shadow: color-mix(in srgb, var(--danger) 70%, #000);
+    --btn-hover-bg: color-mix(in srgb, var(--danger) 85%, #000);
+    --btn-hover-fg: var(--accent-fg);
   }
-}
 
-.btn-ghost {
-  background: transparent;
-  color: var(--foreground);
-  border-color: transparent;
-  box-shadow: none;
-
-  &:hover:not(:disabled) {
-    color: var(--foreground);
-    background: var(--bg-muted);
+  &.btn-warning {
+    --btn-bg: var(--warning);
+    --btn-fg: var(--accent-fg);
+    --btn-outline-fg: var(--warning);
+    --btn-border: color-mix(in srgb, var(--warning) 70%, #000);
+    --btn-shadow: color-mix(in srgb, var(--warning) 70%, #000);
+    --btn-hover-bg: color-mix(in srgb, var(--warning) 85%, #000);
+    --btn-hover-fg: var(--accent-fg);
   }
-}
 
-.btn-danger {
-  background: var(--danger);
-  color: #fff;
-  border-color: color-mix(in srgb, var(--danger) 70%, #000);
-  box-shadow: 3px 3px 0 color-mix(in srgb, var(--danger) 70%, #000);
-
-  &:hover:not(:disabled) {
-    color: #fff;
-    transform: translate(-1px, -1px);
-    box-shadow: 4px 4px 0 color-mix(in srgb, var(--danger) 70%, #000);
+  &.btn-bsky {
+    --btn-bg: var(--bsky-blue);
+    --btn-fg: var(--foreground);
+    --btn-outline-fg: var(--bsky-blue);
+    --btn-border: color-mix(in srgb, var(--bsky-blue) 70%, #000);
+    --btn-shadow: color-mix(in srgb, var(--bsky-blue) 70%, #000);
+    --btn-hover-bg: color-mix(in srgb, var(--bsky-blue) 85%, #000);
+    --btn-hover-fg: var(--foreground);
   }
-  &:active:not(:disabled) {
-    transform: translate(2px, 2px);
-    box-shadow: 1px 1px 0 color-mix(in srgb, var(--danger) 70%, #000);
-  }
-}
 
-.btn-warning {
-  background: var(--warning);
-  color: light-dark(#fff, #1a1200);
-  border-color: color-mix(in srgb, var(--warning) 70%, #000);
-  box-shadow: 3px 3px 0 color-mix(in srgb, var(--warning) 70%, #000);
+  &.btn-outline {
+    background: transparent;
+    color: var(--btn-outline-fg, var(--foreground));
 
-  &:hover:not(:disabled) {
-    color: light-dark(#fff, #1a1200);
-    background: color-mix(in srgb, var(--warning) 85%, #000);
-    transform: translate(-1px, -1px);
-    box-shadow: 4px 4px 0 color-mix(in srgb, var(--warning) 70%, #000);
+    &:hover:not(:disabled) {
+      background: var(--btn-hover-bg, var(--btn-bg, var(--bg-muted)));
+      color: var(--btn-hover-fg, var(--btn-fg, var(--foreground)));
+    }
   }
-  &:active:not(:disabled) {
-    transform: translate(2px, 2px);
-    box-shadow: 1px 1px 0 color-mix(in srgb, var(--warning) 70%, #000);
-  }
-}
 
-.btn-bsky {
-  background: var(--bsky-blue);
-  color: #fff;
-  border-color: color-mix(in srgb, var(--bsky-blue) 70%, #000);
-  box-shadow: 3px 3px 0 color-mix(in srgb, var(--bsky-blue) 70%, #000);
+  &.btn-ghost {
+    background: transparent;
+    color: var(--btn-outline-fg, var(--foreground));
+    border-color: transparent;
+    box-shadow: none;
 
-  &:hover:not(:disabled) {
-    color: #fff;
-    background: color-mix(in srgb, var(--bsky-blue) 85%, #000);
-    transform: translate(-1px, -1px);
-    box-shadow: 4px 4px 0 color-mix(in srgb, var(--bsky-blue) 70%, #000);
-  }
-  &:active:not(:disabled) {
-    transform: translate(2px, 2px);
-    box-shadow: 1px 1px 0 color-mix(in srgb, var(--bsky-blue) 70%, #000);
-  }
-}
-
-.btn-outline-danger {
-  background: transparent;
-  color: var(--danger);
-  border-color: var(--danger);
-  box-shadow: 3px 3px 0 color-mix(in srgb, var(--danger) 70%, #000);
-
-  &:hover:not(:disabled) {
-    color: #fff;
-    background: var(--danger);
-    transform: translate(-1px, -1px);
-    box-shadow: 4px 4px 0 color-mix(in srgb, var(--danger) 70%, #000);
-  }
-  &:active:not(:disabled) {
-    transform: translate(2px, 2px);
-    box-shadow: 1px 1px 0 color-mix(in srgb, var(--danger) 70%, #000);
+    &:hover:not(:disabled) {
+      background: var(--bg-muted);
+      transform: none;
+      box-shadow: none;
+    }
+    &:active:not(:disabled) {
+      transform: none;
+      box-shadow: none;
+    }
   }
 }
 

@@ -68,7 +68,7 @@
       {#if canRemove}
         <button
           type="button"
-          class="btn btn-icon btn-outline-danger"
+          class="btn btn-icon btn-outline btn-danger"
           onclick={handleRemove}
           aria-label="Remove file"><XIcon size={20} /></button
         >

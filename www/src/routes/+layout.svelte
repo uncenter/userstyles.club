@@ -177,8 +177,8 @@
         <p class="footer-tagline">{TAGLINE}</p>
       </div>
       <div class="footer-links">
-        <a href={REPO_URL} target="_blank" rel="noopener noreferrer">Source <MoveUpRightIcon /></a>
-        <a href={FEEDBACK_URL} target="_blank" rel="noopener noreferrer">Feedback <MoveUpRightIcon /></a>
+        <a href={REPO_URL} target="_blank" rel="noopener noreferrer" class="btn btn-outline btn-primary btn-sm">Source <MoveUpRightIcon size={16} /></a>
+        <a href={FEEDBACK_URL} target="_blank" rel="noopener noreferrer" class="btn btn-outline btn-primary btn-sm">Feedback <MoveUpRightIcon size={16} /></a>
       </div>
     </div>
   </footer>
@@ -430,25 +430,11 @@
       }
     }
 
-    .footer-links a {
-      flex-shrink: 0;
-      display: inline-flex;
+    .footer-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-2);
       align-items: center;
-      gap: 0.25em;
-      font-size: var(--text-sm);
-      font-weight: 600;
-      color: var(--fg-muted);
-      text-decoration: none;
-
-      :global(svg) {
-        width: 1em;
-        height: 1em;
-      }
-
-      &:hover {
-        color: var(--accent);
-        text-decoration: underline;
-      }
     }
 
     @media (max-width: 639px) {
