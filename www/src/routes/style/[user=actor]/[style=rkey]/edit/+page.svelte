@@ -9,11 +9,13 @@
 
   import { Spinner, Alert } from '$components/ui';
   import { PreviewImageUpload, CssEditor } from '$components';
+  import LicenseInput from '$components/LicenseInput.svelte';
 
   let { data }: PageProps = $props();
 
   let title = $state(data.userstyle.title);
   let description = $state(data.userstyle.description || '');
+  let license = $state(data.userstyle.license || '');
   let sourceCode = $state(data.userstyle.sourceCode);
   let saving = $state(false);
   let error = $state<string | null>(null);
@@ -42,11 +44,14 @@
     try {
       await updateUserstyle(
         data.style,
-        title,
-        description,
-        sourceCode,
-        data.userstyle.createdAt,
-        previewFile ?? (keepExistingPreview ? data.userstyle.previewImage : undefined)
+        {
+          title,
+          description,
+          license,
+          sourceCode,
+          previewImage: previewFile ?? (keepExistingPreview ? data.userstyle.previewImage : undefined),
+          createdAt: data.userstyle.createdAt,
+        }
       );
       goto(resolve('/style/[user=actor]/[style=rkey]', { user: data.user, style: data.style }));
     } catch (e) {
@@ -82,6 +87,11 @@
       <label class="form-group">
         <span class="field-label">Description</span>
         <input type="text" bind:value={description} maxlength="300" />
+      </label>
+
+      <label class="form-group">
+        <span class="field-label">License</span>
+        <LicenseInput bind:value={license} />
       </label>
 
       <PreviewImageUpload

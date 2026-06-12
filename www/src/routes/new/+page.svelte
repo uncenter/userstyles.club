@@ -14,6 +14,7 @@
   import ImportFromUrl from './ImportFromUrl.svelte';
 
   import { fields } from './fields.svelte';
+  import LicenseInput from '$components/LicenseInput.svelte';
 
   let publishing = $state(false);
   let importing = $state(false);
@@ -51,10 +52,13 @@
           .join('\n');
       }
       let userstyle = await createUserstyle(
-        fields.current.title,
-        fields.current.description,
-        sourceCode,
-        previewImage ?? undefined
+        {
+          title: fields.current.title,
+          description: fields.current.description,
+          license: fields.current.license,
+          sourceCode,
+          previewImage: previewImage ?? undefined,
+        }
       );
       let uri = parseResourceUri(userstyle.response.uri);
       fields.disconnect();
@@ -72,6 +76,7 @@
     fields.current = {
       title: '',
       description: '',
+      license: '',
       sourceCode: '',
       importUrl: '',
       removeUpdateUrl: true
@@ -133,6 +138,17 @@
           maxlength="140"
           placeholder="e.g. Tangled.org tweaks"
         />
+      </div>
+
+      <div class="form-group">
+        <div class="field-row">
+          <label for="license" class="field-label">License</label>
+          {@render importOverrideButton(
+            Boolean(imported?.license && imported.license !== fields.current.license),
+            () => (fields.current.license = imported!.license!)
+          )}
+        </div>
+        <LicenseInput id="license" bind:value={() => fields.current.license, (val) => (fields.current.license = val)} />
       </div>
 
       <div class="form-group">

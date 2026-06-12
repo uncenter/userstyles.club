@@ -16,9 +16,10 @@ export type Userstyle = {
   title: string;
   description?: string;
   sourceCode: string;
+  previewImage?: BlobRef;
+  license?: string;
   createdAt: string;
   updatedAt?: string;
-  previewImage?: BlobRef;
 };
 
 export type UserstyleRecord = RepoRecord & {
@@ -46,25 +47,27 @@ export async function listMyUserstyles() {
   return listUserstyles(did);
 }
 
-export async function createUserstyle(
+export async function createUserstyle(userstyle: {
   title: string,
-  description: string,
+  description?: string,
   sourceCode: string,
   previewImage?: File
-) {
-  title = title.trim();
+  license?: string;
+}) {
+  let title = userstyle.title.trim();
   if (!title) throw new Error('Userstyle title is required.');
   if (title.length > 140) throw new Error('Userstyle title must be 140 characters or fewer.'); // TODO: Grapheme validation?
 
-  const previewImageBlob = previewImage ? await uploadBlob(previewImage) : undefined;
+  const previewImageBlob = userstyle.previewImage ? await uploadBlob(userstyle.previewImage) : undefined;
 
   return createRecord(CLUB_USERSTYLE_COLLECTION, {
     $type: CLUB_USERSTYLE_COLLECTION,
     title,
-    ...(description.trim() && { description }),
-    sourceCode,
+    ...(userstyle.description?.trim() && { description: userstyle.description }),
+    sourceCode: userstyle.sourceCode,
+    ...(previewImageBlob && { previewImage: previewImageBlob }),
+    ...(userstyle.license?.trim() && { license: userstyle.license }),
     createdAt: new Date().toISOString(),
-    ...(previewImageBlob && { previewImage: previewImageBlob })
   });
 }
 
@@ -80,27 +83,30 @@ export async function getUserstyle(repo: ActorIdentifier, rkey: RecordKey) {
 
 export async function updateUserstyle(
   rkey: RecordKey,
-  title: string,
-  description: string,
-  sourceCode: string,
-  createdAt: string,
-  previewImage?: File | BlobRef
-) {
-  title = title.trim();
+  userstyle: {
+    title: string,
+    description?: string,
+    sourceCode: string,
+    previewImage?: File | BlobRef,
+    license?: string,
+    createdAt: string,
+  }) {
+  let title = userstyle.title.trim();
   if (!title) throw new Error('Userstyle title is required.');
   if (title.length > 140) throw new Error('Userstyle title must be 140 characters or fewer.');
 
   const previewImageBlob =
-    previewImage instanceof File ? await uploadBlob(previewImage) : previewImage;
+    userstyle.previewImage instanceof File ? await uploadBlob(userstyle.previewImage) : userstyle.previewImage;
 
   return putRecord(CLUB_USERSTYLE_COLLECTION, rkey, {
     $type: CLUB_USERSTYLE_COLLECTION,
     title,
-    ...(description.trim() && { description }),
-    sourceCode,
-    createdAt,
+    ...(userstyle.description?.trim() && { description: userstyle.description }),
+    sourceCode: userstyle.sourceCode,
+    ...(previewImageBlob && { previewImage: previewImageBlob }),
+    ...(userstyle.license?.trim() && { license: userstyle.license }),
+    createdAt: userstyle.createdAt,
     updatedAt: new Date().toISOString(),
-    ...(previewImageBlob && { previewImage: previewImageBlob })
   });
 }
 

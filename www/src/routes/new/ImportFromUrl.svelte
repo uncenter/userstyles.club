@@ -17,7 +17,7 @@
   let error = $state<string | null>(null);
 
   const usercssParser = usercss.createParser({
-    mandatoryKeys: ['name', 'description'],
+    mandatoryKeys: [],
     allowErrors: true
   });
   const USW_PATTERN = new URLPattern('/style/:id(\\d+){/:name}?{/}?', 'https://userstyles.world');
@@ -41,21 +41,18 @@
 
   async function fetchFromUrl(url: string): Promise<StyleImport> {
     const normalized = normalizeForgeUrl(url);
-    const fetched = await fetchRawFile(normalized).run();
+    const fetched = await fetchRawFile(normalized);
     if (!fetched) throw new Error('Unable to import from URL');
 
     let parsed = usercssParser.parse(fetched);
     for (let err of parsed.errors) {
-      if (err.code === 'missingMandatory') {
-        warning = err.message;
-      } else {
-        error = err.message;
-      }
+      error = err.message;
     }
 
     return {
       title: parsed.metadata.name as string | undefined,
       description: parsed.metadata.description as string | undefined,
+      license: parsed.metadata.license as string | undefined,
       code: fetched
     };
   }
@@ -72,13 +69,14 @@
       const url = fields.current.importUrl;
       const uswMatch = USW_PATTERN.exec(url);
       const result = uswMatch
-        ? await fetchFromUserstylesWorld(uswMatch.pathname.groups.id!).run()
+        ? await fetchFromUserstylesWorld(uswMatch.pathname.groups.id!)
         : await fetchFromUrl(url);
 
       if (!fields.current.sourceCode.trim()) fields.current.sourceCode = result.code ?? '';
       if (!fields.current.title.trim() && result.title) fields.current.title = result.title;
       if (!fields.current.description.trim() && result.description)
         fields.current.description = result.description;
+      if (!fields.current.license.trim() && result.license) fields.current.license = result.license;
 
       imported = result;
     } catch (e) {

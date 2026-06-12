@@ -16,6 +16,7 @@ export const fetchRawFile = query(v.string(), async (url) => {
 export interface StyleImport {
   title?: string;
   description?: string;
+  license?: string;
   code?: string;
 }
 
@@ -26,5 +27,13 @@ export const fetchFromUserstylesWorld = query(v.string(), async (id) => {
 
   const { data } = await response.json();
 
-  return { title: data.name, description: data.description, code: data.code } satisfies StyleImport;
+  let { name: title, description, license, code }: Record<string, string | undefined> = data;
+
+  title = title?.trim() || undefined;
+  description = description?.trim() || undefined;
+  license = license?.trim() || undefined;
+  if (license && license === "No License") license = undefined;
+  code = code?.trim() || undefined;
+
+  return { title, description, license, code } satisfies StyleImport;
 });

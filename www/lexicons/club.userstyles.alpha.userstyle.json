@@ -26,6 +26,10 @@
             "accept": ["image/*"],
             "maxSize": 1000000
           },
+          "license": {
+            "type": "string",
+            "maxLength": "100"
+          },
           "createdAt": {
             "type": "string",
             "format": "datetime"
