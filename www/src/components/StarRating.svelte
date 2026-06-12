@@ -1,6 +1,6 @@
 <script lang="ts">
   interface Props {
-    rating: number;
+    rating: number | undefined;
     count?: number;
     showValue?: boolean;
   }
@@ -10,19 +10,23 @@
 
 <span
   class="star-rating"
-  aria-label="{rating.toFixed(1)} out of 5{count !== undefined
-    ? `, ${count} rating${count !== 1 ? 's' : ''}`
-    : ''}"
+  aria-label={rating !== undefined
+    ? `${rating.toFixed(1)} out of 5${count !== undefined ? `, ${count} rating${count !== 1 ? 's' : ''}` : ''}`
+    : 'No ratings yet'}
 >
   {#each [1, 2, 3, 4, 5] as n}
-    {@const isFilled = rating >= n - 0.25}
-    {@const isHalf = !isFilled && rating >= n - 0.75}
+    {@const isFilled = rating !== undefined && rating >= n - 0.25}
+    {@const isHalf = rating !== undefined && !isFilled && rating >= n - 0.75}
     <span class="star" class:filled={isFilled} class:half={isHalf}>★</span>
   {/each}
   {#if showValue}
-    <span class="average">{rating.toFixed(1)}</span>
-    {#if count !== undefined}
-      <span class="count">({count})</span>
+    {#if rating !== undefined}
+      <span class="average">{rating.toFixed(1)}</span>
+      {#if count !== undefined}
+        <span class="count">({count})</span>
+      {/if}
+    {:else}
+      <span class="average na">n/a</span>
     {/if}
   {/if}
 </span>
@@ -53,6 +57,11 @@
       margin-left: 0.25em;
       font-weight: 700;
       color: var(--foreground);
+
+      &.na {
+        color: var(--fg-muted);
+        font-weight: 400;
+      }
     }
 
     .count {

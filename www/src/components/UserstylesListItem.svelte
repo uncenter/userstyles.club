@@ -15,9 +15,8 @@
   import StarRating from './StarRating.svelte';
   import ActorHandle from './ActorHandle.svelte';
 
-  import { CalendarIcon, WeightIcon } from '@lucide/svelte';
+  import { CalendarIcon } from '@lucide/svelte';
 
-  import bytes from 'pretty-bytes';
   import { formatDate } from '$lib/date';
   import { getPreferredActorIdentifier } from '$lib/preferences.svelte';
 
@@ -59,10 +58,6 @@
       <span class="meta-item">
         <CalendarIcon size={12} />
         {formatDate(userstyle.value.updatedAt ?? userstyle.value.createdAt)}
-      </span>
-      <span class="meta-item">
-        <WeightIcon size={12} />
-        {bytes(userstyle.value.sourceCode.length)}
       </span>
       {#await listReviewsForStyle(userstyle.uri) then reviews}
         {@const avg = computeAverageRating(reviews)}

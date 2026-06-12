@@ -11,8 +11,6 @@
   import { Spinner, Alert, Dialog } from '$components/ui';
   import { ActorHandle, CssPreview, PreviewImage, StarRating } from '$components';
 
-  import { CakeIcon, PenLineIcon, RulerDimensionLineIcon, WeightIcon } from '@lucide/svelte';
-
   import bytes from 'pretty-bytes';
   import { formatDate } from '$lib/date';
 
@@ -27,6 +25,8 @@
 
   let averageRating = $derived(computeAverageRating(data.reviews));
 
+  let lineCount = $derived(data.userstyle.value.sourceCode.split('\n').length);
+  let byteCount = $derived(data.userstyle.value.sourceCode.length);
   async function removeUserstyle() {
     error = null;
     deleting = true;
@@ -75,7 +75,19 @@
 
   <section class="page-section">
     <div class="style-header">
-      <h1 class="style-title">{data.userstyle.value.title}</h1>
+      <div class="style-header-info">
+        <h1 class="style-title">{data.userstyle.value.title}</h1>
+        <p class="style-subtitle">
+          {#if data.userstyle.value.updatedAt}
+            Updated <time>{formatDate(data.userstyle.value.updatedAt)}</time>
+          {:else}
+            Published <time>{formatDate(data.userstyle.value.createdAt)}</time>
+          {/if}
+          {#if data.userstyle.value.license}
+            · <a href="https://spdx.org/licenses/{data.userstyle.value.license}.html" target="_blank" rel="noopener noreferrer">{data.userstyle.value.license}</a>
+          {/if}
+        </p>
+      </div>
       <ActorHandle profile={data.profile} />
     </div>
 
@@ -86,33 +98,15 @@
     <div class="style-info">
       <div class="style-meta">
         <div class="style-item">
-          <time class="style-item-value">{formatDate(data.userstyle.value.createdAt)}</time>
-          <span class="style-item-label"><CakeIcon size={12} /> Published</span>
-        </div>
-        <div class="style-item">
-          <time class="style-item-value"
-            >{data.userstyle.value.updatedAt
-              ? formatDate(data.userstyle.value.updatedAt)
-              : '—'}</time
-          >
-          <span class="style-item-label"><PenLineIcon size={12} /> Last Updated</span>
-        </div>
-        <div class="style-item">
-          <span class="style-item-value">{bytes(data.userstyle.value.sourceCode.length)}</span>
-          <span class="style-item-label"><WeightIcon size={12} /> Size</span>
-        </div>
-        <div class="style-item">
-          <span class="style-item-value">{data.userstyle.value.sourceCode.split('\n').length}</span>
-          <span class="style-item-label"><RulerDimensionLineIcon size={12} /> Lines</span>
-        </div>
-        {#if averageRating}
-          <div class="style-item">
-            <span class="style-item-value">
+          <span class="style-item-value">
+            {#if averageRating}
               <StarRating rating={averageRating.average} count={averageRating.count} />
-            </span>
-            <span class="style-item-label">Rating</span>
-          </div>
-        {/if}
+            {:else}
+              <StarRating rating={undefined} />
+            {/if}
+          </span>
+          <span class="style-item-label">Rating</span>
+        </div>
       </div>
 
       <a
@@ -147,6 +141,7 @@
 
     <div class="code-preview">
       <CssPreview source={data.userstyle.value.sourceCode} />
+      <p class="code-meta">{bytes(byteCount)} · {lineCount} lines</p>
     </div>
   </section>
 
@@ -190,6 +185,22 @@
     gap: var(--space-4);
     flex-wrap: wrap;
     margin-bottom: var(--space-4);
+
+    .style-header-info {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-1);
+      min-width: 0;
+    }
+
+    .style-subtitle {
+      font-size: var(--text-sm);
+      color: var(--fg-muted);
+
+      time {
+        font-weight: 600;
+      }
+    }
   }
 
   .style-title {
@@ -236,7 +247,7 @@
         display: inline-flex;
         align-items: center;
         gap: 0.25rem;
-        font-size: var(--text-xs);
+        font-size: var(--text-sm);
         color: var(--fg-muted);
       }
     }
@@ -259,6 +270,13 @@
     :global(pre) {
       max-height: 14rem;
       overflow-y: auto;
+    }
+
+    .code-meta {
+      font-size: var(--text-xs);
+      color: var(--fg-muted);
+      text-align: right;
+      padding: var(--space-1) var(--space-2);
     }
   }
 </style>
