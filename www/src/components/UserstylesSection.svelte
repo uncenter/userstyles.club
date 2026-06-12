@@ -53,7 +53,7 @@
       list-style: none;
       padding: 0;
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
       gap: var(--space-4);
 
       li:nth-child(6n + 1) {
