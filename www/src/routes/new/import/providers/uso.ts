@@ -36,7 +36,7 @@ export default {
     return {
       title: data.info.name,
       description: data.info.description,
-      license: data.info.license,
+      license: data.info.license !== "NONE" && data.info.license,
       sourceCode: code,
     }
   }
@@ -47,7 +47,7 @@ type USoArchiveData = {
   info: {
     name: string
     description: string
-    additionalInfo: string
+    additionalInfo: string | null
     format: string
     category: string
     createdAt: string
@@ -75,7 +75,7 @@ type USoArchiveData = {
     additional: Array<{
       name: string
       archived: boolean
-    }>
+    }> | null
   }
   obsolete: any
   style: {
