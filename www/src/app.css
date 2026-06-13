@@ -381,18 +381,29 @@ select {
     border-color var(--ease-fast),
     box-shadow var(--ease-fast);
 }
-input:focus,
-textarea:focus,
-select:focus {
-  outline: none;
-  border-color: var(--ring);
-  box-shadow: 3px 3px 0 var(--accent);
+
+input, textarea, select {
+  &:focus {
+    outline: none;
+    border-color: var(--ring);
+    box-shadow: 3px 3px 0 var(--accent);
+  }
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
 }
-input:disabled,
-textarea:disabled,
-select:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
+
+input,
+textarea {
+  &:user-invalid {
+    border-color: var(--danger);
+
+    &:focus {
+      border-color: var(--danger);
+      box-shadow: 3px 3px 0 var(--danger);
+    }
+  }
 }
 
 input[type='checkbox'] {
@@ -511,6 +522,11 @@ input[type='checkbox'] {
   font-size: var(--text-sm);
   user-select: none;
   width: fit-content;
+
+  &.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
 }
 
 .file-label {

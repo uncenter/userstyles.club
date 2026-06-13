@@ -1,27 +1,26 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
   import { resolve } from '$app/paths';
-  import { createUserstyle, user } from '$lib/at';
+  import { createUserstyle, removeUpdateUrlFromSource, user } from '$lib/at';
   import { parseResourceUri } from '@atcute/lexicons';
 
   import { joinPageTitle } from '$lib/constants';
   import type { StyleImport } from './fetch.remote';
 
-  import { Wordmark } from '$components/branding';
-  import { Spinner, Alert, Dialog } from '$components/ui';
-  import { PreviewImageUpload, BlueskyIcon, CssEditor } from '$components';
+  import { Spinner, Dialog } from '$components/ui';
+  import { BlueskyIcon } from '$components';
 
   import ImportFromUrl from './ImportFromUrl.svelte';
+  import UserstyleForm from './UserstyleForm.svelte';
 
-  import { fields } from './fields.svelte';
-  import LicenseInput from '$components/LicenseInput.svelte';
+  import { fields, resetFields } from './fields.svelte';
 
   let publishing = $state(false);
   let importing = $state(false);
   let pending = $derived(publishing || importing);
   let error = $state<string | null>(null);
 
-  let previewImage = $state<File | null>(null);
+  let previewFile = $state<File | null>(null);
   let imported = $state<StyleImport | null>(null);
 
   let shareDialogOpen = $state(false);
@@ -44,22 +43,18 @@
     error = null;
 
     try {
-      let sourceCode = fields.current.sourceCode;
-      if (fields.current.removeUpdateUrl) {
-        sourceCode = sourceCode
-          .split('\n')
-          .filter((line) => !/^\s*@updateURL\s/.test(line))
-          .join('\n');
-      }
-      let userstyle = await createUserstyle(
-        {
-          title: fields.current.title,
-          description: fields.current.description,
-          license: fields.current.license,
-          sourceCode,
-          previewImage: previewImage ?? undefined,
-        }
-      );
+      const sourceCode = fields.current.removeUpdateUrl
+        ? removeUpdateUrlFromSource(fields.current.sourceCode)
+        : fields.current.sourceCode;
+      let userstyle = await createUserstyle({
+        title: fields.current.title,
+        description: fields.current.description,
+        license: fields.current.license,
+        upstreamUrl: fields.current.trackUpstreamUrl ? fields.current.upstreamUrl : undefined,
+        homepageUrl: fields.current.homepageUrl,
+        sourceCode,
+        previewImage: previewFile ?? undefined,
+      });
       let uri = parseResourceUri(userstyle.response.uri);
       fields.disconnect();
       publishedUrl = `/style/${uri.repo}/${uri.rkey}`;
@@ -73,16 +68,7 @@
   }
 
   function clearAll() {
-    fields.current = {
-      title: '',
-      description: '',
-      license: '',
-      sourceCode: '',
-      importUrl: '',
-      upstreamUrl: '',
-      homepageUrl: '',
-      removeUpdateUrl: true
-    };
+    resetFields();
     imported = null;
     clearDialogOpen = false;
   }
@@ -117,132 +103,56 @@
   </div>
 
   <div class="page-section">
-    {#snippet importOverrideButton(condition: boolean, apply: () => void)}
-      {#if condition}
-        <button type="button" class="btn btn-warning btn-sm" onclick={apply}>Import</button>
+    {#snippet importOverrideButton(field: keyof StyleImport)}
+      {#if imported}
+        {@const importedValue = imported[field]}
+        {@const currentValue = fields.current[field]}
+        {#if importedValue && importedValue !== currentValue}
+          <button
+            type="button"
+            class="btn btn-warning btn-sm"
+            onclick={() => (fields.current[field] = importedValue)}
+          >Import</button>
+        {/if}
       {/if}
     {/snippet}
 
-    <form onsubmit={submit} class="form-stack">
-      <div class="form-group">
-        <div class="field-row">
-          <label for="title" class="field-label">Title</label>
-          {@render importOverrideButton(
-            Boolean(imported?.title && imported.title !== fields.current.title),
-            () => (fields.current.title = imported!.title!)
-          )}
-        </div>
-        <input
-          id="title"
-          type="text"
-          required
-          bind:value={() => fields.current.title, (val) => (fields.current.title = val)}
-          maxlength="140"
-          placeholder="e.g. Tangled.org tweaks"
-        />
-      </div>
+    {#snippet formActions()}
+      <button
+        type="button"
+        class="btn btn-danger"
+        onclick={() => (clearDialogOpen = true)}
+        disabled={pending ||
+          (!fields.current.title.trim() &&
+            !fields.current.description?.trim() &&
+            !fields.current.sourceCode.trim())}
+      >
+        Clear
+      </button>
+      <button
+        type="submit"
+        class="btn btn-primary"
+        disabled={pending || !fields.current.title.trim() || !fields.current.sourceCode.trim()}
+      >
+        {#if publishing}<Spinner size="sm" /> Publishing…{:else}Publish{/if}
+      </button>
+    {/snippet}
 
-      <div class="form-group">
-        <div class="field-row">
-          <label for="description" class="field-label">Description</label>
-          {@render importOverrideButton(
-            Boolean(imported?.description && imported.description !== fields.current.description),
-            () => (fields.current.description = imported!.description!)
-          )}
-        </div>
-        <input
-          id="description"
-          type="text"
-          bind:value={() => fields.current.description, (val) => (fields.current.description = val)}
-          maxlength="300"
-        />
-      </div>
-
-      <div class="form-group">
-        <div class="field-row">
-          <label for="license" class="field-label">License</label>
-          {@render importOverrideButton(
-            Boolean(imported?.license && imported.license !== fields.current.license),
-            () => (fields.current.license = imported!.license!)
-          )}
-        </div>
-        <LicenseInput id="license" bind:value={() => fields.current.license, (val) => (fields.current.license = val)} />
-      </div>
-
-      <div class="form-group">
-        <div class="field-row">
-          <label for="homepage-url" class="field-label">Homepage</label>
-          {@render importOverrideButton(
-            Boolean(imported?.homepageUrl && imported.homepageUrl !== fields.current.homepageUrl),
-            () => (fields.current.homepageUrl = imported!.homepageUrl!)
-          )}
-        </div>
-        <input
-          id="homepage-url"
-          type="url"
-          bind:value={() => fields.current.homepageUrl, (val) => (fields.current.homepageUrl = val)}
-          maxlength="100"
-        />
-      </div>
-
-      <PreviewImageUpload bind:file={previewImage} />
-
-      <div class="form-group">
-        <div class="field-row">
-          <p class="field-label" data-required>CSS</p>
-          {@render importOverrideButton(
-            Boolean(imported?.code && imported.code !== fields.current.sourceCode),
-            () => (fields.current.sourceCode = imported!.code!)
-          )}
-        </div>
-        <CssEditor bind:code={fields.current.sourceCode} />
-      </div>
-
-      <div class="form-group">
-        <label class="form-check">
-          <input
-            type="checkbox"
-            bind:checked={
-              () => fields.current.removeUpdateUrl, (val) => (fields.current.removeUpdateUrl = val)
-            }
-            aria-describedby="remove-update-url-desc"
-          />
-          <span
-            >Check for updates from <Wordmark --height="1rem" /> instead of original update URL?</span
-          >
-        </label>
-        <p class="form-hint" id="remove-update-url-desc">
-          If there is a configured update URL within the userstyle source code, Stylus will check
-          for updates from that URL instead of <strong>userstyles.club</strong>. Removes the
-          <code>@updateURL</code> field from the userstyle's metadata.
-        </p>
-      </div>
-
-      <div class="form-footer">
-        <button
-          type="button"
-          class="btn btn-danger"
-          onclick={() => (clearDialogOpen = true)}
-          disabled={pending ||
-            (!fields.current.title.trim() &&
-              !fields.current.description.trim() &&
-              !fields.current.sourceCode.trim())}
-        >
-          Clear
-        </button>
-        <button
-          type="submit"
-          class="btn btn-primary"
-          disabled={pending || !fields.current.title.trim() || !fields.current.sourceCode.trim()}
-        >
-          {#if publishing}<Spinner size="sm" /> Publishing…{:else}Publish{/if}
-        </button>
-      </div>
-
-      {#if error}
-        <Alert variant="error">{error}</Alert>
-      {/if}
-    </form>
+    <UserstyleForm
+      bind:title={fields.current.title}
+      bind:description={fields.current.description}
+      bind:license={fields.current.license}
+      bind:homepageUrl={fields.current.homepageUrl}
+      bind:sourceCode={fields.current.sourceCode}
+      bind:upstreamUrl={fields.current.upstreamUrl}
+      bind:trackUpstreamUrl={fields.current.trackUpstreamUrl}
+      bind:removeUpdateUrl={fields.current.removeUpdateUrl}
+      bind:previewFile
+      {error}
+      onsubmit={submit}
+      fieldExtras={importOverrideButton}
+      {formActions}
+    />
   </div>
 </div>
 

@@ -5,19 +5,24 @@
 
   import { joinPageTitle } from '$lib/constants';
 
-  import { getBlobCdnUrl, updateUserstyle, user } from '$lib/at';
+  import { getBlobCdnUrl, removeUpdateUrlFromSource, updateUserstyle, user } from '$lib/at';
 
-  import { Spinner, Alert } from '$components/ui';
-  import { PreviewImageUpload, CssEditor } from '$components';
-  import LicenseInput from '$components/LicenseInput.svelte';
+  import { Spinner } from '$components/ui';
+
+  import UserstyleForm from '../../../../new/UserstyleForm.svelte';
 
   let { data }: PageProps = $props();
 
   let title = $state(data.userstyle.title);
-  let description = $state(data.userstyle.description || '');
-  let license = $state(data.userstyle.license || '');
+  let description = $state(data.userstyle.description);
+  let license = $state(data.userstyle.license);
+  let upstreamUrl = $state(data.userstyle.upstreamUrl);
   let homepageUrl = $state(data.userstyle.homepageUrl);
   let sourceCode = $state(data.userstyle.sourceCode);
+
+  let trackUpstreamUrl = $state(false);
+  let removeUpdateUrl = $state(false);
+
   let saving = $state(false);
   let error = $state<string | null>(null);
 
@@ -29,7 +34,7 @@
       goto(resolve('/login'));
       return;
     }
-    // Redirect non-owners back to the style page
+    // Redirect non-owners back to the style page.
     if (user.did && user.did !== data.profile.did) {
       goto(resolve('/style/[user=actor]/[style=rkey]', { user: data.user, style: data.style }));
     }
@@ -43,18 +48,17 @@
     error = null;
 
     try {
-      await updateUserstyle(
-        data.style,
-        {
-          title,
-          description,
-          license,
-          homepageUrl,
-          sourceCode,
-          previewImage: previewFile ?? (keepExistingPreview ? data.userstyle.previewImage : undefined),
-          createdAt: data.userstyle.createdAt,
-        }
-      );
+      let processedSourceCode = removeUpdateUrl ? removeUpdateUrlFromSource(sourceCode) : sourceCode;
+      await updateUserstyle(data.style, {
+        title,
+        description,
+        license,
+        upstreamUrl: trackUpstreamUrl ? upstreamUrl : undefined,
+        homepageUrl,
+        sourceCode: processedSourceCode,
+        previewImage: previewFile ?? (keepExistingPreview ? data.userstyle.previewImage : undefined),
+        createdAt: data.userstyle.createdAt,
+      });
       goto(resolve('/style/[user=actor]/[style=rkey]', { user: data.user, style: data.style }));
     } catch (e) {
       error = e instanceof Error ? e.message : 'Failed to save userstyle.';
@@ -74,65 +78,38 @@
   </div>
 
   <div class="page-section">
-    <form onsubmit={submit} class="form-stack">
-      <label class="form-group">
-        <span class="field-label">Title</span>
-        <input
-          type="text"
-          required
-          bind:value={title}
-          maxlength="140"
-          placeholder="e.g. Tangled.org tweaks"
-        />
-      </label>
+    {#snippet formActions()}
+      <button type="submit" class="btn btn-primary" disabled={saving || !title.trim() || !sourceCode.trim()}>
+        {#if saving}<Spinner size="sm" /> Saving…{:else}Save{/if}
+      </button>
+      <a
+        href={resolve('/style/[user=actor]/[style=rkey]', { user: data.user, style: data.style })}
+        class="btn btn-outline"
+      >
+        Cancel
+      </a>
+    {/snippet}
 
-      <label class="form-group">
-        <span class="field-label">Description</span>
-        <input type="text" bind:value={description} maxlength="300" />
-      </label>
+    <UserstyleForm
+      bind:title
+      bind:description
+      bind:license
+      bind:upstreamUrl
+      bind:homepageUrl
+      bind:sourceCode
 
-      <label class="form-group">
-        <span class="field-label">License</span>
-        <LicenseInput bind:value={license} />
-      </label>
+      bind:trackUpstreamUrl
+      bind:removeUpdateUrl
 
-      <label class="form-group">
-        <span class="field-label">Homepage</span>
-        <input type="url" bind:value={homepageUrl} maxlength="100" />
-      </label>
+      bind:previewFile
+      bind:keepExistingPreview
+      existingImageSrc={data.userstyle.previewImage
+        ? getBlobCdnUrl(data.profile.did, data.userstyle.previewImage.ref.$link, 'feed_fullsize')
+        : null}
 
-      <PreviewImageUpload
-        bind:file={previewFile}
-        bind:keepExistingSavedImage={keepExistingPreview}
-        existingImageSrc={data.userstyle.previewImage
-          ? getBlobCdnUrl(data.profile.did, data.userstyle.previewImage.ref.$link, 'feed_fullsize')
-          : null}
-      />
-
-      <div class="form-group">
-        <p class="field-label" data-required>CSS</p>
-        <CssEditor bind:code={sourceCode} />
-      </div>
-
-      {#if error}
-        <Alert variant="error">{error}</Alert>
-      {/if}
-
-      <div class="form-footer">
-        <button
-          type="submit"
-          class="btn btn-primary"
-          disabled={saving || !title.trim() || !sourceCode.trim()}
-        >
-          {#if saving}<Spinner size="sm" /> Saving…{:else}Save{/if}
-        </button>
-        <a
-          href={resolve('/style/[user=actor]/[style=rkey]', { user: data.user, style: data.style })}
-          class="btn btn-outline"
-        >
-          Cancel
-        </a>
-      </div>
-    </form>
+      {error}
+      onsubmit={submit}
+      {formActions}
+    />
   </div>
 </div>

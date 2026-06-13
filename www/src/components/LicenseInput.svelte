@@ -4,7 +4,7 @@
   import { Alert } from './ui';
 
   interface Props {
-    value: string;
+    value: string | undefined;
     id?: string;
     required?: boolean;
   }

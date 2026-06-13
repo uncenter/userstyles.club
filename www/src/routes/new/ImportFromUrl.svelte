@@ -1,18 +1,19 @@
 <script lang="ts">
-  import type { NewUserstyleFields } from './fields.svelte';
+  import type { UserstyleFormFields } from './fields.svelte';
   import { fetchFromUserstylesWorld, fetchRawFile, type StyleImport } from './fetch.remote';
   import usercss from 'usercss-meta';
 
   import { Spinner, Alert } from '$components/ui';
 
   interface Props {
-    fields: NewUserstyleFields;
+    fields: { current: UserstyleFormFields };
     pending: boolean;
     imported?: StyleImport | null;
   }
 
   let { fields, pending = $bindable(), imported = $bindable(null) }: Props = $props();
 
+  let importUrl = $state('');
   let warning = $state<string | null>(null);
   let error = $state<string | null>(null);
 
@@ -54,7 +55,7 @@
       description: parsed.metadata.description as string | undefined,
       license: parsed.metadata.license as string | undefined,
       homepageUrl: parsed.metadata.homepageURL as string | undefined,
-      code: fetched
+      sourceCode: fetched,
     };
   }
 
@@ -67,19 +68,17 @@
     pending = true;
 
     try {
-      const url = fields.current.importUrl;
-      const uswMatch = USW_PATTERN.exec(url);
-      const result = uswMatch
-        ? await fetchFromUserstylesWorld(uswMatch.pathname.groups.id!)
-        : await fetchFromUrl(url);
+      const isUserstylesWorld = USW_PATTERN.exec(importUrl);
+      const result = isUserstylesWorld
+        ? await fetchFromUserstylesWorld(isUserstylesWorld.pathname.groups.id!)
+        : await fetchFromUrl(importUrl);
 
-      if (!fields.current.sourceCode.trim()) fields.current.sourceCode = result.code ?? '';
-      if (!fields.current.title.trim() && result.title) fields.current.title = result.title;
-      if (!fields.current.description.trim() && result.description)
-        fields.current.description = result.description;
-      if (!fields.current.license.trim() && result.license) fields.current.license = result.license;
-      if (!fields.current.homepageUrl.trim() && result.homepageUrl) fields.current.homepageUrl = result.homepageUrl;
+      for (const [key, value] of Object.entries(result) as [keyof StyleImport, string | undefined][]) {
+        if (value && !fields.current[key]?.trim()) fields.current[key] = value;
+      }
 
+      fields.current.upstreamUrl = importUrl;
+      fields.current.trackUpstreamUrl = true;
       imported = result;
     } catch (e) {
       error = e instanceof Error ? e.message : 'Failed to import userstyle from URL.';
@@ -94,12 +93,12 @@
     <span class="field-label">Import from URL</span>
     <div class="text-input-button-group">
       <input
-        type="text"
-        bind:value={() => fields.current.importUrl, (val) => (fields.current.importUrl = val)}
+        type="url"
+        bind:value={importUrl}
         placeholder="https://tangled.org/example.org/my-userstyle/raw/main/style.user.css"
         aria-describedby="import-from-url-desc"
       />
-      <button type="submit" disabled={pending || !fields.current.importUrl.trim()}>
+      <button type="submit" disabled={pending || !importUrl.trim()}>
         {#if pending}<Spinner size="sm" /> Importing…{:else}Import{/if}
       </button>
     </div>

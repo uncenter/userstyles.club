@@ -28,7 +28,9 @@ export {
   createUserstyle,
   updateUserstyle,
   deleteUserstyle,
+  removeUpdateUrlFromSource,
   type Userstyle,
+  type UserstyleInput,
   type UserstyleRecord
 } from './services/userstyles';
 export {
