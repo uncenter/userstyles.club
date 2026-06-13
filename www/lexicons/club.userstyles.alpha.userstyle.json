@@ -30,6 +30,14 @@
             "type": "string",
             "maxLength": "100"
           },
+          "upstreamUrl": {
+            "type": "string",
+            "format": "uri"
+          },
+          "homepageUrl": {
+            "type": "string",
+            "format": "uri"
+          },
           "createdAt": {
             "type": "string",
             "format": "datetime"

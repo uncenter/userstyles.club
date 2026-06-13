@@ -14,10 +14,11 @@ export const fetchRawFile = query(v.string(), async (url) => {
 });
 
 export interface StyleImport {
-  title?: string;
-  description?: string;
-  license?: string;
-  code?: string;
+  title: string | undefined;
+  description: string | undefined;
+  license: string | undefined;
+  homepageUrl: string | undefined;
+  code: string | undefined;
 }
 
 export const fetchFromUserstylesWorld = query(v.string(), async (id) => {
@@ -27,13 +28,14 @@ export const fetchFromUserstylesWorld = query(v.string(), async (id) => {
 
   const { data } = await response.json();
 
-  let { name: title, description, license, code }: Record<string, string | undefined> = data;
+  let { name: title, description, license, homepage: homepageUrl, code }: Record<string, string | undefined> = data;
 
   title = title?.trim() || undefined;
   description = description?.trim() || undefined;
   license = license?.trim() || undefined;
   if (license && license === "No License") license = undefined;
+  homepageUrl = homepageUrl?.trim() || undefined;
   code = code?.trim() || undefined;
 
-  return { title, description, license, code } satisfies StyleImport;
+  return { title, description, license, homepageUrl, code } satisfies StyleImport;
 });

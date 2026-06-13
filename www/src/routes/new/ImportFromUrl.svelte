@@ -53,6 +53,7 @@
       title: parsed.metadata.name as string | undefined,
       description: parsed.metadata.description as string | undefined,
       license: parsed.metadata.license as string | undefined,
+      homepageUrl: parsed.metadata.homepageURL as string | undefined,
       code: fetched
     };
   }
@@ -77,6 +78,7 @@
       if (!fields.current.description.trim() && result.description)
         fields.current.description = result.description;
       if (!fields.current.license.trim() && result.license) fields.current.license = result.license;
+      if (!fields.current.homepageUrl.trim() && result.homepageUrl) fields.current.homepageUrl = result.homepageUrl;
 
       imported = result;
     } catch (e) {

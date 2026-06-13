@@ -1,4 +1,4 @@
-import type { ActorIdentifier, RecordKey, Blob as BlobRef } from '@atcute/lexicons';
+import type { ActorIdentifier, RecordKey, Blob as BlobRef, GenericUri } from '@atcute/lexicons';
 import { getSessionContext } from '../auth';
 import {
   createRecord,
@@ -18,6 +18,8 @@ export type Userstyle = {
   sourceCode: string;
   previewImage?: BlobRef;
   license?: string;
+  upstreamUrl?: GenericUri;
+  homepageUrl?: GenericUri;
   createdAt: string;
   updatedAt?: string;
 };
@@ -25,6 +27,14 @@ export type Userstyle = {
 export type UserstyleRecord = RepoRecord & {
   value: Userstyle;
 };
+
+function optionals<K extends keyof Userstyle>(
+  obj: Partial<Pick<Userstyle, K>>
+): Partial<Pick<Userstyle, K>> {
+  return Object.fromEntries(
+    Object.entries(obj).filter(([, v]) => typeof v !== 'string' || v.trim())
+  ) as Partial<Pick<Userstyle, K>>;
+}
 
 function isUserstyle(value: Record<string, unknown>): value is Userstyle {
   return typeof value.title === 'string' && typeof value.sourceCode === 'string';
@@ -51,24 +61,27 @@ export async function createUserstyle(userstyle: {
   title: string,
   description?: string,
   sourceCode: string,
-  previewImage?: File
-  license?: string;
+  previewImage?: File,
+  license?: string,
+  upstreamUrl?: GenericUri,
+  homepageUrl?: GenericUri,
 }) {
-  let title = userstyle.title.trim();
+  let { title, description, sourceCode, previewImage, license, upstreamUrl, homepageUrl } = userstyle;
+
+  title = title.trim();
   if (!title) throw new Error('Userstyle title is required.');
   if (title.length > 140) throw new Error('Userstyle title must be 140 characters or fewer.'); // TODO: Grapheme validation?
 
-  const previewImageBlob = userstyle.previewImage ? await uploadBlob(userstyle.previewImage) : undefined;
+  const previewImageBlob = previewImage ? await uploadBlob(previewImage) : undefined;
 
   return createRecord(CLUB_USERSTYLE_COLLECTION, {
     $type: CLUB_USERSTYLE_COLLECTION,
     title,
-    ...(userstyle.description?.trim() && { description: userstyle.description }),
-    sourceCode: userstyle.sourceCode,
+    ...optionals({ description, license: license, upstreamUrl, homepageUrl }),
+    sourceCode,
     ...(previewImageBlob && { previewImage: previewImageBlob }),
-    ...(userstyle.license?.trim() && { license: userstyle.license }),
     createdAt: new Date().toISOString(),
-  });
+  } satisfies Partial<Userstyle> & { $type: string });
 }
 
 export async function getUserstyle(repo: ActorIdentifier, rkey: RecordKey) {
@@ -89,25 +102,27 @@ export async function updateUserstyle(
     sourceCode: string,
     previewImage?: File | BlobRef,
     license?: string,
+    upstreamUrl?: GenericUri,
+    homepageUrl?: GenericUri,
     createdAt: string,
   }) {
-  let title = userstyle.title.trim();
+  let { title, description, sourceCode, previewImage, license, upstreamUrl, homepageUrl } = userstyle;
+
+  title = title.trim();
   if (!title) throw new Error('Userstyle title is required.');
   if (title.length > 140) throw new Error('Userstyle title must be 140 characters or fewer.');
 
-  const previewImageBlob =
-    userstyle.previewImage instanceof File ? await uploadBlob(userstyle.previewImage) : userstyle.previewImage;
+  const previewImageBlob = previewImage instanceof File ? await uploadBlob(previewImage) : previewImage;
 
   return putRecord(CLUB_USERSTYLE_COLLECTION, rkey, {
     $type: CLUB_USERSTYLE_COLLECTION,
     title,
-    ...(userstyle.description?.trim() && { description: userstyle.description }),
-    sourceCode: userstyle.sourceCode,
+    ...optionals({ description, license, upstreamUrl, homepageUrl }),
+    sourceCode,
     ...(previewImageBlob && { previewImage: previewImageBlob }),
-    ...(userstyle.license?.trim() && { license: userstyle.license }),
     createdAt: userstyle.createdAt,
     updatedAt: new Date().toISOString(),
-  });
+  } satisfies Partial<Userstyle> & { $type: string });
 }
 
 export async function deleteUserstyle(rkey: RecordKey) {

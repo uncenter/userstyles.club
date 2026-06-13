@@ -79,6 +79,8 @@
       license: '',
       sourceCode: '',
       importUrl: '',
+      upstreamUrl: '',
+      homepageUrl: '',
       removeUpdateUrl: true
     };
     imported = null;
@@ -142,17 +144,6 @@
 
       <div class="form-group">
         <div class="field-row">
-          <label for="license" class="field-label">License</label>
-          {@render importOverrideButton(
-            Boolean(imported?.license && imported.license !== fields.current.license),
-            () => (fields.current.license = imported!.license!)
-          )}
-        </div>
-        <LicenseInput id="license" bind:value={() => fields.current.license, (val) => (fields.current.license = val)} />
-      </div>
-
-      <div class="form-group">
-        <div class="field-row">
           <label for="description" class="field-label">Description</label>
           {@render importOverrideButton(
             Boolean(imported?.description && imported.description !== fields.current.description),
@@ -164,6 +155,33 @@
           type="text"
           bind:value={() => fields.current.description, (val) => (fields.current.description = val)}
           maxlength="300"
+        />
+      </div>
+
+      <div class="form-group">
+        <div class="field-row">
+          <label for="license" class="field-label">License</label>
+          {@render importOverrideButton(
+            Boolean(imported?.license && imported.license !== fields.current.license),
+            () => (fields.current.license = imported!.license!)
+          )}
+        </div>
+        <LicenseInput id="license" bind:value={() => fields.current.license, (val) => (fields.current.license = val)} />
+      </div>
+
+      <div class="form-group">
+        <div class="field-row">
+          <label for="homepage-url" class="field-label">Homepage</label>
+          {@render importOverrideButton(
+            Boolean(imported?.homepageUrl && imported.homepageUrl !== fields.current.homepageUrl),
+            () => (fields.current.homepageUrl = imported!.homepageUrl!)
+          )}
+        </div>
+        <input
+          id="homepage-url"
+          type="url"
+          bind:value={() => fields.current.homepageUrl, (val) => (fields.current.homepageUrl = val)}
+          maxlength="100"
         />
       </div>
 

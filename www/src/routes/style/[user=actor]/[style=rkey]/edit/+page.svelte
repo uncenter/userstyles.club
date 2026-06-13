@@ -16,6 +16,7 @@
   let title = $state(data.userstyle.title);
   let description = $state(data.userstyle.description || '');
   let license = $state(data.userstyle.license || '');
+  let homepageUrl = $state(data.userstyle.homepageUrl);
   let sourceCode = $state(data.userstyle.sourceCode);
   let saving = $state(false);
   let error = $state<string | null>(null);
@@ -48,6 +49,7 @@
           title,
           description,
           license,
+          homepageUrl,
           sourceCode,
           previewImage: previewFile ?? (keepExistingPreview ? data.userstyle.previewImage : undefined),
           createdAt: data.userstyle.createdAt,
@@ -92,6 +94,11 @@
       <label class="form-group">
         <span class="field-label">License</span>
         <LicenseInput bind:value={license} />
+      </label>
+
+      <label class="form-group">
+        <span class="field-label">Homepage</span>
+        <input type="url" bind:value={homepageUrl} maxlength="100" />
       </label>
 
       <PreviewImageUpload

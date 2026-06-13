@@ -107,7 +107,7 @@ export async function getRecord(params: {
   return response;
 }
 
-export async function createRecord(collection: Nsid, record: Record<string, unknown>) {
+export async function createRecord<T extends Record<string, unknown>>(collection: Nsid, record: T) {
   const { client, did } = getSessionContext('You must be logged in to write records.');
 
   const response = await ok(
@@ -123,10 +123,10 @@ export async function createRecord(collection: Nsid, record: Record<string, unkn
   return { response, record };
 }
 
-export async function putRecord(
+export async function putRecord<T extends Record<string, unknown>>(
   collection: Nsid,
   rkey: RecordKey,
-  record: Record<string, unknown>
+  record: T
 ) {
   const { client, did } = getSessionContext('You must be logged in to write records.');
 
