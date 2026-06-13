@@ -12,20 +12,22 @@ import {
 } from '../records';
 import { CLUB_USERSTYLE_COLLECTION } from '../settings';
 
-export type Userstyle = {
+export type UserstyleContent = {
   title: string;
   description?: string;
   sourceCode: string;
-  previewImage?: BlobRef;
   license?: string;
   upstreamUrl?: string;
   homepageUrl?: string;
+};
+
+export type Userstyle = UserstyleContent & {
+  previewImage?: BlobRef;
   createdAt: string;
   updatedAt?: string;
 };
 
-// Input type for creating/updating a userstyle.
-export type UserstyleInput = Omit<Userstyle, 'createdAt' | 'updatedAt' | 'previewImage'> & {
+export type UserstyleInput = UserstyleContent & {
   previewImage?: File;
 };
 
@@ -40,7 +42,7 @@ export function removeUpdateUrlFromSource(sourceCode: string): string {
     .join('\n');
 }
 
-function validateUserstyle<T extends Omit<UserstyleInput, 'previewImage'>>(userstyle: T): T {
+function validateUserstyle<T extends UserstyleContent>(userstyle: T): T {
   const title = userstyle.title.trim();
   if (!title) throw new Error('Userstyle title is required.');
   if (title.length > 140) throw new Error('Userstyle title must be 140 characters or fewer.');
@@ -106,7 +108,7 @@ export async function getUserstyle(repo: ActorIdentifier, rkey: RecordKey) {
   return response;
 }
 
-type UpdateUserstyleInput = Omit<UserstyleInput, 'previewImage'> & {
+type UpdateUserstyleInput = UserstyleContent & {
   previewImage?: File | BlobRef;
   createdAt: string;
 };

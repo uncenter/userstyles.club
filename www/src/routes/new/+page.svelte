@@ -5,12 +5,13 @@
   import { parseResourceUri } from '@atcute/lexicons';
 
   import { joinPageTitle } from '$lib/constants';
-  import type { StyleImport } from './fetch.remote';
+  import type { UserstyleContent } from '$lib/at';
+  import type { ImportResult } from './import';
 
   import { Spinner, Dialog } from '$components/ui';
   import { BlueskyIcon } from '$components';
 
-  import ImportFromUrl from './ImportFromUrl.svelte';
+  import ImportFromUrl from './import/ImportFromUrl.svelte';
   import UserstyleForm from './UserstyleForm.svelte';
 
   import { fields } from './fields.svelte';
@@ -21,7 +22,7 @@
   let error = $state<string | null>(null);
 
   let previewFile = $state<File | null>(null);
-  let imported = $state<StyleImport | null>(null);
+  let imported = $state<ImportResult | null>(null);
 
   let shareDialogOpen = $state(false);
   let clearDialogOpen = $state(false);
@@ -104,7 +105,7 @@
   </div>
 
   <div class="page-section">
-    {#snippet importOverrideButton(field: keyof StyleImport)}
+    {#snippet importOverrideButton(field: keyof UserstyleContent)}
       {#if imported}
         {@const importedValue = imported[field]}
         {@const currentValue = fields[field]}

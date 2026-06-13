@@ -1,6 +1,7 @@
 <script lang="ts">
   import type { Snippet } from 'svelte';
-  import type { UserstyleFormFields, PrimaryFormFields } from './fields.svelte';
+  import type { UserstyleContent } from '$lib/at';
+  import type { UserstyleFormFields } from './fields.svelte';
   import { PreviewImageUpload, CssEditor } from '$components';
   import LicenseInput from '$components/LicenseInput.svelte';
   import { Wordmark } from '$components/branding';
@@ -14,7 +15,7 @@
     error?: string | null;
     onsubmit: (event: Event) => void;
 
-    fieldExtras?: Snippet<[field: keyof PrimaryFormFields]>;
+    fieldExtras?: Snippet<[field: keyof UserstyleContent]>;
     formActions: Snippet;
   }
 

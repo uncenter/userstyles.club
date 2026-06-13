@@ -29,6 +29,7 @@ export {
   updateUserstyle,
   deleteUserstyle,
   removeUpdateUrlFromSource,
+  type UserstyleContent,
   type Userstyle,
   type UserstyleInput,
   type UserstyleRecord

@@ -1,11 +1,9 @@
-import type { UserstyleInput } from '$lib/at';
+import type { UserstyleContent } from '$lib/at';
 
-export interface UserstyleFormFields extends Omit<UserstyleInput, 'previewImage'> {
+export interface UserstyleFormFields extends UserstyleContent {
   removeUpdateUrl: boolean;
   trackUpstreamUrl: boolean;
 }
-
-export type PrimaryFormFields = Omit<UserstyleFormFields, 'upstreamUrl' | 'removeUpdateUrl' | 'trackUpstreamUrl'>;
 
 const STORAGE_KEY = 'new-userstyle-fields';
 
