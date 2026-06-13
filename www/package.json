@@ -32,7 +32,6 @@
     "@typematter/svelte-unist": "^1.0.4",
     "hast-util-from-lezer": "^0.5.4",
     "pretty-bytes": "^7.1.0",
-    "runed": "^0.37.1",
     "spdx-license-list": "^6.11.0",
     "svelte-codemirror-editor": "^2.1.0",
     "usercss-meta": "^0.12.0",

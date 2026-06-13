@@ -1,12 +1,12 @@
 <script lang="ts">
-  import type { UserstyleFormFields } from './fields.svelte';
+  import type { UserstyleFormState } from './fields.svelte';
   import { fetchFromUserstylesWorld, fetchRawFile, type StyleImport } from './fetch.remote';
   import usercss from 'usercss-meta';
 
   import { Spinner, Alert } from '$components/ui';
 
   interface Props {
-    fields: { current: UserstyleFormFields };
+    fields: UserstyleFormState;
     pending: boolean;
     imported?: StyleImport | null;
   }
@@ -74,11 +74,11 @@
         : await fetchFromUrl(importUrl);
 
       for (const [key, value] of Object.entries(result) as [keyof StyleImport, string | undefined][]) {
-        if (value && !fields.current[key]?.trim()) fields.current[key] = value;
+        if (value && !fields[key]?.trim()) fields[key] = value;
       }
 
-      fields.current.upstreamUrl = importUrl;
-      fields.current.trackUpstreamUrl = true;
+      fields.upstreamUrl = importUrl;
+      fields.trackUpstreamUrl = true;
       imported = result;
     } catch (e) {
       error = e instanceof Error ? e.message : 'Failed to import userstyle from URL.';

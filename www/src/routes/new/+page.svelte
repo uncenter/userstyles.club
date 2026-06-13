@@ -13,7 +13,7 @@
   import ImportFromUrl from './ImportFromUrl.svelte';
   import UserstyleForm from './UserstyleForm.svelte';
 
-  import { fields, resetFields } from './fields.svelte';
+  import { fields } from './fields.svelte';
 
   let publishing = $state(false);
   let importing = $state(false);
@@ -43,23 +43,24 @@
     error = null;
 
     try {
-      const sourceCode = fields.current.removeUpdateUrl
-        ? removeUpdateUrlFromSource(fields.current.sourceCode)
-        : fields.current.sourceCode;
+      const sourceCode = fields.removeUpdateUrl
+        ? removeUpdateUrlFromSource(fields.sourceCode)
+        : fields.sourceCode;
       let userstyle = await createUserstyle({
-        title: fields.current.title,
-        description: fields.current.description,
-        license: fields.current.license,
-        upstreamUrl: fields.current.trackUpstreamUrl ? fields.current.upstreamUrl : undefined,
-        homepageUrl: fields.current.homepageUrl,
+        title: fields.title,
+        description: fields.description,
+        license: fields.license,
+        upstreamUrl: fields.trackUpstreamUrl ? fields.upstreamUrl : undefined,
+        homepageUrl: fields.homepageUrl,
         sourceCode,
         previewImage: previewFile ?? undefined,
       });
       let uri = parseResourceUri(userstyle.response.uri);
-      fields.disconnect();
       publishedUrl = `/style/${uri.repo}/${uri.rkey}`;
-      shareText = `Just published "${fields.current.title}" on userstyles.club!\n\nhttps://userstyles.club${publishedUrl}`;
+      shareText = `Just published "${fields.title}" on userstyles.club!\n\nhttps://userstyles.club${publishedUrl}`;
       shareDialogOpen = true;
+
+      fields.reset();
     } catch (e) {
       error = e instanceof Error ? e.message : 'Failed to create userstyle.';
     } finally {
@@ -68,7 +69,7 @@
   }
 
   function clearAll() {
-    resetFields();
+    fields.reset();
     imported = null;
     clearDialogOpen = false;
   }
@@ -106,12 +107,12 @@
     {#snippet importOverrideButton(field: keyof StyleImport)}
       {#if imported}
         {@const importedValue = imported[field]}
-        {@const currentValue = fields.current[field]}
+        {@const currentValue = fields[field]}
         {#if importedValue && importedValue !== currentValue}
           <button
             type="button"
             class="btn btn-warning btn-sm"
-            onclick={() => (fields.current[field] = importedValue)}
+            onclick={() => (fields[field] = importedValue)}
           >Import</button>
         {/if}
       {/if}
@@ -123,30 +124,30 @@
         class="btn btn-danger"
         onclick={() => (clearDialogOpen = true)}
         disabled={pending ||
-          (!fields.current.title.trim() &&
-            !fields.current.description?.trim() &&
-            !fields.current.sourceCode.trim())}
+          (!fields.title.trim() &&
+            !fields.description?.trim() &&
+            !fields.sourceCode.trim())}
       >
         Clear
       </button>
       <button
         type="submit"
         class="btn btn-primary"
-        disabled={pending || !fields.current.title.trim() || !fields.current.sourceCode.trim()}
+        disabled={pending || !fields.title.trim() || !fields.sourceCode.trim()}
       >
         {#if publishing}<Spinner size="sm" /> Publishing…{:else}Publish{/if}
       </button>
     {/snippet}
 
     <UserstyleForm
-      bind:title={fields.current.title}
-      bind:description={fields.current.description}
-      bind:license={fields.current.license}
-      bind:homepageUrl={fields.current.homepageUrl}
-      bind:sourceCode={fields.current.sourceCode}
-      bind:upstreamUrl={fields.current.upstreamUrl}
-      bind:trackUpstreamUrl={fields.current.trackUpstreamUrl}
-      bind:removeUpdateUrl={fields.current.removeUpdateUrl}
+      bind:title={fields.title}
+      bind:description={fields.description}
+      bind:license={fields.license}
+      bind:homepageUrl={fields.homepageUrl}
+      bind:sourceCode={fields.sourceCode}
+      bind:upstreamUrl={fields.upstreamUrl}
+      bind:trackUpstreamUrl={fields.trackUpstreamUrl}
+      bind:removeUpdateUrl={fields.removeUpdateUrl}
       bind:previewFile
       {error}
       onsubmit={submit}

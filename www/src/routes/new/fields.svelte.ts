@@ -1,7 +1,5 @@
-import { PersistedState } from 'runed';
 import type { UserstyleInput } from '$lib/at';
 
-// Subset of UserstyleInput for editable form fields.
 export interface UserstyleFormFields extends Omit<UserstyleInput, 'previewImage'> {
   removeUpdateUrl: boolean;
   trackUpstreamUrl: boolean;
@@ -9,7 +7,9 @@ export interface UserstyleFormFields extends Omit<UserstyleInput, 'previewImage'
 
 export type PrimaryFormFields = Omit<UserstyleFormFields, 'upstreamUrl' | 'removeUpdateUrl' | 'trackUpstreamUrl'>;
 
-export const DEFAULT_FIELDS: UserstyleFormFields = {
+const STORAGE_KEY = 'new-userstyle-fields';
+
+const DEFAULTS: UserstyleFormFields = {
   title: '',
   description: undefined,
   license: undefined,
@@ -20,15 +20,41 @@ export const DEFAULT_FIELDS: UserstyleFormFields = {
   trackUpstreamUrl: false,
 };
 
-export const fields = new PersistedState(
-  'new-userstyle-fields',
-  DEFAULT_FIELDS,
-  {
-    storage: 'session',
-    syncTabs: false
-  }
-);
+export class UserstyleFormState {
+  title = $state(DEFAULTS.title);
+  description = $state(DEFAULTS.description);
+  license = $state(DEFAULTS.license);
+  sourceCode = $state(DEFAULTS.sourceCode);
+  upstreamUrl = $state(DEFAULTS.upstreamUrl);
+  homepageUrl = $state(DEFAULTS.homepageUrl);
+  removeUpdateUrl = $state(DEFAULTS.removeUpdateUrl);
+  trackUpstreamUrl = $state(DEFAULTS.trackUpstreamUrl);
 
-export function resetFields() {
-  fields.current = { ...DEFAULT_FIELDS };
+  constructor() {
+    try {
+      const saved = sessionStorage.getItem(STORAGE_KEY);
+      if (saved) Object.assign(this, JSON.parse(saved));
+    } catch {}
+
+    $effect.root(() => {
+      $effect(() => {
+        sessionStorage.setItem(STORAGE_KEY, JSON.stringify({
+          title: this.title,
+          description: this.description,
+          license: this.license,
+          sourceCode: this.sourceCode,
+          upstreamUrl: this.upstreamUrl,
+          homepageUrl: this.homepageUrl,
+          removeUpdateUrl: this.removeUpdateUrl,
+          trackUpstreamUrl: this.trackUpstreamUrl,
+        }));
+      });
+    });
+  }
+
+  reset() {
+    Object.assign(this, DEFAULTS);
+  }
 }
+
+export const fields = new UserstyleFormState();
