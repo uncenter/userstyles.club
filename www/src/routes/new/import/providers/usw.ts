@@ -1,10 +1,13 @@
-import type { ImportProvider } from ".";
-import { fetchAsJson } from "../fetch.remote";
+import type { ImportProvider } from '.';
+import { fetchAsJson } from '../fetch.remote';
 
 const USw_PATTERN = new URLPattern('/style/:id(\\d+){/:name}?{/}?', 'https://userstyles.world');
 // /preview/<id>/<version>t?.<jpeg | webp>
 // t indicates thumbnail.
-const USw_PREVIEW_PATTERN = new URLPattern('/preview/:id(\\d+)/:version(\\d+t?).:ext(webp|jpeg)', 'https://userstyles.world');
+const USw_PREVIEW_PATTERN = new URLPattern(
+  '/preview/:id(\\d+)/:version(\\d+t?).:ext(webp|jpeg)',
+  'https://userstyles.world',
+);
 
 export default {
   check: (url) => USw_PATTERN.test(url),
@@ -13,12 +16,19 @@ export default {
     const response = await fetchAsJson(`https://userstyles.world/api/style/${id}`);
     if (!response) throw new Error('Failed to fetch style from userstyles.world');
 
-    let { name: title, description, license, homepage: homepageUrl, preview_url: previewUrl, code: sourceCode }: Record<string, string | undefined> = response.data;
+    let {
+      name: title,
+      description,
+      license,
+      homepage: homepageUrl,
+      preview_url: previewUrl,
+      code: sourceCode,
+    }: Record<string, string | undefined> = response.data;
 
     title = title?.trim() || undefined;
     description = description?.trim() || undefined;
     license = license?.trim() || undefined;
-    if (license && license === "No License") license = undefined;
+    if (license && license === 'No License') license = undefined;
     homepageUrl = homepageUrl?.trim() || undefined;
     sourceCode = sourceCode?.trim() || undefined;
 
@@ -30,5 +40,5 @@ export default {
     // }
 
     return { title, description, license, homepageUrl, sourceCode };
-  }
+  },
 } as ImportProvider;

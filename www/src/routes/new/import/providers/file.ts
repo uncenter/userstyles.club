@@ -1,5 +1,5 @@
-import type { ImportProvider } from ".";
-import { fetchRawFile } from "../fetch.remote";
+import type { ImportProvider } from '.';
+import { fetchRawFile } from '../fetch.remote';
 import usercss from 'usercss-meta';
 
 const parser = usercss.createParser({
@@ -39,5 +39,5 @@ export default {
       homepageUrl: parsed.metadata.homepageURL as string | undefined,
       sourceCode: contents,
     };
-  }
+  },
 } as ImportProvider;

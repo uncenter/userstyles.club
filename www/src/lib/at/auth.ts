@@ -14,6 +14,6 @@ export function getSessionContext(message = 'You must be logged in to continue.'
 
   return {
     client: user.client,
-    did: user.did
+    did: user.did,
   };
 }

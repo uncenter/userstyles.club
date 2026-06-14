@@ -24,8 +24,12 @@
 
 <dialog
   bind:this={dialogEl}
-  onclick={(e) => { if (e.target === e.currentTarget) open = false; }}
-  onclose={() => { open = false; }}
+  onclick={(e) => {
+    if (e.target === e.currentTarget) open = false;
+  }}
+  onclose={() => {
+    open = false;
+  }}
 >
   <div class="dialog-header">
     <span>{title}</span>

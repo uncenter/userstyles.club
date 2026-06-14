@@ -7,7 +7,7 @@
     getReviewAuthorDid,
     type ReviewRecord,
     type ProfileView,
-    type Review
+    type Review,
   } from '$lib/at';
 
   import { Spinner, Alert } from '$components/ui';
@@ -36,7 +36,7 @@
   let myReview = $derived(
     user.isLoggedIn && user.did
       ? (reviews.find((r) => getReviewAuthorDid(r.uri) === user.did) ?? null)
-      : null
+      : null,
   );
 
   async function submitReview() {

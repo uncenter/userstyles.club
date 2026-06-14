@@ -9,7 +9,7 @@
     getReviewAuthorDid,
     type ReviewRecord,
     type ProfileView,
-    type Review
+    type Review,
   } from '$lib/at';
 
   import { Spinner, Alert, Dialog } from '$components/ui';
@@ -56,7 +56,7 @@
         subject,
         editComment,
         review.value.createdAt,
-        editRating
+        editRating,
       );
       review.value = updated.record as Review;
     } catch (e) {

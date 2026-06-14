@@ -28,9 +28,10 @@
   });
 
   let theme = $derived(
-    preferences.get('appearance') === 'dark' || (preferences.get('appearance') === 'system' && prefersDark)
+    preferences.get('appearance') === 'dark' ||
+      (preferences.get('appearance') === 'system' && prefersDark)
       ? catppuccinMocha
-      : catppuccinLatte
+      : catppuccinLatte,
   );
 </script>
 

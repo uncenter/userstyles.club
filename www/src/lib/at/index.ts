@@ -9,7 +9,7 @@ export {
   createRecord,
   putRecord,
   deleteRecord,
-  type RepoRecord
+  type RepoRecord,
 } from './records';
 export {
   getProfile,
@@ -19,7 +19,7 @@ export {
   invalidateProfileCaches,
   type ProfileView,
   type ClubProfile,
-  type ClubProfileRecord
+  type ClubProfileRecord,
 } from './services/profiles';
 export {
   listUserstyles,
@@ -32,7 +32,7 @@ export {
   type UserstyleContent,
   type Userstyle,
   type UserstyleInput,
-  type UserstyleRecord
+  type UserstyleRecord,
 } from './services/userstyles';
 export {
   listReviewsForStyle,
@@ -43,10 +43,10 @@ export {
   getReviewAuthorDid,
   computeAverageRating,
   type Review,
-  type ReviewRecord
+  type ReviewRecord,
 } from './services/reviews';
 export {
   CLUB_USERSTYLE_COLLECTION,
   CLUB_PROFILE_COLLECTION,
-  CLUB_REVIEW_COLLECTION
+  CLUB_REVIEW_COLLECTION,
 } from './settings';

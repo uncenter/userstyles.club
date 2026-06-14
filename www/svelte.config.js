@@ -8,24 +8,24 @@ const config = {
   preprocess: vitePreprocess(),
   kit: {
     adapter: adapter({
-      fallback: '404.html'
+      fallback: '404.html',
     }),
     alias: {
       $components: 'src/components',
-      $assets: 'assets'
+      $assets: 'assets',
     },
     paths: {
-      base
+      base,
     },
     experimental: {
-      remoteFunctions: true
-    }
+      remoteFunctions: true,
+    },
   },
   compilerOptions: {
     experimental: {
-      async: true
-    }
-  }
+      async: true,
+    },
+  },
 };
 
 export default config;

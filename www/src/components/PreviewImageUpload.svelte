@@ -14,7 +14,7 @@
     file = $bindable(null),
     keepExistingSavedImage = $bindable(false),
     existingImageSrc = null,
-    required = false
+    required = false,
   }: Props = $props();
 
   let fileInputEl: HTMLInputElement | undefined;
@@ -34,7 +34,7 @@
   let displaySrc = $derived(objectUrl ?? (keepExistingSavedImage ? existingImageSrc : null));
   // Newly uploaded file's filename when one is picked; "Change…" when the pre-existing image is still kept; default placeholder otherwise.
   let displayText = $derived(
-    file ? file.name : keepExistingSavedImage && existingImageSrc ? 'Change…' : 'Choose file…'
+    file ? file.name : keepExistingSavedImage && existingImageSrc ? 'Change…' : 'Choose file…',
   );
   // Show the remove button whenever there's something to clear — a newly picked file or the saved image.
   let canRemove = $derived(!!(file || keepExistingSavedImage));

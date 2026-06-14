@@ -4,7 +4,7 @@ import type {
   Did,
   Nsid,
   RecordKey,
-  ResourceUri
+  ResourceUri,
 } from '@atcute/lexicons';
 import { getClientForDid, getPublicClient, getRelayClient } from './client';
 import { getSessionContext } from './auth';
@@ -35,13 +35,13 @@ export async function listRecordsForRepo(params: {
 
   const response = await ok(
     client.get('com.atproto.repo.listRecords', {
-      params: { repo, collection, limit, cursor }
-    })
+      params: { repo, collection, limit, cursor },
+    }),
   );
 
   return {
     records: response.records,
-    cursor: response.cursor
+    cursor: response.cursor,
   };
 }
 
@@ -61,13 +61,13 @@ export async function listReposByCollection(params: {
 
   const response = await ok(
     client.get('com.atproto.sync.listReposByCollection', {
-      params: { collection, limit, cursor }
-    })
+      params: { collection, limit, cursor },
+    }),
   );
 
   return {
     repos: response.repos,
-    cursor: response.cursor
+    cursor: response.cursor,
   };
 }
 
@@ -79,7 +79,7 @@ export async function listRecordsForCollection(params: { collection: Nsid; limit
     try {
       const listed = await listRecordsForRepo({
         repo: repo.did as Did,
-        collection: params.collection
+        collection: params.collection,
       });
       records.push(...listed.records);
     } catch (e) {}
@@ -100,8 +100,8 @@ export async function getRecord(params: {
 
   const response = await ok(
     client.get('com.atproto.repo.getRecord', {
-      params: { repo, collection, rkey }
-    })
+      params: { repo, collection, rkey },
+    }),
   );
 
   return response;
@@ -115,9 +115,9 @@ export async function createRecord<T extends Record<string, unknown>>(collection
       input: {
         repo: did,
         collection,
-        record
-      }
-    })
+        record,
+      },
+    }),
   );
 
   return { response, record };
@@ -126,7 +126,7 @@ export async function createRecord<T extends Record<string, unknown>>(collection
 export async function putRecord<T extends Record<string, unknown>>(
   collection: Nsid,
   rkey: RecordKey,
-  record: T
+  record: T,
 ) {
   const { client, did } = getSessionContext('You must be logged in to write records.');
 
@@ -136,9 +136,9 @@ export async function putRecord<T extends Record<string, unknown>>(
         repo: did,
         collection,
         rkey,
-        record
-      }
-    })
+        record,
+      },
+    }),
   );
 
   return { response, record };
@@ -150,8 +150,8 @@ export async function uploadBlob(blob: Blob): Promise<BlobRef> {
   const response = await ok(
     client.post('com.atproto.repo.uploadBlob', {
       encoding: blob.type as `${string}/${string}`,
-      input: blob
-    })
+      input: blob,
+    }),
   );
 
   return response.blob;
@@ -165,9 +165,9 @@ export async function deleteRecord(collection: Nsid, rkey: RecordKey) {
       input: {
         repo: did,
         collection,
-        rkey
-      }
-    })
+        rkey,
+      },
+    }),
   );
 
   return true;

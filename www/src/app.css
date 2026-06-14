@@ -273,7 +273,6 @@ main.container {
     box-shadow: none;
   }
 
-
   &.btn-sm {
     font-size: var(--text-xs);
     padding: calc(var(--space-1) + 1px) var(--space-3);
@@ -382,7 +381,9 @@ select {
     box-shadow var(--ease-fast);
 }
 
-input, textarea, select {
+input,
+textarea,
+select {
   &:focus {
     outline: none;
     border-color: var(--ring);

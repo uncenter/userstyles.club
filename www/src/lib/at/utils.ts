@@ -9,7 +9,7 @@ export async function getBlobPdsUrl(did: Did, cid: string): Promise<string> {
 export function getBlobCdnUrl(
   did: Did,
   cid: string,
-  type: 'avatar' | 'avatar_thumbnail' | 'feed_fullsize' | 'feed_thumbnail'
+  type: 'avatar' | 'avatar_thumbnail' | 'feed_fullsize' | 'feed_thumbnail',
 ): string {
   return `https://cdn.bsky.app/img/${type}/plain/${did}/${cid}`;
 }

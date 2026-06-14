@@ -4,7 +4,7 @@ import {
   finalizeAuthorization,
   OAuthUserAgent,
   getSession,
-  deleteStoredSession
+  deleteStoredSession,
 } from '@atcute/oauth-browser-client';
 import {
   CompositeDidDocumentResolver,
@@ -13,7 +13,7 @@ import {
   LocalActorResolver,
   PlcDidDocumentResolver,
   WebDidDocumentResolver,
-  WellKnownHandleResolver
+  WellKnownHandleResolver,
 } from '@atcute/identity-resolver';
 import { Client } from '@atcute/client';
 import { replaceState } from '$app/navigation';
@@ -43,7 +43,7 @@ export const user: {
     } & LoggedInUser)
 ) = $state({
   isInitializing: true,
-  isLoggedIn: false
+  isLoggedIn: false,
 });
 
 export async function initClient() {
@@ -64,22 +64,22 @@ export async function initClient() {
   configureOAuth({
     metadata: {
       client_id: clientId,
-      redirect_uri: isLoopback ? redirectOrigin + REDIRECT_PATH : meta.redirect_uri
+      redirect_uri: isLoopback ? redirectOrigin + REDIRECT_PATH : meta.redirect_uri,
     },
     identityResolver: new LocalActorResolver({
       handleResolver: new CompositeHandleResolver({
         methods: {
           dns: new DohJsonHandleResolver({ dohUrl: DOH_RESOLVER }),
-          http: new WellKnownHandleResolver()
-        }
+          http: new WellKnownHandleResolver(),
+        },
       }),
       didDocumentResolver: new CompositeDidDocumentResolver({
         methods: {
           plc: new PlcDidDocumentResolver(),
-          web: new WebDidDocumentResolver()
-        }
-      })
-    })
+          web: new WebDidDocumentResolver(),
+        },
+      }),
+    }),
   });
 
   const params = new SvelteURLSearchParams(location.hash.slice(1));
@@ -100,7 +100,7 @@ export async function login(handle: ActorIdentifier) {
   if (trimmed.startsWith('did:')) return startAuthorization(trimmed as ActorIdentifier);
   if (trimmed.includes('.'))
     return startAuthorization(
-      (trimmed.startsWith('@') ? trimmed.slice(1) : trimmed) as ActorIdentifier
+      (trimmed.startsWith('@') ? trimmed.slice(1) : trimmed) as ActorIdentifier,
     );
   return startAuthorization(`${trimmed.replace(/^@/, '')}.bsky.social` as ActorIdentifier);
 }
@@ -115,7 +115,7 @@ async function startAuthorization(identity?: ActorIdentifier) {
       ? { type: 'account', identifier: identity }
       : { type: 'pds', serviceUrl: getSignUpPds() },
     prompt: identity ? undefined : 'create',
-    scope: oauthScope
+    scope: oauthScope,
   });
 
   window.location.assign(authUrl);
@@ -139,7 +139,7 @@ export async function logout() {
     agent: undefined,
     client: undefined,
     profile: undefined,
-    did: undefined
+    did: undefined,
   });
 }
 

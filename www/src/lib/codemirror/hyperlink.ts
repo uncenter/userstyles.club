@@ -21,8 +21,8 @@ function buildDecorations(state: EditorState) {
     const mark = Decoration.mark({
       class: 'cm-hyperlink',
       attributes: {
-        'data-url': url
-      }
+        'data-url': url,
+      },
     });
 
     builder.add(from, to, mark);
@@ -44,16 +44,16 @@ const urlField = StateField.define({
     return decorations;
   },
 
-  provide: (f) => EditorView.decorations.from(f)
+  provide: (f) => EditorView.decorations.from(f),
 });
 
 const theme = EditorView.baseTheme({
   '.cm-hyperlink': {
     color: '#1a73e8',
     textDecoration: 'underline',
-    cursor: 'text'
+    cursor: 'text',
   },
-  '&.meta-pressed .cm-hyperlink:hover': { cursor: 'pointer' }
+  '&.meta-pressed .cm-hyperlink:hover': { cursor: 'pointer' },
 });
 
 const clickHandler = EditorView.domEventHandlers({
@@ -83,7 +83,7 @@ const clickHandler = EditorView.domEventHandlers({
     window.open(url, '_blank', 'noopener');
 
     return true;
-  }
+  },
 });
 
 export const hyperlink: Extension = [urlField, theme, clickHandler];

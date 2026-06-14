@@ -12,7 +12,7 @@
     error: '✕',
     success: '✓',
     warning: '⚠',
-    info: 'ℹ'
+    info: 'ℹ',
   };
 </script>
 

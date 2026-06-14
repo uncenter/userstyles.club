@@ -18,7 +18,7 @@
       src={size !== 'lg'
         ? src.replace(
             'https://cdn.bsky.app/img/avatar',
-            'https://cdn.bsky.app/img/avatar_thumbnail'
+            'https://cdn.bsky.app/img/avatar_thumbnail',
           )
         : src}
       {alt}

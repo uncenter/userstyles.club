@@ -10,7 +10,7 @@ export function getPublicClient(): Client {
   if (clientCache.has(key)) return clientCache.get(key)!;
 
   const client = new Client({
-    handler: simpleFetchHandler({ service: 'https://public.api.bsky.app' })
+    handler: simpleFetchHandler({ service: 'https://public.api.bsky.app' }),
   });
   clientCache.set(key, client);
   return client;
@@ -21,7 +21,7 @@ export function getRelayClient(): Client {
   if (clientCache.has(key)) return clientCache.get(key)!;
 
   const client = new Client({
-    handler: simpleFetchHandler({ service: 'https://relay1.us-east.bsky.network' })
+    handler: simpleFetchHandler({ service: 'https://relay1.us-east.bsky.network' }),
   });
   clientCache.set(key, client);
   return client;
@@ -32,7 +32,7 @@ export function getConstellationClient(): Client {
   if (clientCache.has(key)) return clientCache.get(key)!;
 
   const client = new Client({
-    handler: simpleFetchHandler({ service: 'https://constellation.microcosm.blue' })
+    handler: simpleFetchHandler({ service: 'https://constellation.microcosm.blue' }),
   });
   clientCache.set(key, client);
   return client;
@@ -43,7 +43,7 @@ export async function getClientForDid(did: Did): Promise<Client> {
 
   const pds = await getPdsForDid(did);
   const client = new Client({
-    handler: simpleFetchHandler({ service: pds })
+    handler: simpleFetchHandler({ service: pds }),
   });
 
   clientCache.set(did, client);

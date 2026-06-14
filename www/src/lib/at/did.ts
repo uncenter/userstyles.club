@@ -4,7 +4,7 @@ import {
   DohJsonHandleResolver,
   PlcDidDocumentResolver,
   WebDidDocumentResolver,
-  WellKnownHandleResolver
+  WellKnownHandleResolver,
 } from '@atcute/identity-resolver';
 import type { Did, Handle } from '@atcute/lexicons';
 import { DOH_RESOLVER } from './settings';
@@ -12,15 +12,15 @@ import { DOH_RESOLVER } from './settings';
 const handleResolver = new CompositeHandleResolver({
   methods: {
     dns: new DohJsonHandleResolver({ dohUrl: DOH_RESOLVER }),
-    http: new WellKnownHandleResolver()
-  }
+    http: new WellKnownHandleResolver(),
+  },
 });
 
 const didResolver = new CompositeDidDocumentResolver({
   methods: {
     plc: new PlcDidDocumentResolver(),
-    web: new WebDidDocumentResolver()
-  }
+    web: new WebDidDocumentResolver(),
+  },
 });
 
 export async function resolveHandle(handle: Handle): Promise<Did> {

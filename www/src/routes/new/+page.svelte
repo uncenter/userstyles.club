@@ -84,7 +84,7 @@
     window.open(
       `https://bsky.app/intent/compose?text=${encodeURIComponent(shareText)}`,
       '_blank',
-      'noopener,noreferrer'
+      'noopener,noreferrer',
     );
     shareDialogOpen = false;
     goto(publishedUrl);
@@ -113,8 +113,8 @@
           <button
             type="button"
             class="btn btn-warning btn-sm"
-            onclick={() => (fields[field] = importedValue)}
-          >Import</button>
+            onclick={() => (fields[field] = importedValue)}>Import</button
+          >
         {/if}
       {/if}
     {/snippet}
@@ -125,9 +125,7 @@
         class="btn btn-danger"
         onclick={() => (clearDialogOpen = true)}
         disabled={pending ||
-          (!fields.title.trim() &&
-            !fields.description?.trim() &&
-            !fields.sourceCode.trim())}
+          (!fields.title.trim() && !fields.description?.trim() && !fields.sourceCode.trim())}
       >
         Clear
       </button>

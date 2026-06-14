@@ -16,7 +16,7 @@
   let { children } = $props();
 
   $effect(() => {
-    const val = preferences.get("appearance");
+    const val = preferences.get('appearance');
     const html = document.documentElement;
     if (val === 'dark') {
       html.setAttribute('data-theme', 'dark');
@@ -90,8 +90,11 @@
               class="user-menu-dropdown"
               role="menu"
             >
-              <a href={resolve('/profile/[user=actor]', { user: getPreferredActorIdentifier(user.profile) })} role="menuitem"
-                >Profile</a
+              <a
+                href={resolve('/profile/[user=actor]', {
+                  user: getPreferredActorIdentifier(user.profile),
+                })}
+                role="menuitem">Profile</a
               >
               <a href={resolve('/settings')} role="menuitem">Settings</a>
               <button
@@ -177,8 +180,18 @@
         <p class="footer-tagline">{TAGLINE}</p>
       </div>
       <div class="footer-links">
-        <a href={REPO_URL} target="_blank" rel="noopener noreferrer" class="btn btn-outline btn-primary btn-sm">Source <MoveUpRightIcon size={16} /></a>
-        <a href={FEEDBACK_URL} target="_blank" rel="noopener noreferrer" class="btn btn-outline btn-primary btn-sm">Feedback <MoveUpRightIcon size={16} /></a>
+        <a
+          href={REPO_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="btn btn-outline btn-primary btn-sm">Source <MoveUpRightIcon size={16} /></a
+        >
+        <a
+          href={FEEDBACK_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="btn btn-outline btn-primary btn-sm">Feedback <MoveUpRightIcon size={16} /></a
+        >
       </div>
     </div>
   </footer>

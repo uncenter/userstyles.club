@@ -36,7 +36,7 @@ class UserPreferences<T extends Record<string, unknown>> {
 }
 
 export const preferences = new UserPreferences({
-  appearance: "system",
+  appearance: 'system',
   usePermanentUrls: true,
 });
 

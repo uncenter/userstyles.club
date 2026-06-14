@@ -15,7 +15,11 @@
   let { profile, minimal = false }: Props = $props();
 </script>
 
-<a href={resolve('/profile/[user=actor]', { user: getPreferredActorIdentifier(profile) })} class="actor-handle" class:minimal>
+<a
+  href={resolve('/profile/[user=actor]', { user: getPreferredActorIdentifier(profile) })}
+  class="actor-handle"
+  class:minimal
+>
   {#if !minimal}
     <Avatar
       src={profile.avatar}

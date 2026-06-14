@@ -41,9 +41,9 @@ export async function listReviewsForStyle(uri: ResourceUri): Promise<ReviewRecor
       params: {
         subject: uri,
         source: `${CLUB_REVIEW_COLLECTION}:subject`,
-        limit: 100
-      }
-    })
+        limit: 100,
+      },
+    }),
   );
 
   const records = await Promise.all(
@@ -52,12 +52,12 @@ export async function listReviewsForStyle(uri: ResourceUri): Promise<ReviewRecor
         return (await getRecord({
           repo: did,
           collection: CLUB_REVIEW_COLLECTION,
-          rkey
+          rkey,
         })) as ReviewRecord;
       } catch {
         return null;
       }
-    })
+    }),
   );
 
   return records.filter((r): r is ReviewRecord => r !== null && isReview(r.value));
@@ -75,7 +75,7 @@ export async function createReview(subject: ResourceUri, comment: string, rating
     subject,
     ...(rating !== undefined && { rating }),
     comment,
-    createdAt: new Date().toISOString()
+    createdAt: new Date().toISOString(),
   });
 }
 
@@ -84,7 +84,7 @@ export async function updateReview(
   subject: ResourceUri,
   comment: string,
   createdAt: string,
-  rating?: number
+  rating?: number,
 ) {
   comment = comment.trim();
   if (!comment) throw new Error('Review comment is required.');
@@ -98,7 +98,7 @@ export async function updateReview(
     ...(rating !== undefined && { rating }),
     comment,
     createdAt,
-    updatedAt: new Date().toISOString()
+    updatedAt: new Date().toISOString(),
   });
 }
 
@@ -107,14 +107,14 @@ export async function deleteReview(rkey: RecordKey) {
 }
 
 export function computeAverageRating(
-  reviews: ReviewRecord[]
+  reviews: ReviewRecord[],
 ): { average: number; count: number } | undefined {
   const rated = reviews.filter(
-    (r): r is ReviewRecord & { value: Review & { rating: number } } => r.value.rating !== undefined
+    (r): r is ReviewRecord & { value: Review & { rating: number } } => r.value.rating !== undefined,
   );
   if (rated.length === 0) return undefined;
   return {
     average: rated.reduce((sum, r) => sum + r.value.rating, 0) / rated.length,
-    count: rated.length
+    count: rated.length,
   };
 }

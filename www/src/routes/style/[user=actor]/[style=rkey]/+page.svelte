@@ -57,7 +57,7 @@
       <a
         href={resolve('/style/[user=actor]/[style=rkey]/edit', {
           user: getPreferredActorIdentifier(data.profile),
-          style: params.style
+          style: params.style,
         })}
         class="btn btn-secondary btn-sm"
       >
@@ -84,7 +84,11 @@
             Published <time>{formatDate(data.userstyle.value.createdAt)}</time>
           {/if}
           {#if data.userstyle.value.license}
-            · <a href="https://spdx.org/licenses/{data.userstyle.value.license}.html" target="_blank" rel="noopener noreferrer">{data.userstyle.value.license}</a>
+            · <a
+              href="https://spdx.org/licenses/{data.userstyle.value.license}.html"
+              target="_blank"
+              rel="noopener noreferrer">{data.userstyle.value.license}</a
+            >
           {/if}
         </p>
       </div>
@@ -113,7 +117,7 @@
         // Explicitly do not use getPreferredActorIdentifier given the install URL will be used for future updates and *should* be permanent.
         href={resolve('/style/[user=actor]/[style=rkey]/install', {
           user: data.profile.did,
-          style: params.style
+          style: params.style,
         })}
         target="_blank"
         class="btn btn-primary btn-lg"
@@ -132,7 +136,7 @@
           src={getBlobCdnUrl(
             data.profile.did,
             data.userstyle.value.previewImage.ref.$link,
-            'feed_fullsize'
+            'feed_fullsize',
           )}
           alt={data.userstyle.value.title}
         />

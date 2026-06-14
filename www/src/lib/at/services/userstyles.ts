@@ -8,7 +8,7 @@ import {
   listRecordsForRepo,
   putRecord,
   uploadBlob,
-  type RepoRecord
+  type RepoRecord,
 } from '../records';
 import { CLUB_USERSTYLE_COLLECTION } from '../settings';
 
@@ -50,10 +50,10 @@ function validateUserstyle<T extends UserstyleContent>(userstyle: T): T {
 }
 
 function optionals<K extends keyof Userstyle>(
-  obj: Partial<Pick<Userstyle, K>>
+  obj: Partial<Pick<Userstyle, K>>,
 ): Partial<Pick<Userstyle, K>> {
   return Object.fromEntries(
-    Object.entries(obj).filter(([, v]) => typeof v !== 'string' || v.trim())
+    Object.entries(obj).filter(([, v]) => typeof v !== 'string' || v.trim()),
   ) as Partial<Pick<Userstyle, K>>;
 }
 
@@ -65,7 +65,7 @@ export async function listUserstyles(repo: ActorIdentifier) {
   const response = await listRecordsForRepo({
     repo,
     collection: CLUB_USERSTYLE_COLLECTION,
-    limit: 50
+    limit: 50,
   });
 
   return response.records
@@ -79,7 +79,8 @@ export async function listMyUserstyles() {
 }
 
 export async function createUserstyle(userstyle: UserstyleInput) {
-  const { title, description, sourceCode, previewImage, license, upstreamUrl, homepageUrl } = validateUserstyle(userstyle);
+  const { title, description, sourceCode, previewImage, license, upstreamUrl, homepageUrl } =
+    validateUserstyle(userstyle);
 
   const previewImageBlob = previewImage ? await uploadBlob(previewImage) : undefined;
 
@@ -102,7 +103,7 @@ export async function getUserstyle(repo: ActorIdentifier, rkey: RecordKey) {
   const response = (await getRecord({
     repo,
     collection: CLUB_USERSTYLE_COLLECTION,
-    rkey
+    rkey,
   })) as UserstyleRecord;
 
   return response;
@@ -114,9 +115,11 @@ type UpdateUserstyleInput = UserstyleContent & {
 };
 
 export async function updateUserstyle(rkey: RecordKey, userstyle: UpdateUserstyleInput) {
-  const { title, description, sourceCode, previewImage, license, upstreamUrl, homepageUrl } = validateUserstyle(userstyle);
+  const { title, description, sourceCode, previewImage, license, upstreamUrl, homepageUrl } =
+    validateUserstyle(userstyle);
 
-  const previewImageBlob = previewImage instanceof File ? await uploadBlob(previewImage) : previewImage;
+  const previewImageBlob =
+    previewImage instanceof File ? await uploadBlob(previewImage) : previewImage;
 
   return putRecord(CLUB_USERSTYLE_COLLECTION, rkey, {
     $type: CLUB_USERSTYLE_COLLECTION,

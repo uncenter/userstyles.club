@@ -48,7 +48,9 @@
     error = null;
 
     try {
-      let processedSourceCode = removeUpdateUrl ? removeUpdateUrlFromSource(sourceCode) : sourceCode;
+      let processedSourceCode = removeUpdateUrl
+        ? removeUpdateUrlFromSource(sourceCode)
+        : sourceCode;
       await updateUserstyle(data.style, {
         title,
         description,
@@ -56,7 +58,8 @@
         upstreamUrl: trackUpstreamUrl ? upstreamUrl : undefined,
         homepageUrl,
         sourceCode: processedSourceCode,
-        previewImage: previewFile ?? (keepExistingPreview ? data.userstyle.previewImage : undefined),
+        previewImage:
+          previewFile ?? (keepExistingPreview ? data.userstyle.previewImage : undefined),
         createdAt: data.userstyle.createdAt,
       });
       goto(resolve('/style/[user=actor]/[style=rkey]', { user: data.user, style: data.style }));
@@ -79,7 +82,11 @@
 
   <div class="page-section">
     {#snippet formActions()}
-      <button type="submit" class="btn btn-primary" disabled={saving || !title.trim() || !sourceCode.trim()}>
+      <button
+        type="submit"
+        class="btn btn-primary"
+        disabled={saving || !title.trim() || !sourceCode.trim()}
+      >
         {#if saving}<Spinner size="sm" /> Saving…{:else}Save{/if}
       </button>
       <a
@@ -97,16 +104,13 @@
       bind:upstreamUrl
       bind:homepageUrl
       bind:sourceCode
-
       bind:trackUpstreamUrl
       bind:removeUpdateUrl
-
       bind:previewFile
       bind:keepExistingPreview
       existingImageSrc={data.userstyle.previewImage
         ? getBlobCdnUrl(data.profile.did, data.userstyle.previewImage.ref.$link, 'feed_fullsize')
         : null}
-
       {error}
       onsubmit={submit}
       {formActions}

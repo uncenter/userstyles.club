@@ -7,7 +7,7 @@
     getBlobCdnUrl,
     getProfile,
     listReviewsForStyle,
-    computeAverageRating
+    computeAverageRating,
   } from '$lib/at';
   import { parseResourceUri } from '@atcute/lexicons';
   import type { Did } from '@atcute/lexicons';
@@ -38,7 +38,7 @@
         src={getBlobCdnUrl(
           uri.repo as Did,
           userstyle.value.previewImage.ref.$link,
-          'feed_thumbnail'
+          'feed_thumbnail',
         )}
         alt={userstyle.value.title}
       />
@@ -47,8 +47,11 @@
   <div class="card-body">
     <div class="card-title-row">
       <h3 class="userstyle-title">
-        <a href={resolve('/style/[user=actor]/[style=rkey]', { user: getPreferredActorIdentifier(profile), style: uri.rkey! })}
-          >{userstyle.value.title}</a
+        <a
+          href={resolve('/style/[user=actor]/[style=rkey]', {
+            user: getPreferredActorIdentifier(profile),
+            style: uri.rkey!,
+          })}>{userstyle.value.title}</a
         >
       </h3>
       <ActorHandle {profile} minimal={true} />

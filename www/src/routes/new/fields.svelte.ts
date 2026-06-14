@@ -36,16 +36,19 @@ export class UserstyleFormState {
 
     $effect.root(() => {
       $effect(() => {
-        sessionStorage.setItem(STORAGE_KEY, JSON.stringify({
-          title: this.title,
-          description: this.description,
-          license: this.license,
-          sourceCode: this.sourceCode,
-          upstreamUrl: this.upstreamUrl,
-          homepageUrl: this.homepageUrl,
-          removeUpdateUrl: this.removeUpdateUrl,
-          trackUpstreamUrl: this.trackUpstreamUrl,
-        }));
+        sessionStorage.setItem(
+          STORAGE_KEY,
+          JSON.stringify({
+            title: this.title,
+            description: this.description,
+            license: this.license,
+            sourceCode: this.sourceCode,
+            upstreamUrl: this.upstreamUrl,
+            homepageUrl: this.homepageUrl,
+            removeUpdateUrl: this.removeUpdateUrl,
+            trackUpstreamUrl: this.trackUpstreamUrl,
+          }),
+        );
       });
     });
   }

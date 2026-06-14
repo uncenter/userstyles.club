@@ -4,7 +4,7 @@ import {
   getUserstyle,
   listReviewsForStyle,
   type ReviewRecord,
-  type ProfileView
+  type ProfileView,
 } from '$lib/at';
 import { parseResourceUri } from '@atcute/lexicons';
 import { ClientResponseError } from '@atcute/client';
@@ -21,7 +21,7 @@ export const load: PageLoad = async ({ params }) => {
     await Promise.all(
       [...new Set(reviews.map((r) => parseResourceUri(r.uri).repo))].map(async (did) => {
         reviewers[did] = await getProfile(did);
-      })
+      }),
     );
 
     return {
@@ -30,7 +30,7 @@ export const load: PageLoad = async ({ params }) => {
       reviews,
       reviewers,
       user,
-      style
+      style,
     };
   } catch (e) {
     if (e instanceof ClientResponseError) {

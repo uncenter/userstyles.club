@@ -4,7 +4,7 @@ import {
   REDIRECT_PATH,
   CLUB_USERSTYLE_COLLECTION,
   CLUB_REVIEW_COLLECTION,
-  getSiteOrigin
+  getSiteOrigin,
 } from './settings';
 
 const scope = [
@@ -12,7 +12,7 @@ const scope = [
   'blob:*/*',
   `repo:${CLUB_USERSTYLE_COLLECTION}`,
   `repo:${CLUB_PROFILE_COLLECTION}`,
-  `repo:${CLUB_REVIEW_COLLECTION}`
+  `repo:${CLUB_REVIEW_COLLECTION}`,
 ].join(' ');
 
 type ClientMetadata = {
@@ -62,7 +62,7 @@ export function createClientMetadata(origin: string, basePath = base): ClientMet
     response_types: ['code'],
     token_endpoint_auth_method: 'none',
     application_type: 'web',
-    dpop_bound_access_tokens: true
+    dpop_bound_access_tokens: true,
   };
 }
 
@@ -72,7 +72,7 @@ export function getClientMetadata() {
   return {
     client_id: metadata.client_id,
     redirect_uri: metadata.redirect_uris[0],
-    scope: metadata.scope
+    scope: metadata.scope,
   };
 }
 

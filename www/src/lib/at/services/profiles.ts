@@ -33,7 +33,7 @@ export async function getClubProfile(did: Did): Promise<ClubProfile | null> {
     const response = (await getRecord({
       repo: did,
       collection: CLUB_PROFILE_COLLECTION,
-      rkey: SELF_RKEY
+      rkey: SELF_RKEY,
     })) as ClubProfileRecord;
     writeCacheEntry(CLUB_CACHE_KEY(did), response.value);
     return response.value;
@@ -45,7 +45,7 @@ export async function getClubProfile(did: Did): Promise<ClubProfile | null> {
 export async function setClubProfile(
   displayName: string,
   description: string,
-  existingCreatedAt?: string
+  existingCreatedAt?: string,
 ) {
   const { did } = getSessionContext('You must be logged in to update your profile.');
 
@@ -53,12 +53,12 @@ export async function setClubProfile(
   const newProfile: ClubProfile = {
     ...(displayName.trim() && { displayName: displayName.trim() }),
     ...(description.trim() && { description: description.trim() }),
-    createdAt
+    createdAt,
   };
 
   const result = await putRecord(CLUB_PROFILE_COLLECTION, SELF_RKEY, {
     $type: CLUB_PROFILE_COLLECTION,
-    ...newProfile
+    ...newProfile,
   });
 
   writeCacheEntry(CLUB_CACHE_KEY(did), newProfile);
@@ -68,12 +68,12 @@ export async function setClubProfile(
 export async function getBskyProfile(actor: ActorIdentifier) {
   const cached = getCacheEntry<AppBskyActorDefs.ProfileViewDetailed>(
     BSKY_CACHE_KEY(actor),
-    BSKY_TTL
+    BSKY_TTL,
   );
   if (cached) return cached;
 
   const profile = await ok(
-    getPublicClient().get('app.bsky.actor.getProfile', { params: { actor } })
+    getPublicClient().get('app.bsky.actor.getProfile', { params: { actor } }),
   );
   writeCacheEntry(BSKY_CACHE_KEY(actor), profile);
   return profile;
@@ -104,6 +104,6 @@ export async function getProfile(actor: ActorIdentifier): Promise<ProfileView> {
     description: club?.description || bsky.description,
     avatar: bsky.avatar,
     club,
-    bsky
+    bsky,
   };
 }

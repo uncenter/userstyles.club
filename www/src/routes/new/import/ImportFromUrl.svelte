@@ -35,7 +35,8 @@
       if (result.sourceCode) {
         const usercss = getUsercssMetadata(result.sourceCode);
         for (const key of Object.keys(usercss) as Array<keyof UserstyleContent>) {
-          if (result[key] === undefined && usercss[key] !== undefined) (result as any)[key] = usercss[key];
+          if (result[key] === undefined && usercss[key] !== undefined)
+            (result as any)[key] = usercss[key];
         }
       }
 
@@ -73,7 +74,8 @@
     </div>
   </label>
   <p class="form-hint" id="import-from-url-desc">
-    Import from GitHub, Tangled, Userstyles.world, USo Archive, or any other CSS file on the internet.
+    Import from GitHub, Tangled, Userstyles.world, USo Archive, or any other CSS file on the
+    internet.
   </p>
 </form>
 
