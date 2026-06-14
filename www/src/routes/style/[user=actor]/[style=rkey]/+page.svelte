@@ -263,20 +263,10 @@
     margin-bottom: var(--space-5);
   }
 
-  .code-preview {
-    isolation: isolate;
-    overflow: clip;
-
-    :global(pre) {
-      max-height: 14rem;
-      overflow-y: auto;
-    }
-
-    .code-meta {
-      font-size: var(--text-xs);
-      color: var(--fg-muted);
-      text-align: right;
-      padding: var(--space-1) var(--space-2);
-    }
+  .code-meta {
+    font-size: var(--text-xs);
+    color: var(--fg-muted);
+    text-align: right;
+    padding: var(--space-1) var(--space-2);
   }
 </style>

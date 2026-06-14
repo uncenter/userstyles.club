@@ -7,6 +7,9 @@
   import { Unist } from '@typematter/svelte-unist';
   import { parser } from '@lezer/css';
 
+  import { ExpandedDialog } from './ui';
+  import { Maximize2Icon } from '@lucide/svelte';
+
   interface Props {
     source: string;
   }
@@ -14,13 +17,44 @@
   const { source, ...rest }: Props = $props();
 
   const ast = $derived(fromLezer(source, parser.parse(source)));
+
+  let fullscreen = $state(false);
 </script>
 
-<pre>
-  <code {...rest}><Unist {ast} {components} /></code>
-</pre>
+<div class="preview-wrap">
+  <pre>
+    <code {...rest}><Unist {ast} {components} /></code>
+  </pre>
+  <button
+    class="btn btn-icon btn-outline expand-btn"
+    type="button"
+    onclick={() => (fullscreen = true)}
+    aria-label="Toggle fullscreen"
+  >
+    <Maximize2Icon size={14} />
+  </button>
+</div>
+
+<ExpandedDialog bind:open={fullscreen} title="Source">
+  <pre><code><Unist {ast} {components} /></code></pre>
+</ExpandedDialog>
 
 <style>
+  .preview-wrap {
+    position: relative;
+  }
+
+  .expand-btn {
+    position: absolute;
+    top: var(--space-2);
+    right: var(--space-2);
+    opacity: 0.6;
+
+    &:hover {
+      opacity: 1;
+    }
+  }
+
   pre {
     display: flex;
     overflow: auto;
@@ -31,6 +65,9 @@
     font-family: var(--font-mono);
     font-size: var(--text-sm);
     line-height: 1.6;
+
+    max-height: 14rem;
+    overflow-y: auto;
 
     code {
       flex-grow: 1;
@@ -108,5 +145,9 @@
         }
       }
     }
+  }
+
+  :global(.dialog-body) pre {
+    max-height: none;
   }
 </style>
