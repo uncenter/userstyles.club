@@ -17,12 +17,13 @@
   .badge {
     display: inline-flex;
     align-items: center;
-    padding: 0.125rem var(--space-2);
+    padding: 0.2rem var(--space-2);
     font-size: var(--text-xs);
-    font-weight: 600;
-    line-height: 1.5;
+    font-weight: 700;
+    line-height: 1.4;
     white-space: nowrap;
-    border: 1.5px solid currentColor;
+    border-radius: var(--radius-pill);
+    border: 1.5px solid transparent;
   }
 
   .badge-secondary {
@@ -33,13 +34,16 @@
   .badge-success {
     background: var(--mint);
     color: var(--mint-vivid);
+    border-color: color-mix(in srgb, var(--mint-vivid) 30%, transparent);
   }
   .badge-warning {
     background: var(--butter);
     color: var(--butter-vivid);
+    border-color: color-mix(in srgb, var(--butter-vivid) 30%, transparent);
   }
   .badge-danger {
     background: var(--danger-bg);
     color: var(--danger);
+    border-color: color-mix(in srgb, var(--danger) 25%, transparent);
   }
 </style>

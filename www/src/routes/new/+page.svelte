@@ -95,65 +95,63 @@
   <title>{joinPageTitle('New Userstyle')}</title>
 </svelte:head>
 
-<div class="narrow-col">
-  <div class="page-section">
-    <h1>New Userstyle</h1>
-  </div>
+<div class="page-section">
+  <h1>New Userstyle</h1>
+</div>
 
-  <div class="page-section">
-    <ImportFromUrl {fields} bind:pending={importing} bind:imported />
-  </div>
+<div class="page-section">
+  <ImportFromUrl {fields} bind:pending={importing} bind:imported />
+</div>
 
-  <div class="page-section">
-    {#snippet importOverrideButton(field: keyof UserstyleContent)}
-      {#if imported}
-        {@const importedValue = imported[field]}
-        {@const currentValue = fields[field]}
-        {#if importedValue && importedValue !== currentValue}
-          <button
-            type="button"
-            class="btn btn-warning btn-sm"
-            onclick={() => (fields[field] = importedValue)}>Import</button
-          >
-        {/if}
+<div class="page-section">
+  {#snippet importOverrideButton(field: keyof UserstyleContent)}
+    {#if imported}
+      {@const importedValue = imported[field]}
+      {@const currentValue = fields[field]}
+      {#if importedValue && importedValue !== currentValue}
+        <button
+          type="button"
+          class="btn btn-warning btn-sm"
+          onclick={() => (fields[field] = importedValue)}>Import</button
+        >
       {/if}
-    {/snippet}
+    {/if}
+  {/snippet}
 
-    {#snippet formActions()}
-      <button
-        type="button"
-        class="btn btn-danger"
-        onclick={() => (clearDialogOpen = true)}
-        disabled={pending ||
-          (!fields.title.trim() && !fields.description?.trim() && !fields.sourceCode.trim())}
-      >
-        Clear
-      </button>
-      <button
-        type="submit"
-        class="btn btn-primary"
-        disabled={pending || !fields.title.trim() || !fields.sourceCode.trim()}
-      >
-        {#if publishing}<Spinner size="sm" /> Publishing…{:else}Publish{/if}
-      </button>
-    {/snippet}
+  {#snippet formActions()}
+    <button
+      type="button"
+      class="btn btn-danger"
+      onclick={() => (clearDialogOpen = true)}
+      disabled={pending ||
+        (!fields.title.trim() && !fields.description?.trim() && !fields.sourceCode.trim())}
+    >
+      Clear
+    </button>
+    <button
+      type="submit"
+      class="btn btn-primary"
+      disabled={pending || !fields.title.trim() || !fields.sourceCode.trim()}
+    >
+      {#if publishing}<Spinner size="sm" /> Publishing…{:else}Publish{/if}
+    </button>
+  {/snippet}
 
-    <UserstyleForm
-      bind:title={fields.title}
-      bind:description={fields.description}
-      bind:license={fields.license}
-      bind:homepageUrl={fields.homepageUrl}
-      bind:sourceCode={fields.sourceCode}
-      bind:upstreamUrl={fields.upstreamUrl}
-      bind:trackUpstreamUrl={fields.trackUpstreamUrl}
-      bind:removeUpdateUrl={fields.removeUpdateUrl}
-      bind:previewFile
-      {error}
-      onsubmit={submit}
-      fieldExtras={importOverrideButton}
-      {formActions}
-    />
-  </div>
+  <UserstyleForm
+    bind:title={fields.title}
+    bind:description={fields.description}
+    bind:license={fields.license}
+    bind:homepageUrl={fields.homepageUrl}
+    bind:sourceCode={fields.sourceCode}
+    bind:upstreamUrl={fields.upstreamUrl}
+    bind:trackUpstreamUrl={fields.trackUpstreamUrl}
+    bind:removeUpdateUrl={fields.removeUpdateUrl}
+    bind:previewFile
+    {error}
+    onsubmit={submit}
+    fieldExtras={importOverrideButton}
+    {formActions}
+  />
 </div>
 
 <Dialog bind:open={shareDialogOpen} title="Share to Bluesky?" maxWidth="32rem">

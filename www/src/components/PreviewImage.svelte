@@ -21,9 +21,8 @@
   .preview-image {
     display: block;
     width: 100%;
-    max-height: 360px;
-    object-fit: cover;
-    border: 2px solid var(--border);
-    box-shadow: var(--shadow-md);
+    height: 100%;
+    object-fit: contain;
+    max-height: 40vh;
   }
 </style>

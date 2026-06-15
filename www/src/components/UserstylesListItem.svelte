@@ -32,7 +32,7 @@
 </script>
 
 <article class="userstyle-card">
-  <div class="card-thumbnail">
+  <div class="card-thumbnail grid-background">
     {#if userstyle.value.previewImage}
       <img
         src={getBlobCdnUrl(
@@ -82,23 +82,15 @@
     flex-direction: column;
     overflow: hidden;
     background: var(--card-bg);
-    border: 2px solid var(--border);
-    transition:
-      transform var(--ease-fast),
-      box-shadow var(--ease-fast),
-      border-color var(--ease-fast);
-
-    &:hover {
-      transform: translate(-2px, -2px);
-      border-color: var(--card-hover-color, var(--accent));
-      box-shadow: 6px 7px 0 var(--card-hover-color, var(--accent));
-    }
+    border-top: 5px solid var(--card-accent-color, var(--accent));
+    border-radius: var(--radius);
 
     .card-thumbnail {
       height: 160px;
       flex-shrink: 0;
       overflow: hidden;
-      background: var(--bg-faint);
+
+      --grid-background-accent: var(--card-accent-color);
 
       img {
         display: block;
@@ -114,6 +106,7 @@
       gap: var(--space-2);
       padding: var(--space-3) var(--space-4);
       min-width: 0;
+      flex: 1;
 
       .card-title-row {
         display: flex;
@@ -161,7 +154,8 @@
         font-size: var(--text-xs);
         color: var(--fg-muted);
         flex-wrap: wrap;
-        margin-top: var(--space-1);
+        margin-top: auto;
+        padding-top: var(--space-2);
 
         .meta-item {
           display: inline-flex;

@@ -75,45 +75,43 @@
   <title>{joinPageTitle('Editing', data.userstyle.title)}</title>
 </svelte:head>
 
-<div class="narrow-col">
-  <div class="page-section">
-    <h1>Edit Userstyle</h1>
-  </div>
+<div class="page-section">
+  <h1>Edit Userstyle</h1>
+</div>
 
-  <div class="page-section">
-    {#snippet formActions()}
-      <button
-        type="submit"
-        class="btn btn-primary"
-        disabled={saving || !title.trim() || !sourceCode.trim()}
-      >
-        {#if saving}<Spinner size="sm" /> Saving…{:else}Save{/if}
-      </button>
-      <a
-        href={resolve('/style/[user=actor]/[style=rkey]', { user: data.user, style: data.style })}
-        class="btn btn-outline"
-      >
-        Cancel
-      </a>
-    {/snippet}
+<div class="page-section">
+  {#snippet formActions()}
+    <button
+      type="submit"
+      class="btn btn-primary"
+      disabled={saving || !title.trim() || !sourceCode.trim()}
+    >
+      {#if saving}<Spinner size="sm" /> Saving…{:else}Save{/if}
+    </button>
+    <a
+      href={resolve('/style/[user=actor]/[style=rkey]', { user: data.user, style: data.style })}
+      class="btn btn-outline"
+    >
+      Cancel
+    </a>
+  {/snippet}
 
-    <UserstyleForm
-      bind:title
-      bind:description
-      bind:license
-      bind:upstreamUrl
-      bind:homepageUrl
-      bind:sourceCode
-      bind:trackUpstreamUrl
-      bind:removeUpdateUrl
-      bind:previewFile
-      bind:keepExistingPreview
-      existingImageSrc={data.userstyle.previewImage
-        ? getBlobCdnUrl(data.profile.did, data.userstyle.previewImage.ref.$link, 'feed_fullsize')
-        : null}
-      {error}
-      onsubmit={submit}
-      {formActions}
-    />
-  </div>
+  <UserstyleForm
+    bind:title
+    bind:description
+    bind:license
+    bind:upstreamUrl
+    bind:homepageUrl
+    bind:sourceCode
+    bind:trackUpstreamUrl
+    bind:removeUpdateUrl
+    bind:previewFile
+    bind:keepExistingPreview
+    existingImageSrc={data.userstyle.previewImage
+      ? getBlobCdnUrl(data.profile.did, data.userstyle.previewImage.ref.$link, 'feed_fullsize')
+      : null}
+    {error}
+    onsubmit={submit}
+    {formActions}
+  />
 </div>

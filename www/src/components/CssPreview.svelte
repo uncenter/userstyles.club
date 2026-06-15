@@ -59,8 +59,8 @@
     display: flex;
     overflow: auto;
     background: var(--bg-subtle);
-    border: 2px solid var(--foreground);
-    border-left: 5px solid var(--accent);
+    border: 2px solid var(--border);
+    border-radius: var(--radius-sm);
     padding: var(--space-4);
     font-family: var(--font-mono);
     font-size: var(--text-sm);

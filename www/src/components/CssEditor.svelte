@@ -104,6 +104,7 @@
   :global .codemirror-wrapper {
     display: flex;
     border: 2px solid var(--input-border);
+    border-radius: var(--radius-sm);
     overflow: hidden;
     transition:
       border-color var(--ease-fast),

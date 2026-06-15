@@ -10,30 +10,6 @@
         if (t === 'dark' || t === 'light') document.documentElement.setAttribute('data-theme', t);
       } catch (e) {}
     </script>
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      aria-hidden="true"
-      style="position: absolute; pointer-events: none; width: 0; height: 0; overflow: hidden"
-    >
-      <defs>
-        <filter id="rough" x="-8%" y="-8%" width="116%" height="116%">
-          <feTurbulence
-            type="fractalNoise"
-            baseFrequency="0.03 0.05"
-            numOctaves="4"
-            seed="3"
-            result="noise"
-          />
-          <feDisplacementMap
-            in="SourceGraphic"
-            in2="noise"
-            scale="2.5"
-            xChannelSelector="R"
-            yChannelSelector="G"
-          />
-        </filter>
-      </defs>
-    </svg>
     %sveltekit.head%
   </head>
   <body data-sveltekit-preload-data="hover">

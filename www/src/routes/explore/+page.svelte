@@ -32,10 +32,8 @@
   <title>{joinPageTitle('Explore')}</title>
 </svelte:head>
 
-<div class="narrow-col">
-  <div class="page-section">
-    <h1>Explore</h1>
-  </div>
+<div class="page-section">
+  <h1>Explore</h1>
 </div>
 <UserstylesSection {userstyles} {loading} {error}>
   {#snippet empty()}<p>No userstyles published yet.</p>{/snippet}

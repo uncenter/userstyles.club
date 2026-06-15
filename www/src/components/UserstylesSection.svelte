@@ -42,7 +42,7 @@
     .empty-state {
       display: flex;
       justify-content: center;
-      padding: var(--space-6) 0;
+      padding: var(--space-8) 0;
     }
 
     .empty-state {
@@ -53,26 +53,26 @@
       list-style: none;
       padding: 0;
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
       gap: var(--space-4);
 
       li:nth-child(6n + 1) {
-        --card-hover-color: var(--lavender-vivid);
+        --card-accent-color: var(--lavender-vivid);
       }
       li:nth-child(6n + 2) {
-        --card-hover-color: var(--mint-vivid);
+        --card-accent-color: var(--mint-vivid);
       }
       li:nth-child(6n + 3) {
-        --card-hover-color: var(--peach-vivid);
+        --card-accent-color: var(--peach-vivid);
       }
       li:nth-child(6n + 4) {
-        --card-hover-color: var(--butter-vivid);
+        --card-accent-color: var(--butter-vivid);
       }
       li:nth-child(6n + 5) {
-        --card-hover-color: var(--sky-vivid);
+        --card-accent-color: var(--sky-vivid);
       }
       li:nth-child(6n + 6) {
-        --card-hover-color: var(--rose-vivid);
+        --card-accent-color: var(--rose-vivid);
       }
     }
   }

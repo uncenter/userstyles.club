@@ -52,7 +52,7 @@
     background: var(--card-bg);
     color: var(--foreground);
     border: none;
-    box-shadow: var(--shadow-lg);
+    border-radius: var(--radius-lg);
     padding: var(--space-4);
     width: calc(100vw - var(--space-8));
     max-width: 80rem;
@@ -68,18 +68,9 @@
       display: none;
     }
 
-    &::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      border: 2px solid var(--foreground);
-      pointer-events: none;
-      filter: url('#rough');
-      z-index: 10;
-    }
-
     &::backdrop {
-      background: rgb(0 0 0 / 0.6);
+      background: rgb(0 0 0 / 0.55);
+      backdrop-filter: blur(2px);
     }
   }
 

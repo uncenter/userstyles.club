@@ -55,8 +55,7 @@
   <title>{joinPageTitle(`@${data.profile.handle}`)}</title>
 </svelte:head>
 
-<div class="narrow-col">
-  <section class="page-section profile-header">
+<section class="page-section profile-header">
     <Avatar src={data.profile.avatar} alt={data.profile.handle} name={displayName} size="lg" />
     {#if editing}
       <form onsubmit={saveProfile} class="form-stack profile-edit-form">
@@ -117,8 +116,7 @@
         </button>
       {/if}
     {/if}
-  </section>
-</div>
+</section>
 
 <UserstylesSection userstyles={data.userstyles} author={data.profile} />
 

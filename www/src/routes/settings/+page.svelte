@@ -13,46 +13,44 @@
   <title>{joinPageTitle('Settings')}</title>
 </svelte:head>
 
-<div class="narrow-col">
-  <div class="page-section">
-    <h1>Settings</h1>
-  </div>
+<div class="page-section">
+  <h1>Settings</h1>
+</div>
 
-  <div class="page-section settings-list">
-    <div class="settings-row">
-      <div class="settings-label">
-        <label for="appearance-select">Appearance</label>
-        <p class="text-muted">Choose your preferred color scheme.</p>
-      </div>
-      <select
-        id="appearance-select"
-        bind:value={
-          () => preferences.get('appearance'), (val) => preferences.set('appearance', val)
-        }
-        class="appearance-select"
-      >
-        {#each appearances as opt}
-          <option value={opt.value}>{opt.label}</option>
-        {/each}
-      </select>
+<div class="page-section settings-list">
+  <div class="settings-row">
+    <div class="settings-label">
+      <label for="appearance-select">Appearance</label>
+      <p class="text-muted">Choose your preferred color scheme.</p>
     </div>
-    <div class="settings-row">
-      <div class="settings-label">
-        <label for="use-permanent-urls-toggle">Use Permanent URLs</label>
-        <p class="text-muted">
-          Prefer permanent URLs over shorter URLs by using DIDs instead of handles.
-        </p>
-      </div>
-      <input
-        type="checkbox"
-        id="use-permanent-urls-toggle"
-        bind:checked={
-          () => preferences.get('usePermanentUrls'),
-          (val) => preferences.set('usePermanentUrls', val)
-        }
-        class="use-permanent-urls-toggle"
-      />
+    <select
+      id="appearance-select"
+      bind:value={
+        () => preferences.get('appearance'), (val) => preferences.set('appearance', val)
+      }
+      class="appearance-select"
+    >
+      {#each appearances as opt}
+        <option value={opt.value}>{opt.label}</option>
+      {/each}
+    </select>
+  </div>
+  <div class="settings-row">
+    <div class="settings-label">
+      <label for="use-permanent-urls-toggle">Use Permanent URLs</label>
+      <p class="text-muted">
+        Prefer permanent URLs over shorter URLs by using DIDs instead of handles.
+      </p>
     </div>
+    <input
+      type="checkbox"
+      id="use-permanent-urls-toggle"
+      bind:checked={
+        () => preferences.get('usePermanentUrls'),
+        (val) => preferences.set('usePermanentUrls', val)
+      }
+      class="use-permanent-urls-toggle"
+    />
   </div>
 </div>
 

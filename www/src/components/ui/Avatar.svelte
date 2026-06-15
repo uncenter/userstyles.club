@@ -34,16 +34,13 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    border-radius: 0;
+    border-radius: 50%;
     background: var(--lavender);
     color: var(--lavender-vivid);
     font-family: var(--font-display);
     font-weight: 700;
     overflow: hidden;
-    border: 2px solid var(--foreground);
-    box-shadow: 2px 2px 0 var(--foreground);
     flex-shrink: 0;
-    filter: url('#rough');
 
     img {
       width: 100%;

@@ -6,17 +6,17 @@
   /* Accent & Palette */
 
   --accent: light-dark(#7c6fbc, #b8a8f0);
-  --accent-fg: light-dark(#ffffff, #1a1625);
+  --accent-fg: light-dark(#ffffff, #09090b);
   --accent-hover: light-dark(#6a5dae, #cdbeff);
 
-  --lavender: light-dark(#ede9fe, #2e2260);
-  --lavender-vivid: light-dark(#a78bfa, #d8b4fe);
+  --lavender: light-dark(#ede9fe, #201d30);
+  --lavender-vivid: light-dark(#7c6fbc, #b8a8f0);
   --mint: light-dark(#d1fae5, #0f3c25);
   --mint-vivid: light-dark(#34d399, #6ee7b7);
   --peach: light-dark(#ffedd5, #3d2010);
   --peach-vivid: light-dark(#fb923c, #fdba74);
   --butter: light-dark(#fef3c7, #3a2a00);
-  --butter-vivid: light-dark(#fbbf24, #fde68a);
+  --butter-vivid: light-dark(#f59e0b, #fde68a);
   --sky: light-dark(#dbeafe, #0f1e42);
   --sky-vivid: light-dark(#60a5fa, #93c5fd);
   --rose: light-dark(#fce7f3, #3d1025);
@@ -25,23 +25,31 @@
   --bsky-blue: #1185fe;
 
   /* Backgrounds */
-  --background: light-dark(#ffffff, #09090b);
-  --bg-subtle: light-dark(#fafafa, #111113);
-  --bg-muted: light-dark(#f4f4f5, #18181b);
-  --bg-faint: light-dark(#eeeeef, #27272a);
+  --background: light-dark(#edeaf8, #09090b);
+  --bg-subtle: light-dark(#e5e1f4, #111113);
+  --bg-muted: light-dark(#d8d3ee, #1d1d20);
+  --bg-faint: light-dark(#ccc6e6, #27272a);
 
   /* Foregrounds */
-  --foreground: light-dark(#0a0a0b, #eeeaf8);
-  --fg-muted: light-dark(#52525b, #bfbbcd);
+  --foreground: light-dark(#09090b, #fafafa);
+  --fg-muted: light-dark(#52525b, #a1a1aa);
 
   /* Card */
-  --card-bg: light-dark(#ffffff, #18181b);
-  --card-border: light-dark(#0a0a0b, #eeeaf8);
+  --card-bg: light-dark(#f7f5ff, #18181b);
+  --card-border: light-dark(#09090b, #71717a);
+  --float-bg: light-dark(#ffffff, #27272a);
 
   /* Borders & Inputs */
   --border: light-dark(#d4d4d8, #3f3f46);
-  --input-border: light-dark(#a8a8b0, #52525b);
+  --border-strong: light-dark(#09090b, #71717a);
+  --input-border: light-dark(#a1a1aa, #52525b);
   --ring: light-dark(#7c6fbc, #b8a8f0);
+
+  /* Border Radii */
+  --radius-sm: 4px;
+  --radius: 6px;
+  --radius-lg: 8px;
+  --radius-pill: 999px;
 
   /* States */
   --danger: light-dark(#dc2626, #f87171);
@@ -54,19 +62,19 @@
   --info-bg: light-dark(#eff6ff, #0f1f3a);
 
   /* Nav */
-  --nav-bg: light-dark(#f5f3ff, #1c1a2e);
-  --nav-border: light-dark(#0a0a0b, #eeeaf8);
-  --nav-shadow: light-dark(#7c6fbc, #9b8fd4);
+  --nav-bg: light-dark(#f7f5ff, #18181b);
+  --nav-border: light-dark(#09090b, #71717a);
+  --nav-height: 5rem;
 
   /* Shadows */
-  --shadow-color: var(--foreground);
+  --shadow-color: light-dark(#09090b, #3d3a60);
   --shadow-sm: 2px 3px 0 var(--shadow-color);
   --shadow-md: 4px 5px 0 var(--shadow-color);
   --shadow-lg: 6px 7px 0 var(--shadow-color);
 
   /* Typography */
   --font-display: 'Baloo 2 Variable', system-ui, -apple-system, sans-serif;
-  --font-sans: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-sans: 'Baloo 2 Variable', system-ui, -apple-system, sans-serif;
   --font-mono: ui-monospace, 'Cascadia Code', 'JetBrains Mono', Consolas, monospace;
 
   --text-xs: 0.75rem;
@@ -140,6 +148,18 @@ body {
 
 /* Base */
 
+body {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18'%3E%3Ccircle cx='9' cy='9' r='1' fill='%2309090b' fill-opacity='0.08'/%3E%3C/svg%3E");
+}
+[data-theme='dark'] body {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18'%3E%3Ccircle cx='9' cy='9' r='1' fill='%23fafafa' fill-opacity='0.05'/%3E%3C/svg%3E");
+}
+@media (prefers-color-scheme: dark) {
+  body:not([data-theme='light']) {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18'%3E%3Ccircle cx='9' cy='9' r='1' fill='%23fafafa' fill-opacity='0.05'/%3E%3C/svg%3E");
+  }
+}
+
 a {
   color: var(--accent);
   text-decoration: underline;
@@ -157,13 +177,13 @@ h3 {
 }
 h1 {
   font-size: var(--text-3xl);
-  font-weight: 700;
-  line-height: 1.15;
+  font-weight: 800;
+  line-height: 1.1;
 }
 h2 {
   font-size: var(--text-2xl);
   font-weight: 700;
-  line-height: 1.25;
+  line-height: 1.2;
 }
 h3 {
   font-size: var(--text-xl);
@@ -171,12 +191,12 @@ h3 {
   line-height: 1.3;
 }
 p {
-  line-height: 1.6;
+  line-height: 1.65;
 }
 
 hr {
   border: none;
-  border-top: 2px solid var(--foreground);
+  border-top: 2px solid var(--border);
   margin: var(--space-5) 0;
 }
 
@@ -191,8 +211,8 @@ hr {
 
 main.container {
   flex: 1;
-  padding-top: var(--space-8);
-  padding-bottom: var(--space-10);
+  padding-top: var(--space-10);
+  padding-bottom: var(--space-12);
 }
 
 .centered-col {
@@ -200,34 +220,29 @@ main.container {
   margin-inline: auto;
 }
 
-.narrow-col {
-  max-width: 56rem;
-  margin-inline: auto;
-}
-
 .page-section {
-  position: relative;
-  isolation: isolate;
   padding: var(--space-6);
   margin-bottom: var(--space-5);
-
-  &::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    z-index: -1;
-    background: var(--card-bg);
-    border: 2px solid var(--card-border);
-    box-shadow: var(--shadow-md);
-    filter: url('#rough');
-    pointer-events: none;
-  }
+  background: var(--card-bg);
+  border-radius: var(--radius);
 }
 
 /* Utilities */
 
 .text-muted {
   color: var(--fg-muted);
+}
+
+.grid-background {
+  /* Inspired by https://projects.verou.me/css3patterns/#blueprint-grid. */
+  background-color: color-mix(in srgb, var(--grid-background-accent) 12%, var(--card-bg));
+  background-image:
+    linear-gradient(color-mix(in srgb, var(--grid-background-accent) 35%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in srgb, var(--grid-background-accent) 35%, transparent) 1px, transparent 1px),
+    linear-gradient(color-mix(in srgb, var(--grid-background-accent) 14%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in srgb, var(--grid-background-accent) 14%, transparent) 1px, transparent 1px);
+  background-size: 50px 50px, 50px 50px, 10px 10px, 10px 10px;
+  background-position: -1px -1px, -1px -1px, -1px -1px, -1px -1px;
 }
 
 /* Buttons */
@@ -237,7 +252,7 @@ main.container {
   align-items: center;
   justify-content: center;
   gap: var(--space-2);
-  border: 2px solid var(--btn-border, var(--foreground));
+  border-radius: var(--radius-sm);
   font-family: inherit;
   font-weight: 700;
   font-size: var(--text-sm);
@@ -248,29 +263,19 @@ main.container {
   white-space: nowrap;
   background: var(--btn-bg, var(--bg-muted));
   color: var(--btn-fg, var(--foreground));
-  box-shadow: 3px 3px 0 var(--btn-shadow, var(--foreground));
   transition:
     background-color var(--ease-fast),
     color var(--ease-fast),
-    border-color var(--ease-fast),
-    transform var(--ease-fast),
-    box-shadow var(--ease-fast);
+    border-color var(--ease-fast);
+  border: none;
 
   &:hover:not(:disabled) {
     background: var(--btn-hover-bg, var(--btn-bg, var(--bg-faint)));
     color: var(--btn-hover-fg, var(--btn-fg, var(--foreground)));
-    border-color: var(--btn-hover-border, var(--btn-border, var(--foreground)));
-    transform: translate(-1px, -1px);
-    box-shadow: 4px 4px 0 var(--btn-hover-shadow, var(--btn-shadow, var(--foreground)));
-  }
-  &:active:not(:disabled) {
-    transform: translate(2px, 2px);
-    box-shadow: 1px 1px 0 var(--btn-shadow, var(--foreground));
   }
   &:disabled {
     opacity: 0.45;
     cursor: not-allowed;
-    box-shadow: none;
   }
 
   &.btn-sm {
@@ -283,15 +288,13 @@ main.container {
   }
 
   &.btn-icon {
-    font-size: var(--text-xs);
-    padding: var(--space-1) var(--space-1);
+    padding: var(--space-1);
+    aspect-ratio: 1;
   }
 
   &.btn-primary {
     --btn-bg: var(--accent);
     --btn-fg: var(--accent-fg);
-    --btn-outline-fg: var(--accent);
-    --btn-border: var(--accent-hover);
     --btn-shadow: var(--accent-hover);
     --btn-hover-bg: var(--accent-hover);
     --btn-hover-fg: var(--accent-fg);
@@ -300,17 +303,12 @@ main.container {
   &.btn-secondary {
     --btn-bg: var(--bg-muted);
     --btn-fg: var(--foreground);
-    --btn-border: var(--foreground);
-    --btn-shadow: var(--foreground);
     --btn-hover-bg: var(--bg-faint);
   }
 
   &.btn-danger {
     --btn-bg: var(--danger);
     --btn-fg: var(--accent-fg);
-    --btn-outline-fg: var(--danger);
-    --btn-border: color-mix(in srgb, var(--danger) 70%, #000);
-    --btn-shadow: color-mix(in srgb, var(--danger) 70%, #000);
     --btn-hover-bg: color-mix(in srgb, var(--danger) 85%, #000);
     --btn-hover-fg: var(--accent-fg);
   }
@@ -318,21 +316,15 @@ main.container {
   &.btn-warning {
     --btn-bg: var(--warning);
     --btn-fg: var(--accent-fg);
-    --btn-outline-fg: var(--warning);
-    --btn-border: color-mix(in srgb, var(--warning) 70%, #000);
-    --btn-shadow: color-mix(in srgb, var(--warning) 70%, #000);
     --btn-hover-bg: color-mix(in srgb, var(--warning) 85%, #000);
     --btn-hover-fg: var(--accent-fg);
   }
 
   &.btn-bsky {
     --btn-bg: var(--bsky-blue);
-    --btn-fg: var(--foreground);
-    --btn-outline-fg: var(--bsky-blue);
-    --btn-border: color-mix(in srgb, var(--bsky-blue) 70%, #000);
-    --btn-shadow: color-mix(in srgb, var(--bsky-blue) 70%, #000);
+    --btn-fg: #ffffff;
     --btn-hover-bg: color-mix(in srgb, var(--bsky-blue) 85%, #000);
-    --btn-hover-fg: var(--foreground);
+    --btn-hover-fg: #ffffff;
   }
 
   &.btn-outline {
@@ -349,16 +341,9 @@ main.container {
     background: transparent;
     color: var(--btn-outline-fg, var(--foreground));
     border-color: transparent;
-    box-shadow: none;
 
     &:hover:not(:disabled) {
       background: var(--bg-muted);
-      transform: none;
-      box-shadow: none;
-    }
-    &:active:not(:disabled) {
-      transform: none;
-      box-shadow: none;
     }
   }
 }
@@ -376,6 +361,7 @@ select {
   background: var(--background);
   color: var(--foreground);
   border: 2px solid var(--input-border);
+  border-radius: var(--radius-sm);
   transition:
     border-color var(--ease-fast),
     box-shadow var(--ease-fast);
@@ -412,7 +398,8 @@ input[type='checkbox'] {
   flex-shrink: 0;
   width: 1.125rem;
   height: 1.125rem;
-  border: 2px solid var(--foreground);
+  border: 2px solid var(--border-strong);
+  border-radius: var(--radius-sm);
   background: var(--background);
   cursor: pointer;
   position: relative;
@@ -483,10 +470,12 @@ input[type='checkbox'] {
 
   input {
     border-right: none;
+    border-radius: var(--radius-sm) 0 0 var(--radius-sm);
   }
 
   button {
     border: 2px solid var(--input-border);
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
     background: var(--bg-muted);
     color: var(--foreground);
     font: inherit;
@@ -553,6 +542,7 @@ input[type='checkbox'] {
 
     .file-input-text {
       border: 2px solid var(--input-border);
+      border-radius: var(--radius-sm);
       padding: var(--space-1) var(--space-2);
       background: var(--background);
       font-size: var(--text-sm);

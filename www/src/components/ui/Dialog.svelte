@@ -47,23 +47,14 @@
     background: var(--card-bg);
     color: var(--foreground);
     border: none;
-    box-shadow: var(--shadow-lg);
+    border-radius: var(--radius-lg);
     padding: var(--space-6);
     width: calc(100% - var(--space-8));
     margin: auto;
-    position: relative;
-
-    &::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      border: 2px solid var(--foreground);
-      pointer-events: none;
-      filter: url('#rough');
-    }
 
     &::backdrop {
-      background: rgb(0 0 0 / 0.6);
+      background: rgb(0 0 0 / 0.55);
+      backdrop-filter: blur(2px);
     }
 
     h2 {

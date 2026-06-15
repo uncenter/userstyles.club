@@ -166,7 +166,8 @@
 <style>
   .review-card {
     padding: var(--space-4);
-    border: 2px solid var(--border);
+    background: var(--bg-subtle);
+    border-radius: var(--radius);
 
     .review-form {
       display: flex;
@@ -176,7 +177,8 @@
       .review-textarea {
         width: 100%;
         padding: var(--space-3);
-        border: 2px solid var(--border);
+        border: 2px solid var(--input-border);
+        border-radius: var(--radius-sm);
         background: var(--background);
         color: var(--foreground);
         font-family: inherit;
@@ -185,7 +187,8 @@
 
         &:focus {
           outline: none;
-          border-color: var(--foreground);
+          border-color: var(--ring);
+          box-shadow: 3px 3px 0 var(--accent);
         }
       }
 

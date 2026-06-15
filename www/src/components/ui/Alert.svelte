@@ -30,8 +30,9 @@
     gap: var(--space-3);
     padding: var(--space-3) var(--space-4);
     font-size: var(--text-sm);
-    border: 2px solid currentColor;
-    border-left-width: 5px;
+    border-radius: var(--radius);
+    border: 1.5px solid color-mix(in srgb, currentColor 30%, transparent);
+    border-left: 4px solid currentColor;
 
     .alert-icon {
       flex-shrink: 0;

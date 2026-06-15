@@ -11,6 +11,8 @@
   import { Spinner, Alert, Dialog } from '$components/ui';
   import { ActorHandle, CssPreview, PreviewImage, StarRating } from '$components';
 
+  import { PencilIcon, Trash2Icon } from '@lucide/svelte';
+
   import bytes from 'pretty-bytes';
   import { formatDate } from '$lib/date';
 
@@ -51,29 +53,21 @@
   <title>{joinPageTitle(data.userstyle.value.title)}</title>
 </svelte:head>
 
-<div class="narrow-col">
-  {#if user.isLoggedIn && user.did === data.profile.did}
-    <div class="owner-toolbar">
-      <a
-        href={resolve('/style/[user=actor]/[style=rkey]/edit', {
-          user: getPreferredActorIdentifier(data.profile),
-          style: params.style,
-        })}
-        class="btn btn-secondary btn-sm"
-      >
-        Edit
-      </a>
-      <button
-        type="button"
-        class="btn btn-danger btn-sm"
-        onclick={() => (confirmDialogOpen = true)}
-      >
-        Delete
-      </button>
-    </div>
-  {/if}
+<div class="page-wrapper">
+  <section class="page-section userstyle-section">
+    {#if data.userstyle.value.previewImage}
+      <div class="style-preview grid-background">
+        <PreviewImage
+          src={getBlobCdnUrl(
+            data.profile.did,
+            data.userstyle.value.previewImage.ref.$link,
+            'feed_fullsize',
+          )}
+          alt={data.userstyle.value.title}
+        />
+      </div>
+    {/if}
 
-  <section class="page-section">
     <div class="style-header">
       <div class="style-header-info">
         <h1 class="style-title">{data.userstyle.value.title}</h1>
@@ -127,19 +121,8 @@
     </div>
 
     {#if error}
-      <Alert variant="error">{error}</Alert>
-    {/if}
-
-    {#if data.userstyle.value.previewImage}
-      <div class="style-preview">
-        <PreviewImage
-          src={getBlobCdnUrl(
-            data.profile.did,
-            data.userstyle.value.previewImage.ref.$link,
-            'feed_fullsize',
-          )}
-          alt={data.userstyle.value.title}
-        />
+      <div class="section-pad">
+        <Alert variant="error">{error}</Alert>
       </div>
     {/if}
 
@@ -149,12 +132,37 @@
     </div>
   </section>
 
-  <Reviews
-    subject={data.userstyle.uri}
-    owner={data.profile.did}
-    reviews={data.reviews}
-    reviewers={data.reviewers}
-  />
+  {#if user.isLoggedIn && user.did === data.profile.did}
+    <div class="owner-actions">
+      <a
+        href={resolve('/style/[user=actor]/[style=rkey]/edit', {
+          user: getPreferredActorIdentifier(data.profile),
+          style: params.style,
+        })}
+        class="btn btn-secondary btn-sm btn-icon"
+        aria-label="Edit userstyle"
+      >
+        <PencilIcon size={14} />
+      </a>
+      <button
+        type="button"
+        class="btn btn-danger btn-sm btn-icon"
+        aria-label="Delete userstyle"
+        onclick={() => (confirmDialogOpen = true)}
+      >
+        <Trash2Icon size={14} />
+      </button>
+    </div>
+  {/if}
+
+  <div class="reviews-wrapper">
+    <Reviews
+      subject={data.userstyle.uri}
+      owner={data.profile.did}
+      reviews={data.reviews}
+      reviewers={data.reviewers}
+    />
+  </div>
 </div>
 
 <Dialog bind:open={confirmDialogOpen} title="Delete userstyle?">
@@ -175,11 +183,42 @@
 </Dialog>
 
 <style>
-  .owner-toolbar {
+  .page-wrapper {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    column-gap: var(--space-3);
+
+    @media (max-width: 40rem) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .reviews-wrapper {
+    grid-column: 1 / -1;
+  }
+
+  .owner-actions {
+    grid-column: 2;
+    grid-row: 1;
     display: flex;
-    justify-content: flex-end;
+    flex-direction: column;
     gap: var(--space-2);
-    margin-bottom: var(--space-3);
+    padding-top: calc(var(--space-6) + 5px);
+
+    @media (max-width: 40rem) {
+      grid-column: 1;
+      grid-row: auto;
+      flex-direction: row;
+      justify-content: flex-end;
+      padding-top: 0;
+      margin-bottom: var(--space-3);
+    }
+  }
+
+  .userstyle-section {
+    border-top: 5px solid var(--lavender-vivid);
+    overflow: hidden;
+    padding: 0;
   }
 
   .style-header {
@@ -188,7 +227,7 @@
     justify-content: space-between;
     gap: var(--space-4);
     flex-wrap: wrap;
-    margin-bottom: var(--space-4);
+    padding: var(--space-6) var(--space-6) var(--space-4);
 
     .style-header-info {
       display: flex;
@@ -211,14 +250,19 @@
     font-size: var(--text-4xl);
   }
 
+  .style-description {
+    color: var(--fg-muted);
+    line-height: 1.6;
+    padding: 0 var(--space-6) var(--space-5);
+  }
+
   .style-info {
     display: flex;
-    align-items: end;
+    align-items: center;
     justify-content: space-between;
     gap: var(--space-4);
-    padding-bottom: var(--space-5);
-    margin-bottom: var(--space-5);
-    border-bottom: 2px solid var(--border);
+    padding: var(--space-4) var(--space-6);
+    margin-bottom: var(--space-6);
 
     @media (max-width: 639px) {
       flex-direction: column;
@@ -257,14 +301,17 @@
     }
   }
 
-  .style-description {
-    color: var(--fg-muted);
-    line-height: 1.6;
-    margin-bottom: var(--space-5);
+  .section-pad {
+    padding: 0 var(--space-6) var(--space-4);
   }
 
   .style-preview {
     margin-bottom: var(--space-5);
+    --grid-background-accent: var(--lavender-vivid);
+  }
+
+  .code-preview {
+    padding: 0 var(--space-6) var(--space-6);
   }
 
   .code-meta {
