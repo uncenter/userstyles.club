@@ -305,7 +305,7 @@
         }
 
         .style-link {
-          color: var(--accent);
+          color: var(--brand-purple);
           font-weight: 600;
           text-decoration: none;
 
@@ -349,12 +349,10 @@
       flex-shrink: 0;
       display: flex;
 
-      &:nth-child(6n + 1) { --card-accent-color: var(--lavender-vivid); }
-      &:nth-child(6n + 2) { --card-accent-color: var(--mint-vivid); }
-      &:nth-child(6n + 3) { --card-accent-color: var(--peach-vivid); }
-      &:nth-child(6n + 4) { --card-accent-color: var(--butter-vivid); }
-      &:nth-child(6n + 5) { --card-accent-color: var(--sky-vivid); }
-      &:nth-child(6n + 6) { --card-accent-color: var(--rose-vivid); }
+      &:nth-child(4n + 1) { --card-accent-color: var(--brand-purple); }
+      &:nth-child(4n + 2) { --card-accent-color: var(--brand-red); }
+      &:nth-child(4n + 3) { --card-accent-color: var(--brand-green); }
+      &:nth-child(4n + 4) { --card-accent-color: var(--brand-blue); }
 
       .style-scroll-card {
         display: flex;
@@ -364,7 +362,7 @@
         height: 100%;
         padding: var(--space-3) var(--space-4);
         background: var(--background);
-        border-top: 4px solid var(--card-accent-color, var(--accent));
+        border-top: 4px solid var(--card-accent-color, var(--brand-purple));
         border-radius: var(--radius);
         text-decoration: none;
         color: var(--foreground);

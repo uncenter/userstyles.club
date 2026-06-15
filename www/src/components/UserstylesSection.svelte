@@ -56,23 +56,17 @@
       grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
       gap: var(--space-4);
 
-      li:nth-child(6n + 1) {
-        --card-accent-color: var(--lavender-vivid);
+      li:nth-child(4n + 1) {
+        --card-accent-color: var(--brand-purple);
       }
-      li:nth-child(6n + 2) {
-        --card-accent-color: var(--mint-vivid);
+      li:nth-child(4n + 2) {
+        --card-accent-color: var(--brand-red);
       }
-      li:nth-child(6n + 3) {
-        --card-accent-color: var(--peach-vivid);
+      li:nth-child(4n + 3) {
+        --card-accent-color: var(--brand-green);
       }
-      li:nth-child(6n + 4) {
-        --card-accent-color: var(--butter-vivid);
-      }
-      li:nth-child(6n + 5) {
-        --card-accent-color: var(--sky-vivid);
-      }
-      li:nth-child(6n + 6) {
-        --card-accent-color: var(--rose-vivid);
+      li:nth-child(4n + 4) {
+        --card-accent-color: var(--brand-blue);
       }
     }
   }

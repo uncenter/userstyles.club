@@ -1,23 +1,173 @@
-<svg width="168" height="167.908" viewBox="0 0 168 167.908" xmlns="http://www.w3.org/2000/svg">
-  <g class="wheel">
-    <path d="M84 83.954h84a84 84 0 0 1-42 72.7z" fill="#f472b6"/>
-    <path d="m84 83.954 42 72.7a84 84 0 0 1-84 0z" fill="#fb923c"/>
-    <path d="m84 83.954-42 72.7a84 84 0 0 1-42-72.7Z" fill="#fbbf24"/>
-    <path d="M84 83.954H0a84 84 0 0 1 42-72.7z" fill="#34d399"/>
-    <path d="m84 83.954-42-72.7a84 84 0 0 1 84 0z" fill="#60a5fa"/>
-    <path d="m84 83.954 42-72.7a84 84 0 0 1 42 72.7z" fill="#a78bfa"/>
-    <circle cx="84" cy="83.954" r="77" fill="none" stroke="#0d0d0d" stroke-opacity=".3" stroke-width="1.4"/>
-    <circle cx="84" cy="83.954" r="68" fill="none" stroke="#0d0d0d" stroke-opacity=".3" stroke-width="1.4"/>
-    <circle cx="84" cy="83.954" r="59" fill="none" stroke="#0d0d0d" stroke-opacity=".3" stroke-width="1.4"/>
-    <circle cx="84" cy="83.954" r="50" fill="none" stroke="#0d0d0d" stroke-opacity=".3" stroke-width="1.4"/>
-    <circle cx="84" cy="83.954" r="41" fill="none" stroke="#0d0d0d" stroke-opacity=".3" stroke-width="1.4"/>
-    <circle cx="84" cy="83.954" r="80" fill="none" stroke="#0d0d0d" stroke-opacity=".55" stroke-width="3.5" stroke-dasharray="2, 8"/>
-    <circle cx="84" cy="83.954" r="36" fill="none" stroke="#f4eef8" stroke-opacity=".35" stroke-width="1.4"/>
-    <circle cx="84" cy="83.954" r="29" fill="none" stroke="#f4eef8" stroke-opacity=".35" stroke-width="1.4"/>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   width="91.477699"
+   height="88.547379"
+   viewBox="0 0 77.404207 76.741061"
+   role="img"
+   aria-label="Three roughly drawn pastel crayons fanned out: pink, mint and blue"
+   version="1.1"
+   id="svg15"
+   sodipodi:docname="tri-crayon-logo.svg"
+   inkscape:version="1.4.4 (dcaf3e7, 2026-05-05)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:dc="http://purl.org/dc/elements/1.1/">
+  <defs
+     id="defs15" />
+  <sodipodi:namedview
+     id="namedview15"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:zoom="2.6097365"
+     inkscape:cx="-31.420797"
+     inkscape:cy="100.20169"
+     inkscape:window-width="1800"
+     inkscape:window-height="1102"
+     inkscape:window-x="0"
+     inkscape:window-y="39"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg15" />
+  <title
+     id="title1">userstyles.club tri-crayon mark</title>
+  <g
+     transform="rotate(-19,227.16996,-45.917322)"
+     id="g5">
+    <path
+       d="m -9,-1 q -1,-29 0,-56 l 9,-15 9,16 q 1,26 0,55 -9,4 -18,0 z"
+       fill="#ffafcc"
+       stroke="#3d3a52"
+       stroke-width="2.4"
+       stroke-linejoin="round"
+       id="path1" />
+    <path
+       d="m -9,-57 9,-15 9,16 z"
+       fill="#ff8fb3"
+       stroke="#3d3a52"
+       stroke-width="2.4"
+       stroke-linejoin="round"
+       id="path2" />
+    <path
+       d="m -9.6,-22 q 9.6,3.5 19.2,0 L 9.4,-31 Q 0,-34.5 -9.4,-31 Z"
+       fill="#ffe9f1"
+       stroke="#3d3a52"
+       stroke-width="1.8"
+       stroke-linejoin="round"
+       id="path3" />
+    <path
+       d="m -4,-44 3,-6"
+       fill="none"
+       stroke="#ffffff"
+       stroke-width="2"
+       stroke-linecap="round"
+       opacity="0.5"
+       id="path4" />
+    <path
+       d="m 3,-9 2,-6"
+       fill="none"
+       stroke="#ffffff"
+       stroke-width="2"
+       stroke-linecap="round"
+       opacity="0.4"
+       id="path5" />
   </g>
-  <g class="center">
-    <circle cx="84" cy="83.954" r="21" fill="#161616"/>
-    <circle cx="84" cy="83.954" r="4" fill="#0a0a0a"/>
-    <circle cx="84" cy="83.954" r="2" fill="#d7dbe0"/>
+  <g
+     transform="rotate(3,-1378.0849,713.49439)"
+     id="g10">
+    <path
+       d="m -9,-1 q -1,-29 0,-56 l 9,-15 9,16 q 1,26 0,55 -9,4 -18,0 z"
+       fill="#7ce0a0"
+       stroke="#3d3a52"
+       stroke-width="2.4"
+       stroke-linejoin="round"
+       id="path6" />
+    <path
+       d="m -9,-57 9,-15 9,16 z"
+       fill="#52d48a"
+       stroke="#3d3a52"
+       stroke-width="2.4"
+       stroke-linejoin="round"
+       id="path7" />
+    <path
+       d="m -9.6,-22 q 9.6,3.5 19.2,0 L 9.4,-31 Q 0,-34.5 -9.4,-31 Z"
+       fill="#dcfce7"
+       stroke="#3d3a52"
+       stroke-width="1.8"
+       stroke-linejoin="round"
+       id="path8" />
+    <path
+       d="m -4,-44 3,-6"
+       fill="none"
+       stroke="#ffffff"
+       stroke-width="2"
+       stroke-linecap="round"
+       opacity="0.5"
+       id="path9" />
+    <path
+       d="m 3,-9 2,-6"
+       fill="none"
+       stroke="#ffffff"
+       stroke-width="2"
+       stroke-linecap="round"
+       opacity="0.4"
+       id="path10" />
   </g>
+  <g
+     transform="rotate(21,-173.18326,167.90374)"
+     id="g15">
+    <path
+       d="m -9,-1 q -1,-29 0,-56 l 9,-15 9,16 q 1,26 0,55 -9,4 -18,0 z"
+       fill="#a0c4ff"
+       stroke="#3d3a52"
+       stroke-width="2.4"
+       stroke-linejoin="round"
+       id="path11" />
+    <path
+       d="m -9,-57 9,-15 9,16 z"
+       fill="#7fb0ff"
+       stroke="#3d3a52"
+       stroke-width="2.4"
+       stroke-linejoin="round"
+       id="path12" />
+    <path
+       d="m -9.6,-22 q 9.6,3.5 19.2,0 L 9.4,-31 Q 0,-34.5 -9.4,-31 Z"
+       fill="#e6f0ff"
+       stroke="#3d3a52"
+       stroke-width="1.8"
+       stroke-linejoin="round"
+       id="path13" />
+    <path
+       d="m -4,-44 3,-6"
+       fill="none"
+       stroke="#ffffff"
+       stroke-width="2"
+       stroke-linecap="round"
+       opacity="0.5"
+       id="path14" />
+    <path
+       d="m 3,-9 2,-6"
+       fill="none"
+       stroke="#ffffff"
+       stroke-width="2"
+       stroke-linecap="round"
+       opacity="0.4"
+       id="path15" />
+  </g>
+  <metadata
+     id="metadata15">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:title>userstyles.club tri-crayon mark</dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
 </svg>

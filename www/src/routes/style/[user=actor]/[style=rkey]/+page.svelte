@@ -216,7 +216,7 @@
   }
 
   .userstyle-section {
-    border-top: 5px solid var(--lavender-vivid);
+    border-top: 5px solid var(--brand-purple);
     overflow: hidden;
     padding: 0;
   }
@@ -307,7 +307,7 @@
 
   .style-preview {
     margin-bottom: var(--space-5);
-    --grid-background-accent: var(--lavender-vivid);
+    --grid-background-accent: var(--brand-purple);
   }
 
   .code-preview {

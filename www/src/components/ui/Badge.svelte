@@ -32,14 +32,14 @@
     border-color: var(--border);
   }
   .badge-success {
-    background: var(--mint);
-    color: var(--mint-vivid);
-    border-color: color-mix(in srgb, var(--mint-vivid) 30%, transparent);
+    background: var(--success-bg);
+    color: var(--success);
+    border-color: color-mix(in srgb, var(--success) 30%, transparent);
   }
   .badge-warning {
-    background: var(--butter);
-    color: var(--butter-vivid);
-    border-color: color-mix(in srgb, var(--butter-vivid) 30%, transparent);
+    background: var(--warning-bg);
+    color: var(--warning);
+    border-color: color-mix(in srgb, var(--warning) 30%, transparent);
   }
   .badge-danger {
     background: var(--danger-bg);

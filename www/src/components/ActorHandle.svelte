@@ -46,7 +46,7 @@
       line-height: 1;
 
       &:hover {
-        color: var(--accent);
+        color: var(--brand-purple);
       }
     }
 
@@ -56,7 +56,7 @@
       font-weight: normal;
 
       &:hover {
-        color: var(--accent);
+        color: var(--brand-purple);
       }
     }
   }

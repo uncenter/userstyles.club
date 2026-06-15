@@ -113,7 +113,7 @@
 
     &:focus-within {
       border-color: var(--ring);
-      box-shadow: 3px 3px 0 var(--accent);
+      box-shadow: 3px 3px 0 var(--brand-purple);
     }
 
     .cm-editor {
@@ -138,20 +138,20 @@
         overflow: auto;
       }
       .cm-activeLine {
-        background: color-mix(in srgb, var(--accent) 8%, transparent) !important;
+        background: color-mix(in srgb, var(--brand-purple) 8%, transparent) !important;
       }
       .cm-activeLineGutter {
-        background: color-mix(in srgb, var(--accent) 12%, transparent) !important;
+        background: color-mix(in srgb, var(--brand-purple) 12%, transparent) !important;
       }
       .cm-cursor,
       .cm-dropCursor {
-        border-left-color: var(--accent) !important;
+        border-left-color: var(--brand-purple) !important;
       }
       .cm-selectionBackground {
-        background: color-mix(in srgb, var(--accent) 25%, transparent) !important;
+        background: color-mix(in srgb, var(--brand-purple) 25%, transparent) !important;
       }
       &.cm-focused .cm-selectionBackground {
-        background: color-mix(in srgb, var(--accent) 30%, transparent) !important;
+        background: color-mix(in srgb, var(--brand-purple) 30%, transparent) !important;
       }
     }
   }

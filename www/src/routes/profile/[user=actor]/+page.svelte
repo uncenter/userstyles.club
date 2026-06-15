@@ -127,7 +127,7 @@
     display: flex;
     flex-direction: column;
     gap: var(--space-3);
-    background: var(--lavender);
+    background: var(--bg-subtle);
 
     .edit-profile-btn {
       position: absolute;

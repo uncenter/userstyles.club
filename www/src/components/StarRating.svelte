@@ -42,11 +42,11 @@
       line-height: 1;
 
       &.filled {
-        color: var(--butter-vivid);
+        color: var(--pastel-yellow);
       }
 
       &.half {
-        background: linear-gradient(to right, var(--butter-vivid) 50%, var(--border) 50%);
+        background: linear-gradient(to right, var(--pastel-yellow) 50%, var(--border) 50%);
         background-clip: text;
         -webkit-background-clip: text;
         color: transparent;

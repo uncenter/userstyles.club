@@ -50,15 +50,15 @@
     color: var(--danger);
   }
   .alert-success {
-    background: var(--mint);
-    color: var(--mint-vivid);
+    background: var(--success-bg);
+    color: var(--success);
   }
   .alert-warning {
-    background: var(--butter);
-    color: var(--butter-vivid);
+    background: var(--warning-bg);
+    color: var(--warning);
   }
   .alert-info {
-    background: var(--sky);
-    color: var(--sky-vivid);
+    background: var(--info-bg);
+    color: var(--info);
   }
 </style>

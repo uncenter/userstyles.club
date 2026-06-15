@@ -22,6 +22,7 @@
     "@atcute/microcosm": "^2.0.1",
     "@atcute/oauth-browser-client": "^4.0.0",
     "@catppuccin/codemirror": "^1.0.3",
+    "@catppuccin/palette": "^1.8.0",
     "@codemirror/lang-css": "^6.3.1",
     "@codemirror/state": "^6.6.0",
     "@codemirror/view": "^6.43.0",

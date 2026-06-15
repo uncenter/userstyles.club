@@ -82,7 +82,7 @@
     flex-direction: column;
     overflow: hidden;
     background: var(--card-bg);
-    border-top: 5px solid var(--card-accent-color, var(--accent));
+    border-top: 5px solid var(--card-accent-color, var(--brand-purple));
     border-radius: var(--radius);
 
     .card-thumbnail {

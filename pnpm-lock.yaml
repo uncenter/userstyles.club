@@ -32,6 +32,9 @@ importers:
       '@catppuccin/codemirror':
         specifier: ^1.0.3
         version: 1.0.3
+      '@catppuccin/palette':
+        specifier: ^1.8.0
+        version: 1.8.0
       '@codemirror/lang-css':
         specifier: ^6.3.1
         version: 6.3.1

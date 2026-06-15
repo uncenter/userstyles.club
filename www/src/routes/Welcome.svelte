@@ -8,7 +8,7 @@
 
 <div class="welcome">
   <div class="welcome-mark">
-    <Logomark size="8rem" withArm withSpin />
+    <Logomark size="8rem" />
   </div>
   <div class="welcome-text">
     <Wordmark --height="clamp(2rem, 8vw, 4rem)" />

@@ -45,7 +45,7 @@
 
       &:has(:checked),
       &:has(:checked) ~ .star-label {
-        color: var(--butter-vivid);
+        color: var(--pastel-yellow);
       }
     }
 
@@ -55,7 +55,7 @@
 
     .star-label:hover,
     .star-label:hover ~ .star-label {
-      color: var(--butter-vivid);
+      color: var(--pastel-yellow);
     }
 
     .sr-only {

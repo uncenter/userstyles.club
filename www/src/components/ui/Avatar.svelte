@@ -35,8 +35,8 @@
     align-items: center;
     justify-content: center;
     border-radius: 50%;
-    background: var(--lavender);
-    color: var(--lavender-vivid);
+    background: var(--brand-purple-bg);
+    color: var(--brand-purple);
     font-family: var(--font-display);
     font-weight: 700;
     overflow: hidden;

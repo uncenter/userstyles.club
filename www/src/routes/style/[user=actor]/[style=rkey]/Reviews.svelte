@@ -160,7 +160,7 @@
           &:focus {
             outline: none;
             border-color: var(--ring);
-            box-shadow: 3px 3px 0 var(--accent);
+            box-shadow: 3px 3px 0 var(--brand-purple);
           }
         }
       }

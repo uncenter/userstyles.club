@@ -3,30 +3,23 @@
 :root {
   color-scheme: light dark;
 
-  /* Accent & Palette */
+  /* Brand */
 
-  --accent: light-dark(#7c6fbc, #b8a8f0);
-  --accent-fg: light-dark(#ffffff, #09090b);
-  --accent-hover: light-dark(#6a5dae, #cdbeff);
+  --brand-red: #ffafcc;
+  --brand-green: #7ce0a0;
+  --brand-blue: #a0c4ff;
+  --brand-purple: light-dark(#7c6fbc, #b8a8f0);
+  --brand-purple-hover: light-dark(#6a5dae, #cdbeff);
+  --brand-purple-fg: light-dark(#ffffff, #09090b);
+  --brand-purple-bg: light-dark(#e1dcf5, #201d30);
 
-  --lavender: light-dark(#ede9fe, #201d30);
-  --lavender-vivid: light-dark(#7c6fbc, #b8a8f0);
-  --mint: light-dark(#d1fae5, #0f3c25);
-  --mint-vivid: light-dark(#34d399, #6ee7b7);
-  --peach: light-dark(#ffedd5, #3d2010);
-  --peach-vivid: light-dark(#fb923c, #fdba74);
-  --butter: light-dark(#fef3c7, #3a2a00);
-  --butter-vivid: light-dark(#f59e0b, #fde68a);
-  --sky: light-dark(#dbeafe, #0f1e42);
-  --sky-vivid: light-dark(#60a5fa, #93c5fd);
-  --rose: light-dark(#fce7f3, #3d1025);
-  --rose-vivid: light-dark(#f472b6, #f9a8d4);
+  --pastel-yellow: light-dark(#ffc96d, #fde68a);
 
   --bsky-blue: #1185fe;
 
   /* Backgrounds */
   --background: light-dark(#edeaf8, #09090b);
-  --bg-subtle: light-dark(#e5e1f4, #111113);
+  --bg-subtle: light-dark(#f3f0ff, #111113);
   --bg-muted: light-dark(#d8d3ee, #1d1d20);
   --bg-faint: light-dark(#ccc6e6, #27272a);
 
@@ -43,7 +36,7 @@
   --border: light-dark(#d4d4d8, #3f3f46);
   --border-strong: light-dark(#09090b, #71717a);
   --input-border: light-dark(#a1a1aa, #52525b);
-  --ring: light-dark(#7c6fbc, #b8a8f0);
+  --ring: var(--brand-purple);
 
   /* Border Radii */
   --radius-sm: 4px;
@@ -161,13 +154,13 @@ body {
 }
 
 a {
-  color: var(--accent);
+  color: var(--brand-purple);
   text-decoration: underline;
   text-underline-offset: 2px;
 }
 /* (Lowest specificity with :where() to allow superseding button/component rules.) */
 :where(a):hover {
-  color: var(--accent-hover);
+  color: var(--brand-purple-hover);
 }
 
 h1,
@@ -293,11 +286,11 @@ main.container {
   }
 
   &.btn-primary {
-    --btn-bg: var(--accent);
-    --btn-fg: var(--accent-fg);
-    --btn-shadow: var(--accent-hover);
-    --btn-hover-bg: var(--accent-hover);
-    --btn-hover-fg: var(--accent-fg);
+    --btn-bg: var(--brand-purple);
+    --btn-fg: var(--brand-purple-fg);
+    --btn-shadow: var(--brand-purple-hover);
+    --btn-hover-bg: var(--brand-purple-hover);
+    --btn-hover-fg: var(--brand-purple-fg);
   }
 
   &.btn-secondary {
@@ -308,16 +301,16 @@ main.container {
 
   &.btn-danger {
     --btn-bg: var(--danger);
-    --btn-fg: var(--accent-fg);
+    --btn-fg: var(--brand-purple-fg);
     --btn-hover-bg: color-mix(in srgb, var(--danger) 85%, #000);
-    --btn-hover-fg: var(--accent-fg);
+    --btn-hover-fg: var(--brand-purple-fg);
   }
 
   &.btn-warning {
     --btn-bg: var(--warning);
-    --btn-fg: var(--accent-fg);
+    --btn-fg: var(--brand-purple-fg);
     --btn-hover-bg: color-mix(in srgb, var(--warning) 85%, #000);
-    --btn-hover-fg: var(--accent-fg);
+    --btn-hover-fg: var(--brand-purple-fg);
   }
 
   &.btn-bsky {
@@ -373,7 +366,7 @@ select {
   &:focus {
     outline: none;
     border-color: var(--ring);
-    box-shadow: 3px 3px 0 var(--accent);
+    box-shadow: 3px 3px 0 var(--brand-purple);
   }
   &:disabled {
     opacity: 0.5;
@@ -408,14 +401,14 @@ input[type='checkbox'] {
     border-color var(--ease-fast);
 
   &:checked {
-    background: var(--accent);
-    border-color: var(--accent-hover);
+    background: var(--brand-purple);
+    border-color: var(--brand-purple-hover);
 
     &::after {
       content: '';
       position: absolute;
       inset: 0;
-      background-color: var(--accent-fg);
+      background-color: var(--brand-purple-fg);
       mask-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 10 10' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M2 5l2.5 2.5L8 3' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' fill='none'/%3E%3C/svg%3E");
       mask-repeat: no-repeat;
       mask-position: center;

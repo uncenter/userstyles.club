@@ -46,12 +46,12 @@
 <svelte:head>
   <title>userstyles.club</title>
   <meta name="description" content={TAGLINE} />
-  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-  <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
-  <link rel="shortcut icon" href="/favicon.ico" />
-  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg?v=20260615" />
+  <link rel="icon" type="image/png" href="/favicon-96x96.png?v=20260615" sizes="96x96" />
+  <link rel="shortcut icon" href="/favicon.ico?v=20260615" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=20260615" />
   <meta name="apple-mobile-web-app-title" content="userstyles.club" />
-  <link rel="manifest" href="/site.webmanifest" />
+  <link rel="manifest" href="/site.webmanifest?v=20260615" />
 </svelte:head>
 
 {#if user.isInitializing}
@@ -61,7 +61,7 @@
 {:else}
   <nav class="navbar">
     <div class="nav-stripe" aria-hidden="true">
-      <span></span><span></span><span></span><span></span><span></span><span></span>
+      <span></span><span></span><span></span><span></span>
     </div>
     <div class="navbar-inner">
       <a href={resolve('/')} class="navbar-logo"><LogoCombo /></a>
@@ -253,8 +253,8 @@
       width: 100%;
 
       &:hover {
-        background: var(--lavender);
-        color: var(--lavender-vivid);
+        background: var(--brand-purple-bg);
+        color: var(--brand-purple);
       }
     }
 
@@ -288,12 +288,10 @@
     flex-shrink: 0;
 
     span { flex: 1; }
-    span:nth-child(1) { background: var(--lavender-vivid); }
-    span:nth-child(2) { background: var(--mint-vivid); }
-    span:nth-child(3) { background: var(--peach-vivid); }
-    span:nth-child(4) { background: var(--butter-vivid); }
-    span:nth-child(5) { background: var(--sky-vivid); }
-    span:nth-child(6) { background: var(--rose-vivid); }
+    span:nth-child(1) { background: var(--brand-purple); }
+    span:nth-child(2) { background: var(--brand-red); }
+    span:nth-child(3) { background: var(--brand-green); }
+    span:nth-child(4) { background: var(--brand-blue); }
   }
 
   .navbar {
@@ -330,7 +328,7 @@
 
         &:hover {
           background: var(--bg-muted);
-          color: var(--accent);
+          color: var(--brand-purple);
         }
       }
     }
@@ -377,8 +375,8 @@
       border-radius: 0;
 
       &:hover {
-        background: var(--lavender);
-        color: var(--lavender-vivid);
+        background: var(--brand-purple-bg);
+        color: var(--brand-purple);
       }
     }
 

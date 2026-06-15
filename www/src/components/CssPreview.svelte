@@ -40,6 +40,8 @@
 </ExpandedDialog>
 
 <style>
+  @import "@catppuccin/palette/css/catppuccin.css";
+
   .preview-wrap {
     position: relative;
   }
@@ -72,6 +74,24 @@
     code {
       flex-grow: 1;
       width: 0;
+      color: var(--ctp-text);
+
+      --ctp-rosewater: light-dark(var(--ctp-latte-rosewater), var(--ctp-mocha-rosewater));
+      --ctp-flamingo: light-dark(var(--ctp-latte-flamingo), var(--ctp-mocha-flamingo));
+      --ctp-pink: light-dark(var(--ctp-latte-pink), var(--ctp-mocha-pink));
+      --ctp-mauve: light-dark(var(--ctp-latte-mauve), var(--ctp-mocha-mauve));
+      --ctp-red: light-dark(var(--ctp-latte-red), var(--ctp-mocha-red));
+      --ctp-maroon: light-dark(var(--ctp-latte-maroon), var(--ctp-mocha-maroon));
+      --ctp-peach: light-dark(var(--ctp-latte-peach), var(--ctp-mocha-peach));
+      --ctp-yellow: light-dark(var(--ctp-latte-yellow), var(--ctp-mocha-yellow));
+      --ctp-green: light-dark(var(--ctp-latte-green), var(--ctp-mocha-green));
+      --ctp-teal: light-dark(var(--ctp-latte-teal), var(--ctp-mocha-teal));
+      --ctp-sky: light-dark(var(--ctp-latte-sky), var(--ctp-mocha-sky));
+      --ctp-sapphire: light-dark(var(--ctp-latte-sapphire), var(--ctp-mocha-sapphire));
+      --ctp-blue: light-dark(var(--ctp-latte-blue), var(--ctp-mocha-blue));
+      --ctp-lavender: light-dark(var(--ctp-latte-lavender), var(--ctp-mocha-lavender));
+      --ctp-overlay2: light-dark(var(--ctp-latte-overlay2), var(--ctp-mocha-overlay2));
+      --ctp-text: light-dark(var(--ctp-latte-text), var(--ctp-mocha-text));
 
       :global {
         .tok-link {
@@ -92,53 +112,55 @@
         }
 
         .tok-keyword {
-          color: var(--lavender-vivid);
+          color: var(--ctp-mauve);
         }
-        .tok-atom,
+        .tok-atom {
+          color: var(--ctp-red);
+        }
         .tok-url,
         .tok-labelName {
-          color: var(--sky-vivid);
+          color: var(--ctp-blue);
         }
         .tok-bool,
         .tok-literal {
-          color: var(--peach-vivid);
-        }
-        .tok-inserted {
-          color: var(--mint-vivid);
+          color: var(--ctp-peach);
         }
         .tok-string,
-        .tok-deleted {
-          color: var(--rose-vivid);
-        }
         .tok-string2 {
-          color: var(--mint-vivid);
+          color: var(--ctp-green);
+        }
+        .tok-deleted {
+          color: var(--ctp-red);
+        }
+        .tok-inserted {
+          color: var(--ctp-green);
         }
         .tok-variableName.tok-definition {
-          color: var(--sky-vivid);
+          color: var(--ctp-blue);
         }
         .tok-variableName.tok-local {
-          color: var(--foreground);
+          color: var(--ctp-text);
         }
         .tok-variableName2,
         .tok-macroName {
-          color: var(--sky-vivid);
+          color: var(--ctp-blue);
         }
         .tok-typeName,
         .tok-namespace {
-          color: var(--butter-vivid);
+          color: var(--ctp-yellow);
         }
         .tok-className {
-          color: var(--sky-vivid);
+          color: var(--ctp-blue);
         }
         .tok-propertyName.tok-definition {
-          color: var(--lavender-vivid);
+          color: var(--ctp-lavender);
         }
         .tok-comment {
-          color: var(--fg-muted);
+          color: var(--ctp-overlay2);
           font-style: italic;
         }
         .tok-meta {
-          color: var(--fg-muted);
+          color: var(--ctp-overlay2);
         }
         .tok-invalid {
           color: var(--danger);
