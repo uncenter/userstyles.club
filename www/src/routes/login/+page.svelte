@@ -64,7 +64,7 @@
         <Alert variant="error">{error}</Alert>
       {/if}
       <button type="submit" class="btn btn-primary" disabled={loading || !handle.trim()}>
-        {#if loading}<Spinner size="sm" /> Opening OAuth…{:else}Continue{/if}
+        {#if loading}<Spinner size="sm" /> Signing in…{:else}Continue{/if}
       </button>
       <button type="button" class="btn btn-outline" onclick={signup}> Create account </button>
     </form>
