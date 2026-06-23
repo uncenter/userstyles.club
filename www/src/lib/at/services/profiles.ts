@@ -25,7 +25,7 @@ export type ClubProfileRecord = RepoRecord & {
 
 const SELF_RKEY = 'self';
 
-export async function getClubProfile(did: Did): Promise<ClubProfile | null> {
+export async function getClubProfile(did: Did): Promise<ClubProfile | undefined> {
   const cached = getCacheEntry<ClubProfile>(CLUB_CACHE_KEY(did), CLUB_TTL);
   if (cached) return cached;
 
@@ -38,7 +38,7 @@ export async function getClubProfile(did: Did): Promise<ClubProfile | null> {
     writeCacheEntry(CLUB_CACHE_KEY(did), response.value);
     return response.value;
   } catch {
-    return null;
+    return undefined;
   }
 }
 
@@ -85,7 +85,7 @@ export type ProfileView = {
   displayName: string | undefined;
   description: string | undefined;
   avatar: string | undefined;
-  club: ClubProfile | null;
+  club: ClubProfile | undefined;
   bsky: AppBskyActorDefs.ProfileViewDetailed;
 };
 
@@ -100,7 +100,8 @@ export async function getProfile(actor: ActorIdentifier): Promise<ProfileView> {
   return {
     did: bsky.did,
     handle: bsky.handle,
-    displayName: club?.displayName || bsky.displayName,
+    // Bluesky sometimes returns display names as empty strings like "".
+    displayName: club?.displayName || (!bsky.displayName?.trim() ? undefined : bsky.displayName),
     description: club?.description || bsky.description,
     avatar: bsky.avatar,
     club,
