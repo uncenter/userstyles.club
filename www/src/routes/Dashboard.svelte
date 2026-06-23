@@ -10,13 +10,12 @@
     listRatingsForStyle,
     getProfile,
     computeAverageRating,
-    type RatingRecord,
     type CommentRecord,
   } from '$lib/at';
   import { getPreferredActorIdentifier } from '$lib/preferences.svelte';
   import { formatDate } from '$lib/date';
 
-  import { StarRating } from '$components';
+  import { ActorHandle, StarRating } from '$components';
   import { Spinner } from '$components/ui';
 
   import { PlusIcon, UserIcon, CompassIcon } from '@lucide/svelte';
@@ -27,7 +26,8 @@
   const comments = userstyles.then((userstyles) => Promise.all(
     userstyles.map(async (style) => {
       const comments = await listCommentsForStyle(style.uri);
-      return comments.map((comment) => { return { style, comment }; });
+      const filtered = comments.filter((comment) => parseResourceUri(comment.uri).repo !== user.did); // filter out user's own comments
+      return filtered.map((comment) => { return { style, comment }; });
     }),
   ).then((comments) => comments.flat().sort(
     (a: EnrichedComment, b: EnrichedComment) =>
@@ -113,19 +113,19 @@
       {@const recents = comments.slice(0, 5)}
       <ul class="comment-list" role="list">
         {#each recents as { style, comment } (comment.uri)}
-          {@const did = parseResourceUri(comment.uri).repo!}
+          {@const did = parseResourceUri(comment.uri).repo}
           {@const commenter = await getProfile(did)}
           {@const rating = ratings.then((ratings) => ratings.find((rating) => rating.style.uri === style.uri && parseResourceUri(rating.rating.uri).repo! === did)?.rating)}
           <li class="comment-row">
             <div class="comment-row-header">
-              <span class="commenter-name">
-                {commenter.displayName ?? commenter.handle ?? did}
-              </span>
-              {#await rating then rating}
-                <StarRating value={rating?.value.rating} />
-              {/await}
-              <span class="comment-on">on <a href={getLinkToStyle(style.uri)} class="style-link">{style.value.title}</a></span>
-              <time class="comment-date">{formatDate(comment.value.updatedAt ?? comment.value.createdAt)}</time>
+              <ActorHandle profile={commenter} style='small' />
+              <span class="comment-on">commented on <a href={getLinkToStyle(style.uri)} class="style-link">{style.value.title}</a></span>
+              <div class="comment-row-header-end">
+                {#await rating then rating}
+                  <StarRating value={rating?.value.rating} />
+                {/await}
+                <time class="comment-date">{formatDate(comment.value.updatedAt ?? comment.value.createdAt)}</time>
+              </div>
             </div>
             <p class="comment-content">{comment.value.comment}</p>
           </li>
@@ -241,7 +241,6 @@
   .comment-list {
     display: flex;
     flex-direction: column;
-    gap: var(--space-4);
     list-style: none;
     padding: 0;
     margin: 0;
@@ -257,17 +256,11 @@
       .comment-row-header {
         display: flex;
         align-items: center;
-        gap: var(--space-3);
+        gap: var(--space-1);
         flex-wrap: wrap;
         margin-bottom: var(--space-2);
 
-        .commenter-name {
-          font-weight: 700;
-          font-size: var(--text-sm);
-        }
-
         .comment-on {
-          font-size: var(--text-sm);
           color: var(--fg-muted);
         }
 
@@ -281,16 +274,20 @@
           }
         }
 
-        .comment-date {
-          font-size: var(--text-xs);
-          color: var(--fg-muted);
+        .comment-row-header-end {
           margin-left: auto;
+          display: flex;
+          flex-direction: row;
+          gap: var(--space-2);
+        }
+
+        .comment-date {
+          font-size: var(--text-sm);
+          color: var(--fg-muted);
         }
       }
 
       .comment-content {
-        font-size: var(--text-sm);
-        color: var(--fg-muted);
         line-height: 1.5;
         display: -webkit-box;
         -webkit-line-clamp: 2;
