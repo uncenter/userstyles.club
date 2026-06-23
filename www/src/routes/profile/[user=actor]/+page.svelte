@@ -56,66 +56,66 @@
 </svelte:head>
 
 <section class="page-section profile-header">
-    <Avatar src={data.profile.avatar} alt={data.profile.handle} name={displayName} size="lg" />
-    {#if editing}
-      <form onsubmit={saveProfile} class="form-stack profile-edit-form">
-        <div class="form-group">
-          <label for="edit-display-name" class="field-label">Display name</label>
-          <input
-            id="edit-display-name"
-            type="text"
-            bind:value={editDisplayName}
-            maxlength="64"
-            placeholder={data.profile.bsky.displayName ?? data.profile.handle}
-          />
-        </div>
-        <div class="form-group">
-          <label for="edit-description" class="field-label">Description</label>
-          <textarea id="edit-description" bind:value={editDescription} maxlength="256" rows="3"
-          ></textarea>
-        </div>
-        {#if saveError}
-          <Alert variant="error">{saveError}</Alert>
-        {/if}
-        <div class="form-footer">
-          <button
-            type="button"
-            class="btn btn-outline"
-            onclick={() => (editing = false)}
-            disabled={saving}
-          >
-            Cancel
-          </button>
-          <button type="submit" class="btn btn-primary" disabled={saving}>
-            {#if saving}<Spinner size="sm" /> Saving…{:else}Save{/if}
-          </button>
-        </div>
-      </form>
-    {:else}
-      <div class="profile-info">
-        <h1>{displayName}</h1>
-        <div class="profile-handle-row">
-          <p class="text-muted">@{data.profile.handle}</p>
-          <a
-            class="bsky-link"
-            href="https://bsky.app/profile/{data.profile.handle}"
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="View on Bluesky"
-          >
-            <BlueskyIcon size={16} />
-          </a>
-        </div>
+  <Avatar src={data.profile.avatar} alt={data.profile.handle} name={displayName} size="lg" />
+  {#if editing}
+    <form onsubmit={saveProfile} class="form-stack profile-edit-form">
+      <div class="form-group">
+        <label for="edit-display-name" class="field-label">Display name</label>
+        <input
+          id="edit-display-name"
+          type="text"
+          bind:value={editDisplayName}
+          maxlength="64"
+          placeholder={data.profile.bsky.displayName ?? data.profile.handle}
+        />
       </div>
-      {#if description}
-        <p class="profile-description">{description}</p>
+      <div class="form-group">
+        <label for="edit-description" class="field-label">Description</label>
+        <textarea id="edit-description" bind:value={editDescription} maxlength="256" rows="3"
+        ></textarea>
+      </div>
+      {#if saveError}
+        <Alert variant="error">{saveError}</Alert>
       {/if}
-      {#if isOwner}
-        <button type="button" class="btn btn-ghost btn-sm edit-profile-btn" onclick={startEditing}>
-          <PencilIcon size={14} /> Edit Profile
+      <div class="form-footer">
+        <button
+          type="button"
+          class="btn btn-outline"
+          onclick={() => (editing = false)}
+          disabled={saving}
+        >
+          Cancel
         </button>
-      {/if}
+        <button type="submit" class="btn btn-primary" disabled={saving}>
+          {#if saving}<Spinner size="sm" /> Saving…{:else}Save{/if}
+        </button>
+      </div>
+    </form>
+  {:else}
+    <div class="profile-info">
+      <h1>{displayName}</h1>
+      <div class="profile-handle-row">
+        <p class="text-muted">@{data.profile.handle}</p>
+        <a
+          class="bsky-link"
+          href="https://bsky.app/profile/{data.profile.handle}"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="View on Bluesky"
+        >
+          <BlueskyIcon size={16} />
+        </a>
+      </div>
+    </div>
+    {#if description}
+      <p class="profile-description">{description}</p>
     {/if}
+    {#if isOwner}
+      <button type="button" class="btn btn-ghost btn-sm edit-profile-btn" onclick={startEditing}>
+        <PencilIcon size={14} /> Edit Profile
+      </button>
+    {/if}
+  {/if}
 </section>
 
 <UserstylesSection userstyles={data.userstyles} author={data.profile} />

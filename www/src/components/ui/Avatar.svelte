@@ -3,7 +3,7 @@
     src?: string;
     alt?: string;
     name?: string;
-    size?: 'sm' | 'md' | 'lg';
+    size?: 'xs' | 'sm' | 'md' | 'lg';
   }
 
   let { src, alt = '', name, size = 'md' }: Props = $props();
@@ -49,6 +49,11 @@
       display: block;
     }
 
+    &.avatar-xs {
+      width: 1.5rem;
+      height: 1.5rem;
+      font-size: var(--text-xs);
+    }
     &.avatar-sm {
       width: 2rem;
       height: 2rem;

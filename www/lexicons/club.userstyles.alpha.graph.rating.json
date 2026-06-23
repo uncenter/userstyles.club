@@ -1,7 +1,7 @@
 {
   "$type": "com.atproto.lexicon.schema",
   "lexicon": 1,
-  "id": "club.userstyles.alpha.graph.review",
+  "id": "club.userstyles.alpha.graph.rating",
   "defs": {
     "main": {
       "type": "record",
@@ -9,7 +9,7 @@
       "record": {
         "type": "object",
         "properties": {
-          "subject": {
+          "userstyle": {
             "type": "string",
             "format": "at-uri"
           },
@@ -17,11 +17,6 @@
             "type": "integer",
             "minimum": 1,
             "maximum": 5
-          },
-          "comment": {
-            "type": "string",
-            "maxLength": 2560,
-            "maxGraphemes": 256
           },
           "createdAt": {
             "type": "string",
@@ -32,9 +27,9 @@
             "format": "datetime"
           }
         },
-        "required": ["subject", "comment", "createdAt"]
+        "required": ["userstyle", "rating", "createdAt"]
       },
-      "description": "Record representing a review of a userstyle, consisting of a comment and an optional numerical rating."
+      "description": "Record representing a numerical rating of a userstyle."
     }
   }
 }

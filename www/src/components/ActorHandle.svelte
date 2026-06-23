@@ -9,23 +9,22 @@
 
   interface Props {
     profile: ProfileView;
-    minimal?: boolean;
+    style?: 'large' | 'small' | 'minimal';
   }
 
-  let { profile, minimal = false }: Props = $props();
+  let { profile, style = 'large' }: Props = $props();
 </script>
 
 <a
   href={resolve('/profile/[user=actor]', { user: getPreferredActorIdentifier(profile) })}
-  class="actor-handle"
-  class:minimal
+  class={["actor-handle", "actor-handle--style-" + style]}
 >
-  {#if !minimal}
+  {#if style !== 'minimal'}
     <Avatar
       src={profile.avatar}
       name={profile.displayName ?? profile.handle}
       alt={profile.handle ?? ''}
-      size="sm"
+      size={style == 'small' ? 'xs' : 'sm'}
     />
   {/if}
   <span class="actor-handle-label">@{profile.handle}</span>
@@ -50,14 +49,23 @@
       }
     }
 
-    &.minimal .actor-handle-label {
-      font-size: var(--text-sm);
-      color: var(--fg-muted);
-      font-weight: normal;
+    &.actor-handle--style-small,
+    &.actor-handle--style-minimal {
+      padding: 0;
+      flex-shrink: 0;
 
-      &:hover {
-        color: var(--brand-purple);
+      .actor-handle-label {
+        color: var(--fg-muted);
+        font-weight: normal;
+
+        &:hover {
+          color: var(--brand-purple);
+        }
       }
+    }
+
+    &.actor-handle--style-minimal {
+      font-size: var(--text-sm);
     }
   }
 </style>

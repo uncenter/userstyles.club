@@ -1,18 +1,17 @@
 <script lang="ts">
   import { resolve } from '$app/paths';
   import { parseResourceUri } from '@atcute/lexicons/syntax';
-  import type { ActorIdentifier } from '@atcute/lexicons';
 
   import {
     type UserstyleRecord,
-    type ReviewRecord,
-    type ProfileView,
     user,
     listMyUserstyles,
-    listReviewsForStyle,
-    getReviewAuthorDid,
+    listCommentsForStyle,
+    listRatingsForStyle,
     getProfile,
     computeAverageRating,
+    type RatingRecord,
+    type CommentRecord,
   } from '$lib/at';
   import { getPreferredActorIdentifier } from '$lib/preferences.svelte';
   import { formatDate } from '$lib/date';
@@ -22,71 +21,29 @@
 
   import { PlusIcon, UserIcon, CompassIcon } from '@lucide/svelte';
 
-  type EnrichedReview = { style: UserstyleRecord; review: ReviewRecord };
+  type EnrichedComment = { style: UserstyleRecord; comment: CommentRecord };
 
-  let allUserstyles = $state<UserstyleRecord[]>([]);
-  let allReviews = $state<EnrichedReview[]>([]);
-  let reviewerProfiles = $state(new Map<ActorIdentifier, ProfileView>());
+  const userstyles = listMyUserstyles();
+  const comments = userstyles.then((userstyles) => Promise.all(
+    userstyles.map(async (style) => {
+      const comments = await listCommentsForStyle(style.uri);
+      return comments.map((comment) => { return { style, comment }; });
+    }),
+  ).then((comments) => comments.flat().sort(
+    (a: EnrichedComment, b: EnrichedComment) =>
+      new Date(b.comment.value.updatedAt ?? b.comment.value.createdAt).getTime() -
+      new Date(a.comment.value.updatedAt ?? a.comment.value.createdAt).getTime(),
+  )));
+  const ratings = userstyles.then((userstyles) => Promise.all(
+    userstyles.map(async (style) => {
+      const ratings = await listRatingsForStyle(style.uri);
+      return ratings.map((rating) => { return { style, rating }})
+    }),
+  ).then((ratings) => ratings.flat()));
 
-  let loadingStyles = $state(true);
-  let loadingReviews = $state(false);
-
-  $effect(() => {
-    loadDashboard();
-  });
-
-  async function loadDashboard() {
-    loadingStyles = true;
-    allUserstyles = await listMyUserstyles();
-    loadingStyles = false;
-
-    if (allUserstyles.length > 0) {
-      loadingReviews = true;
-
-      const batches = await Promise.all(
-        allUserstyles.map(async (style) => {
-          const rs = await listReviewsForStyle(style.uri);
-          return rs.map((r) => { return { style, review: r }; });
-        }),
-      );
-
-      allReviews = batches
-        .flat()
-        .sort(
-          (a: EnrichedReview, b: EnrichedReview) =>
-            new Date(b.review.value.updatedAt ?? b.review.value.createdAt).getTime() -
-            new Date(a.review.value.updatedAt ?? a.review.value.createdAt).getTime(),
-        );
-
-      const topReviews = allReviews.slice(0, 5);
-      const reviewAuthors = [...new Set(topReviews.map((r) => getReviewAuthorDid(r.review.uri)))];
-      const reviewAuthorProfiles = await Promise.all(
-        reviewAuthors.map((did) =>
-          getProfile(did)
-            .then((p) => [did, p] as const)
-            .catch(() => null),
-        ),
-      );
-      reviewerProfiles = new Map(
-        reviewAuthorProfiles.filter((e) => e !== null),
-      );
-
-      loadingReviews = false;
-    }
+  function sortRecordsByCreation<R extends { value: { createdAt: string }}>(records: Array<R>): Array<R> {
+    return records.toSorted((a, b) => new Date(b.value.createdAt).getTime() - new Date(a.value.createdAt).getTime());
   }
-
-  let stats = $derived({
-    styles: allUserstyles.length,
-    reviews: allReviews.length,
-    rating: computeAverageRating(allReviews.map((review) => review.review)),
-  });
-
-  let recentReviews = $derived(allReviews.slice(0, 5));
-  let recentStyles = $derived(
-    allUserstyles
-      .toSorted((a, b) => new Date(b.value.createdAt).getTime() - new Date(a.value.createdAt).getTime())
-      .slice(0, 6),
-  );
 
   function getLinkToStyle(styleUri: string) {
     const { repo, rkey } = parseResourceUri(styleUri);
@@ -98,25 +55,28 @@
   <div class="stat-strip">
     <div class="stat-card">
       <span class="stat-value">
-        {#if loadingStyles}<Spinner size="md" />{:else}{stats.styles}{/if}
+        {#await userstyles}<Spinner size="md" />{:then userstyles}{userstyles.length}{/await}
       </span>
       <span class="stat-label">Styles</span>
     </div>
     <div class="stat-card">
       <span class="stat-value">
-        {#if loadingReviews}<Spinner size="md" />{:else}{stats.reviews}{/if}
+        {#await comments}<Spinner size="md" />{:then comments}{comments.length}{/await}
       </span>
-      <span class="stat-label">Reviews received</span>
+      <span class="stat-label">Comments</span>
     </div>
     <div class="stat-card">
       <span class="stat-value">
-        {#if loadingReviews}
+        {#await ratings}
           <Spinner size="md" />
-        {:else if stats.rating}
-          {stats.rating.average.toFixed(1)}<span class="stat-unit">/ 5</span>
-        {:else}
-          —
-        {/if}
+        {:then ratings}
+          {@const computed = computeAverageRating(ratings.map((rating) => rating.rating))}
+          {#if computed}
+            {computed.average.toFixed(1)}<span class="stat-unit">/ 5</span>
+          {:else}
+            —
+          {/if}
+        {/await}
       </span>
       <span class="stat-label">Avg rating</span>
     </div>
@@ -143,59 +103,66 @@
 </div>
 
 <div class="page-section">
-  <h2 class="section-heading">Recent reviews</h2>
-  {#if loadingReviews}
-    <div class="section-loading"><Spinner size="sm" /> Loading…</div>
-  {:else if recentReviews.length === 0}
-    <p class="text-muted no-content">No reviews on your styles yet.</p>
-  {:else}
-    <ul class="review-list" role="list">
-      {#each recentReviews as { style, review } (review.uri)}
-        {@const reviewerDid = getReviewAuthorDid(review.uri)}
-        {@const reviewer = reviewerProfiles.get(reviewerDid)}
-        <li class="review-row">
-          <div class="review-row-header">
-            <span class="reviewer-name">
-              {reviewer?.displayName ?? reviewer?.handle ?? reviewerDid}
-            </span>
-            {#if review.value.rating !== undefined}
-              <StarRating rating={review.value.rating} showValue={false} />
-            {/if}
-            <span class="review-on">on <a href={getLinkToStyle(style.uri)} class="style-link">{style.value.title}</a></span>
-            <time class="review-date">{formatDate(review.value.updatedAt ?? review.value.createdAt)}</time>
-          </div>
-          <p class="review-comment">{review.value.comment}</p>
-        </li>
-      {/each}
-    </ul>
-  {/if}
+  <h2 class="section-heading">Recent comments</h2>
+  {#await comments}
+    <div class="section-loading"><Spinner size="md" /> Loading…</div>
+  {:then comments}
+    {#if comments.length === 0}
+      <p class="text-muted no-content">No comments on your styles yet.</p>
+    {:else}
+      {@const recents = comments.slice(0, 5)}
+      <ul class="comment-list" role="list">
+        {#each recents as { style, comment } (comment.uri)}
+          {@const did = parseResourceUri(comment.uri).repo!}
+          {@const commenter = await getProfile(did)}
+          {@const rating = ratings.then((ratings) => ratings.find((rating) => rating.style.uri === style.uri && parseResourceUri(rating.rating.uri).repo! === did)?.rating)}
+          <li class="comment-row">
+            <div class="comment-row-header">
+              <span class="commenter-name">
+                {commenter.displayName ?? commenter.handle ?? did}
+              </span>
+              {#await rating then rating}
+                <StarRating value={rating?.value.rating} />
+              {/await}
+              <span class="comment-on">on <a href={getLinkToStyle(style.uri)} class="style-link">{style.value.title}</a></span>
+              <time class="comment-date">{formatDate(comment.value.updatedAt ?? comment.value.createdAt)}</time>
+            </div>
+            <p class="comment-content">{comment.value.comment}</p>
+          </li>
+        {/each}
+      </ul>
+    {/if}
+  {/await}
 </div>
 
 <div class="page-section">
   <h2 class="section-heading">Your styles</h2>
-  {#if loadingStyles}
+  {#await userstyles}
     <div class="section-loading"><Spinner size="sm" /> Loading…</div>
-  {:else if recentStyles.length === 0}
-    <p class="text-muted no-content">
-      No userstyles yet. <a href={resolve('/new')}>Create your first.</a>
-    </p>
-  {:else}
-    <ul class="style-scroll" role="list">
-      {#each recentStyles as style (style.uri)}
-        <li class="style-scroll-item">
-          <a href={getLinkToStyle(style.uri)} class="style-scroll-card">
-            <span class="style-card-title">{style.value.title}</span>
-            {#if style.value.description}
-              <span class="style-card-desc">{style.value.description}</span>
-            {/if}
-            <time class="style-card-date">
-              {formatDate(style.value.updatedAt ?? style.value.createdAt)}
-            </time>
-          </a>
-        </li>
-      {/each}
-    </ul>
-  {/if}
+  {:then userstyles}
+    {#if userstyles.length === 0}
+      <p class="text-muted no-content">
+        No userstyles yet. <a href={resolve('/new')}>Create your first.</a>
+      </p>
+    {:else}
+      {@const recents = sortRecordsByCreation(userstyles).slice(0, 6)}
+      <ul class="style-scroll" role="list">
+        {#each recents as style (style.uri)}
+          <li class="style-scroll-item">
+            <a href={getLinkToStyle(style.uri)} class="style-scroll-card">
+              <span class="style-card-title">{style.value.title}</span>
+              {#if style.value.description}
+                <span class="style-card-desc">{style.value.description}</span>
+              {/if}
+              <time class="style-card-date">
+                {formatDate(style.value.updatedAt ?? style.value.createdAt)}
+              </time>
+            </a>
+          </li>
+        {/each}
+      </ul>
+    {/if}
+  {/await}
 </div>
 
 <style>
@@ -271,7 +238,7 @@
     padding: var(--space-2) 0;
   }
 
-  .review-list {
+  .comment-list {
     display: flex;
     flex-direction: column;
     gap: var(--space-4);
@@ -279,7 +246,7 @@
     padding: 0;
     margin: 0;
 
-    .review-row {
+    .comment-row {
       padding: var(--space-3) 0;
       border-top: 1px solid var(--border);
 
@@ -287,19 +254,19 @@
         border-bottom: 1px solid var(--border);
       }
 
-      .review-row-header {
+      .comment-row-header {
         display: flex;
         align-items: center;
         gap: var(--space-3);
         flex-wrap: wrap;
         margin-bottom: var(--space-2);
 
-        .reviewer-name {
+        .commenter-name {
           font-weight: 700;
           font-size: var(--text-sm);
         }
 
-        .review-on {
+        .comment-on {
           font-size: var(--text-sm);
           color: var(--fg-muted);
         }
@@ -314,14 +281,14 @@
           }
         }
 
-        .review-date {
+        .comment-date {
           font-size: var(--text-xs);
           color: var(--fg-muted);
           margin-left: auto;
         }
       }
 
-      .review-comment {
+      .comment-content {
         font-size: var(--text-sm);
         color: var(--fg-muted);
         line-height: 1.5;

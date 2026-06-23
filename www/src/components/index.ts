@@ -6,4 +6,5 @@ export { default as PreviewImage } from './PreviewImage.svelte';
 export { default as PreviewImageUpload } from './PreviewImageUpload.svelte';
 export { default as BlueskyIcon } from './BlueskyIcon.svelte';
 export { default as StarRating } from './StarRating.svelte';
+export { default as StarRatingAverage } from './StarRatingAverage.svelte';
 export { default as StarRatingInput } from './StarRatingInput.svelte';

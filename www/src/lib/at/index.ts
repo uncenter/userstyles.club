@@ -5,6 +5,8 @@ export { resolveHandle, getPdsForDid } from './did';
 export { getBlobCdnUrl, getBlobPdsUrl } from './utils';
 export {
   listRecordsForRepo,
+  getBacklinksTo,
+  resolveBacklinkedRecords,
   getRecord,
   createRecord,
   putRecord,
@@ -24,29 +26,42 @@ export {
 export {
   listUserstyles,
   listMyUserstyles,
+  listAllUserstyles,
   getUserstyle,
   createUserstyle,
   updateUserstyle,
   deleteUserstyle,
   removeUpdateUrlFromSource,
+  getUserstyleFeedback,
   type UserstyleContent,
   type Userstyle,
   type UserstyleInput,
   type UserstyleRecord,
+  type ReviewThread,
+  type UserstyleFeedback
 } from './services/userstyles';
 export {
-  listReviewsForStyle,
-  createReview,
-  updateReview,
-  deleteReview,
-  getReviewRkey,
-  getReviewAuthorDid,
+  listCommentsForStyle,
+  getCommentThreads,
+  createComment,
+  updateComment,
+  deleteComment,
+  type Comment,
+  type CommentRecord,
+  type CommentThread,
+} from './services/comments';
+export {
+  listRatingsForStyle,
+  createRating,
+  updateRating,
+  deleteRating,
   computeAverageRating,
-  type Review,
-  type ReviewRecord,
-} from './services/reviews';
+  type Rating,
+  type RatingRecord,
+} from './services/ratings';
 export {
   CLUB_USERSTYLE_COLLECTION,
   CLUB_PROFILE_COLLECTION,
-  CLUB_REVIEW_COLLECTION,
+  CLUB_COMMENT_COLLECTION,
+  CLUB_RATING_COLLECTION
 } from './settings';

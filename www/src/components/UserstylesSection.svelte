@@ -1,26 +1,19 @@
 <script lang="ts">
   import type { Snippet } from 'svelte';
   import type { ProfileView, UserstyleRecord } from '$lib/at';
-  import { Spinner, Alert } from '$components/ui';
   import UserstylesListItem from './UserstylesListItem.svelte';
 
   interface Props {
     userstyles: UserstyleRecord[];
     author?: ProfileView;
-    loading?: boolean;
-    error?: string | null;
     empty?: Snippet;
   }
 
-  let { userstyles, author, loading = false, error = null, empty }: Props = $props();
+  let { userstyles, author, empty }: Props = $props();
 </script>
 
 <section class="userstyles-section">
-  {#if loading}
-    <div class="loading-state"><Spinner /></div>
-  {:else if error}
-    <Alert variant="error">{error}</Alert>
-  {:else if userstyles.length === 0}
+  {#if userstyles.length === 0}
     <div class="empty-state">
       {#if empty}{@render empty()}{:else}No userstyles yet.{/if}
     </div>
@@ -38,7 +31,6 @@
     margin-top: var(--space-6);
     margin-bottom: var(--space-5);
 
-    .loading-state,
     .empty-state {
       display: flex;
       justify-content: center;

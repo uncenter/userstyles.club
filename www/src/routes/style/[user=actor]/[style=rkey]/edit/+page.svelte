@@ -13,12 +13,12 @@
 
   let { data }: PageProps = $props();
 
-  let title = $state(data.userstyle.title);
-  let description = $state(data.userstyle.description);
-  let license = $state(data.userstyle.license);
-  let upstreamUrl = $state(data.userstyle.upstreamUrl);
-  let homepageUrl = $state(data.userstyle.homepageUrl);
-  let sourceCode = $state(data.userstyle.sourceCode);
+  let title = $derived(data.userstyle.title);
+  let description = $derived(data.userstyle.description);
+  let license = $derived(data.userstyle.license);
+  let upstreamUrl = $derived(data.userstyle.upstreamUrl);
+  let homepageUrl = $derived(data.userstyle.homepageUrl);
+  let sourceCode = $derived(data.userstyle.sourceCode);
 
   let trackUpstreamUrl = $state(false);
   let removeUpdateUrl = $state(false);
@@ -27,7 +27,7 @@
   let error = $state<string | null>(null);
 
   let previewFile = $state<File | null>(null);
-  let keepExistingPreview = $state(!!data.userstyle.previewImage);
+  let keepExistingPreview = $derived(!!data.userstyle.previewImage);
 
   $effect(() => {
     if (!user.isLoggedIn) {

@@ -6,7 +6,7 @@ import type {
   RecordKey,
   ResourceUri,
 } from '@atcute/lexicons';
-import { getClientForDid, getPublicClient, getRelayClient } from './client';
+import { getClientForDid, getConstellationClient, getPublicClient, getRelayClient } from './client';
 import { getSessionContext } from './auth';
 import { isDid } from '@atcute/lexicons/syntax';
 import { ok } from '@atcute/client';
@@ -86,6 +86,40 @@ export async function listRecordsForCollection(params: { collection: Nsid; limit
   }
 
   return { records };
+}
+
+export async function getBacklinksTo(subject: ResourceUri, collection: Nsid, path: string) {
+  const client = getConstellationClient();
+
+  const response = await ok(
+    client.get('blue.microcosm.links.getBacklinks', {
+      params: {
+        subject,
+        source: `${collection}:${path}`,
+        limit: 100,
+      },
+    }),
+  );
+
+  return response;
+}
+
+export async function resolveBacklinkedRecords(backlinks: Awaited<ReturnType<typeof getBacklinksTo>>) {
+  const records = await Promise.all(
+    backlinks.records.map(async ({ did, collection, rkey }) => {
+      try {
+        return (await getRecord({
+          repo: did,
+          collection,
+          rkey,
+        }));
+      } catch {
+        return null;
+      }
+    }),
+  );
+
+  return records.filter((r) => r !== null);
 }
 
 export async function getRecord(params: {

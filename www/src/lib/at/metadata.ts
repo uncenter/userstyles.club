@@ -1,18 +1,14 @@
 import { base } from '$app/paths';
 import {
-  CLUB_PROFILE_COLLECTION,
+  CLUB_COLLECTIONS,
   REDIRECT_PATH,
-  CLUB_USERSTYLE_COLLECTION,
-  CLUB_REVIEW_COLLECTION,
   getSiteOrigin,
 } from './settings';
 
 const scope = [
   'atproto',
   'blob:*/*',
-  `repo:${CLUB_USERSTYLE_COLLECTION}`,
-  `repo:${CLUB_PROFILE_COLLECTION}`,
-  `repo:${CLUB_REVIEW_COLLECTION}`,
+  ...(CLUB_COLLECTIONS.map((collection) => `repo:${collection}`))
 ].join(' ');
 
 type ClientMetadata = {

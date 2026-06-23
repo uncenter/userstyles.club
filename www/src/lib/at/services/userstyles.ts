@@ -1,4 +1,4 @@
-import type { ActorIdentifier, RecordKey, Blob as BlobRef, GenericUri } from '@atcute/lexicons';
+import { type ActorIdentifier, type RecordKey, type Blob as BlobRef, type ResourceUri, parseResourceUri } from '@atcute/lexicons';
 import { getSessionContext } from '../auth';
 import {
   createRecord,
@@ -11,6 +11,8 @@ import {
   type RepoRecord,
 } from '../records';
 import { CLUB_USERSTYLE_COLLECTION } from '../settings';
+import { listCommentsForStyle, type CommentRecord, type CommentThread } from './comments';
+import { listRatingsForStyle, type RatingRecord } from './ratings';
 
 export type UserstyleContent = {
   title: string;
@@ -144,4 +146,20 @@ export async function deleteUserstyle(rkey: RecordKey) {
 export async function listAllUserstyles() {
   const response = await listRecordsForCollection({ collection: CLUB_USERSTYLE_COLLECTION });
   return response.records as UserstyleRecord[];
+}
+
+export type ReviewThread = CommentThread & {
+  rating?: RatingRecord;
+}
+
+export type UserstyleFeedback = { comments: CommentRecord[], ratings: Record<string, RatingRecord> };
+
+export async function getUserstyleFeedback(userstyle: ResourceUri): Promise<UserstyleFeedback> {
+  const [comments, ratings]: [CommentRecord[], RatingRecord[]] = await Promise.all([listCommentsForStyle(userstyle), listRatingsForStyle(userstyle)]);
+
+  const ratingsByDid: Record<string, RatingRecord> = Object.fromEntries(
+    ratings.map((r) => [parseResourceUri(r.uri).repo!, r])
+  );
+
+  return { comments, ratings: ratingsByDid };
 }

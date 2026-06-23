@@ -1,0 +1,39 @@
+{
+  "$type": "com.atproto.lexicon.schema",
+  "lexicon": 1,
+  "id": "club.userstyles.alpha.graph.comment",
+  "defs": {
+    "main": {
+      "type": "record",
+      "key": "tid",
+      "record": {
+        "type": "object",
+        "properties": {
+          "userstyle": {
+            "type": "string",
+            "format": "at-uri"
+          },
+          "parent": {
+            "type": "string",
+            "format": "at-uri"
+          },
+          "comment": {
+            "type": "string",
+            "maxLength": 2560,
+            "maxGraphemes": 256
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "datetime"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "datetime"
+          }
+        },
+        "required": ["userstyle", "text", "createdAt"]
+      },
+      "description": "Record representing a comment on a userstyle. Can be a reply to another comment."
+    }
+  }
+}

@@ -5,30 +5,107 @@
 
   import { joinPageTitle } from '$lib/constants';
 
-  import { user, deleteUserstyle, getBlobCdnUrl, computeAverageRating } from '$lib/at';
+  import { parseResourceUri } from '@atcute/lexicons';
+
+  import {
+    user,
+    deleteUserstyle,
+    getBlobCdnUrl,
+    computeAverageRating,
+    createRating,
+    updateRating,
+    deleteRating,
+    getCommentThreads,
+    type Rating,
+    type RatingRecord,
+    type ReviewThread,
+  } from '$lib/at';
   import { getPreferredActorIdentifier } from '$lib/preferences.svelte';
 
   import { Spinner, Alert, Dialog } from '$components/ui';
-  import { ActorHandle, CssPreview, PreviewImage, StarRating } from '$components';
+  import { ActorHandle, CssPreview, PreviewImage, StarRating, StarRatingAverage, StarRatingInput } from '$components';
 
   import { PencilIcon, Trash2Icon } from '@lucide/svelte';
 
   import bytes from 'pretty-bytes';
   import { formatDate } from '$lib/date';
 
-  import Reviews from './Reviews.svelte';
+  import Comments from './Comments.svelte';
+
+  import { proxify } from '$lib/proxify.svelte';
 
   let deleting = $state(false);
   let error = $state<string | null>(null);
 
   let { data, params }: PageProps = $props();
 
+  let feedback = $derived(proxify(data.feedback));
+
+  const threads: ReviewThread[] = $derived(getCommentThreads(feedback.comments).map((thread) => {
+    const did = parseResourceUri(thread.comment.uri).repo!;
+    return { ...thread, rating: feedback.ratings[did] };
+  }));
+
   let confirmDialogOpen = $state(false);
 
-  let averageRating = $derived(computeAverageRating(data.reviews));
+  let averageRating = $derived(computeAverageRating(Object.values(feedback.ratings)));
+  let myRating = $derived(user.isLoggedIn ? feedback.ratings[user.did!] : undefined);
+  let canRate = $derived(user.isLoggedIn && user.did !== data.profile.did);
+
+  let ratingDialog = $state({
+    open: false,
+    selected: undefined as number | undefined,
+    submitting: false,
+    deleting: false,
+    error: null as string | null,
+  });
 
   let lineCount = $derived(data.userstyle.value.sourceCode.split('\n').length);
   let byteCount = $derived(data.userstyle.value.sourceCode.length);
+
+  function openRatingDialog() {
+    ratingDialog.selected = myRating?.value.rating;
+    ratingDialog.error = null;
+    ratingDialog.open = true;
+  }
+
+  async function submitRating() {
+    if (!ratingDialog.selected) return;
+    ratingDialog.error = null;
+    ratingDialog.submitting = true;
+    try {
+      if (myRating) {
+        const { rkey } = parseResourceUri(myRating.uri);
+        await updateRating(rkey!, data.userstyle.uri, ratingDialog.selected, myRating.value.createdAt);
+        feedback.ratings[user.did!].value.rating = ratingDialog.selected;
+      } else {
+        const created = await createRating(data.userstyle.uri, ratingDialog.selected);
+        feedback.ratings[user.did!] = { uri: created.response.uri, value: created.record as Rating } as RatingRecord;
+      }
+      ratingDialog.open = false;
+    } catch (e) {
+      ratingDialog.error = e instanceof Error ? e.message : 'Failed to save rating.';
+    } finally {
+      ratingDialog.submitting = false;
+    }
+  }
+
+  async function removeRating() {
+    if (!myRating) return;
+    ratingDialog.error = null;
+    ratingDialog.deleting = true;
+    try {
+      const { rkey } = parseResourceUri(myRating.uri);
+      await deleteRating(rkey!);
+      delete feedback.ratings[user.did!];
+      ratingDialog.open = false;
+    } catch (e) {
+      ratingDialog.error = e instanceof Error ? e.message : 'Failed to remove rating.';
+    } finally {
+      ratingDialog.deleting = false;
+    }
+  }
+
   async function removeUserstyle() {
     error = null;
     deleting = true;
@@ -95,16 +172,21 @@
 
     <div class="style-info">
       <div class="style-meta">
-        <div class="style-item">
-          <span class="style-item-value">
-            {#if averageRating}
-              <StarRating rating={averageRating.average} count={averageRating.count} />
-            {:else}
-              <StarRating rating={undefined} />
-            {/if}
-          </span>
-          <span class="style-item-label">Rating</span>
-        </div>
+        {#if canRate}
+          <button type="button" class="style-item ratable" aria-label="Rate this userstyle" onclick={openRatingDialog}>
+            <span class="style-item-value">
+              <StarRatingAverage average={averageRating?.average} count={averageRating?.count} />
+            </span>
+            <span class="style-item-label">Rating{#if myRating}{' · '}<StarRating value={myRating.value.rating} label="Your rating: {myRating.value.rating}/5" />{/if}</span>
+          </button>
+        {:else}
+          <div class="style-item">
+            <span class="style-item-value">
+              <StarRatingAverage average={averageRating?.average} count={averageRating?.count} />
+            </span>
+            <span class="style-item-label">Rating</span>
+          </div>
+        {/if}
       </div>
 
       <a
@@ -155,15 +237,37 @@
     </div>
   {/if}
 
-  <div class="reviews-wrapper">
-    <Reviews
-      subject={data.userstyle.uri}
+  <div class="comments-wrapper">
+    <Comments
+      userstyle={data.userstyle.uri}
       owner={data.profile.did}
-      reviews={data.reviews}
-      reviewers={data.reviewers}
+      bind:feedback
+      {threads}
     />
   </div>
 </div>
+
+<Dialog bind:open={ratingDialog.open} title={myRating ? 'Update your rating' : 'Rate this userstyle'}>
+  {#snippet children()}
+    {#if ratingDialog.error}
+      <Alert variant="error">{ratingDialog.error}</Alert>
+    {/if}
+    <StarRatingInput bind:value={ratingDialog.selected} />
+  {/snippet}
+  {#snippet actions()}
+    <button class="btn btn-outline" type="button" onclick={() => (ratingDialog.open = false)}>
+      Cancel
+    </button>
+    {#if myRating}
+      <button class="btn btn-secondary" type="button" onclick={removeRating} disabled={ratingDialog.deleting || ratingDialog.submitting}>
+        {#if ratingDialog.deleting}<Spinner size="sm" /> Removing…{:else}Remove{/if}
+      </button>
+    {/if}
+    <button class="btn btn-primary" type="button" onclick={submitRating} disabled={ratingDialog.submitting || ratingDialog.deleting || !ratingDialog.selected}>
+      {#if ratingDialog.submitting}<Spinner size="sm" /> Saving…{:else}{myRating ? 'Update' : 'Submit'}{/if}
+    </button>
+  {/snippet}
+</Dialog>
 
 <Dialog bind:open={confirmDialogOpen} title="Delete userstyle?">
   {#snippet children()}
@@ -193,7 +297,7 @@
     }
   }
 
-  .reviews-wrapper {
+  .comments-wrapper {
     grid-column: 1 / -1;
   }
 
@@ -297,6 +401,23 @@
         gap: 0.25rem;
         font-size: var(--text-sm);
         color: var(--fg-muted);
+      }
+
+      &.ratable {
+        appearance: none;
+        border: none;
+        background: none;
+        font: inherit;
+        text-align: left;
+        cursor: pointer;
+        border-radius: var(--radius-sm);
+        padding: var(--space-2);
+        margin: calc(-1 * var(--space-2));
+        transition: background 0.1s;
+
+        &:hover {
+          background: var(--bg-muted);
+        }
       }
     }
   }

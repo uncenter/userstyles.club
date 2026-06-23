@@ -6,13 +6,13 @@
     type UserstyleRecord,
     getBlobCdnUrl,
     getProfile,
-    listReviewsForStyle,
+    listRatingsForStyle,
     computeAverageRating,
   } from '$lib/at';
   import { parseResourceUri } from '@atcute/lexicons';
   import type { Did } from '@atcute/lexicons';
 
-  import StarRating from './StarRating.svelte';
+  import StarRatingAverage from './StarRatingAverage.svelte';
   import ActorHandle from './ActorHandle.svelte';
 
   import { CalendarIcon } from '@lucide/svelte';
@@ -54,7 +54,7 @@
           })}>{userstyle.value.title}</a
         >
       </h3>
-      <ActorHandle {profile} minimal={true} />
+      <ActorHandle {profile} style='minimal' />
     </div>
     <p class="userstyle-description">{userstyle.value.description ?? ''}</p>
     <footer class="card-meta">
@@ -62,11 +62,10 @@
         <CalendarIcon size={12} />
         {formatDate(userstyle.value.updatedAt ?? userstyle.value.createdAt)}
       </span>
-      {#await listReviewsForStyle(userstyle.uri) then reviews}
-        {@const avg = computeAverageRating(reviews)}
-        {#if avg}
-          <span class="meta-item meta-item-rating"
-            ><StarRating rating={avg.average} count={avg.count} /></span
+      {#await listRatingsForStyle(userstyle.uri) then ratings}
+        {@const computed = computeAverageRating(ratings)}
+        {#if computed}
+          <span class="meta-item meta-item-rating"><StarRatingAverage average={computed.average} count={computed.count} /></span
           >
         {:else}
           <span class="meta-item meta-item-rating meta-na">Unrated</span>
@@ -114,11 +113,6 @@
         justify-content: space-between;
         gap: var(--space-2);
         min-width: 0;
-
-        :global .actor-handle {
-          padding: 0;
-          flex-shrink: 0;
-        }
       }
 
       .userstyle-title {

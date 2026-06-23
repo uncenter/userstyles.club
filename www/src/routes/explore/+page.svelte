@@ -1,31 +1,12 @@
 <script lang="ts">
   import { joinPageTitle } from '$lib/constants';
 
-  import { listAllUserstyles, type UserstyleRecord } from '$lib/at/services/userstyles';
+  import { listAllUserstyles } from '$lib/at';
 
+  import { Spinner, Alert } from '$components/ui';
   import { UserstylesSection } from '$components';
 
-  let userstyles = $state<UserstyleRecord[]>([]);
-
-  let loading = $state(false);
-  let error = $state<string | null>(null);
-
-  $effect(() => {
-    loadUserstyles();
-  });
-
-  async function loadUserstyles() {
-    loading = true;
-    error = null;
-
-    try {
-      userstyles = await listAllUserstyles();
-    } catch (e) {
-      error = e instanceof Error ? e.message : 'Failed to load userstyles.';
-    } finally {
-      loading = false;
-    }
-  }
+  let userstyles = listAllUserstyles();
 </script>
 
 <svelte:head>
@@ -35,6 +16,20 @@
 <div class="page-section">
   <h1>Explore</h1>
 </div>
-<UserstylesSection {userstyles} {loading} {error}>
-  {#snippet empty()}<p>No userstyles published yet.</p>{/snippet}
-</UserstylesSection>
+{#await userstyles}
+  <div class="loading-state"><Spinner /></div>
+{:then userstyles}
+  <UserstylesSection {userstyles}>
+    {#snippet empty()}<p>No userstyles published yet.</p>{/snippet}
+  </UserstylesSection>
+{:catch error}
+  <Alert variant="error">{error}</Alert>
+{/await}
+
+<style>
+  .loading-state {
+    display: flex;
+    justify-content: center;
+    padding: var(--space-8) 0;
+  }
+</style>
