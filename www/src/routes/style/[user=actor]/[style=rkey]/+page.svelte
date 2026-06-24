@@ -5,7 +5,7 @@
 
   import { joinPageTitle } from '$lib/constants';
 
-  import { parseResourceUri } from '@atcute/lexicons';
+  import { AtUri } from '@atproto/syntax';
 
   import {
     user,
@@ -42,7 +42,7 @@
   let feedback = $derived(proxify(data.feedback));
 
   const threads: ReviewThread[] = $derived(getCommentThreads(feedback.comments).map((thread) => {
-    const did = parseResourceUri(thread.comment.uri).repo!;
+    const did = new AtUri(thread.comment.uri).did;
     return { ...thread, rating: feedback.ratings[did] };
   }));
 
@@ -75,11 +75,11 @@
     ratingDialog.submitting = true;
     try {
       if (myRating) {
-        const { rkey } = parseResourceUri(myRating.uri);
-        await updateRating(rkey!, data.userstyle.uri, ratingDialog.selected, myRating.value.createdAt);
+        const rkey = new AtUri(myRating.uri).rkey;
+        await updateRating(rkey!, { subject: data.userstyle.uri, rating: ratingDialog.selected, createdAt: myRating.value.createdAt });
         feedback.ratings[user.did!].value.rating = ratingDialog.selected;
       } else {
-        const created = await createRating(data.userstyle.uri, ratingDialog.selected);
+        const created = await createRating({ subject: data.userstyle.uri, rating: ratingDialog.selected });
         feedback.ratings[user.did!] = { uri: created.response.uri, value: created.record as Rating } as RatingRecord;
       }
       ratingDialog.open = false;
@@ -95,7 +95,7 @@
     ratingDialog.error = null;
     ratingDialog.deleting = true;
     try {
-      const { rkey } = parseResourceUri(myRating.uri);
+      const rkey = new AtUri(myRating.uri).rkey;
       await deleteRating(rkey!);
       delete feedback.ratings[user.did!];
       ratingDialog.open = false;
@@ -137,7 +137,7 @@
         <PreviewImage
           src={getBlobCdnUrl(
             data.profile.did,
-            data.userstyle.value.previewImage.ref.$link,
+            data.userstyle.value.previewImage,
             'feed_fullsize',
           )}
           alt={data.userstyle.value.title}

@@ -1,8 +1,8 @@
 import { base } from '$app/paths';
+import type { OAuthClientMetadataInput } from '@atproto/oauth-client-browser';
 import {
   CLUB_COLLECTIONS,
   REDIRECT_PATH,
-  getSiteOrigin,
 } from './settings';
 
 const scope = [
@@ -10,22 +10,6 @@ const scope = [
   'blob:*/*',
   ...(CLUB_COLLECTIONS.map((collection) => `repo:${collection}`))
 ].join(' ');
-
-type ClientMetadata = {
-  client_id: string;
-  client_name: string;
-  client_uri: string;
-  logo_uri: string;
-  tos_uri: string;
-  policy_uri: string;
-  redirect_uris: string[];
-  scope: string;
-  grant_types: string[];
-  response_types: string[];
-  token_endpoint_auth_method: 'none';
-  application_type: 'web';
-  dpop_bound_access_tokens: true;
-};
 
 function normalizeBase(basePath: string) {
   if (!basePath || basePath === '/') return '';
@@ -41,7 +25,7 @@ function appUrl(root: string, path: string) {
   return `${root}${normalizedPath}`;
 }
 
-export function createClientMetadata(origin: string, basePath = base): ClientMetadata {
+export function createClientMetadata(origin: string, basePath = base): OAuthClientMetadataInput {
   const normalizedBase = normalizeBase(basePath);
   const root = `${normalizeOrigin(origin)}${normalizedBase}`;
 
@@ -61,15 +45,3 @@ export function createClientMetadata(origin: string, basePath = base): ClientMet
     dpop_bound_access_tokens: true,
   };
 }
-
-export function getClientMetadata() {
-  const metadata = createClientMetadata(getSiteOrigin());
-
-  return {
-    client_id: metadata.client_id,
-    redirect_uri: metadata.redirect_uris[0],
-    scope: metadata.scope,
-  };
-}
-
-export const oauthScope = scope;

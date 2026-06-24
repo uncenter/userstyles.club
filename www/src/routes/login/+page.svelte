@@ -4,7 +4,6 @@
   import { joinPageTitle } from '$lib/constants';
 
   import { login, signup, user } from '$lib/at';
-  import type { ActorIdentifier } from '@atcute/lexicons';
 
   import { Spinner, Alert } from '$components/ui';
 
@@ -28,7 +27,7 @@
     loading = true;
     error = null;
     try {
-      await login(handle as ActorIdentifier);
+      await login(handle);
     } catch (e) {
       error = e instanceof Error ? e.message : 'Login failed.';
       loading = false;

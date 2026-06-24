@@ -1,51 +1,66 @@
-import { Client, simpleFetchHandler } from '@atcute/client';
-import type { Did } from '@atcute/lexicons';
-import type {} from '@atcute/microcosm';
-import { getPdsForDid } from './did';
+import { user } from './oauth.svelte';
 
-const clientCache = new Map<string, Client>();
+import { Client, type AtIdentifierString } from '@atproto/lex';
+import * as blue from '../at/generated/blue';
+
+const cache = new Map<string, Client>();
 
 export function getPublicClient(): Client {
   const key = 'public';
-  if (clientCache.has(key)) return clientCache.get(key)!;
+  if (cache.has(key)) return cache.get(key)!;
 
-  const client = new Client({
-    handler: simpleFetchHandler({ service: 'https://public.api.bsky.app' }),
-  });
-  clientCache.set(key, client);
+  const client = new Client('https://public.api.bsky.app');
+  cache.set(key, client);
   return client;
 }
 
 export function getRelayClient(): Client {
   const key = 'relay';
-  if (clientCache.has(key)) return clientCache.get(key)!;
+  if (cache.has(key)) return cache.get(key)!;
 
-  const client = new Client({
-    handler: simpleFetchHandler({ service: 'https://relay1.us-east.bsky.network' }),
-  });
-  clientCache.set(key, client);
+  const client = new Client('https://relay1.us-east.bsky.network');
+  cache.set(key, client);
   return client;
 }
 
 export function getConstellationClient(): Client {
   const key = 'constellation';
-  if (clientCache.has(key)) return clientCache.get(key)!;
+  if (cache.has(key)) return cache.get(key)!;
 
-  const client = new Client({
-    handler: simpleFetchHandler({ service: 'https://constellation.microcosm.blue' }),
-  });
-  clientCache.set(key, client);
+  const client = new Client('https://constellation.microcosm.blue');
+  cache.set(key, client);
   return client;
 }
 
-export async function getClientForDid(did: Did): Promise<Client> {
-  if (clientCache.has(did)) return clientCache.get(did)!;
+export function getSlingshotClient(): Client {
+  const key = 'slingshot';
+  if (cache.has(key)) return cache.get(key)!;
 
-  const pds = await getPdsForDid(did);
-  const client = new Client({
-    handler: simpleFetchHandler({ service: pds }),
-  });
-
-  clientCache.set(did, client);
+  const client = new Client('https://slingshot.microcosm.blue');
+  cache.set(key, client);
   return client;
+}
+
+export async function getPdsClient(actor: AtIdentifierString): Promise<Client> {
+  if (cache.has(actor)) return cache.get(actor)!;
+
+  const slingshot = getSlingshotClient();
+  const doc = await slingshot.call(blue.microcosm.identity.resolveMiniDoc, {
+    identifier: actor,
+  })
+  const client = new Client(doc.pds);
+
+  cache.set(actor, client);
+  return client;
+}
+
+export function getSessionClient(error: false): Client | undefined;
+export function getSessionClient(error?: string): Client;
+export function getSessionClient(error: string | false = 'You must be logged in to continue.'): Client | undefined {
+  if (!user.client) {
+    if (error === false) return;
+    throw new Error(error);
+  }
+
+  return user.client;
 }

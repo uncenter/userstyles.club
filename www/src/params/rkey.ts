@@ -1,4 +1,4 @@
 import type { ParamMatcher } from '@sveltejs/kit';
-import { isRecordKey } from '@atcute/lexicons/syntax';
+import { isRecordKeyString } from '@atproto/lex';
 
-export const match = isRecordKey satisfies ParamMatcher;
+export const match = isRecordKeyString satisfies ParamMatcher;

@@ -1,9 +1,10 @@
 <script lang="ts">
   import type { Snippet } from 'svelte';
+
   import type { UserstyleContent } from '$lib/at';
   import type { UserstyleFormFields } from './fields.svelte';
-  import { PreviewImageUpload, CssEditor } from '$components';
-  import LicenseInput from '$components/LicenseInput.svelte';
+
+  import { PreviewImageUpload, CssEditor, LicenseInput } from '$components';
   import { Wordmark } from '$components/branding';
   import { Alert } from '$components/ui';
 

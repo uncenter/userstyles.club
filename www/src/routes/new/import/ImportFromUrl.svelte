@@ -1,6 +1,7 @@
 <script lang="ts">
   import type { UserstyleContent } from '$lib/at';
   import type { UserstyleFormState } from '../fields.svelte';
+  import type { UriString } from '@atproto/syntax';
 
   import { Spinner, Alert } from '$components/ui';
 
@@ -46,7 +47,7 @@
         if (value && !fields[key]?.trim()) (fields as any)[key] = value;
       }
 
-      fields.upstreamUrl = importUrl;
+      fields.upstreamUrl = importUrl as UriString;
       fields.trackUpstreamUrl = true;
 
       imported = result;

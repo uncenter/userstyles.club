@@ -1,15 +1,16 @@
 <script lang="ts">
   import { resolve } from '$app/paths';
-  import { parseResourceUri } from '@atcute/lexicons/syntax';
+
+  import { AtUri } from '@atproto/syntax';
 
   import {
-    type UserstyleRecord,
     user,
     listMyUserstyles,
     listCommentsForStyle,
     listRatingsForStyle,
     getProfile,
     computeAverageRating,
+    type UserstyleRecord,
     type CommentRecord,
   } from '$lib/at';
   import { getPreferredActorIdentifier } from '$lib/preferences.svelte';
@@ -26,7 +27,7 @@
   const comments = userstyles.then((userstyles) => Promise.all(
     userstyles.map(async (style) => {
       const comments = await listCommentsForStyle(style.uri);
-      const filtered = comments.filter((comment) => parseResourceUri(comment.uri).repo !== user.did); // filter out user's own comments
+      const filtered = comments.filter((comment) => new AtUri(comment.uri).did !== user.did); // filter out user's own comments
       return filtered.map((comment) => { return { style, comment }; });
     }),
   ).then((comments) => comments.flat().sort(
@@ -45,9 +46,9 @@
     return records.toSorted((a, b) => new Date(b.value.createdAt).getTime() - new Date(a.value.createdAt).getTime());
   }
 
-  function getLinkToStyle(styleUri: string) {
-    const { repo, rkey } = parseResourceUri(styleUri);
-    return resolve('/style/[user=actor]/[style=rkey]', { user: repo!, style: rkey! });
+  function getLinkToUserOwnStyle(uri: string) {
+    const { rkey } = new AtUri(uri);
+    return resolve('/style/[user=actor]/[style=rkey]', { user: getPreferredActorIdentifier(user.profile!), style: rkey });
   }
 </script>
 
@@ -113,13 +114,13 @@
       {@const recents = comments.slice(0, 5)}
       <ul class="comment-list" role="list">
         {#each recents as { style, comment } (comment.uri)}
-          {@const did = parseResourceUri(comment.uri).repo}
+          {@const did = new AtUri(comment.uri).did}
           {@const commenter = await getProfile(did)}
-          {@const rating = ratings.then((ratings) => ratings.find((rating) => rating.style.uri === style.uri && parseResourceUri(rating.rating.uri).repo! === did)?.rating)}
+          {@const rating = ratings.then((ratings) => ratings.find((rating) => rating.style.uri === style.uri && new AtUri(rating.rating.uri).did === did)?.rating)}
           <li class="comment-row">
             <div class="comment-row-header">
               <ActorHandle profile={commenter} style='small' />
-              <span class="comment-on">commented on <a href={getLinkToStyle(style.uri)} class="style-link">{style.value.title}</a></span>
+              <span class="comment-on">commented on <a href={getLinkToUserOwnStyle(style.uri)} class="style-link">{style.value.title}</a></span>
               <div class="comment-row-header-end">
                 {#await rating then rating}
                   <StarRating value={rating?.value.rating} />
@@ -149,7 +150,7 @@
       <ul class="style-scroll" role="list">
         {#each recents as style (style.uri)}
           <li class="style-scroll-item">
-            <a href={getLinkToStyle(style.uri)} class="style-scroll-card">
+            <a href={getLinkToUserOwnStyle(style.uri)} class="style-scroll-card">
               <span class="style-card-title">{style.value.title}</span>
               {#if style.value.description}
                 <span class="style-card-desc">{style.value.description}</span>

@@ -1,6 +1,4 @@
 <script lang="ts">
-  import { parseResourceUri, type ResourceUri } from '@atcute/lexicons';
-
   import {
     user,
     getProfile,
@@ -20,16 +18,20 @@
   import Self from './CommentItem.svelte'
 
   import { formatDate } from '$lib/date';
+  import { AtUri, type AtUriString } from '@atproto/syntax';
 
   interface Props {
     thread: ReviewThread;
     feedback: UserstyleFeedback;
-    userstyle: ResourceUri;
+    userstyle: AtUriString;
   }
 
   let { thread, feedback = $bindable(), userstyle }: Props = $props();
 
-  let { repo: actor, rkey } = $derived(parseResourceUri(thread.comment.uri));
+  let { repo: actor, rkey } = $derived.by(() => {
+    let uri = new AtUri(thread.comment.uri);
+    return { repo: uri.did, rkey: uri.rkey };
+  });
   let rating = $derived(feedback.ratings?.[actor!]);
   let isMyComment = $derived(user.isLoggedIn && user.did === actor);
 
@@ -59,10 +61,12 @@
     try {
       let updated = await updateComment(
         rkey!,
-        userstyle,
-        editing.value,
-        thread.comment.value.createdAt,
-        thread.comment.value.parent
+        {
+          subject: userstyle,
+          parent: thread.comment.value.parent,
+          comment: editing.value,
+          createdAt: thread.comment.value.createdAt,
+        }
       );
       thread.comment.value = updated.record as Comment;
     } catch (e) {
@@ -88,9 +92,11 @@
     submitting = true;
     try {
       let reply = await createComment(
-        userstyle,
-        replying.value,
-        thread.comment.uri
+        {
+          subject: userstyle,
+          parent: thread.comment.uri,
+          comment: replying.value
+        }
       );
       feedback.comments.push({  uri: reply.response.uri, value: reply.record as Comment });
       replying.value = '';

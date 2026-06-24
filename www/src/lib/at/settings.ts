@@ -1,14 +1,11 @@
 import { dev } from '$app/environment';
 
+import * as club from './generated/club';
+
 export const REDIRECT_PATH = '/';
-export const DOH_RESOLVER = 'https://mozilla.cloudflare-dns.com/dns-query';
+export const HANDLE_RESOLVER_URL = 'https://slingshot.microcosm.blue';
 
-export const CLUB_USERSTYLE_COLLECTION = 'club.userstyles.alpha.userstyle' as const;
-export const CLUB_PROFILE_COLLECTION = 'club.userstyles.alpha.actor.profile' as const;
-export const CLUB_RATING_COLLECTION = 'club.userstyles.alpha.graph.rating' as const;
-export const CLUB_COMMENT_COLLECTION = 'club.userstyles.alpha.graph.comment' as const;
-
-export const CLUB_COLLECTIONS = [CLUB_USERSTYLE_COLLECTION, CLUB_PROFILE_COLLECTION, CLUB_RATING_COLLECTION, CLUB_COMMENT_COLLECTION];
+export const CLUB_COLLECTIONS = [club.userstyles.alpha.userstyle.$nsid, club.userstyles.alpha.actor.profile.$nsid, club.userstyles.alpha.graph.rating.$nsid, club.userstyles.alpha.graph.comment.$nsid];
 
 export function getSiteOrigin(): string {
   const envOrigin = import.meta.env.VITE_SITE_ORIGIN;

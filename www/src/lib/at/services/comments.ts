@@ -1,41 +1,23 @@
-import type { RecordKey, ResourceUri } from '@atcute/lexicons';
-import { createRecord, deleteRecord, getBacklinksTo, putRecord, resolveBacklinkedRecords, type RepoRecord } from '../records';
-import { CLUB_COMMENT_COLLECTION } from '../settings';
+import { createRecord, deleteRecord, getBacklinksFrom, getRecord, putRecord, resolveBacklinkedRecords, type RecordCommit } from '../records';
 
-export type Comment = {
-  userstyle: ResourceUri;
-  parent?: ResourceUri;
-  comment: string;
-  createdAt: string;
-  updatedAt?: string;
-};
+import { l, type AtIdentifierString, type AtUriString, type RecordKeyString } from '@atproto/lex';
+import * as club from '../generated/club';
 
-export type CommentRecord = RepoRecord & {
-  value: Comment;
-};
+export type Comment = club.userstyles.alpha.graph.comment.Main;
+export type CommentRecord = RecordCommit<club.userstyles.alpha.graph.comment.Main>;
 
 export type CommentThread = {
   comment: CommentRecord;
   replies: CommentThread[];
 };
 
-export function isComment(value: Record<string, unknown>): value is Comment {
-  return (
-    typeof value.userstyle === 'string' &&
-    typeof value.comment === 'string' &&
-    typeof value.createdAt === 'string'
-  );
-}
-
-export async function listCommentsForStyle(uri: ResourceUri): Promise<CommentRecord[]> {
-  const backlinks = await getBacklinksTo(uri, CLUB_COMMENT_COLLECTION, 'userstyle');
-  const records = await resolveBacklinkedRecords(backlinks);
-
-  return records.filter((r): r is CommentRecord => r !== null && isComment(r.value));
+export async function listCommentsForStyle(uri: AtUriString): Promise<CommentRecord[]> {
+  const backlinks = await getBacklinksFrom(club.userstyles.alpha.graph.comment, uri, 'subject');
+  return await resolveBacklinkedRecords(club.userstyles.alpha.graph.comment, backlinks);
 }
 
 export function getCommentThreads(comments: CommentRecord[]): CommentThread[] {
-  const nodes = new Map<ResourceUri, CommentThread>();
+  const nodes = new Map<AtUriString, CommentThread>();
 
   for (const comment of comments) {
     nodes.set(comment.uri, {
@@ -65,39 +47,35 @@ export function getCommentThreads(comments: CommentRecord[]): CommentThread[] {
   return roots;
 }
 
-export async function createComment(userstyle: ResourceUri, comment: string, parent?: ResourceUri) {
-  comment = comment.trim();
-  if (!comment) throw new Error('Comment is required.');
-
-  return createRecord(CLUB_COMMENT_COLLECTION, {
-    $type: CLUB_COMMENT_COLLECTION,
-    userstyle,
-    ...(parent !== undefined && { parent }),
+export async function createComment({ subject, parent, comment }: Omit<club.userstyles.alpha.graph.comment.Main, "$type" | 'createdAt' | 'updatedAt'>) {
+  return await createRecord(club.userstyles.alpha.graph.comment, club.userstyles.alpha.graph.comment.$parse({
+    subject,
+    parent,
     comment,
-    createdAt: new Date().toISOString(),
+    createdAt: l.currentDatetimeString()
+  }));
+}
+
+export async function getComment(repo: AtIdentifierString, rkey: RecordKeyString) {
+  return await getRecord(club.userstyles.alpha.graph.comment, {
+    repo,
+    rkey,
   });
 }
 
-export async function updateComment(
-  rkey: RecordKey,
-  userstyle: ResourceUri,
-  comment: string,
-  createdAt: string,
-  parent?: ResourceUri,
-) {
-  comment = comment.trim();
-  if (!comment) throw new Error('Comment is required.');
-
-  return putRecord(CLUB_COMMENT_COLLECTION, rkey, {
-    $type: CLUB_COMMENT_COLLECTION,
-    userstyle,
-    ...(parent !== undefined && { parent }),
+export async function updateComment(rkey: RecordKeyString, { subject, parent, comment, createdAt }: Omit<club.userstyles.alpha.graph.comment.Main, "$type" | 'updatedAt'>) {
+  return await putRecord(club.userstyles.alpha.graph.comment, club.userstyles.alpha.graph.comment.$parse({
+    subject,
+    parent,
     comment,
     createdAt,
-    updatedAt: new Date().toISOString(),
+    updatedAt: l.currentDatetimeString()
+  }), {
+    rkey
   });
 }
 
-export async function deleteComment(rkey: RecordKey) {
-  return deleteRecord(CLUB_COMMENT_COLLECTION, rkey);
+export async function deleteComment(rkey: RecordKeyString) {
+  return await deleteRecord(club.userstyles.alpha.graph.comment, { rkey });
 }
+

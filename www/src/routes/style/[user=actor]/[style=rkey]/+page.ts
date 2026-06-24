@@ -4,7 +4,7 @@ import {
   getUserstyle,
   getUserstyleFeedback
 } from '$lib/at';
-import { ClientResponseError } from '@atcute/client';
+import { XrpcResponseError } from '@atproto/lex';
 import { error } from '@sveltejs/kit';
 
 export const load: PageLoad = async ({ params }) => {
@@ -21,16 +21,11 @@ export const load: PageLoad = async ({ params }) => {
       user,
       style,
     };
-  } catch (e) {
-    if (e instanceof ClientResponseError) {
-      switch (e.error) {
-        case 'RecordNotFound':
-          error(404, e.message);
-        default:
-          error(500, e.message);
-      }
+  } catch (err) {
+    if (err instanceof XrpcResponseError && err.error === 'RecordNotFound') {
+      error(404, err.message);
     } else {
-      throw e;
+      throw err;
     }
   }
 };

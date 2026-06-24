@@ -11,16 +11,13 @@
     "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
     "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
     "lint": "prettier --check .",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "lex:build": "pnpm exec lex build --lexicons ./lexicons --out ./src/lib/at/generated --clear"
   },
   "dependencies": {
-    "@atcute/atproto": "^4.0.0",
-    "@atcute/bluesky": "^4.0.1",
-    "@atcute/client": "^5.0.0",
-    "@atcute/identity-resolver": "^2.0.0",
-    "@atcute/lexicons": "^2.0.0",
-    "@atcute/microcosm": "^2.0.1",
-    "@atcute/oauth-browser-client": "^4.0.0",
+    "@atproto/lex": "^0.1.4",
+    "@atproto/oauth-client-browser": "^0.4.2",
+    "@atproto/syntax": "^0.6.2",
     "@catppuccin/codemirror": "^1.0.3",
     "@catppuccin/palette": "^1.8.0",
     "@codemirror/lang-css": "^6.3.1",

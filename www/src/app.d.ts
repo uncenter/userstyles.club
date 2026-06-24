@@ -8,6 +8,4 @@ declare global {
   }
 }
 
-import type {} from '@atcute/atproto';
-
 export {};

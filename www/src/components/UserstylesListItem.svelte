@@ -1,6 +1,8 @@
 <script lang="ts">
   import { resolve } from '$app/paths';
 
+  import { AtUri } from '@atproto/syntax';
+
   import {
     type ProfileView,
     type UserstyleRecord,
@@ -9,8 +11,6 @@
     listRatingsForStyle,
     computeAverageRating,
   } from '$lib/at';
-  import { parseResourceUri } from '@atcute/lexicons';
-  import type { Did } from '@atcute/lexicons';
 
   import StarRatingAverage from './StarRatingAverage.svelte';
   import ActorHandle from './ActorHandle.svelte';
@@ -27,8 +27,8 @@
 
   let { userstyle, author }: Props = $props();
 
-  let uri = $derived.by(() => parseResourceUri(userstyle.uri));
-  let profile = $derived(author || (await getProfile(uri.repo)));
+  let uri = $derived.by(() => new AtUri(userstyle.uri));
+  let profile = $derived(author || (await getProfile(uri.did)));
 </script>
 
 <article class="userstyle-card">
@@ -36,8 +36,8 @@
     {#if userstyle.value.previewImage}
       <img
         src={getBlobCdnUrl(
-          uri.repo as Did,
-          userstyle.value.previewImage.ref.$link,
+          uri.did,
+          userstyle.value.previewImage,
           'feed_thumbnail',
         )}
         alt={userstyle.value.title}

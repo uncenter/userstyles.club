@@ -1,4 +1,4 @@
 import type { ParamMatcher } from '@sveltejs/kit';
-import { isActorIdentifier } from '@atcute/lexicons/syntax';
+import { isAtIdentifierString } from '@atproto/syntax';
 
-export const match = isActorIdentifier satisfies ParamMatcher;
+export const match = isAtIdentifierString satisfies ParamMatcher;

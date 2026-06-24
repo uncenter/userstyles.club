@@ -108,7 +108,7 @@
     bind:previewFile
     bind:keepExistingPreview
     existingImageSrc={data.userstyle.previewImage
-      ? getBlobCdnUrl(data.profile.did, data.userstyle.previewImage.ref.$link, 'feed_fullsize')
+      ? getBlobCdnUrl(data.profile.did, data.userstyle.previewImage, 'feed_fullsize')
       : null}
     {error}
     onsubmit={submit}

@@ -1,67 +1,44 @@
-import type { RecordKey, ResourceUri } from '@atcute/lexicons';
-import { createRecord, deleteRecord, getBacklinksTo, putRecord, resolveBacklinkedRecords, type RepoRecord } from '../records';
-import { CLUB_RATING_COLLECTION } from '../settings';
+import { createRecord, deleteRecord, getBacklinksFrom, getRecord, putRecord, resolveBacklinkedRecords, type RecordCommit } from '../records';
 
-export type Rating = {
-  userstyle: ResourceUri;
-  rating: number;
-  createdAt: string;
-  updatedAt?: string;
-};
+import { l, type AtIdentifierString, type AtUriString, type RecordKeyString } from '@atproto/lex';
+import * as club from '../generated/club';
 
-export type RatingRecord = RepoRecord & {
-  value: Rating;
-};
+export type Rating = club.userstyles.alpha.graph.rating.Main;
+export type RatingRecord = RecordCommit<club.userstyles.alpha.graph.rating.Main>;
 
-export function isRating(value: Record<string, unknown>): value is Rating {
-  return (
-    typeof value.userstyle === 'string' &&
-    typeof value.rating === 'number' &&
-    typeof value.createdAt === 'string'
-  );
+export async function listRatingsForStyle(uri: AtUriString) {
+  const backlinks = await getBacklinksFrom(club.userstyles.alpha.graph.rating, uri, 'subject');
+  return await resolveBacklinkedRecords(club.userstyles.alpha.graph.rating, backlinks);
 }
 
-export async function listRatingsForStyle(uri: ResourceUri): Promise<RatingRecord[]> {
-  const backlinks = await getBacklinksTo(uri, CLUB_RATING_COLLECTION, 'userstyle');
-  const records = await resolveBacklinkedRecords(backlinks);
-
-  return records.filter((r): r is RatingRecord => r !== null && isRating(r.value));
-}
-
-export async function createRating(userstyle: ResourceUri, rating: number) {
-  if (rating < 1 || rating > 5) {
-    throw new Error('Rating must be between 1 and 5.');
-  }
-
-  return createRecord(CLUB_RATING_COLLECTION, {
-    $type: CLUB_RATING_COLLECTION,
-    userstyle,
+export async function createRating({ subject, rating }: Omit<club.userstyles.alpha.graph.rating.Main, "$type" | 'createdAt'>) {
+  return await createRecord(club.userstyles.alpha.graph.rating, club.userstyles.alpha.graph.rating.$parse({
+    subject,
     rating,
-    createdAt: new Date().toISOString(),
+    createdAt: l.currentDatetimeString()
+  }));
+}
+
+export async function getRating(repo: AtIdentifierString, rkey: RecordKeyString) {
+  return await getRecord(club.userstyles.alpha.graph.rating, {
+    repo,
+    rkey,
   });
 }
 
-export async function updateRating(
-  rkey: RecordKey,
-  userstyle: ResourceUri,
-  rating: number,
-  createdAt: string,
-) {
-  if (rating < 1 || rating > 5) {
-    throw new Error('Rating must be between 1 and 5.');
-  }
-
-  return putRecord(CLUB_RATING_COLLECTION, rkey, {
-    $type: CLUB_RATING_COLLECTION,
-    userstyle,
+export async function updateRating(rkey: RecordKeyString, { subject, rating, createdAt }: Omit<club.userstyles.alpha.graph.rating.Main, "$type">) {
+  return await putRecord(club.userstyles.alpha.graph.rating, club.userstyles.alpha.graph.rating.$parse({
+    subject,
     rating,
     createdAt,
-    updatedAt: new Date().toISOString(),
+    updatedAt: l.currentDatetimeString()
+  }), {
+    rkey
   });
 }
 
-export async function deleteRating(rkey: RecordKey) {
-  return deleteRecord(CLUB_RATING_COLLECTION, rkey);
+export async function deleteRating(rkey: RecordKeyString) {
+  return await deleteRecord(club.userstyles.alpha.graph.rating, { rkey });
 }
 
 export function computeAverageRating(

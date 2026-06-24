@@ -1,4 +1,4 @@
-import type { ActorIdentifier } from '@atcute/lexicons';
+import type { AtIdentifierString } from '@atproto/syntax';
 import type { ProfileView } from './at';
 
 class UserPreferences<T extends Record<string, unknown>> {
@@ -40,6 +40,6 @@ export const preferences = new UserPreferences({
   usePermanentUrls: true,
 });
 
-export function getPreferredActorIdentifier(profile: ProfileView): ActorIdentifier {
+export function getPreferredActorIdentifier(profile: ProfileView): AtIdentifierString {
   return preferences.get('usePermanentUrls') ? profile.did : profile.handle;
 }

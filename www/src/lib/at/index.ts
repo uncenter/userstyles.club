@@ -1,17 +1,14 @@
-export { initClient, login, logout, signup, user } from './oauth.svelte';
-export { getSessionContext, type SessionContext } from './auth';
-export { getPublicClient, getClientForDid } from './client';
-export { resolveHandle, getPdsForDid } from './did';
-export { getBlobCdnUrl, getBlobPdsUrl } from './utils';
+export { initOAuthClient, login, logout, signup, user } from './oauth.svelte';
+export { getPublicClient, getSessionClient, getSlingshotClient, getConstellationClient } from './client';
+export { getBlobCdnUrl } from './utils';
 export {
   listRecordsForRepo,
-  getBacklinksTo,
+  getBacklinksFrom,
   resolveBacklinkedRecords,
   getRecord,
   createRecord,
   putRecord,
   deleteRecord,
-  type RepoRecord,
 } from './records';
 export {
   getProfile,
@@ -20,8 +17,6 @@ export {
   setClubProfile,
   invalidateProfileCaches,
   type ProfileView,
-  type ClubProfile,
-  type ClubProfileRecord,
 } from './services/profiles';
 export {
   listUserstyles,
@@ -33,10 +28,9 @@ export {
   deleteUserstyle,
   removeUpdateUrlFromSource,
   getUserstyleFeedback,
-  type UserstyleContent,
   type Userstyle,
-  type UserstyleInput,
   type UserstyleRecord,
+  type UserstyleContent,
   type ReviewThread,
   type UserstyleFeedback
 } from './services/userstyles';
@@ -60,8 +54,5 @@ export {
   type RatingRecord,
 } from './services/ratings';
 export {
-  CLUB_USERSTYLE_COLLECTION,
-  CLUB_PROFILE_COLLECTION,
-  CLUB_COMMENT_COLLECTION,
-  CLUB_RATING_COLLECTION
+  CLUB_COLLECTIONS
 } from './settings';

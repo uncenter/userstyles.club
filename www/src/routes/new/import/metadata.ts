@@ -1,6 +1,8 @@
 import usercss from 'usercss-meta';
 import type { UserstyleContent } from '$lib/at';
 
+import type { UriString } from '@atproto/syntax';
+
 const parser = usercss.createParser({
   mandatoryKeys: [],
 });
@@ -12,6 +14,6 @@ export function getUsercssMetadata(source: string): Partial<UserstyleContent> {
     title: metadata.name as string | undefined,
     description: metadata.description as string | undefined,
     license: metadata.license as string | undefined,
-    homepageUrl: metadata.homepageURL as string | undefined,
+    homepageUrl: metadata.homepageURL as UriString | undefined,
   };
 }

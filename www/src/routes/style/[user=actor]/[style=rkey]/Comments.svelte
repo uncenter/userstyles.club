@@ -1,6 +1,4 @@
 <script lang="ts">
-  import { type Did, type ResourceUri } from '@atcute/lexicons';
-
   import {
     user,
     createComment,
@@ -12,10 +10,11 @@
   import { Spinner, Alert } from '$components/ui';
 
   import CommentItem from './CommentItem.svelte';
+  import type { AtUriString, DidString } from '@atproto/syntax';
 
   interface Props {
-    userstyle: ResourceUri;
-    owner: Did;
+    userstyle: AtUriString;
+    owner: DidString;
     feedback: UserstyleFeedback;
     threads: ReviewThread[];
   }
@@ -33,7 +32,7 @@
     error = null;
     submitting = true;
     try {
-      let created = await createComment(userstyle, comment);
+      let created = await createComment({ subject: userstyle, comment });
       feedback.comments.push({ uri: created.response.uri, value: created.record as Comment });
       comment = '';
     } catch (e) {

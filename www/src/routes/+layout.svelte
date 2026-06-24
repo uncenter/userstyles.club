@@ -4,7 +4,7 @@
   import { resolve } from '$app/paths';
   import '../app.css';
 
-  import { initClient, user, logout } from '$lib/at';
+  import { initOAuthClient, user, logout } from '$lib/at';
   import { preferences, getPreferredActorIdentifier } from '$lib/preferences.svelte';
   import { TAGLINE, REPO_URL, FEEDBACK_URL } from '$lib/constants';
 
@@ -39,7 +39,7 @@
   });
 
   onMount(async () => {
-    await initClient();
+    await initOAuthClient();
   });
 </script>
 

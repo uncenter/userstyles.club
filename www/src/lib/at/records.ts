@@ -1,85 +1,54 @@
-import type {
-  ActorIdentifier,
-  Blob as BlobRef,
-  Did,
-  Nsid,
-  RecordKey,
-  ResourceUri,
-} from '@atcute/lexicons';
-import { getClientForDid, getConstellationClient, getPublicClient, getRelayClient } from './client';
-import { getSessionContext } from './auth';
-import { isDid } from '@atcute/lexicons/syntax';
-import { ok } from '@atcute/client';
-import { resolveHandle } from './did';
+import { getConstellationClient, getPdsClient, getRelayClient, getSessionClient, getSlingshotClient } from './client';
 
-export type RepoRecord = {
-  uri: ResourceUri;
+import { getMain, type AtUriString, type BlobRef, type CreateOptions, type DeleteOptions, type GetOptions, type Infer, type InferOutput, type ListOptions, type Main, type PutOptions, type RecordSchema } from '@atproto/lex';
+import * as com from '../at/generated/com';
+import * as blue from '../at/generated/blue';
+
+export type RecordCommit<T> = {
+  uri: AtUriString;
   cid?: string;
-  value: Record<string, unknown>;
-};
-
-export type ListRecordsResult = {
-  records: RepoRecord[];
-  cursor?: string;
-};
-
-export async function listRecordsForRepo(params: {
-  repo: ActorIdentifier;
-  collection: Nsid;
-  limit?: number;
-  cursor?: string;
-}): Promise<ListRecordsResult> {
-  const { repo, collection, limit = 50, cursor } = params;
-
-  const client = repo.startsWith('did:') ? await getClientForDid(repo as Did) : getPublicClient();
-
-  const response = await ok(
-    client.get('com.atproto.repo.listRecords', {
-      params: { repo, collection, limit, cursor },
-    }),
-  );
-
-  return {
-    records: response.records,
-    cursor: response.cursor,
-  };
+  value: T
 }
 
-export type ListReposResult = {
-  repos: { did: string }[];
-  cursor?: string;
-};
+export async function listRecordsForRepo<const T extends RecordSchema>(
+  ns: Main<T>,
+  params: ListOptions
+) {
+  const { repo } = params;
 
-export async function listReposByCollection(params: {
-  collection: Nsid;
-  limit?: number;
-  cursor?: string;
-}): Promise<ListReposResult> {
-  const { collection, limit = 50, cursor } = params;
+  const client = repo ? await getPdsClient(repo) : getSessionClient();
 
+  return await client.list(ns, params);
+}
+
+export async function listReposByCollection<const T extends RecordSchema>(
+  ns: Main<T>,
+  params: {
+    limit?: number
+    cursor?: string;
+  }
+) {
   const client = getRelayClient();
 
-  const response = await ok(
-    client.get('com.atproto.sync.listReposByCollection', {
-      params: { collection, limit, cursor },
-    }),
-  );
-
-  return {
-    repos: response.repos,
-    cursor: response.cursor,
-  };
+  return await client.call(com.atproto.sync.listReposByCollection, {
+    collection: getMain(ns).$type,
+    ...params
+  });
 }
 
-export async function listRecordsForCollection(params: { collection: Nsid; limit?: number }) {
-  const { repos } = await listReposByCollection(params);
+export async function listRecordsForCollection<const T extends RecordSchema>(
+  ns: Main<T>,
+  params: {
+    limit?: number
+  } = {}
+) {
+  const { repos } = await listReposByCollection(ns, params);
 
-  const records: RepoRecord[] = [];
+  const records = [];
   for (const repo of repos) {
     try {
-      const listed = await listRecordsForRepo({
-        repo: repo.did as Did,
-        collection: params.collection,
+      const listed = await listRecordsForRepo(ns, {
+        repo: repo.did,
       });
       records.push(...listed.records);
     } catch (e) {}
@@ -88,31 +57,29 @@ export async function listRecordsForCollection(params: { collection: Nsid; limit
   return { records };
 }
 
-export async function getBacklinksTo(subject: ResourceUri, collection: Nsid, path: string) {
+export async function getBacklinksFrom<const T extends RecordSchema>(ns: Main<T>, subject: AtUriString, path: keyof InferOutput<T> & string) {
   const client = getConstellationClient();
 
-  const response = await ok(
-    client.get('blue.microcosm.links.getBacklinks', {
-      params: {
-        subject,
-        source: `${collection}:${path}`,
-        limit: 100,
-      },
-    }),
-  );
-
-  return response;
+  return await client.call(blue.microcosm.links.getBacklinks, {
+    subject,
+    source: `${getMain(ns).$type}:${path}`,
+    limit: 100,
+  });
 }
 
-export async function resolveBacklinkedRecords(backlinks: Awaited<ReturnType<typeof getBacklinksTo>>) {
+export async function resolveBacklinkedRecords<const T extends RecordSchema>(ns: Main<T>, backlinks: Awaited<ReturnType<typeof getBacklinksFrom>>) {
+  const client = getSessionClient(false) ?? getSlingshotClient();
+  const schema = getMain(ns);
+
   const records = await Promise.all(
     backlinks.records.map(async ({ did, collection, rkey }) => {
       try {
-        return (await getRecord({
-          repo: did,
-          collection,
-          rkey,
-        }));
+        const response = await client.getRecord(collection, rkey, {
+          repo: did
+        });
+
+        const value = schema.validate(response.body.value)
+        return { ...response.body, value };
       } catch {
         return null;
       }
@@ -122,87 +89,56 @@ export async function resolveBacklinkedRecords(backlinks: Awaited<ReturnType<typ
   return records.filter((r) => r !== null);
 }
 
-export async function getRecord(params: {
-  repo: ActorIdentifier;
-  collection: Nsid;
-  rkey: RecordKey;
-}): Promise<RepoRecord> {
-  const { repo, collection, rkey } = params;
+export async function getRecord<const T extends RecordSchema>(
+  ns: Main<T>,
+  params: GetOptions<T>
+){
+  const client = getSessionClient(false) ?? getSlingshotClient();
 
-  const did = isDid(repo) ? repo : await resolveHandle(repo);
-  const client = await getClientForDid(did);
-
-  const response = await ok(
-    client.get('com.atproto.repo.getRecord', {
-      params: { repo, collection, rkey },
-    }),
-  );
-
-  return response;
+  return await client.get(ns, params);
 }
 
-export async function createRecord<T extends Record<string, unknown>>(collection: Nsid, record: T) {
-  const { client, did } = getSessionContext('You must be logged in to write records.');
+export async function createRecord<const T extends RecordSchema>(
+  ns: Main<T>,
+  record: Omit<Infer<T>, '$type'>,
+  options: CreateOptions<T> = {} as CreateOptions<T>,
+) {
+  const client = getSessionClient();
 
-  const response = await ok(
-    client.post('com.atproto.repo.createRecord', {
-      input: {
-        repo: did,
-        collection,
-        record,
-      },
-    }),
-  );
+  const response = await client.create(ns, record, options)
 
   return { response, record };
 }
 
-export async function putRecord<T extends Record<string, unknown>>(
-  collection: Nsid,
-  rkey: RecordKey,
-  record: T,
+export async function putRecord<const T extends RecordSchema>(
+  ns: Main<T>,
+  record: Omit<Infer<T>, '$type'>,
+  options: PutOptions<T> = {} as PutOptions<T>
 ) {
-  const { client, did } = getSessionContext('You must be logged in to write records.');
+  const client = getSessionClient();
 
-  const response = await ok(
-    client.post('com.atproto.repo.putRecord', {
-      input: {
-        repo: did,
-        collection,
-        rkey,
-        record,
-      },
-    }),
-  );
+  const response = await client.put(ns, record, options)
 
   return { response, record };
 }
 
 export async function uploadBlob(blob: Blob): Promise<BlobRef> {
-  const { client } = getSessionContext('You must be logged in to upload files.');
+  const client = getSessionClient('You must be logged in to upload files.');
 
-  const response = await ok(
-    client.post('com.atproto.repo.uploadBlob', {
-      encoding: blob.type as `${string}/${string}`,
-      input: blob,
-    }),
-  );
+  const response = await client.uploadBlob(blob, {
+    encoding: blob.type as `${string}/${string}`
+  })
 
-  return response.blob;
+  return response.body.blob;
 }
 
-export async function deleteRecord(collection: Nsid, rkey: RecordKey) {
-  const { client, did } = getSessionContext('You must be logged in to write records.');
+export async function deleteRecord<const T extends RecordSchema>(
+  ns: Main<T>,
+  options: DeleteOptions<T>
+) {
+  const client = getSessionClient();
 
-  await ok(
-    client.post('com.atproto.repo.deleteRecord', {
-      input: {
-        repo: did,
-        collection,
-        rkey,
-      },
-    }),
-  );
+  await client.delete(ns, options);
 
   return true;
 }
