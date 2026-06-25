@@ -174,13 +174,13 @@
         {/if}
       </div>
     </div>
-    {#if editing}
+    {#if editing.state}
       {@render InlineEditor(editing, saveEdit, cancelEdit, 'Save', 'Saving')}
     {:else}
       <p class="comment-content">{thread.comment.value.comment}</p>
     {/if}
     <div class="comment-reply-section">
-      {#if replying}
+      {#if replying.state}
         {@render InlineEditor(replying, submitReply, cancelReply, 'Reply', 'Replying')}
       {:else}
         <button type="button" class="reply-trigger" disabled={submitting} onclick={startReply}>
