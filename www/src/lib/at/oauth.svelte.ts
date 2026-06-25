@@ -7,19 +7,13 @@ import {
   deleteStoredSession,
 } from '@atcute/oauth-browser-client';
 import {
-  CompositeDidDocumentResolver,
-  CompositeHandleResolver,
-  DohJsonHandleResolver,
-  LocalActorResolver,
-  PlcDidDocumentResolver,
-  WebDidDocumentResolver,
-  WellKnownHandleResolver,
+  type ActorResolver,
 } from '@atcute/identity-resolver';
-import { Client } from '@atcute/client';
+import { Client, ok, simpleFetchHandler } from '@atcute/client';
 
 import { replaceState } from '$app/navigation';
 import { SvelteURLSearchParams } from 'svelte/reactivity';
-import { DOH_RESOLVER, REDIRECT_PATH, getSignUpPds } from './settings';
+import { REDIRECT_PATH, SLINGSHOT_URL, getSignUpPds } from './settings';
 import { getClientMetadata, oauthScope } from './metadata';
 import { getProfile, invalidateProfileCaches, type ProfileView } from './services/profiles';
 
@@ -69,20 +63,7 @@ export async function initClient() {
       client_id: clientId,
       redirect_uri: isLoopback ? redirectOrigin + REDIRECT_PATH : meta.redirect_uri,
     },
-    identityResolver: new LocalActorResolver({
-      handleResolver: new CompositeHandleResolver({
-        methods: {
-          dns: new DohJsonHandleResolver({ dohUrl: DOH_RESOLVER }),
-          http: new WellKnownHandleResolver(),
-        },
-      }),
-      didDocumentResolver: new CompositeDidDocumentResolver({
-        methods: {
-          plc: new PlcDidDocumentResolver(),
-          web: new WebDidDocumentResolver(),
-        },
-      }),
-    }),
+    identityResolver: new SlingshotActorResolver(),
   });
 
   const params = new SvelteURLSearchParams(location.hash.slice(1));
@@ -178,4 +159,27 @@ async function resumeSession(did: Did) {
     deleteStoredSession(did);
     localStorage.removeItem('current-login');
   }
+}
+
+class SlingshotActorResolver implements ActorResolver {
+	private client = new Client({
+		handler: simpleFetchHandler({ service: SLINGSHOT_URL }),
+	});
+
+	async resolve(actor: ActorIdentifier, options?: { signal?: AbortSignal }) {
+		const resolved = await ok(
+			this.client.get('blue.microcosm.identity.resolveMiniDoc', {
+				params: {
+					identifier: actor,
+				},
+				signal: options?.signal,
+			}),
+		);
+
+		return {
+			did: resolved.did,
+			handle: resolved.handle,
+			pds: new URL(resolved.pds).href,
+		};
+	}
 }

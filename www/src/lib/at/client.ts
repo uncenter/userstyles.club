@@ -1,7 +1,7 @@
-import { Client, simpleFetchHandler } from '@atcute/client';
-import type { Did } from '@atcute/lexicons';
+import { Client, ok, simpleFetchHandler } from '@atcute/client';
+import type { ActorIdentifier } from '@atcute/lexicons';
 import type {} from '@atcute/microcosm';
-import { getPdsForDid } from './did';
+import { CONSTELLATION_URL, SLINGSHOT_URL } from './settings';
 
 const clientCache = new Map<string, Client>();
 
@@ -32,20 +32,38 @@ export function getConstellationClient(): Client {
   if (clientCache.has(key)) return clientCache.get(key)!;
 
   const client = new Client({
-    handler: simpleFetchHandler({ service: 'https://constellation.microcosm.blue' }),
+    handler: simpleFetchHandler({ service: CONSTELLATION_URL }),
   });
   clientCache.set(key, client);
   return client;
 }
 
-export async function getClientForDid(did: Did): Promise<Client> {
-  if (clientCache.has(did)) return clientCache.get(did)!;
+export function getSlingshotClient(): Client {
+  const key = 'slingshot';
+  if (clientCache.has(key)) return clientCache.get(key)!;
 
-  const pds = await getPdsForDid(did);
   const client = new Client({
-    handler: simpleFetchHandler({ service: pds }),
+    handler: simpleFetchHandler({ service: SLINGSHOT_URL }),
+  });
+  clientCache.set(key, client);
+  return client;
+}
+
+export async function getPdsClient(actor: ActorIdentifier): Promise<Client> {
+  if (clientCache.has(actor)) return clientCache.get(actor)!;
+
+  const slingshot = getSlingshotClient();
+  const doc = await ok(
+    slingshot.get('blue.microcosm.identity.resolveMiniDoc', {
+      params: {
+        identifier: actor,
+      }
+    })
+  );
+  const client = new Client({
+    handler: simpleFetchHandler({ service: doc.pds }),
   });
 
-  clientCache.set(did, client);
+  clientCache.set(actor, client);
   return client;
 }

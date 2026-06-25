@@ -1,10 +1,4 @@
 import type { Blob, Did, LegacyBlob } from '@atcute/lexicons';
-import { getPdsForDid } from './did';
-
-export async function getBlobPdsUrl(did: Did, cid: string): Promise<string> {
-  const pds = await getPdsForDid(did);
-  return `${pds}/xrpc/com.atproto.sync.getBlob?did=${encodeURIComponent(did)}&cid=${encodeURIComponent(cid)}`;
-}
 
 export function getBlobCdnUrl(
   did: Did,

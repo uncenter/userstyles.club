@@ -1,8 +1,7 @@
 export { initClient, login, logout, signup, user } from './oauth.svelte';
 export { getSessionContext, type SessionContext } from './auth';
-export { getPublicClient, getClientForDid } from './client';
-export { resolveHandle, getPdsForDid } from './did';
-export { getBlobCdnUrl, getBlobPdsUrl } from './utils';
+export { getPublicClient } from './client';
+export { getBlobCdnUrl } from './utils';
 export {
   listRecordsForRepo,
   getBacklinkedRecords,

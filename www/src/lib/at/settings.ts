@@ -1,7 +1,9 @@
 import { dev } from '$app/environment';
 
 export const REDIRECT_PATH = '/';
-export const DOH_RESOLVER = 'https://mozilla.cloudflare-dns.com/dns-query';
+
+export const SLINGSHOT_URL = 'https://slingshot.microcosm.blue';
+export const CONSTELLATION_URL = 'https://constellation.microcosm.blue';
 
 export const CLUB_USERSTYLE_COLLECTION = 'club.userstyles.alpha.userstyle' as const;
 export const CLUB_PROFILE_COLLECTION = 'club.userstyles.alpha.actor.profile' as const;

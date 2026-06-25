@@ -8,12 +8,10 @@ import type {
 } from '@atcute/lexicons';
 import type { Records } from '@atcute/lexicons/ambient';
 import type * as v from '@atcute/lexicons/validations';
-import { isDid } from '@atcute/lexicons/syntax';
 
-import { getClientForDid, getConstellationClient, getPublicClient, getRelayClient } from './client';
+import { getPdsClient, getConstellationClient, getPublicClient, getRelayClient } from './client';
 import { getSessionContext } from './auth';
 import { ok } from '@atcute/client';
-import { resolveHandle } from './did';
 
 export type RepoRecord<T extends Record<string, unknown> = Record<string, unknown>> = {
   uri: ResourceUri;
@@ -39,7 +37,7 @@ export async function listRecordsForRepo<NSID extends Nsid>(params: {
 }): Promise<ListRecordsResult<ValueFor<NSID>>> {
   const { repo, collection, limit = 50, cursor } = params;
 
-  const client = repo.startsWith('did:') ? await getClientForDid(repo as Did) : getPublicClient();
+  const client = repo.startsWith('did:') ? await getPdsClient(repo) : getPublicClient();
 
   const response = await ok(
     client.get('com.atproto.repo.listRecords', {
@@ -132,8 +130,7 @@ export async function getRecord<NSID extends Nsid>(params: {
 }): Promise<RepoRecord<ValueFor<NSID>>> {
   const { repo, collection, rkey } = params;
 
-  const did = isDid(repo) ? repo : await resolveHandle(repo);
-  const client = await getClientForDid(did);
+  const client = await getPdsClient(repo);
 
   const response = await ok(
     client.get('com.atproto.repo.getRecord', {
