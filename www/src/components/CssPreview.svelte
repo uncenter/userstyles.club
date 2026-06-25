@@ -3,8 +3,7 @@
 <!-- TODO: Write about and/or release Svelte version! -->
 <script lang="ts">
   import { fromLezer } from 'hast-util-from-lezer';
-  import { components } from '@typematter/svelte-hast';
-  import { Unist } from '@typematter/svelte-unist';
+  import { toHtml } from 'hast-util-to-html';
   import { parser } from '@lezer/css';
 
   import { ExpandedDialog } from './ui';
@@ -16,14 +15,14 @@
 
   const { source, ...rest }: Props = $props();
 
-  const ast = $derived(fromLezer(source, parser.parse(source)));
+  const html = $derived(toHtml(fromLezer(source, parser.parse(source))));
 
   let fullscreen = $state(false);
 </script>
 
 <div class="preview-wrap">
   <pre>
-    <code {...rest}><Unist {ast} {components} /></code>
+    <code {...rest}>{@html html}</code>
   </pre>
   <button
     class="btn btn-icon btn-outline expand-btn"
@@ -36,7 +35,7 @@
 </div>
 
 <ExpandedDialog bind:open={fullscreen} title="Source">
-  <pre><code><Unist {ast} {components} /></code></pre>
+  <pre><code>{@html html}</code></pre>
 </ExpandedDialog>
 
 <style>
