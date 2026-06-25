@@ -22,13 +22,8 @@ export const load: PageLoad = async ({ params }) => {
       style,
     };
   } catch (e) {
-    if (e instanceof ClientResponseError) {
-      switch (e.error) {
-        case 'RecordNotFound':
-          error(404, e.message);
-        default:
-          error(500, e.message);
-      }
+    if (e instanceof ClientResponseError && e.error === "RecordNotFound") {
+      error(404, e.message);
     } else {
       throw e;
     }
