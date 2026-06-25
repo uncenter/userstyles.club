@@ -5,8 +5,7 @@ export { resolveHandle, getPdsForDid } from './did';
 export { getBlobCdnUrl, getBlobPdsUrl } from './utils';
 export {
   listRecordsForRepo,
-  getBacklinksTo,
-  resolveBacklinkedRecords,
+  getBacklinkedRecords,
   getRecord,
   createRecord,
   putRecord,

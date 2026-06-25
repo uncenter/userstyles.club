@@ -1,67 +1,32 @@
 import type { RecordKey, ResourceUri } from '@atcute/lexicons';
-import { createRecord, deleteRecord, getBacklinksTo, putRecord, resolveBacklinkedRecords, type RepoRecord } from '../records';
+import { is } from '@atcute/lexicons/validations';
+import { createRecord, deleteRecord, getBacklinkedRecords, putRecord, type RepoRecord } from '../records';
+
+import { makeRecordBuilder, type RecordCreateInput, type RecordUpdateInput } from '../builder';
 import { CLUB_RATING_COLLECTION } from '../settings';
+import { ClubUserstylesAlphaGraphRating } from '$lib/at/lexicons';
 
-export type Rating = {
-  userstyle: ResourceUri;
-  rating: number;
-  createdAt: string;
-  updatedAt?: string;
-};
+export type Rating = ClubUserstylesAlphaGraphRating.Main;
 
-export type RatingRecord = RepoRecord & {
-  value: Rating;
-};
+export type RatingRecord = RepoRecord<Rating>;
 
-export function isRating(value: Record<string, unknown>): value is Rating {
-  return (
-    typeof value.userstyle === 'string' &&
-    typeof value.rating === 'number' &&
-    typeof value.createdAt === 'string'
-  );
-}
+const builder = makeRecordBuilder(ClubUserstylesAlphaGraphRating.mainSchema, CLUB_RATING_COLLECTION);
 
 export async function listRatingsForStyle(uri: ResourceUri): Promise<RatingRecord[]> {
-  const backlinks = await getBacklinksTo(uri, CLUB_RATING_COLLECTION, 'userstyle');
-  const records = await resolveBacklinkedRecords(backlinks);
-
-  return records.filter((r): r is RatingRecord => r !== null && isRating(r.value));
+  const records = await getBacklinkedRecords(uri, CLUB_RATING_COLLECTION, 'subject');
+  return records.filter((r): r is RatingRecord => is(ClubUserstylesAlphaGraphRating.mainSchema, r.value));
 }
 
-export async function createRating(userstyle: ResourceUri, rating: number) {
-  if (rating < 1 || rating > 5) {
-    throw new Error('Rating must be between 1 and 5.');
-  }
-
-  return createRecord(CLUB_RATING_COLLECTION, {
-    $type: CLUB_RATING_COLLECTION,
-    userstyle,
-    rating,
-    createdAt: new Date().toISOString(),
-  });
+export async function createRating(input: RecordCreateInput<Rating>) {
+  return await createRecord(CLUB_RATING_COLLECTION, builder.create(input));
 }
 
-export async function updateRating(
-  rkey: RecordKey,
-  userstyle: ResourceUri,
-  rating: number,
-  createdAt: string,
-) {
-  if (rating < 1 || rating > 5) {
-    throw new Error('Rating must be between 1 and 5.');
-  }
-
-  return putRecord(CLUB_RATING_COLLECTION, rkey, {
-    $type: CLUB_RATING_COLLECTION,
-    userstyle,
-    rating,
-    createdAt,
-    updatedAt: new Date().toISOString(),
-  });
+export async function updateRating(rkey: RecordKey, input: RecordUpdateInput<Rating>) {
+  return await putRecord(CLUB_RATING_COLLECTION, rkey, builder.update(input));
 }
 
-export async function deleteRating(rkey: RecordKey) {
-  return deleteRecord(CLUB_RATING_COLLECTION, rkey);
+export async function deleteRating(rkey: RecordKey): Promise<boolean> {
+  return await deleteRecord(CLUB_RATING_COLLECTION, rkey);
 }
 
 export function computeAverageRating(

@@ -5,3 +5,5 @@ build/
 .DS_Store
 .env
 .env.*
+
+www/src/lib/at/lexicons

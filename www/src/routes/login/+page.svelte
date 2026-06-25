@@ -28,7 +28,7 @@
     loading = true;
     error = null;
     try {
-      await login(handle as ActorIdentifier);
+      await login(handle);
     } catch (e) {
       error = e instanceof Error ? e.message : 'Login failed.';
       loading = false;

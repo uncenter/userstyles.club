@@ -40,7 +40,7 @@
     saveError = null;
 
     try {
-      await setClubProfile(editDisplayName, editDescription, data.profile.club?.createdAt);
+      await setClubProfile({ displayName: editDisplayName, description: editDescription }, data.profile.club?.createdAt);
       await invalidateAll();
       editing = false;
     } catch (e) {

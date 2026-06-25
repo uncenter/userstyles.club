@@ -1,4 +1,4 @@
-import type { Did } from '@atcute/lexicons';
+import type { Blob, Did, LegacyBlob } from '@atcute/lexicons';
 import { getPdsForDid } from './did';
 
 export async function getBlobPdsUrl(did: Did, cid: string): Promise<string> {
@@ -8,8 +8,8 @@ export async function getBlobPdsUrl(did: Did, cid: string): Promise<string> {
 
 export function getBlobCdnUrl(
   did: Did,
-  cid: string,
+  blob: Blob | LegacyBlob,
   type: 'avatar' | 'avatar_thumbnail' | 'feed_fullsize' | 'feed_thumbnail',
 ): string {
-  return `https://cdn.bsky.app/img/${type}/plain/${did}/${cid}`;
+  return `https://cdn.bsky.app/img/${type}/plain/${did}/${'$type' in blob ? blob.ref.toString() : blob.cid}`;
 }

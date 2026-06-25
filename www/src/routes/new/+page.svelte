@@ -1,11 +1,12 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
   import { resolve } from '$app/paths';
-  import { createUserstyle, removeUpdateUrlFromSource, user } from '$lib/at';
+  import { joinPageTitle } from '$lib/constants';
+
   import { parseResourceUri } from '@atcute/lexicons';
 
-  import { joinPageTitle } from '$lib/constants';
-  import type { UserstyleContent } from '$lib/at';
+  import { createUserstyle, removeUpdateUrlFromSource, user, type UserstyleContent } from '$lib/at';
+  import { getPreferredActorIdentifier } from '$lib/preferences.svelte';
   import type { ImportResult } from './import';
 
   import { Spinner, Dialog } from '$components/ui';
@@ -57,7 +58,7 @@
         previewImage: previewFile ?? undefined,
       });
       let uri = parseResourceUri(userstyle.response.uri);
-      publishedUrl = `/style/${uri.repo}/${uri.rkey}`;
+      publishedUrl = `/style/${getPreferredActorIdentifier(user.profile!)}/${uri.rkey}`;
       shareText = `Just published "${fields.title}" on userstyles.club!\n\nhttps://userstyles.club${publishedUrl}`;
       shareDialogOpen = true;
 

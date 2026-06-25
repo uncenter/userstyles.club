@@ -4,7 +4,6 @@
   import {
     user,
     createComment,
-    type Comment,
     type ReviewThread,
     type UserstyleFeedback
   } from '$lib/at';
@@ -33,8 +32,8 @@
     error = null;
     submitting = true;
     try {
-      let created = await createComment(userstyle, comment);
-      feedback.comments.push({ uri: created.response.uri, value: created.record as Comment });
+      let created = await createComment({ subject: userstyle, comment });
+      feedback.comments.push({ uri: created.response.uri, value: created.record });
       comment = '';
     } catch (e) {
       error = e instanceof Error ? e.message : 'Failed to submit commit.';

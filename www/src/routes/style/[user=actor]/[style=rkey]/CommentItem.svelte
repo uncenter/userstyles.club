@@ -7,7 +7,6 @@
     updateComment,
     deleteComment,
     createComment,
-    type Comment,
     type ReviewThread,
     type UserstyleFeedback
   } from '$lib/at';
@@ -57,14 +56,13 @@
     error = null;
     submitting = true;
     try {
-      let updated = await updateComment(
-        rkey!,
-        userstyle,
-        editing.value,
-        thread.comment.value.createdAt,
-        thread.comment.value.parent
-      );
-      thread.comment.value = updated.record as Comment;
+      let updated = await updateComment(rkey!, {
+        subject: userstyle,
+        comment: editing.value,
+        createdAt: thread.comment.value.createdAt,
+        parent: thread.comment.value.parent,
+      });
+      thread.comment.value = updated.record;
     } catch (e) {
       error = e instanceof Error ? e.message : 'Failed to update comment.';
     } finally {
@@ -87,12 +85,12 @@
     error = null;
     submitting = true;
     try {
-      let reply = await createComment(
-        userstyle,
-        replying.value,
-        thread.comment.uri
-      );
-      feedback.comments.push({  uri: reply.response.uri, value: reply.record as Comment });
+      let reply = await createComment({
+        subject: userstyle,
+        comment: replying.value,
+        parent: thread.comment.uri,
+      });
+      feedback.comments.push({ uri: reply.response.uri, value: reply.record });
       replying.value = '';
     } catch (e) {
       error = e instanceof Error ? e.message : 'Failed to submit comment reply.';

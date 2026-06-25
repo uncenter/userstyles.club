@@ -1,4 +1,4 @@
-import { type ActorIdentifier, type RecordKey, type Blob as BlobRef, type ResourceUri, parseResourceUri } from '@atcute/lexicons';
+
 import { getSessionContext } from '../auth';
 import {
   createRecord,
@@ -10,57 +10,32 @@ import {
   uploadBlob,
   type RepoRecord,
 } from '../records';
-import { CLUB_USERSTYLE_COLLECTION } from '../settings';
+
 import { listCommentsForStyle, type CommentRecord, type CommentThread } from './comments';
 import { listRatingsForStyle, type RatingRecord } from './ratings';
 
-export type UserstyleContent = {
-  title: string;
-  description?: string;
-  sourceCode: string;
-  license?: string;
-  upstreamUrl?: string;
-  homepageUrl?: string;
-};
+import { type ActorIdentifier, type RecordKey, type Blob as BlobRef, type ResourceUri, parseResourceUri } from '@atcute/lexicons';
+import { is } from '@atcute/lexicons/validations';
 
-export type Userstyle = UserstyleContent & {
-  previewImage?: BlobRef;
-  createdAt: string;
-  updatedAt?: string;
-};
+import { makeRecordBuilder } from '../builder';
+import { CLUB_USERSTYLE_COLLECTION } from '../settings';
+import { ClubUserstylesAlphaUserstyle } from '$lib/at/lexicons';
 
-export type UserstyleInput = UserstyleContent & {
-  previewImage?: File;
-};
+export type Userstyle = ClubUserstylesAlphaUserstyle.Main;
 
-export type UserstyleRecord = RepoRecord & {
-  value: Userstyle;
-};
+export type UserstyleContent = Omit<Userstyle, '$type' | 'previewImage' | 'createdAt' | 'updatedAt'>;
+
+export type UserstyleInput<Options extends { previewImage?: any; createdAt?: Userstyle['createdAt'] } = Record<never, never>> = UserstyleContent & Options;
+
+export type UserstyleRecord = RepoRecord<Userstyle>;
+
+const builder = makeRecordBuilder(ClubUserstylesAlphaUserstyle.mainSchema, CLUB_USERSTYLE_COLLECTION);
 
 export function removeUpdateUrlFromSource(sourceCode: string): string {
   return sourceCode
     .split('\n')
     .filter((line) => !/^\s*@updateURL\s/.test(line))
     .join('\n');
-}
-
-function validateUserstyle<T extends UserstyleContent>(userstyle: T): T {
-  const title = userstyle.title.trim();
-  if (!title) throw new Error('Userstyle title is required.');
-  if (title.length > 140) throw new Error('Userstyle title must be 140 characters or fewer.');
-  return { ...userstyle, title };
-}
-
-function optionals<K extends keyof Userstyle>(
-  obj: Partial<Pick<Userstyle, K>>,
-): Partial<Pick<Userstyle, K>> {
-  return Object.fromEntries(
-    Object.entries(obj).filter(([, v]) => typeof v !== 'string' || v.trim()),
-  ) as Partial<Pick<Userstyle, K>>;
-}
-
-function isUserstyle(value: Record<string, unknown>): value is Userstyle {
-  return typeof value.title === 'string' && typeof value.sourceCode === 'string';
 }
 
 export async function listUserstyles(repo: ActorIdentifier) {
@@ -71,72 +46,38 @@ export async function listUserstyles(repo: ActorIdentifier) {
   });
 
   return response.records
-    .filter((record): record is UserstyleRecord => isUserstyle(record.value))
+    .filter((record): record is UserstyleRecord => is(ClubUserstylesAlphaUserstyle.mainSchema, record.value))
     .sort((a, b) => b.value.createdAt.localeCompare(a.value.createdAt));
 }
 
 export async function listMyUserstyles() {
   const { did } = getSessionContext('You must be logged in to read your userstyles.');
-  return listUserstyles(did);
+  return await listUserstyles(did);
 }
 
-export async function createUserstyle(userstyle: UserstyleInput) {
-  const { title, description, sourceCode, previewImage, license, upstreamUrl, homepageUrl } =
-    validateUserstyle(userstyle);
-
-  const previewImageBlob = previewImage ? await uploadBlob(previewImage) : undefined;
-
-  return createRecord(CLUB_USERSTYLE_COLLECTION, {
-    $type: CLUB_USERSTYLE_COLLECTION,
-    title,
-    ...optionals({
-      description,
-      license,
-      upstreamUrl,
-      homepageUrl,
-    }),
-    sourceCode,
-    ...(previewImageBlob && { previewImage: previewImageBlob }),
-    createdAt: new Date().toISOString(),
-  } satisfies Partial<Userstyle> & { $type: string });
+export async function createUserstyle(userstyle: UserstyleInput<{ previewImage?: File }>) {
+  const previewImage = userstyle.previewImage ? await uploadBlob(userstyle.previewImage) : undefined;
+  return await createRecord(CLUB_USERSTYLE_COLLECTION, builder.create({ ...userstyle, previewImage }));
 }
 
 export async function getUserstyle(repo: ActorIdentifier, rkey: RecordKey) {
-  const response = (await getRecord({
+  return await getRecord({
     repo,
     collection: CLUB_USERSTYLE_COLLECTION,
     rkey,
-  })) as UserstyleRecord;
-
-  return response;
+  });
 }
 
-type UpdateUserstyleInput = UserstyleContent & {
-  previewImage?: File | BlobRef;
-  createdAt: string;
-};
+export async function updateUserstyle(
+  rkey: RecordKey,
+  userstyle: UserstyleInput<{ previewImage?: File | BlobRef; createdAt: string }>,
+) {
+  const previewImage =
+    userstyle.previewImage instanceof File
+      ? await uploadBlob(userstyle.previewImage)
+      : userstyle.previewImage;
 
-export async function updateUserstyle(rkey: RecordKey, userstyle: UpdateUserstyleInput) {
-  const { title, description, sourceCode, previewImage, license, upstreamUrl, homepageUrl } =
-    validateUserstyle(userstyle);
-
-  const previewImageBlob =
-    previewImage instanceof File ? await uploadBlob(previewImage) : previewImage;
-
-  return putRecord(CLUB_USERSTYLE_COLLECTION, rkey, {
-    $type: CLUB_USERSTYLE_COLLECTION,
-    title,
-    ...optionals({
-      description,
-      license,
-      upstreamUrl,
-      homepageUrl,
-    }),
-    sourceCode,
-    ...(previewImageBlob && { previewImage: previewImageBlob }),
-    createdAt: userstyle.createdAt,
-    updatedAt: new Date().toISOString(),
-  } satisfies Partial<Userstyle> & { $type: string });
+  return await putRecord(CLUB_USERSTYLE_COLLECTION, rkey, builder.update({ ...userstyle, previewImage }));
 }
 
 export async function deleteUserstyle(rkey: RecordKey) {
@@ -145,7 +86,7 @@ export async function deleteUserstyle(rkey: RecordKey) {
 
 export async function listAllUserstyles() {
   const response = await listRecordsForCollection({ collection: CLUB_USERSTYLE_COLLECTION });
-  return response.records as UserstyleRecord[];
+  return response.records;
 }
 
 export type ReviewThread = CommentThread & {
@@ -155,7 +96,9 @@ export type ReviewThread = CommentThread & {
 export type UserstyleFeedback = { comments: CommentRecord[], ratings: Record<string, RatingRecord> };
 
 export async function getUserstyleFeedback(userstyle: ResourceUri): Promise<UserstyleFeedback> {
+  let st = performance.now();
   const [comments, ratings]: [CommentRecord[], RatingRecord[]] = await Promise.all([listCommentsForStyle(userstyle), listRatingsForStyle(userstyle)]);
+  console.log(`Fetched feedback in ${performance.now() - st} ms.`)
 
   const ratingsByDid: Record<string, RatingRecord> = Object.fromEntries(
     ratings.map((r) => [parseResourceUri(r.uri).repo!, r])

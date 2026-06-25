@@ -1,22 +1,18 @@
 {
-  "$type": "com.atproto.lexicon.schema",
-  "lexicon": 1,
-  "id": "club.userstyles.alpha.graph.rating",
   "defs": {
     "main": {
-      "type": "record",
+      "description": "A numerical rating of a userstyle.",
       "key": "tid",
       "record": {
-        "type": "object",
         "properties": {
-          "userstyle": {
+          "subject": {
             "type": "string",
             "format": "at-uri"
           },
           "rating": {
-            "type": "integer",
+            "maximum": 5,
             "minimum": 1,
-            "maximum": 5
+            "type": "integer"
           },
           "createdAt": {
             "type": "string",
@@ -27,9 +23,12 @@
             "format": "datetime"
           }
         },
-        "required": ["userstyle", "rating", "createdAt"]
+        "required": ["subject", "rating", "createdAt"],
+        "type": "object"
       },
-      "description": "Record representing a numerical rating of a userstyle."
+      "type": "record"
     }
-  }
+  },
+  "id": "club.userstyles.alpha.graph.rating",
+  "lexicon": 1
 }

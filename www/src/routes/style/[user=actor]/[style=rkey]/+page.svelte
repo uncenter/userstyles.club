@@ -16,8 +16,6 @@
     updateRating,
     deleteRating,
     getCommentThreads,
-    type Rating,
-    type RatingRecord,
     type ReviewThread,
   } from '$lib/at';
   import { getPreferredActorIdentifier } from '$lib/preferences.svelte';
@@ -76,11 +74,11 @@
     try {
       if (myRating) {
         const { rkey } = parseResourceUri(myRating.uri);
-        await updateRating(rkey!, data.userstyle.uri, ratingDialog.selected, myRating.value.createdAt);
+        await updateRating(rkey!, { subject: data.userstyle.uri, rating: ratingDialog.selected, createdAt: myRating.value.createdAt });
         feedback.ratings[user.did!].value.rating = ratingDialog.selected;
       } else {
-        const created = await createRating(data.userstyle.uri, ratingDialog.selected);
-        feedback.ratings[user.did!] = { uri: created.response.uri, value: created.record as Rating } as RatingRecord;
+        const created = await createRating({ subject: data.userstyle.uri, rating: ratingDialog.selected });
+        feedback.ratings[user.did!] = { uri: created.response.uri, value: created.record };
       }
       ratingDialog.open = false;
     } catch (e) {
@@ -137,7 +135,7 @@
         <PreviewImage
           src={getBlobCdnUrl(
             data.profile.did,
-            data.userstyle.value.previewImage.ref.$link,
+            data.userstyle.value.previewImage,
             'feed_fullsize',
           )}
           alt={data.userstyle.value.title}

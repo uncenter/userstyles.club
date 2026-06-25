@@ -16,12 +16,15 @@ import {
   WellKnownHandleResolver,
 } from '@atcute/identity-resolver';
 import { Client } from '@atcute/client';
+
 import { replaceState } from '$app/navigation';
 import { SvelteURLSearchParams } from 'svelte/reactivity';
-import type { ActorIdentifier, Did } from '@atcute/lexicons';
 import { DOH_RESOLVER, REDIRECT_PATH, getSignUpPds } from './settings';
 import { getClientMetadata, oauthScope } from './metadata';
 import { getProfile, invalidateProfileCaches, type ProfileView } from './services/profiles';
+
+import type { ActorIdentifier, Did, Handle } from '@atcute/lexicons';
+import { isDid } from '@atcute/lexicons/syntax';
 
 type LoggedOutUser = {
   agent?: OAuthUserAgent;
@@ -94,15 +97,15 @@ export async function initClient() {
   user.isInitializing = false;
 }
 
-export async function login(handle: ActorIdentifier) {
-  const trimmed = handle.trim();
-  if (!trimmed) throw new Error('Please provide a handle or DID.');
-  if (trimmed.startsWith('did:')) return startAuthorization(trimmed as ActorIdentifier);
-  if (trimmed.includes('.'))
-    return startAuthorization(
-      (trimmed.startsWith('@') ? trimmed.slice(1) : trimmed) as ActorIdentifier,
-    );
-  return startAuthorization(`${trimmed.replace(/^@/, '')}.bsky.social` as ActorIdentifier);
+export async function login(input: string) {
+  input = input.trim();
+  if (!input) throw new Error('Please provide a handle or DID.');
+
+  let actor: ActorIdentifier = isDid(input) ? input : ( // pass DIDs through
+    input.includes('.') ? (input.startsWith('@') ? input.slice(1) : input) as Handle : // trim @ from handles
+    `${input.replace(/^@/, '')}.bsky.social` as Handle // otherwise assume a bsky username and complete the handle
+  );
+  return startAuthorization(actor);
 }
 
 export async function signup() {

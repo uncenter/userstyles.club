@@ -6,29 +6,37 @@ import type {
   RecordKey,
   ResourceUri,
 } from '@atcute/lexicons';
+import type { Records } from '@atcute/lexicons/ambient';
+import type * as v from '@atcute/lexicons/validations';
+import { isDid } from '@atcute/lexicons/syntax';
+
 import { getClientForDid, getConstellationClient, getPublicClient, getRelayClient } from './client';
 import { getSessionContext } from './auth';
-import { isDid } from '@atcute/lexicons/syntax';
 import { ok } from '@atcute/client';
 import { resolveHandle } from './did';
 
-export type RepoRecord = {
+export type RepoRecord<T extends Record<string, unknown> = Record<string, unknown>> = {
   uri: ResourceUri;
   cid?: string;
-  value: Record<string, unknown>;
+  value: T;
 };
 
-export type ListRecordsResult = {
-  records: RepoRecord[];
+/** Maps a lexicon NSID to its record value type via the ambient registry. Falls back to `Record<string, unknown>` for unregistered collections. */
+type ValueFor<NSID extends Nsid> = [NSID] extends [keyof Records]
+  ? v.InferInput<Records[NSID]>
+  : Record<string, unknown>;
+
+export type ListRecordsResult<T extends Record<string, unknown> = Record<string, unknown>> = {
+  records: RepoRecord<T>[];
   cursor?: string;
 };
 
-export async function listRecordsForRepo(params: {
+export async function listRecordsForRepo<NSID extends Nsid>(params: {
   repo: ActorIdentifier;
-  collection: Nsid;
+  collection: NSID;
   limit?: number;
   cursor?: string;
-}): Promise<ListRecordsResult> {
+}): Promise<ListRecordsResult<ValueFor<NSID>>> {
   const { repo, collection, limit = 50, cursor } = params;
 
   const client = repo.startsWith('did:') ? await getClientForDid(repo as Did) : getPublicClient();
@@ -40,7 +48,7 @@ export async function listRecordsForRepo(params: {
   );
 
   return {
-    records: response.records,
+    records: response.records as RepoRecord<ValueFor<NSID>>[],
     cursor: response.cursor,
   };
 }
@@ -71,10 +79,13 @@ export async function listReposByCollection(params: {
   };
 }
 
-export async function listRecordsForCollection(params: { collection: Nsid; limit?: number }) {
+export async function listRecordsForCollection<NSID extends Nsid>(params: {
+  collection: NSID;
+  limit?: number;
+}): Promise<{ records: RepoRecord<ValueFor<NSID>>[] }> {
   const { repos } = await listReposByCollection(params);
 
-  const records: RepoRecord[] = [];
+  const records: RepoRecord<ValueFor<NSID>>[] = [];
   for (const repo of repos) {
     try {
       const listed = await listRecordsForRepo({
@@ -88,45 +99,37 @@ export async function listRecordsForCollection(params: { collection: Nsid; limit
   return { records };
 }
 
-export async function getBacklinksTo(subject: ResourceUri, collection: Nsid, path: string) {
+export async function getBacklinkedRecords<NSID extends Nsid>(
+  subject: ResourceUri,
+  collection: NSID,
+  path: string,
+): Promise<RepoRecord<ValueFor<NSID>>[]> {
   const client = getConstellationClient();
 
-  const response = await ok(
+  const backlinks = await ok(
     client.get('blue.microcosm.links.getBacklinks', {
-      params: {
-        subject,
-        source: `${collection}:${path}`,
-        limit: 100,
-      },
+      params: { subject, source: `${collection}:${path}`, limit: 100 },
     }),
   );
 
-  return response;
-}
-
-export async function resolveBacklinkedRecords(backlinks: Awaited<ReturnType<typeof getBacklinksTo>>) {
   const records = await Promise.all(
     backlinks.records.map(async ({ did, collection, rkey }) => {
       try {
-        return (await getRecord({
-          repo: did,
-          collection,
-          rkey,
-        }));
+        return await getRecord({ repo: did, collection, rkey }) as RepoRecord<ValueFor<NSID>>;
       } catch {
         return null;
       }
     }),
   );
 
-  return records.filter((r) => r !== null);
+  return records.filter((r): r is RepoRecord<ValueFor<NSID>> => r !== null);
 }
 
-export async function getRecord(params: {
+export async function getRecord<NSID extends Nsid>(params: {
   repo: ActorIdentifier;
-  collection: Nsid;
+  collection: NSID;
   rkey: RecordKey;
-}): Promise<RepoRecord> {
+}): Promise<RepoRecord<ValueFor<NSID>>> {
   const { repo, collection, rkey } = params;
 
   const did = isDid(repo) ? repo : await resolveHandle(repo);
@@ -138,10 +141,13 @@ export async function getRecord(params: {
     }),
   );
 
-  return response;
+  return response as RepoRecord<ValueFor<NSID>>;
 }
 
-export async function createRecord<T extends Record<string, unknown>>(collection: Nsid, record: T) {
+export async function createRecord<NSID extends Nsid>(
+  collection: NSID,
+  record: ValueFor<NSID>,
+) {
   const { client, did } = getSessionContext('You must be logged in to write records.');
 
   const response = await ok(
@@ -149,7 +155,7 @@ export async function createRecord<T extends Record<string, unknown>>(collection
       input: {
         repo: did,
         collection,
-        record,
+        record: record as Record<string, unknown>,
       },
     }),
   );
@@ -157,10 +163,10 @@ export async function createRecord<T extends Record<string, unknown>>(collection
   return { response, record };
 }
 
-export async function putRecord<T extends Record<string, unknown>>(
-  collection: Nsid,
+export async function putRecord<NSID extends Nsid>(
+  collection: NSID,
   rkey: RecordKey,
-  record: T,
+  record: ValueFor<NSID>,
 ) {
   const { client, did } = getSessionContext('You must be logged in to write records.');
 
@@ -170,7 +176,7 @@ export async function putRecord<T extends Record<string, unknown>>(
         repo: did,
         collection,
         rkey,
-        record,
+        record: record as Record<string, unknown>,
       },
     }),
   );
