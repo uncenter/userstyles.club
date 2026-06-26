@@ -189,7 +189,7 @@
 
       <a
         // Explicitly do not use getPreferredActorIdentifier given the install URL will be used for future updates and *should* be permanent.
-        href={resolve('/style/[user=actor]/[style=rkey]/install', {
+        href={resolve('/style/[user=actor]/[style=rkey].user.css', {
           user: data.profile.did,
           style: params.style,
         })}
