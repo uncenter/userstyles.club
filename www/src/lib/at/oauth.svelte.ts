@@ -15,7 +15,7 @@ import { replaceState } from '$app/navigation';
 import { SvelteURLSearchParams } from 'svelte/reactivity';
 import { REDIRECT_PATH, SLINGSHOT_URL, getSignUpPds } from './settings';
 import { getClientMetadata, oauthScope } from './metadata';
-import { getProfile, invalidateProfileCaches, type ProfileView } from './services/profiles';
+import { getProfile, setClubProfile, invalidateProfileCaches, type ProfileView } from './services/profiles';
 
 import type { ActorIdentifier, Did, Handle } from '@atcute/lexicons';
 import { isDid } from '@atcute/lexicons/syntax';
@@ -127,6 +127,14 @@ export async function logout() {
   });
 }
 
+async function ensureClubProfile() {
+  if (!user.isLoggedIn || user.profile?.club !== undefined) return;
+  try {
+    const result = await setClubProfile({});
+    user.profile!.club = result.record;
+  } catch {}
+}
+
 async function finalizeLogin(params: SvelteURLSearchParams, fallbackDid?: Did) {
   try {
     const { session } = await finalizeAuthorization(params);
@@ -139,6 +147,7 @@ async function finalizeLogin(params: SvelteURLSearchParams, fallbackDid?: Did) {
 
     localStorage.setItem('current-login', session.info.sub);
     user.profile = await getProfile(session.info.sub);
+    await ensureClubProfile();
   } catch {
     if (fallbackDid) {
       await resumeSession(fallbackDid);
@@ -155,6 +164,7 @@ async function resumeSession(did: Did) {
     user.isLoggedIn = true;
 
     user.profile = await getProfile(session.info.sub);
+    await ensureClubProfile();
   } catch {
     deleteStoredSession(did);
     localStorage.removeItem('current-login');
