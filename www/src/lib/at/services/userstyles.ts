@@ -70,7 +70,7 @@ export async function getUserstyle(repo: ActorIdentifier, rkey: RecordKey) {
 
 export async function updateUserstyle(
   rkey: RecordKey,
-  userstyle: UserstyleInput<{ previewImage?: File | BlobRef; createdAt: string }>,
+  userstyle: UserstyleInput<{ previewImage?: File | Userstyle['previewImage']; createdAt: string }>,
 ) {
   const previewImage =
     userstyle.previewImage instanceof File
