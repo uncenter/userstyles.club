@@ -4,6 +4,7 @@
   import { hyperlink } from '$lib/codemirror/hyperlink';
   import { catppuccinLatte, catppuccinMocha } from '@catppuccin/codemirror';
 
+  import { MediaQuery } from 'svelte/reactivity';
   import { preferences } from '$lib/preferences.svelte';
 
   import { ExpandedDialog } from './ui';
@@ -15,21 +16,12 @@
 
   let { code = $bindable() }: Props = $props();
 
-  let prefersDark = $state(window.matchMedia('(prefers-color-scheme: dark)').matches);
+  const darkMode = new MediaQuery('(prefers-color-scheme: dark)');
   let fullscreen = $state(false);
-
-  $effect(() => {
-    const mq = window.matchMedia('(prefers-color-scheme: dark)');
-    const handler = (e: MediaQueryListEvent) => {
-      prefersDark = e.matches;
-    };
-    mq.addEventListener('change', handler);
-    return () => mq.removeEventListener('change', handler);
-  });
 
   let theme = $derived(
     preferences.get('appearance') === 'dark' ||
-      (preferences.get('appearance') === 'system' && prefersDark)
+      (preferences.get('appearance') === 'system' && darkMode.current)
       ? catppuccinMocha
       : catppuccinLatte,
   );
