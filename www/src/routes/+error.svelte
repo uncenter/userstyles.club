@@ -1,13 +1,15 @@
 <script lang="ts">
   import { page } from '$app/state';
   import { resolve } from '$app/paths';
+
+  import { ArrowLeftIcon } from '@lucide/svelte';
 </script>
 
 <div class="centered-col">
   <section class="page-section error-page">
     <p class="error-page__status">{page.status}</p>
     <h3>{page.error?.message ?? 'Something went wrong'}</h3>
-    <a href={resolve('/')} class="btn btn--outline">← Back home</a>
+    <a href={resolve('/')} class="btn btn--outline"><ArrowLeftIcon size={14} /> Go Back</a>
   </section>
 </div>
 
