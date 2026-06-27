@@ -138,7 +138,7 @@
 <div class="page-section">
   <h2 class="section-heading">Your styles</h2>
   {#await userstyles}
-    <div class="section-loading"><Spinner size="sm" /> Loading…</div>
+    <div class="section-loading"><Spinner size="md" /> Loading…</div>
   {:then userstyles}
     {#if userstyles.length === 0}
       <p class="text-muted no-content">
