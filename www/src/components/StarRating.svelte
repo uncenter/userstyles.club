@@ -17,7 +17,7 @@
   {#each [1, 2, 3, 4, 5] as n}
     {@const isFilled = rating !== undefined && rating >= n - 0.25}
     {@const isHalf = rating !== undefined && !isFilled && rating >= n - 0.75}
-    <span class="star" class:filled={isFilled} class:half={isHalf}>★</span>
+    <span class="star-rating__star" class:star-rating__star--filled={isFilled} class:star-rating__star--half={isHalf}>★</span>
   {/each}
   {#if text}
     {@render text()}
@@ -30,15 +30,15 @@
     align-items: center;
     gap: 0.15em;
 
-    .star {
+    .star-rating__star {
       color: var(--border);
       line-height: 1;
 
-      &.filled {
+      &.star-rating__star--filled {
         color: var(--pastel-yellow);
       }
 
-      &.half {
+      &.star-rating__star--half {
         background: linear-gradient(to right, var(--pastel-yellow) 50%, var(--border) 50%);
         background-clip: text;
         -webkit-background-clip: text;

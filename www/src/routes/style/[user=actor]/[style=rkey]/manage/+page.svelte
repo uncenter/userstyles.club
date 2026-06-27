@@ -130,9 +130,9 @@
 </svelte:head>
 
 <div class="page-section">
-  <div class="manage-header">
+  <div class="manage-page__header">
     <a
-      class="back-link text-muted"
+      class="manage-page__back text-muted"
       href={resolve('/style/[user=actor]/[style=rkey]', {
         user: getPreferredActorIdentifier(data.profile),
         style: data.style,
@@ -144,31 +144,31 @@
 
 <div class="page-section">
   <ul class="action-list">
-    <li class="action-item">
-      <div class="action-info">
-        <p class="action-title">Edit</p>
-        <p class="action-desc text-muted">Update title, description, license, source code, and more.</p>
+    <li class="action-list__item">
+      <div class="action-list__info">
+        <p class="action-list__title">Edit</p>
+        <p class="action-list__desc text-muted">Update title, description, license, source code, and more.</p>
       </div>
       <a
         href={resolve('/style/[user=actor]/[style=rkey]/edit', {
           user: getPreferredActorIdentifier(data.profile),
           style: data.style,
         })}
-        class="btn btn-secondary btn-lg"
+        class="btn btn--secondary btn--lg"
       >
         <PencilIcon size={14} /> Edit
       </a>
     </li>
 
     {#if userstyle.upstreamUrl}
-      <li class="action-item">
-        <div class="action-info">
-          <p class="action-title">Sync</p>
-          <p class="action-desc text-muted">Fetch the latest source code from the upstream URL.</p>
+      <li class="action-list__item">
+        <div class="action-list__info">
+          <p class="action-list__title">Sync</p>
+          <p class="action-list__desc text-muted">Fetch the latest source code from the upstream URL.</p>
         </div>
         <button
           type="button"
-          class="btn btn-secondary btn-lg"
+          class="btn btn--secondary btn--lg"
           disabled={sync.fetching}
           onclick={fetchSync}
         >
@@ -179,17 +179,17 @@
   </ul>
 </div>
 
-<div class="page-section danger-zone">
-  <h2>Danger Zone</h2>
+<div class="page-section manage-page__danger-zone">
+  <h2 class="manage-page__danger-heading">Danger Zone</h2>
   <ul class="action-list">
-    <li class="action-item">
-      <div class="action-info">
-        <p class="action-title">Delete</p>
-        <p class="action-desc text-muted">Permanently delete this userstyle. This cannot be undone.</p>
+    <li class="action-list__item">
+      <div class="action-list__info">
+        <p class="action-list__title">Delete</p>
+        <p class="action-list__desc text-muted">Permanently delete this userstyle. This cannot be undone.</p>
       </div>
       <button
         type="button"
-        class="btn btn-danger btn-lg"
+        class="btn btn--danger btn--lg"
         onclick={() => (deletion.dialogOpen = true)}
         disabled={deletion.running}
       >
@@ -225,17 +225,17 @@
     {:else if sync.newSourceCode !== null}
       <p class="text-muted">No changes detected! This userstyle is already in sync with upstream.</p>
     {/if}
-    <a class="upstream-url" href={userstyle.upstreamUrl} target="_blank" rel="noopener noreferrer">
+    <a class="manage-page__upstream-url" href={userstyle.upstreamUrl} target="_blank" rel="noopener noreferrer">
       <ExternalLinkIcon size={11} />
-      <span>{userstyle.upstreamUrl}</span>
+      <span class="manage-page__upstream-url-text">{userstyle.upstreamUrl}</span>
     </a>
   {/snippet}
   {#snippet actions()}
-    <button class="btn btn-outline" type="button" onclick={() => (sync.dialogOpen = false)}>
+    <button class="btn btn--outline" type="button" onclick={() => (sync.dialogOpen = false)}>
       {#if diff.hasChanges}Cancel{:else}Close{/if}
     </button>
     {#if diff.hasChanges}
-      <button class="btn btn-primary" type="button" onclick={applySync} disabled={sync.saving}>
+      <button class="btn btn--primary" type="button" onclick={applySync} disabled={sync.saving}>
         {#if sync.saving}<Spinner size="sm" /> Syncing…{:else}Sync{/if}
       </button>
     {/if}
@@ -249,23 +249,23 @@
     </p>
   {/snippet}
   {#snippet actions()}
-    <button class="btn btn-outline" type="button" onclick={() => (deletion.dialogOpen = false)}>
+    <button class="btn btn--outline" type="button" onclick={() => (deletion.dialogOpen = false)}>
       Cancel
     </button>
-    <button class="btn btn-danger" type="button" onclick={deleteAndRedirect} disabled={deletion.running}>
+    <button class="btn btn--danger" type="button" onclick={deleteAndRedirect} disabled={deletion.running}>
       {#if deletion.running}<Spinner size="sm" /> Deleting…{:else}Delete{/if}
     </button>
   {/snippet}
 </Dialog>
 
 <style>
-  .manage-header {
+  .manage-page__header {
     display: flex;
     flex-direction: column;
     gap: var(--space-1);
   }
 
-  .back-link {
+  .manage-page__back {
     font-size: var(--text-sm);
     text-decoration: none;
 
@@ -282,7 +282,7 @@
     flex-direction: column;
   }
 
-  .action-item {
+  .action-list__item {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -294,29 +294,29 @@
     }
   }
 
-  .action-info {
+  .action-list__info {
     display: flex;
     flex-direction: column;
     gap: var(--space-1);
   }
 
-  .action-title {
+  .action-list__title {
     font-weight: 600;
   }
 
-  .action-desc {
+  .action-list__desc {
     font-size: var(--text-sm);
   }
 
-  .danger-zone {
-    h2 {
+  .manage-page__danger-zone {
+    .manage-page__danger-heading {
       font-size: var(--text-base);
       color: var(--danger);
       margin-bottom: var(--space-2);
     }
   }
 
-  .upstream-url {
+  .manage-page__upstream-url {
     display: inline-flex;
     align-items: center;
     gap: var(--space-1);
@@ -326,7 +326,7 @@
     color: var(--fg-muted);
     text-decoration: none;
 
-    span {
+    .manage-page__upstream-url-text {
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;

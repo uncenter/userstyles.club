@@ -5,9 +5,9 @@
 
 <div class="centered-col">
   <section class="page-section error-page">
-    <p class="error-status">{page.status}</p>
+    <p class="error-page__status">{page.status}</p>
     <h3>{page.error?.message ?? 'Something went wrong'}</h3>
-    <a href={resolve('/')} class="btn btn-outline">← Back home</a>
+    <a href={resolve('/')} class="btn btn--outline">← Back home</a>
   </section>
 </div>
 
@@ -20,7 +20,7 @@
     align-items: center;
     gap: var(--space-4);
 
-    .error-status {
+    .error-page__status {
       font-family: var(--font-display);
       font-size: var(--text-4xl);
       font-weight: 700;

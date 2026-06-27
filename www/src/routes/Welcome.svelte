@@ -7,16 +7,16 @@
 </script>
 
 <div class="welcome">
-  <div class="welcome-mark">
+  <div class="welcome__mark">
     <Logomark size="8rem" />
   </div>
-  <div class="welcome-text">
+  <div class="welcome__text">
     <Wordmark --height="clamp(2rem, 8vw, 4rem)" />
-    <p class="welcome-tagline">{TAGLINE}</p>
+    <p class="welcome__tagline">{TAGLINE}</p>
   </div>
-  <div class="welcome-actions">
-    <a href={resolve('/login')} class="btn btn-primary btn-lg">Get started</a>
-    <a href={resolve('/explore')} class="btn btn-outline btn-lg">Explore styles</a>
+  <div class="welcome__actions">
+    <a href={resolve('/login')} class="btn btn--primary btn--lg">Get started</a>
+    <a href={resolve('/explore')} class="btn btn--outline btn--lg">Explore styles</a>
   </div>
 </div>
 
@@ -36,14 +36,14 @@
       gap: var(--space-6);
     }
 
-    .welcome-text {
+    .welcome__text {
       display: flex;
       flex-direction: column;
       align-items: center;
       gap: var(--space-3);
     }
 
-    .welcome-tagline {
+    .welcome__tagline {
       font-size: var(--text-lg);
       color: var(--fg-muted);
       max-width: 32rem;
@@ -51,7 +51,7 @@
       line-height: 1.6;
     }
 
-    .welcome-actions {
+    .welcome__actions {
       display: flex;
       gap: var(--space-3);
       justify-content: center;

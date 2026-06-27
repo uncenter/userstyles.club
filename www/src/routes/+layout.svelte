@@ -60,20 +60,20 @@
   </div>
 {:else}
   <nav class="navbar">
-    <div class="nav-stripe" aria-hidden="true">
-      <span></span><span></span><span></span><span></span>
+    <div class="navbar__stripe" aria-hidden="true">
+      <span class="navbar__stripe-segment"></span><span class="navbar__stripe-segment"></span><span class="navbar__stripe-segment"></span><span class="navbar__stripe-segment"></span>
     </div>
-    <div class="navbar-inner">
-      <a href={resolve('/')} class="navbar-logo"><LogoCombo /></a>
+    <div class="navbar__inner">
+      <a href={resolve('/')} class="navbar__logo"><LogoCombo /></a>
 
-      <ul class="navbar-links" role="list">
-        <li><a href={resolve('/')} class="nav-link">Home</a></li>
-        <li><a href={resolve('/explore')} class="nav-link">Explore</a></li>
-        <li><a href={resolve('/new')} class="btn btn-primary">New</a></li>
+      <ul class="navbar__links" role="list">
+        <li><a href={resolve('/')} class="navbar__link">Home</a></li>
+        <li><a href={resolve('/explore')} class="navbar__link">Explore</a></li>
+        <li><a href={resolve('/new')} class="btn btn--primary">New</a></li>
         {#if user.isLoggedIn && user.did}
           <li class="user-menu">
             <button
-              class="user-menu-trigger"
+              class="user-menu__trigger"
               popovertarget="user-menu-popover"
               popovertargetaction="toggle"
               aria-haspopup="menu"
@@ -90,20 +90,21 @@
               id="user-menu-popover"
               bind:this={userMenuPopover}
               popover
-              class="user-menu-dropdown"
+              class="user-menu__dropdown"
               role="menu"
             >
               <a
+                class="user-menu__item"
                 href={resolve('/profile/[user=actor]', {
                   user: getPreferredActorIdentifier(user.profile),
                 })}
                 role="menuitem">Profile</a
               >
-              <a href={resolve('/settings')} role="menuitem">Settings</a>
+              <a class="user-menu__item" href={resolve('/settings')} role="menuitem">Settings</a>
               <button
                 type="button"
                 role="menuitem"
-                class="menu-item-danger"
+                class="user-menu__item user-menu__item--danger"
                 popovertarget="user-menu-popover"
                 popovertargetaction="hide"
                 onclick={() => logout()}>Logout</button
@@ -111,12 +112,12 @@
             </div>
           </li>
         {:else}
-          <li class="nav-login"><a href={resolve('/login')} class="btn btn-outline">Login</a></li>
+          <li class="navbar__login"><a href={resolve('/login')} class="btn btn--outline">Login</a></li>
         {/if}
       </ul>
 
       <button
-        class="nav-toggle"
+        class="navbar__toggle"
         popovertarget="mobile-nav-popover"
         popovertargetaction="toggle"
         aria-haspopup="menu"
@@ -137,51 +138,51 @@
       aria-modal="true"
       aria-label="Navigation menu"
     >
-      <a href={resolve('/')} class="nav-link">Home</a>
-      <a href={resolve('/explore')} class="nav-link">Explore</a>
-      <a href={resolve('/new')} class="nav-link">New</a>
+      <a href={resolve('/')} class="mobile-nav__link">Home</a>
+      <a href={resolve('/explore')} class="mobile-nav__link">Explore</a>
+      <a href={resolve('/new')} class="mobile-nav__link">New</a>
 
-      <hr class="nav-divider" />
+      <hr class="mobile-nav__divider" />
 
       {#if user.isLoggedIn && user.did}
         <a
           href={resolve('/profile/[user=actor]', { user: getPreferredActorIdentifier(user.profile) })}
-          class="nav-link"
+          class="mobile-nav__link"
           role="menuitem">Profile</a
         >
-        <a href={resolve('/settings')} class="nav-link" role="menuitem">Settings</a>
+        <a href={resolve('/settings')} class="mobile-nav__link" role="menuitem">Settings</a>
         <button
           type="button"
           role="menuitem"
-          class="nav-link nav-link-danger"
+          class="mobile-nav__link mobile-nav__link--danger"
           popovertarget="mobile-nav-popover"
           popovertargetaction="hide"
           onclick={() => logout()}>Logout</button
         >
       {:else}
-        <a href={resolve('/login')} class="nav-link" role="menuitem">Login</a>
+        <a href={resolve('/login')} class="mobile-nav__link" role="menuitem">Login</a>
       {/if}
     </div>
     {@render children()}
   </main>
   <footer class="site-footer">
     <div class="container">
-      <div class="footer-brand">
-        <a href={resolve('/')} class="footer-logo"><LogoCombo /></a>
-        <p class="footer-tagline">{TAGLINE}</p>
+      <div class="site-footer__brand">
+        <a href={resolve('/')} class="site-footer__logo"><LogoCombo /></a>
+        <p class="site-footer__tagline">{TAGLINE}</p>
       </div>
-      <div class="footer-links">
+      <div class="site-footer__links">
         <a
           href={REPO_URL}
           target="_blank"
           rel="noopener noreferrer"
-          class="btn btn-outline btn-primary btn-sm">Source <MoveUpRightIcon size={16} /></a
+          class="btn btn--outline btn--primary btn--sm">Source <MoveUpRightIcon size={16} /></a
         >
         <a
           href={FEEDBACK_URL}
           target="_blank"
           rel="noopener noreferrer"
-          class="btn btn-outline btn-primary btn-sm">Feedback <MoveUpRightIcon size={16} /></a
+          class="btn btn--outline btn--primary btn--sm">Feedback <MoveUpRightIcon size={16} /></a
         >
       </div>
     </div>
@@ -195,7 +196,7 @@
     place-items: center;
   }
 
-  .nav-toggle {
+  .navbar__toggle {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -213,7 +214,7 @@
     }
   }
 
-  .user-menu-trigger {
+  .user-menu__trigger {
     display: flex;
     align-items: center;
     background: none;
@@ -222,7 +223,7 @@
     padding: 2px;
   }
 
-  .user-menu-dropdown {
+  .user-menu__dropdown {
     position: fixed;
     inset: unset;
     right: var(--container-pad);
@@ -234,8 +235,7 @@
     min-width: 12rem;
     overflow: hidden;
 
-    a,
-    button {
+    .user-menu__item {
       padding: var(--space-3) var(--space-4);
       color: var(--foreground);
       text-decoration: none;
@@ -258,7 +258,7 @@
       }
     }
 
-    .menu-item-danger {
+    .user-menu__item--danger {
       color: var(--danger);
 
       &:hover {
@@ -268,7 +268,8 @@
     }
   }
 
-  .nav-link {
+  .navbar__link,
+  .mobile-nav__link {
     color: var(--foreground);
     text-decoration: none;
     font-weight: 600;
@@ -282,16 +283,16 @@
       background-color var(--ease-fast);
   }
 
-  .nav-stripe {
+  .navbar__stripe {
     display: flex;
     height: 4px;
     flex-shrink: 0;
 
-    span { flex: 1; }
-    span:nth-child(1) { background: var(--brand-purple); }
-    span:nth-child(2) { background: var(--brand-red); }
-    span:nth-child(3) { background: var(--brand-green); }
-    span:nth-child(4) { background: var(--brand-blue); }
+    .navbar__stripe-segment { flex: 1; }
+    .navbar__stripe-segment:nth-child(1) { background: var(--brand-purple); }
+    .navbar__stripe-segment:nth-child(2) { background: var(--brand-red); }
+    .navbar__stripe-segment:nth-child(3) { background: var(--brand-green); }
+    .navbar__stripe-segment:nth-child(4) { background: var(--brand-blue); }
   }
 
   .navbar {
@@ -300,7 +301,7 @@
     z-index: 100;
     background: var(--nav-bg);
 
-    .navbar-inner {
+    .navbar__inner {
       height: calc(var(--nav-height) - 4px);
       width: 100%;
       padding-inline: var(--container-pad);
@@ -310,19 +311,19 @@
       gap: var(--space-4);
     }
 
-    .navbar-links {
+    .navbar__links {
       display: flex;
       align-items: center;
       gap: var(--space-1);
       list-style: none;
       padding: 0;
 
-      .nav-login,
+      .navbar__login,
       .user-menu {
         margin-left: var(--space-2);
       }
 
-      .nav-link {
+      .navbar__link {
         padding: var(--space-2) var(--space-3);
         font-size: var(--text-base);
 
@@ -334,16 +335,16 @@
     }
 
     /* Reveal toggle and hide links when appropriate. */
-    .nav-toggle {
+    .navbar__toggle {
       display: none;
       flex-shrink: 0;
     }
     @media (max-width: 639px) {
-      .navbar-links {
+      .navbar__links {
         display: none;
       }
 
-      .nav-toggle {
+      .navbar__toggle {
         display: flex;
       }
     }
@@ -366,7 +367,7 @@
       display: flex;
     }
 
-    .nav-link {
+    .mobile-nav__link {
       padding: var(--space-6) var(--space-8);
       font-size: var(--text-3xl);
       width: 100%;
@@ -380,13 +381,13 @@
       }
     }
 
-    .nav-divider {
+    .mobile-nav__divider {
       border: none;
       border-top: 2px solid var(--border);
       margin: var(--space-2) 0;
     }
 
-    .nav-link-danger {
+    .mobile-nav__link--danger {
       color: var(--danger);
 
       &:hover {
@@ -407,12 +408,12 @@
       gap: var(--space-8);
     }
 
-    .footer-brand {
+    .site-footer__brand {
       display: flex;
       flex-direction: column;
       gap: var(--space-2);
 
-      .footer-logo {
+      .site-footer__logo {
         display: flex;
         align-items: center;
         opacity: 0.65;
@@ -423,7 +424,7 @@
         }
       }
 
-      .footer-tagline {
+      .site-footer__tagline {
         font-size: var(--text-sm);
         color: var(--fg-muted);
         max-width: 28rem;
@@ -432,7 +433,7 @@
       }
     }
 
-    .footer-links {
+    .site-footer__links {
       display: flex;
       flex-wrap: wrap;
       gap: var(--space-2);

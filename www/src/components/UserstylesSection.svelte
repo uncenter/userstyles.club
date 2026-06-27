@@ -14,13 +14,13 @@
 
 <section class="userstyles-section">
   {#if userstyles.length === 0}
-    <div class="empty-state">
+    <div class="userstyles-section__empty">
       {#if empty}{@render empty()}{:else}No userstyles yet.{/if}
     </div>
   {:else}
-    <ul>
+    <ul class="userstyles-section__list">
       {#each userstyles as userstyle}
-        <li><UserstylesListItem {userstyle} {author} /></li>
+        <li class="userstyles-section__list-item"><UserstylesListItem {userstyle} {author} /></li>
       {/each}
     </ul>
   {/if}
@@ -31,33 +31,30 @@
     margin-top: var(--space-6);
     margin-bottom: var(--space-5);
 
-    .empty-state {
+    .userstyles-section__empty {
       display: flex;
       justify-content: center;
       padding: var(--space-8) 0;
-    }
-
-    .empty-state {
       color: var(--fg-muted);
     }
 
-    ul {
+    .userstyles-section__list {
       list-style: none;
       padding: 0;
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
       gap: var(--space-4);
 
-      li:nth-child(4n + 1) {
+      .userstyles-section__list-item:nth-child(4n + 1) {
         --card-accent-color: var(--brand-purple);
       }
-      li:nth-child(4n + 2) {
+      .userstyles-section__list-item:nth-child(4n + 2) {
         --card-accent-color: var(--brand-red);
       }
-      li:nth-child(4n + 3) {
+      .userstyles-section__list-item:nth-child(4n + 3) {
         --card-accent-color: var(--brand-green);
       }
-      li:nth-child(4n + 4) {
+      .userstyles-section__list-item:nth-child(4n + 4) {
         --card-accent-color: var(--brand-blue);
       }
     }

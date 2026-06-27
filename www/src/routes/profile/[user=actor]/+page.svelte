@@ -60,7 +60,7 @@
   {#if editing}
     <form onsubmit={saveProfile} class="form-stack profile-edit-form">
       <div class="form-group">
-        <label for="edit-display-name" class="field-label">Display name</label>
+        <label for="edit-display-name" class="form-field-label">Display name</label>
         <input
           id="edit-display-name"
           type="text"
@@ -70,7 +70,7 @@
         />
       </div>
       <div class="form-group">
-        <label for="edit-description" class="field-label">Description</label>
+        <label for="edit-description" class="form-field-label">Description</label>
         <textarea id="edit-description" bind:value={editDescription} maxlength="256" rows="3"
         ></textarea>
       </div>
@@ -80,24 +80,24 @@
       <div class="form-footer">
         <button
           type="button"
-          class="btn btn-outline"
+          class="btn btn--outline"
           onclick={() => (editing = false)}
           disabled={saving}
         >
           Cancel
         </button>
-        <button type="submit" class="btn btn-primary" disabled={saving}>
+        <button type="submit" class="btn btn--primary" disabled={saving}>
           {#if saving}<Spinner size="sm" /> Saving…{:else}Save{/if}
         </button>
       </div>
     </form>
   {:else}
-    <div class="profile-info">
-      <h1>{displayNameSafe}</h1>
-      <div class="profile-handle-row">
+    <div class="profile-header__info">
+      <h1 class="profile-header__name">{displayNameSafe}</h1>
+      <div class="profile-header__handle-row">
         <p class="text-muted">@{data.profile.handle}</p>
         <a
-          class="bsky-link"
+          class="profile-header__bsky-link"
           href="https://bsky.app/profile/{data.profile.handle}"
           target="_blank"
           rel="noopener noreferrer"
@@ -108,10 +108,10 @@
       </div>
     </div>
     {#if description}
-      <p class="profile-description">{description}</p>
+      <p class="profile-header__description">{description}</p>
     {/if}
     {#if isOwner}
-      <button type="button" class="btn btn-ghost btn-sm edit-profile-btn" onclick={startEditing}>
+      <button type="button" class="btn btn--ghost btn--sm profile-header__edit-btn" onclick={startEditing}>
         <PencilIcon size={14} /> Edit Profile
       </button>
     {/if}
@@ -129,28 +129,28 @@
     gap: var(--space-3);
     background: var(--bg-subtle);
 
-    .edit-profile-btn {
+    .profile-header__edit-btn {
       position: absolute;
       top: var(--space-3);
       right: var(--space-3);
     }
 
-    .profile-info {
+    .profile-header__info {
       display: grid;
       gap: var(--space-1);
 
-      h1 {
+      .profile-header__name {
         font-size: var(--text-2xl);
       }
     }
 
-    .profile-handle-row {
+    .profile-header__handle-row {
       display: flex;
       align-items: center;
       gap: var(--space-2);
     }
 
-    .bsky-link {
+    .profile-header__bsky-link {
       display: inline-flex;
       align-items: center;
       color: var(--fg-muted);
@@ -161,7 +161,7 @@
       }
     }
 
-    .profile-description {
+    .profile-header__description {
       color: var(--fg-muted);
       line-height: 1.6;
       margin-top: var(--space-1);

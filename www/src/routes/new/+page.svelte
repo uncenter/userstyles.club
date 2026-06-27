@@ -107,7 +107,7 @@
       {#if importedValue && importedValue !== currentValue}
         <button
           type="button"
-          class="btn btn-warning btn-sm"
+          class="btn btn--warning btn--sm"
           onclick={() => (fields[field] = importedValue)}>Import</button
         >
       {/if}
@@ -117,7 +117,7 @@
   {#snippet formActions()}
     <button
       type="button"
-      class="btn btn-danger"
+      class="btn btn--danger"
       onclick={() => (clearDialogOpen = true)}
       disabled={pending ||
         (!fields.title.trim() && !fields.description?.trim() && !fields.sourceCode.trim())}
@@ -126,7 +126,7 @@
     </button>
     <button
       type="submit"
-      class="btn btn-primary"
+      class="btn btn--primary"
       disabled={pending || !fields.title.trim() || !fields.sourceCode.trim()}
     >
       {#if publishing}<Spinner size="sm" /> Publishing…{:else}Publish{/if}
@@ -157,8 +157,8 @@
     </p>
   {/snippet}
   {#snippet actions()}
-    <button class="btn btn-outline" type="button" onclick={goToStyle}>Maybe later</button>
-    <button class="btn btn-bsky" type="button" onclick={openInBluesky}>
+    <button class="btn btn--outline" type="button" onclick={goToStyle}>Maybe later</button>
+    <button class="btn btn--bsky" type="button" onclick={openInBluesky}>
       <BlueskyIcon size={16} /> Open in Bluesky
     </button>
   {/snippet}
@@ -171,9 +171,9 @@
     </p>
   {/snippet}
   {#snippet actions()}
-    <button class="btn btn-outline" type="button" onclick={() => (clearDialogOpen = false)}
+    <button class="btn btn--outline" type="button" onclick={() => (clearDialogOpen = false)}
       >Cancel</button
     >
-    <button class="btn btn-danger" type="button" onclick={clearAll}>Clear</button>
+    <button class="btn btn--danger" type="button" onclick={clearAll}>Clear</button>
   {/snippet}
 </Dialog>

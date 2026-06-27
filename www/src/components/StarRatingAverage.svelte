@@ -19,30 +19,30 @@
   {#snippet text()}
     {#if showValue}
       {#if average !== undefined}
-        <span class="average">{average.toFixed(1)}</span>
+        <span class="star-rating-average__value">{average.toFixed(1)}</span>
         {#if count !== undefined}
-          <span class="count">({count})</span>
+          <span class="star-rating-average__count">({count})</span>
         {/if}
       {:else}
-        <span class="average na">n/a</span>
+        <span class="star-rating-average__value star-rating-average__value--na">n/a</span>
       {/if}
     {/if}
   {/snippet}
 </StarRating>
 
 <style>
-  .average {
+  .star-rating-average__value {
     margin-left: 0.25em;
     font-weight: 700;
     color: var(--foreground);
 
-    &.na {
+    &.star-rating-average__value--na {
       color: var(--fg-muted);
       font-weight: 400;
     }
   }
 
-  .count {
+  .star-rating-average__count {
     margin-left: 0.5ch;
     color: var(--fg-muted);
   }

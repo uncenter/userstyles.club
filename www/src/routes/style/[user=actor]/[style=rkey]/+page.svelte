@@ -117,7 +117,7 @@
 <div class="page-wrapper">
   <section class="page-section userstyle-section">
     {#if userstyle.previewImage}
-      <div class="style-preview grid-background">
+      <div class="userstyle-section__preview grid-background">
         <PreviewImage
           src={getBlobCdnUrl(
             data.profile.did,
@@ -129,18 +129,18 @@
       </div>
     {/if}
 
-    <div class="style-header">
-      <div class="style-header-info">
-        <h1 class="style-title">{userstyle.title}</h1>
-        <p class="style-subtitle">
+    <div class="userstyle-section__header">
+      <div class="userstyle-section__header-info">
+        <h1 class="userstyle-section__title">{userstyle.title}</h1>
+        <p class="userstyle-section__subtitle">
           {#if userstyle.updatedAt}
-            Updated <time>{formatDate(userstyle.updatedAt)}</time>
+            Updated <time class="userstyle-section__subtitle-time">{formatDate(userstyle.updatedAt)}</time>
           {:else}
-            Published <time>{formatDate(userstyle.createdAt)}</time>
+            Published <time class="userstyle-section__subtitle-time">{formatDate(userstyle.createdAt)}</time>
           {/if}
           {#if userstyle.license}
             · <a
-              class="subtitle-link"
+              class="userstyle-section__subtitle-link"
               href="https://spdx.org/licenses/{userstyle.license}.html"
               target="_blank"
               rel="noopener noreferrer"
@@ -152,36 +152,36 @@
     </div>
 
     {#if userstyle.description}
-      <p class="style-description">{userstyle.description}</p>
+      <p class="userstyle-section__description">{userstyle.description}</p>
     {/if}
 
-    <div class="style-info">
-      <div class="style-meta">
+    <div class="userstyle-section__info">
+      <div class="userstyle-section__meta">
         {#if canRate}
-          <button type="button" class="style-item ratable" aria-label="Rate this userstyle" onclick={openRatingDialog}>
-            <span class="style-item-value">
+          <button type="button" class="userstyle-section__item userstyle-section__item--ratable" aria-label="Rate this userstyle" onclick={openRatingDialog}>
+            <span class="userstyle-section__item-value">
               <StarRatingAverage average={averageRating?.average} count={averageRating?.count} />
             </span>
-            <span class="style-item-label">Rating{#if myRating}{' · '}<StarRating value={myRating.value.rating} label="Your rating: {myRating.value.rating}/5" />{/if}</span>
+            <span class="userstyle-section__item-label">Rating{#if myRating}{' · '}<StarRating value={myRating.value.rating} label="Your rating: {myRating.value.rating}/5" />{/if}</span>
           </button>
         {:else}
-          <div class="style-item">
-            <span class="style-item-value">
+          <div class="userstyle-section__item">
+            <span class="userstyle-section__item-value">
               <StarRatingAverage average={averageRating?.average} count={averageRating?.count} />
             </span>
-            <span class="style-item-label">Rating</span>
+            <span class="userstyle-section__item-label">Rating</span>
           </div>
         {/if}
       </div>
 
-      <div class="style-actions">
+      <div class="userstyle-section__actions">
         {#if user.isLoggedIn && user.did === data.profile.did}
           <a
             href={resolve('/style/[user=actor]/[style=rkey]/manage', {
               user: getPreferredActorIdentifier(data.profile),
               style: params.style,
             })}
-            class="btn btn-secondary btn-lg"
+            class="btn btn--secondary btn--lg"
           >
             Manage
           </a>
@@ -193,29 +193,30 @@
             style: params.style,
           })}
           target="_blank"
-          class="btn btn-primary btn-lg"
+          class="btn btn--primary btn--lg"
         >
           Install
         </a>
       </div>
     </div>
 
-    <div class="code-preview">
+    <div class="userstyle-section__code">
       <CssPreview source={userstyle.sourceCode} />
-      <div class="code-footer">
+      <div class="userstyle-section__code-footer">
         {#if userstyle.upstreamUrl}
-          <span class="upstream-source">Upstreamed from <a
+          <span class="userstyle-section__upstream">Upstreamed from <a
+            class="userstyle-section__upstream-link"
             href={userstyle.upstreamUrl}
             target="_blank"
             rel="noopener noreferrer"
           >{userstyle.upstreamUrl}</a>.</span>
         {/if}
-        <p class="source-stats">{bytes(byteCount)} · {lineCount} lines</p>
+        <p class="userstyle-section__stats">{bytes(byteCount)} · {lineCount} lines</p>
       </div>
     </div>
   </section>
 
-  <div class="comments-wrapper">
+  <div class="page-wrapper__comments">
     <Comments
       userstyle={data.userstyle.uri}
       owner={data.profile.did}
@@ -235,15 +236,15 @@
     <StarRatingInput bind:value={ratingDialog.selected} />
   {/snippet}
   {#snippet actions()}
-    <button class="btn btn-outline" type="button" onclick={() => (ratingDialog.open = false)}>
+    <button class="btn btn--outline" type="button" onclick={() => (ratingDialog.open = false)}>
       Cancel
     </button>
     {#if myRating}
-      <button class="btn btn-secondary" type="button" onclick={removeRating} disabled={ratingDialog.deleting || ratingDialog.submitting}>
+      <button class="btn btn--secondary" type="button" onclick={removeRating} disabled={ratingDialog.deleting || ratingDialog.submitting}>
         {#if ratingDialog.deleting}<Spinner size="sm" /> Removing…{:else}Remove{/if}
       </button>
     {/if}
-    <button class="btn btn-primary" type="button" onclick={submitRating} disabled={ratingDialog.submitting || ratingDialog.deleting || !ratingDialog.selected}>
+    <button class="btn btn--primary" type="button" onclick={submitRating} disabled={ratingDialog.submitting || ratingDialog.deleting || !ratingDialog.selected}>
       {#if ratingDialog.submitting}<Spinner size="sm" /> Saving…{:else}{myRating ? 'Update' : 'Submit'}{/if}
     </button>
   {/snippet}
@@ -256,7 +257,7 @@
     padding: 0;
   }
 
-  .style-header {
+  .userstyle-section__header {
     display: flex;
     align-items: flex-start;
     justify-content: space-between;
@@ -264,22 +265,22 @@
     flex-wrap: wrap;
     padding: var(--space-6) var(--space-6) var(--space-4);
 
-    .style-header-info {
+    .userstyle-section__header-info {
       display: flex;
       flex-direction: column;
       gap: var(--space-1);
       min-width: 0;
     }
 
-    .style-subtitle {
+    .userstyle-section__subtitle {
       font-size: var(--text-sm);
       color: var(--fg-muted);
 
-      time {
+      .userstyle-section__subtitle-time {
         font-weight: 600;
       }
 
-      .subtitle-link {
+      .userstyle-section__subtitle-link {
         display: inline-flex;
         align-items: center;
         gap: var(--space-1);
@@ -288,17 +289,17 @@
     }
   }
 
-  .style-title {
+  .userstyle-section__title {
     font-size: var(--text-4xl);
   }
 
-  .style-description {
+  .userstyle-section__description {
     color: var(--fg-muted);
     line-height: 1.6;
     padding: 0 var(--space-6) var(--space-5);
   }
 
-  .style-info {
+  .userstyle-section__info {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -310,7 +311,7 @@
       flex-direction: column;
       align-items: stretch;
 
-      .style-actions {
+      .userstyle-section__actions {
         flex-direction: column;
         align-items: stretch;
       }
@@ -321,30 +322,30 @@
     }
   }
 
-  .style-actions {
+  .userstyle-section__actions {
     display: flex;
     gap: var(--space-2);
     align-items: center;
   }
 
-  .style-meta {
+  .userstyle-section__meta {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
     gap: var(--space-5) var(--space-6);
 
-    .style-item {
+    .userstyle-section__item {
       display: flex;
       flex-direction: column;
       gap: 0.2rem;
 
-      .style-item-value {
+      .userstyle-section__item-value {
         font-size: var(--text-base);
         font-weight: 700;
         color: var(--foreground);
       }
 
-      .style-item-label {
+      .userstyle-section__item-label {
         display: inline-flex;
         align-items: center;
         gap: 0.25rem;
@@ -352,7 +353,7 @@
         color: var(--fg-muted);
       }
 
-      &.ratable {
+      &.userstyle-section__item--ratable {
         appearance: none;
         border: none;
         background: none;
@@ -371,16 +372,16 @@
     }
   }
 
-  .style-preview {
+  .userstyle-section__preview {
     margin-bottom: var(--space-5);
     --grid-background-accent: var(--brand-purple);
   }
 
-  .code-preview {
+  .userstyle-section__code {
     padding: 0 var(--space-6) var(--space-6);
   }
 
-  .code-footer {
+  .userstyle-section__code-footer {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
@@ -389,16 +390,16 @@
     font-size: var(--text-sm);
     color: var(--fg-muted);
 
-    .upstream-source {
+    .userstyle-section__upstream {
       min-width: 0;
 
-      a {
+      .userstyle-section__upstream-link {
         overflow-wrap: break-word;
         word-break: break-all;
       }
     }
 
-    .source-stats {
+    .userstyle-section__stats {
       margin-left: auto;
       white-space: nowrap;
     }

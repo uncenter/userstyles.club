@@ -23,6 +23,7 @@
 </script>
 
 <dialog
+  class="dialog"
   bind:this={dialogEl}
   onclick={(e) => {
     if (e.target === e.currentTarget) open = false;
@@ -31,10 +32,10 @@
     open = false;
   }}
 >
-  <div class="dialog-header">
+  <div class="dialog__header">
     <span>{title}</span>
     <button
-      class="btn btn-icon btn-outline"
+      class="btn btn--icon btn--outline"
       type="button"
       onclick={() => (open = false)}
       aria-label="Close"
@@ -42,13 +43,13 @@
       <XIcon size={16} />
     </button>
   </div>
-  <div class="dialog-body">
+  <div class="dialog__body">
     {@render children?.()}
   </div>
 </dialog>
 
 <style>
-  dialog {
+  .dialog {
     background: var(--card-bg);
     color: var(--foreground);
     border: none;
@@ -72,22 +73,22 @@
       background: rgb(0 0 0 / 0.55);
       backdrop-filter: blur(2px);
     }
-  }
 
-  .dialog-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: var(--space-3);
-    flex-shrink: 0;
-    font-weight: 700;
-    font-size: var(--text-lg);
-  }
+    .dialog__header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-3);
+      flex-shrink: 0;
+      font-weight: 700;
+      font-size: var(--text-lg);
+    }
 
-  .dialog-body {
-    flex: 1;
-    min-height: 0;
-    display: flex;
-    flex-direction: column;
+    .dialog__body {
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+    }
   }
 </style>

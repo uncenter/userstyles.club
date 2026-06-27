@@ -32,9 +32,10 @@
 </script>
 
 <article class="userstyle-card">
-  <div class="card-thumbnail grid-background">
+  <div class="userstyle-card__thumbnail grid-background">
     {#if userstyle.value.previewImage}
       <img
+        class="userstyle-card__thumbnail-img"
         src={getBlobCdnUrl(
           uri.repo as Did,
           userstyle.value.previewImage.ref.$link,
@@ -44,9 +45,9 @@
       />
     {/if}
   </div>
-  <div class="card-body">
-    <div class="card-title-row">
-      <h3 class="userstyle-title">
+  <div class="userstyle-card__body">
+    <div class="userstyle-card__title-row">
+      <h3 class="userstyle-card__title">
         <a
           href={resolve('/style/[user=actor]/[style=rkey]', {
             user: getPreferredActorIdentifier(profile),
@@ -56,19 +57,19 @@
       </h3>
       <ActorHandle {profile} style='minimal' />
     </div>
-    <p class="userstyle-description">{userstyle.value.description ?? ''}</p>
-    <footer class="card-meta">
-      <span class="meta-item">
+    <p class="userstyle-card__description">{userstyle.value.description ?? ''}</p>
+    <footer class="userstyle-card__meta">
+      <span class="userstyle-card__meta-item">
         <CalendarIcon size={12} />
         {formatDate(userstyle.value.updatedAt ?? userstyle.value.createdAt)}
       </span>
       {#await listRatingsForStyle(userstyle.uri) then ratings}
         {@const computed = computeAverageRating(ratings)}
         {#if computed}
-          <span class="meta-item meta-item-rating"><StarRatingAverage average={computed.average} count={computed.count} /></span
+          <span class="userstyle-card__meta-item userstyle-card__meta-item--rating"><StarRatingAverage average={computed.average} count={computed.count} /></span
           >
         {:else}
-          <span class="meta-item meta-item-rating meta-na">Unrated</span>
+          <span class="userstyle-card__meta-item userstyle-card__meta-item--rating userstyle-card__meta-item--na">Unrated</span>
         {/if}
       {/await}
     </footer>
@@ -84,14 +85,14 @@
     border-top: 5px solid var(--card-accent-color, var(--brand-purple));
     border-radius: var(--radius);
 
-    .card-thumbnail {
+    .userstyle-card__thumbnail {
       height: 160px;
       flex-shrink: 0;
       overflow: hidden;
 
       --grid-background-accent: var(--card-accent-color);
 
-      img {
+      .userstyle-card__thumbnail-img {
         display: block;
         width: 100%;
         height: 100%;
@@ -99,7 +100,7 @@
       }
     }
 
-    .card-body {
+    .userstyle-card__body {
       display: flex;
       flex-direction: column;
       gap: var(--space-2);
@@ -107,7 +108,7 @@
       min-width: 0;
       flex: 1;
 
-      .card-title-row {
+      .userstyle-card__title-row {
         display: flex;
         align-items: center;
         justify-content: space-between;
@@ -115,7 +116,7 @@
         min-width: 0;
       }
 
-      .userstyle-title {
+      .userstyle-card__title {
         font-size: var(--text-xl);
         font-weight: 700;
         margin: 0;
@@ -130,7 +131,7 @@
         }
       }
 
-      .userstyle-description {
+      .userstyle-card__description {
         font-size: var(--text-sm);
         color: var(--fg-muted);
         line-height: 1.4;
@@ -141,7 +142,7 @@
         text-overflow: ellipsis;
       }
 
-      .card-meta {
+      .userstyle-card__meta {
         display: flex;
         align-items: center;
         gap: var(--space-3);
@@ -151,18 +152,18 @@
         margin-top: auto;
         padding-top: var(--space-2);
 
-        .meta-item {
+        .userstyle-card__meta-item {
           display: inline-flex;
           align-items: center;
           gap: 0.25rem;
-        }
 
-        .meta-item-rating {
-          margin-left: auto;
-        }
+          &.userstyle-card__meta-item--rating {
+            margin-left: auto;
+          }
 
-        .meta-na {
-          font-style: italic;
+          &.userstyle-card__meta-item--na {
+            font-style: italic;
+          }
         }
       }
     }

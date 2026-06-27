@@ -21,11 +21,11 @@
 </script>
 
 <div class="preview-wrap">
-  <pre>
-    <code {...rest}>{@html html}</code>
+  <pre class="preview-wrap__source-wrap">
+    <code class="preview-wrap__code" {...rest}>{@html html}</code>
   </pre>
   <button
-    class="btn btn-icon btn-outline expand-btn"
+    class="btn btn--icon btn--outline preview-wrap__expand-btn"
     type="button"
     onclick={() => (fullscreen = true)}
     aria-label="Toggle fullscreen"
@@ -35,7 +35,7 @@
 </div>
 
 <ExpandedDialog bind:open={fullscreen} title="Source">
-  <pre><code>{@html html}</code></pre>
+  <pre class="preview-wrap__source-wrap"><code class="preview-wrap__code">{@html html}</code></pre>
 </ExpandedDialog>
 
 <style>
@@ -43,20 +43,20 @@
 
   .preview-wrap {
     position: relative;
-  }
 
-  .expand-btn {
-    position: absolute;
-    top: var(--space-2);
-    right: var(--space-2);
-    opacity: 0.6;
+    .preview-wrap__expand-btn {
+      position: absolute;
+      top: var(--space-2);
+      right: var(--space-2);
+      opacity: 0.6;
 
-    &:hover {
-      opacity: 1;
+      &:hover {
+        opacity: 1;
+      }
     }
   }
 
-  pre {
+  .preview-wrap__source-wrap {
     display: flex;
     overflow: auto;
     background: var(--bg-subtle);
@@ -70,7 +70,7 @@
     max-height: 14rem;
     overflow-y: auto;
 
-    code {
+    .preview-wrap__code {
       flex-grow: 1;
       width: 0;
       color: var(--ctp-text);
@@ -168,7 +168,7 @@
     }
   }
 
-  :global(.dialog-body) pre {
+  :global(.dialog__body) .preview-wrap__source-wrap {
     max-height: none;
   }
 </style>

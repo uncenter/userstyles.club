@@ -24,6 +24,7 @@
 </script>
 
 <dialog
+  class="dialog"
   bind:this={dialogEl}
   style:max-width={maxWidth}
   onclick={(e) => {
@@ -33,17 +34,17 @@
     open = false;
   }}
 >
-  <h2>{title}</h2>
+  <h2 class="dialog__title">{title}</h2>
   {@render children?.()}
   {#if actions}
-    <div class="dialog-actions">
+    <div class="dialog__actions">
       {@render actions()}
     </div>
   {/if}
 </dialog>
 
 <style>
-  dialog {
+  .dialog {
     background: var(--card-bg);
     color: var(--foreground);
     border: none;
@@ -57,16 +58,16 @@
       backdrop-filter: blur(2px);
     }
 
-    h2 {
+    .dialog__title {
       font-size: var(--text-xl);
       margin-bottom: var(--space-3);
     }
-  }
 
-  .dialog-actions {
-    display: flex;
-    gap: var(--space-3);
-    justify-content: flex-end;
-    margin-top: var(--space-5);
+    .dialog__actions {
+      display: flex;
+      gap: var(--space-3);
+      justify-content: flex-end;
+      margin-top: var(--space-5);
+    }
   }
 </style>

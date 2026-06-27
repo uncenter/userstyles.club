@@ -123,18 +123,18 @@
     onsubmit={(e) => { e.preventDefault(); onSubmit(); }}
   >
     <textarea
-      class="inline-textarea"
+      class="inline-editor__textarea"
       bind:value={ctx.value}
       rows="2"
       maxlength="2560"
       placeholder="Share your thoughts…"
       required
     ></textarea>
-    <div class="inline-editor-actions">
-      <button type="submit" class="btn btn-primary btn-sm" disabled={submitting || !ctx.value.trim()}>
+    <div class="inline-editor__actions">
+      <button type="submit" class="btn btn--primary btn--sm" disabled={submitting || !ctx.value.trim()}>
         {#if submitting}<Spinner size="sm" /> {pendingLabel}...{:else}{submitLabel}{/if}
       </button>
-      <button type="button" class="btn btn-outline btn-sm" onclick={onCancel}>Cancel</button>
+      <button type="button" class="btn btn--outline btn--sm" onclick={onCancel}>Cancel</button>
     </div>
   </form>
 {/snippet}
@@ -145,19 +145,19 @@
       <Alert variant="error">{error}</Alert>
     {/if}
 
-    <div class="comment-header">
-      <div class="commenter-info">
+    <div class="comment-card__header">
+      <div class="comment-card__commenter">
         <ActorHandle profile={commenter} style='small' />{#if rating} rated <StarRating value={rating.value.rating} />{/if}
       </div>
-      <div class="comment-meta">
-        <time class="comment-date"
+      <div class="comment-card__meta">
+        <time class="comment-card__date"
           >{formatDate(thread.comment.value.updatedAt ?? thread.comment.value.createdAt)}</time
         >
         {#if isMyComment}
-          <div class="comment-actions">
+          <div class="comment-card__actions">
             <button
               type="button"
-              class="btn btn-secondary btn-sm btn-icon"
+              class="btn btn--secondary btn--sm btn--icon"
               aria-label="Edit comment"
               disabled={submitting || editing.state}
               onclick={startEdit}
@@ -166,7 +166,7 @@
             </button>
             <button
               type="button"
-              class="btn btn-danger btn-sm btn-icon"
+              class="btn btn--danger btn--sm btn--icon"
               aria-label="Delete comment"
               disabled={submitting || editing.state}
               onclick={() => (confirmDeleteOpen = true)}
@@ -180,20 +180,20 @@
     {#if editing.state}
       {@render InlineEditor(editing, saveEdit, cancelEdit, 'Save', 'Saving')}
     {:else}
-      <p class="comment-content">{thread.comment.value.comment}</p>
+      <p class="comment-card__content">{thread.comment.value.comment}</p>
     {/if}
-    <div class="comment-reply-section">
+    <div class="comment-card__reply">
       {#if replying.state}
         {@render InlineEditor(replying, submitReply, cancelReply, 'Reply', 'Replying')}
       {:else}
-        <button type="button" class="reply-trigger" disabled={submitting} onclick={startReply}>
+        <button type="button" class="comment-card__reply-trigger" disabled={submitting} onclick={startReply}>
           Reply to comment...
         </button>
       {/if}
     </div>
   </div>
   {#if thread.replies.length > 0}
-    <ul class="comment-replies">
+    <ul class="comment-tree__replies">
       {#each thread.replies as reply}
         <Self
           thread={reply}
@@ -212,10 +212,10 @@
     <p class="text-muted">This will permanently delete your comment. This cannot be undone.</p>
   {/snippet}
   {#snippet actions()}
-    <button class="btn btn-outline" type="button" onclick={() => (confirmDeleteOpen = false)}>
+    <button class="btn btn--outline" type="button" onclick={() => (confirmDeleteOpen = false)}>
       Cancel
     </button>
-    <button class="btn btn-danger" type="button" onclick={confirmDelete}>Yes, delete!</button>
+    <button class="btn btn--danger" type="button" onclick={confirmDelete}>Yes, delete!</button>
   {/snippet}
 </Dialog>
 
@@ -225,7 +225,7 @@
     flex-direction: column;
     gap: var(--space-3);
 
-    .inline-textarea {
+    .inline-editor__textarea {
       width: 100%;
       padding: var(--space-2) var(--space-3);
       border: 2px solid var(--input-border);
@@ -243,7 +243,7 @@
       }
     }
 
-    .inline-editor-actions {
+    .inline-editor__actions {
       display: flex;
       gap: var(--space-2);
     }
@@ -254,7 +254,7 @@
     background: var(--bg-subtle);
     border-radius: var(--radius);
 
-    .comment-header {
+    .comment-card__header {
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -262,42 +262,42 @@
       gap: var(--space-3);
       margin-bottom: var(--space-3);
 
-      .commenter-info {
+      .comment-card__commenter {
         display: flex;
         align-items: center;
         gap: var(--space-2);
       }
 
-      .comment-meta {
+      .comment-card__meta {
         display: flex;
         flex-direction: column;
         align-items: flex-end;
         gap: var(--space-2);
       }
 
-      .comment-date {
+      .comment-card__date {
         font-size: var(--text-sm);
         color: var(--fg-muted);
       }
 
-      .comment-actions {
+      .comment-card__actions {
         display: flex;
         gap: var(--space-1);
       }
     }
 
-    .comment-content {
+    .comment-card__content {
       line-height: 1.6;
       white-space: pre-wrap;
       word-break: break-word;
     }
 
-    .comment-reply-section {
+    .comment-card__reply {
       margin-top: var(--space-3);
       padding-top: var(--space-3);
       border-top: 1px solid var(--border);
 
-      .reply-trigger {
+      .comment-card__reply-trigger {
         display: block;
         width: 100%;
         padding: var(--space-2) var(--space-3);
@@ -322,7 +322,7 @@
     }
   }
 
-  .comment-replies {
+  .comment-tree__replies {
     list-style: none;
     padding: 0 0 0 var(--space-5);
     margin: var(--space-3) 0 0 0;

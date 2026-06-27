@@ -35,7 +35,7 @@
     {theme}
   />
   <button
-    class="btn btn-icon btn-outline expand-btn"
+    class="btn btn--icon btn--outline editor-wrap__expand-btn"
     type="button"
     onclick={() => (fullscreen = true)}
     aria-label="Toggle fullscreen"
@@ -58,21 +58,21 @@
 <style>
   .editor-wrap {
     position: relative;
-  }
 
-  .expand-btn {
-    position: absolute;
-    top: var(--space-2);
-    right: var(--space-2);
-    z-index: 1;
-    opacity: 0.6;
+    .editor-wrap__expand-btn {
+      position: absolute;
+      top: var(--space-2);
+      right: var(--space-2);
+      z-index: 1;
+      opacity: 0.6;
 
-    &:hover {
-      opacity: 1;
+      &:hover {
+        opacity: 1;
+      }
     }
   }
 
-  :global .dialog-body {
+  :global .dialog__body {
     .codemirror-wrapper {
       flex: 1;
       min-height: 0;

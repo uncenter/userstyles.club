@@ -7,10 +7,10 @@
   let { value = $bindable(), name = 'rating' }: Props = $props();
 </script>
 
-<fieldset class="stars">
-  <legend class="field-label">Rating</legend>
+<fieldset class="star-rating-input">
+  <legend class="form-field-label">Rating</legend>
   {#each [5, 4, 3, 2, 1] as n}
-    <label class="star-label">
+    <label class="star-rating-input__label">
       <input
         type="radio"
         class="sr-only"
@@ -27,7 +27,7 @@
 </fieldset>
 
 <style>
-  .stars {
+  .star-rating-input {
     display: flex;
     flex-direction: row-reverse;
     justify-content: start;
@@ -36,7 +36,7 @@
     padding: 0;
     margin: 0;
 
-    .star-label {
+    .star-rating-input__label {
       font-size: 1.5rem;
       line-height: 1;
       cursor: pointer;
@@ -44,30 +44,18 @@
       transition: color 0.1s;
 
       &:has(:checked),
-      &:has(:checked) ~ .star-label {
+      &:has(:checked) ~ .star-rating-input__label {
         color: var(--pastel-yellow);
       }
     }
 
-    &:hover .star-label {
+    &:hover .star-rating-input__label {
       color: var(--border);
     }
 
-    .star-label:hover,
-    .star-label:hover ~ .star-label {
+    .star-rating-input__label:hover,
+    .star-rating-input__label:hover ~ .star-rating-input__label {
       color: var(--pastel-yellow);
-    }
-
-    .sr-only {
-      position: absolute;
-      width: 1px;
-      height: 1px;
-      padding: 0;
-      margin: -1px;
-      overflow: hidden;
-      clip: rect(0, 0, 0, 0);
-      white-space: nowrap;
-      border-width: 0;
     }
   }
 </style>

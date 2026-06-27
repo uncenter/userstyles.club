@@ -12,9 +12,10 @@
   const initial = $derived((name ?? alt).trim().charAt(0).toUpperCase() || '?');
 </script>
 
-<span class="avatar avatar-{size}" aria-label={alt || name || undefined}>
+<span class="avatar avatar--{size}" aria-label={alt || name || undefined}>
   {#if src && !error}
     <img
+      class="avatar__img"
       src={size !== 'lg'
         ? src.replace(
             'https://cdn.bsky.app/img/avatar',
@@ -42,29 +43,29 @@
     overflow: hidden;
     flex-shrink: 0;
 
-    img {
+    .avatar__img {
       width: 100%;
       height: 100%;
       object-fit: cover;
       display: block;
     }
 
-    &.avatar-xs {
+    &.avatar--xs {
       width: 1.5rem;
       height: 1.5rem;
       font-size: var(--text-xs);
     }
-    &.avatar-sm {
+    &.avatar--sm {
       width: 2rem;
       height: 2rem;
       font-size: var(--text-xs);
     }
-    &.avatar-md {
+    &.avatar--md {
       width: 2.5rem;
       height: 2.5rem;
       font-size: var(--text-sm);
     }
-    &.avatar-lg {
+    &.avatar--lg {
       width: 4.5rem;
       height: 4.5rem;
       font-size: var(--text-2xl);

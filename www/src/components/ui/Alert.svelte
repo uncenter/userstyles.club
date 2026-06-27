@@ -16,9 +16,9 @@
   };
 </script>
 
-<div class="alert alert-{variant}" role="alert">
-  <em class="alert-icon" aria-hidden="true">{icons[variant]}</em>
-  <div class="alert-content">
+<div class="alert alert--{variant}" role="alert">
+  <em class="alert__icon" aria-hidden="true">{icons[variant]}</em>
+  <div class="alert__content">
     {@render children()}
   </div>
 </div>
@@ -34,31 +34,31 @@
     border: 1.5px solid color-mix(in srgb, currentColor 30%, transparent);
     border-left: 4px solid currentColor;
 
-    .alert-icon {
+    .alert__icon {
       flex-shrink: 0;
       font-weight: 700;
       margin-top: 1px;
       font-style: normal;
     }
-    .alert-content {
+    .alert__content {
       flex: 1;
     }
-  }
 
-  .alert-error {
-    background: var(--danger-bg);
-    color: var(--danger);
-  }
-  .alert-success {
-    background: var(--success-bg);
-    color: var(--success);
-  }
-  .alert-warning {
-    background: var(--warning-bg);
-    color: var(--warning);
-  }
-  .alert-info {
-    background: var(--info-bg);
-    color: var(--info);
+    &.alert--error {
+      background: var(--danger-bg);
+      color: var(--danger);
+    }
+    &.alert--success {
+      background: var(--success-bg);
+      color: var(--success);
+    }
+    &.alert--warning {
+      background: var(--warning-bg);
+      color: var(--warning);
+    }
+    &.alert--info {
+      background: var(--info-bg);
+      color: var(--info);
+    }
   }
 </style>

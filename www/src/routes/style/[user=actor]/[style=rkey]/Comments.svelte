@@ -47,23 +47,23 @@
 </script>
 
 <section class="page-section comments-section">
-  <h2 class="comments-heading">Comments{feedback.comments.length > 0 ? ` (${feedback.comments.length})` : ''}</h2>
+  <h2 class="comments-section__heading">Comments{feedback.comments.length > 0 ? ` (${feedback.comments.length})` : ''}</h2>
 
   {#if error}
     <Alert variant="error">{error}</Alert>
   {/if}
 
   {#if user.isLoggedIn && !isOwner}
-    <div class="comment-form-wrapper">
+    <div class="comments-section__form-wrapper">
       <form
-        class="comment-editor-form"
+        class="comments-section__form"
         onsubmit={(e) => { e.preventDefault(); submitComment(); }}
       >
         <div class="form-group">
           <label>
-            <span class="field-label">Comment</span>
+            <span class="form-field-label">Comment</span>
             <textarea
-              class="comment-textarea"
+              class="comments-section__textarea"
               bind:value={comment}
               rows="3"
               maxlength="2560"
@@ -74,7 +74,7 @@
         </div>
         <button
           type="submit"
-          class="btn btn-primary"
+          class="btn btn--primary"
           disabled={submitting || !comment.trim()}
         >
           {#if submitting}<Spinner size="sm" /> Posting...{:else}Post{/if}
@@ -84,9 +84,9 @@
   {/if}
 
   {#if threads.length === 0}
-    <p class="no-comments">No comments yet.</p>
+    <p class="comments-section__empty">No comments yet.</p>
   {:else}
-    <ul class="comment-list">
+    <ul class="comments-section__list">
       {#each threads as thread (thread.comment.uri)}
         <CommentItem
           {thread}
@@ -104,27 +104,27 @@
   .comments-section {
     margin-top: var(--space-5);
 
-    .comments-heading {
+    .comments-section__heading {
       font-size: var(--text-2xl);
       margin-bottom: var(--space-5);
     }
 
-    .no-comments {
+    .comments-section__empty {
       color: var(--fg-muted);
       font-size: var(--text-sm);
     }
 
-    .comment-form-wrapper {
+    .comments-section__form-wrapper {
       margin-bottom: var(--space-6);
       padding-bottom: var(--space-6);
       border-bottom: 2px solid var(--border);
 
-      .comment-editor-form {
+      .comments-section__form {
         display: flex;
         flex-direction: column;
         gap: var(--space-4);
 
-        .comment-textarea {
+        .comments-section__textarea {
           width: 100%;
           padding: var(--space-3);
           border: 2px solid var(--input-border);
@@ -144,7 +144,7 @@
       }
     }
 
-    .comment-list {
+    .comments-section__list {
       list-style: none;
       padding: 0;
       margin: 0;

@@ -52,23 +52,23 @@
 
 <div class="form-group">
   <label class="file-label">
-    <span class="field-label">Preview Image</span>
+    <span class="form-field-label">Preview Image</span>
     <div class="file-input-row">
-      <div class="file-input-wrapper">
+      <div class="file-label__input-wrapper">
         <input
           type="file"
           accept="image/*"
-          class="file-input"
+          class="file-label__input"
           {required}
           bind:this={fileInputEl}
           onchange={handleFileChange}
         />
-        <span class="file-input-text">{displayText}</span>
+        <span class="file-label__input-text">{displayText}</span>
       </div>
       {#if canRemove}
         <button
           type="button"
-          class="btn btn-icon btn-outline btn-danger"
+          class="btn btn--icon btn--outline btn--danger"
           onclick={handleRemove}
           aria-label="Remove file"><XIcon size={20} /></button
         >

@@ -82,14 +82,14 @@
   {#snippet formActions()}
     <button
       type="submit"
-      class="btn btn-primary"
+      class="btn btn--primary"
       disabled={saving || !title.trim() || !sourceCode.trim()}
     >
       {#if saving}<Spinner size="sm" /> Saving…{:else}Save{/if}
     </button>
     <a
       href={resolve('/style/[user=actor]/[style=rkey]', { user: data.user, style: data.style })}
-      class="btn btn-outline"
+      class="btn btn--outline"
     >
       Cancel
     </a>

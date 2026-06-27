@@ -37,26 +37,29 @@
   <tbody>
     {#if currentVersion || newVersion}
       <tr>
-        <td class="diff-label">Version</td>
-        <td class="diff-current">{currentVersion ?? '—'}</td>
-        <td class="diff-next" class:changed={newVersion !== currentVersion}>{newVersion ?? '—'}</td>
+        <td class="diff-table__label">Version</td>
+        <td class="diff-table__current">{currentVersion ?? '—'}</td>
+        <td class="diff-table__next" class:diff-table__next--changed={newVersion !== currentVersion}>{newVersion ?? '—'}</td>
       </tr>
     {/if}
     {#snippet TableDeltaCell(prev: number, next: number, fmt: (n: number) => string)}
-      <td class="diff-next" class:changed={next !== prev}>
-        {fmt(next)}<span class="diff-delta {getDeltaDirection(next, prev)}"
+      <td class="diff-table__next" class:diff-table__next--changed={next !== prev}>
+        {fmt(next)}<span
+          class="diff-table__delta"
+          class:diff-table__delta--positive={getDeltaDirection(next, prev) === 'positive'}
+          class:diff-table__delta--negative={getDeltaDirection(next, prev) === 'negative'}
           >{formatDelta(next, prev, fmt)}</span
         >
       </td>
     {/snippet}
     <tr>
-      <td class="diff-label">Lines</td>
-      <td class="diff-current">{currentLines.toLocaleString()}</td>
+      <td class="diff-table__label">Lines</td>
+      <td class="diff-table__current">{currentLines.toLocaleString()}</td>
       {@render TableDeltaCell(currentLines, newLines, (n) => n.toLocaleString())}
     </tr>
     <tr>
-      <td class="diff-label">Size</td>
-      <td class="diff-current">{bytes(currentBytes)}</td>
+      <td class="diff-table__label">Size</td>
+      <td class="diff-table__current">{bytes(currentBytes)}</td>
       {@render TableDeltaCell(currentBytes, newBytes, bytes)}
     </tr>
   </tbody>
@@ -86,28 +89,28 @@
     td {
       border-bottom: 1px solid var(--border-subtle, var(--border));
 
-      &.diff-label {
+      &.diff-table__label {
         font-weight: 600;
         color: var(--fg-muted);
         width: 5rem;
       }
 
-      &.diff-next.changed {
+      &.diff-table__next--changed {
         font-weight: 600;
       }
     }
   }
 
-  .diff-delta {
+  .diff-table__delta {
     font-weight: 400;
     font-size: var(--text-xs);
     color: var(--fg-muted);
 
-    &.positive {
+    &.diff-table__delta--positive {
       color: var(--success);
     }
 
-    &.negative {
+    &.diff-table__delta--negative {
       color: var(--danger);
     }
   }

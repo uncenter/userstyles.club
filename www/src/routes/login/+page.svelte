@@ -42,8 +42,8 @@
 
 <div class="centered-col">
   <section class="page-section login-card">
-    <div class="login-header">
-      <h1>Sign in</h1>
+    <div class="login-card__header">
+      <h1 class="login-card__title">Sign in</h1>
       <p class="text-muted">Enter your Bluesky handle or DID to continue.</p>
     </div>
 
@@ -63,35 +63,35 @@
       {#if error}
         <Alert variant="error">{error}</Alert>
       {/if}
-      <button type="submit" class="btn btn-primary" disabled={loading || !handle.trim()}>
+      <button type="submit" class="btn btn--primary" disabled={loading || !handle.trim()}>
         {#if loading}<Spinner size="sm" /> Signing in…{:else}Continue{/if}
       </button>
-      <button type="button" class="btn btn-outline" onclick={signup}> Create account </button>
+      <button type="button" class="btn btn--outline" onclick={signup}> Create account </button>
     </form>
 
-    <p class="login-back">
-      <a href={resolve('/')} class="text-muted">← Back home</a>
+    <p class="login-card__back">
+      <a href={resolve('/')} class="login-card__back-link text-muted">← Back home</a>
     </p>
   </section>
 </div>
 
 <style>
   .login-card {
-    h1 {
+    .login-card__title {
       font-size: var(--text-2xl);
     }
 
-    .login-header {
+    .login-card__header {
       display: grid;
       gap: var(--space-1);
       margin-bottom: var(--space-5);
     }
 
-    .login-back {
+    .login-card__back {
       margin-top: var(--space-5);
       font-size: var(--text-sm);
 
-      a {
+      .login-card__back-link {
         text-decoration: none;
         &:hover {
           text-decoration: underline;

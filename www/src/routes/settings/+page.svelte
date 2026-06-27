@@ -18,10 +18,10 @@
 </div>
 
 <div class="page-section settings-list">
-  <div class="settings-row">
-    <div class="settings-label">
-      <label for="appearance-select">Appearance</label>
-      <p class="text-muted">Choose your preferred color scheme.</p>
+  <div class="settings-list__row">
+    <div class="settings-list__label">
+      <label for="appearance-select" class="settings-list__label-text">Appearance</label>
+      <p class="settings-list__label-desc text-muted">Choose your preferred color scheme.</p>
     </div>
     <select
       id="appearance-select"
@@ -35,10 +35,10 @@
       {/each}
     </select>
   </div>
-  <div class="settings-row">
-    <div class="settings-label">
-      <label for="use-permanent-urls-toggle">Use Permanent URLs</label>
-      <p class="text-muted">
+  <div class="settings-list__row">
+    <div class="settings-list__label">
+      <label for="use-permanent-urls-toggle" class="settings-list__label-text">Use Permanent URLs</label>
+      <p class="settings-list__label-desc text-muted">
         Prefer permanent URLs over shorter URLs by using DIDs instead of handles.
       </p>
     </div>
@@ -61,21 +61,21 @@
     gap: 1rem;
   }
 
-  .settings-row {
+  .settings-list__row {
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: var(--space-6);
 
-    .settings-label {
+    .settings-list__label {
       display: grid;
       gap: var(--space-1);
 
-      label {
+      .settings-list__label-text {
         margin: 0;
         font-size: var(--text-base);
       }
-      p {
+      .settings-list__label-desc {
         font-size: var(--text-sm);
       }
     }

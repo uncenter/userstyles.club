@@ -27,7 +27,7 @@
       size={style == 'small' ? 'xs' : 'sm'}
     />
   {/if}
-  <span class="actor-handle-label">@{profile.handle}</span>
+  <span class="actor-handle__label">@{profile.handle}</span>
 </a>
 
 <style>
@@ -38,7 +38,7 @@
     padding: var(--space-1) var(--space-3) var(--space-1) var(--space-1);
     text-decoration: none;
 
-    .actor-handle-label {
+    .actor-handle__label {
       font-weight: 700;
       color: var(--foreground);
       font-family: var(--font-display);
@@ -54,7 +54,7 @@
       padding: 0;
       flex-shrink: 0;
 
-      .actor-handle-label {
+      .actor-handle__label {
         color: var(--fg-muted);
         font-weight: normal;
 

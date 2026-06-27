@@ -60,15 +60,16 @@
 
 <form onsubmit={importFromUrl} class="form-group">
   <label>
-    <span class="field-label">Import from URL</span>
-    <div class="text-input-button-group">
+    <span class="form-field-label">Import from URL</span>
+    <div class="form-input-group">
       <input
+        class="form-input-group__input"
         type="url"
         bind:value={importUrl}
         placeholder="https://tangled.org/example.org/my-userstyle/raw/main/style.user.css"
         aria-describedby="import-from-url-desc"
       />
-      <button type="submit" disabled={pending || !importUrl.trim()}>
+      <button class="form-input-group__btn" type="submit" disabled={pending || !importUrl.trim()}>
         {#if pending}<Spinner size="sm" /> Importing…{:else}Import{/if}
       </button>
     </div>

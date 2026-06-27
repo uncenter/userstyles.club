@@ -238,6 +238,18 @@ main.container {
   background-position: -1px -1px, -1px -1px, -1px -1px, -1px -1px;
 }
 
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
 /* Buttons */
 
 .btn {
@@ -271,21 +283,21 @@ main.container {
     cursor: not-allowed;
   }
 
-  &.btn-sm {
+  &.btn--sm {
     font-size: var(--text-xs);
     padding: calc(var(--space-1) + 1px) var(--space-3);
   }
-  &.btn-lg {
+  &.btn--lg {
     font-size: var(--text-base);
     padding: var(--space-3) var(--space-6);
   }
 
-  &.btn-icon {
+  &.btn--icon {
     padding: var(--space-1);
     aspect-ratio: 1;
   }
 
-  &.btn-primary {
+  &.btn--primary {
     --btn-bg: var(--brand-purple);
     --btn-fg: var(--brand-purple-fg);
     --btn-shadow: var(--brand-purple-hover);
@@ -293,34 +305,34 @@ main.container {
     --btn-hover-fg: var(--brand-purple-fg);
   }
 
-  &.btn-secondary {
+  &.btn--secondary {
     --btn-bg: var(--bg-muted);
     --btn-fg: var(--foreground);
     --btn-hover-bg: var(--bg-faint);
   }
 
-  &.btn-danger {
+  &.btn--danger {
     --btn-bg: var(--danger);
     --btn-fg: var(--brand-purple-fg);
     --btn-hover-bg: color-mix(in srgb, var(--danger) 85%, #000);
     --btn-hover-fg: var(--brand-purple-fg);
   }
 
-  &.btn-warning {
+  &.btn--warning {
     --btn-bg: var(--warning);
     --btn-fg: var(--brand-purple-fg);
     --btn-hover-bg: color-mix(in srgb, var(--warning) 85%, #000);
     --btn-hover-fg: var(--brand-purple-fg);
   }
 
-  &.btn-bsky {
+  &.btn--bsky {
     --btn-bg: var(--bsky-blue);
     --btn-fg: #ffffff;
     --btn-hover-bg: color-mix(in srgb, var(--bsky-blue) 85%, #000);
     --btn-hover-fg: #ffffff;
   }
 
-  &.btn-outline {
+  &.btn--outline {
     background: transparent;
     color: var(--btn-outline-fg, var(--foreground));
 
@@ -330,7 +342,7 @@ main.container {
     }
   }
 
-  &.btn-ghost {
+  &.btn--ghost {
     background: transparent;
     color: var(--btn-outline-fg, var(--foreground));
     border-color: transparent;
@@ -422,14 +434,14 @@ input[type='checkbox'] {
   }
 }
 
-.field-row {
+.form-field-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: var(--space-2);
 }
 
-.field-label {
+.form-field-label {
   display: block;
   font-weight: 600;
   margin-bottom: var(--space-1);
@@ -445,12 +457,12 @@ input[type='checkbox'] {
   display: grid;
   gap: var(--space-1);
 
-  &:has(:required, [data-required]) .field-label::after {
+  &:has(:required, [data-required]) .form-field-label::after {
     content: ' *';
     color: var(--danger);
   }
 
-  &:not(:has(:required, [data-required])) .field-label::after {
+  &:not(:has(:required, [data-required])) .form-field-label::after {
     content: ' (optional)';
     font-size: var(--text-sm);
     color: var(--fg-muted);
@@ -458,15 +470,15 @@ input[type='checkbox'] {
   }
 }
 
-.text-input-button-group {
+.form-input-group {
   display: flex;
 
-  input {
+  .form-input-group__input {
     border-right: none;
     border-radius: var(--radius-sm) 0 0 var(--radius-sm);
   }
 
-  button {
+  .form-input-group__btn {
     border: 2px solid var(--input-border);
     border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
     background: var(--bg-muted);
@@ -506,7 +518,7 @@ input[type='checkbox'] {
   user-select: none;
   width: fit-content;
 
-  &.disabled {
+  &.form-check--disabled {
     opacity: 0.5;
     cursor: not-allowed;
   }
@@ -520,12 +532,12 @@ input[type='checkbox'] {
   font-weight: 500;
   margin-bottom: 0;
 
-  .file-input-wrapper {
+  .file-label__input-wrapper {
     position: relative;
     display: inline-flex;
     width: fit-content;
 
-    .file-input {
+    .file-label__input {
       position: absolute;
       inset: 0;
       opacity: 0;
@@ -533,7 +545,7 @@ input[type='checkbox'] {
       cursor: pointer;
     }
 
-    .file-input-text {
+    .file-label__input-text {
       border: 2px solid var(--input-border);
       border-radius: var(--radius-sm);
       padding: var(--space-1) var(--space-2);

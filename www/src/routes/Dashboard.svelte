@@ -54,36 +54,36 @@
 <div class="page-section dashboard-top">
   <div class="stat-strip">
     <div class="stat-card">
-      <span class="stat-value">
+      <span class="stat-card__value">
         {#await userstyles}<Spinner size="md" />{:then userstyles}{userstyles.length}{/await}
       </span>
-      <span class="stat-label">Styles</span>
+      <span class="stat-card__label">Styles</span>
     </div>
     <div class="stat-card">
-      <span class="stat-value">
+      <span class="stat-card__value">
         {#await comments}<Spinner size="md" />{:then comments}{comments.length}{/await}
       </span>
-      <span class="stat-label">Comments</span>
+      <span class="stat-card__label">Comments</span>
     </div>
     <div class="stat-card">
-      <span class="stat-value">
+      <span class="stat-card__value">
         {#await ratings}
           <Spinner size="md" />
         {:then ratings}
           {@const computed = computeAverageRating(ratings.map((rating) => rating.rating))}
           {#if computed}
-            {computed.average.toFixed(1)}<span class="stat-unit">/ 5</span>
+            {computed.average.toFixed(1)}<span class="stat-card__unit">/ 5</span>
           {:else}
             —
           {/if}
         {/await}
       </span>
-      <span class="stat-label">Avg rating</span>
+      <span class="stat-card__label">Avg rating</span>
     </div>
   </div>
 
-  <div class="quick-actions">
-    <a href={resolve('/new')} class="btn btn-primary">
+  <div class="dashboard-top__actions">
+    <a href={resolve('/new')} class="btn btn--primary">
       <PlusIcon size={15} /> New Userstyle
     </a>
     {#if user.profile}
@@ -91,12 +91,12 @@
         href={resolve('/profile/[user=actor]', {
           user: getPreferredActorIdentifier(user.profile),
         })}
-        class="btn btn-secondary"
+        class="btn btn--secondary"
       >
         <UserIcon size={15} /> Your Profile
       </a>
     {/if}
-    <a href={resolve('/explore')} class="btn btn-outline">
+    <a href={resolve('/explore')} class="btn btn--outline">
       <CompassIcon size={15} /> Explore
     </a>
   </div>
@@ -116,18 +116,18 @@
           {@const did = parseResourceUri(comment.uri).repo}
           {@const commenter = await getProfile(did)}
           {@const rating = ratings.then((ratings) => ratings.find((rating) => rating.style.uri === style.uri && parseResourceUri(rating.rating.uri).repo! === did)?.rating)}
-          <li class="comment-row">
-            <div class="comment-row-header">
+          <li class="comment-list__item">
+            <div class="comment-list__item-header">
               <ActorHandle profile={commenter} style='small' />
-              <span class="comment-on">commented on <a href={getLinkToUserOwnStyle(style.uri)} class="style-link">{style.value.title}</a></span>
-              <div class="comment-row-header-end">
+              <span class="comment-list__item-on">commented on <a href={getLinkToUserOwnStyle(style.uri)} class="comment-list__style-link">{style.value.title}</a></span>
+              <div class="comment-list__item-end">
                 {#await rating then rating}
                   <StarRating value={rating?.value.rating} />
                 {/await}
-                <time class="comment-date">{formatDate(comment.value.updatedAt ?? comment.value.createdAt)}</time>
+                <time class="comment-list__date">{formatDate(comment.value.updatedAt ?? comment.value.createdAt)}</time>
               </div>
             </div>
-            <p class="comment-content">{comment.value.comment}</p>
+            <p class="comment-list__content">{comment.value.comment}</p>
           </li>
         {/each}
       </ul>
@@ -148,13 +148,13 @@
       {@const recents = sortRecordsByCreation(userstyles).slice(0, 6)}
       <ul class="style-scroll" role="list">
         {#each recents as style (style.uri)}
-          <li class="style-scroll-item">
-            <a href={getLinkToUserOwnStyle(style.uri)} class="style-scroll-card">
-              <span class="style-card-title">{style.value.title}</span>
+          <li class="style-scroll__item">
+            <a href={getLinkToUserOwnStyle(style.uri)} class="style-scroll__card">
+              <span class="style-scroll__title">{style.value.title}</span>
               {#if style.value.description}
-                <span class="style-card-desc">{style.value.description}</span>
+                <span class="style-scroll__desc">{style.value.description}</span>
               {/if}
-              <time class="style-card-date">
+              <time class="style-scroll__date">
                 {formatDate(style.value.updatedAt ?? style.value.createdAt)}
               </time>
             </a>
@@ -187,7 +187,7 @@
         padding: var(--space-4) var(--space-5);
         min-width: 8rem;
 
-        .stat-value {
+        .stat-card__value {
           font-size: var(--text-3xl);
           font-weight: 800;
           color: var(--foreground);
@@ -197,14 +197,14 @@
           gap: var(--space-2);
           min-height: 2.25rem;
 
-          .stat-unit {
+          .stat-card__unit {
             font-size: var(--text-base);
             font-weight: 600;
             color: var(--fg-muted);
           }
         }
 
-        .stat-label {
+        .stat-card__label {
           font-size: var(--text-sm);
           color: var(--fg-muted);
           font-weight: 500;
@@ -212,7 +212,7 @@
       }
     }
 
-    .quick-actions {
+    .dashboard-top__actions {
       display: flex;
       gap: var(--space-2);
       flex-wrap: wrap;
@@ -245,7 +245,7 @@
     padding: 0;
     margin: 0;
 
-    .comment-row {
+    .comment-list__item {
       padding: var(--space-3) 0;
       border-top: 1px solid var(--border);
 
@@ -253,18 +253,18 @@
         border-bottom: 1px solid var(--border);
       }
 
-      .comment-row-header {
+      .comment-list__item-header {
         display: flex;
         align-items: center;
         gap: var(--space-1);
         flex-wrap: wrap;
         margin-bottom: var(--space-2);
 
-        .comment-on {
+        .comment-list__item-on {
           color: var(--fg-muted);
         }
 
-        .style-link {
+        .comment-list__style-link {
           color: var(--brand-purple);
           font-weight: 600;
           text-decoration: none;
@@ -274,20 +274,20 @@
           }
         }
 
-        .comment-row-header-end {
+        .comment-list__item-end {
           margin-left: auto;
           display: flex;
           flex-direction: row;
           gap: var(--space-2);
         }
 
-        .comment-date {
+        .comment-list__date {
           font-size: var(--text-sm);
           color: var(--fg-muted);
         }
       }
 
-      .comment-content {
+      .comment-list__content {
         line-height: 1.5;
         display: -webkit-box;
         -webkit-line-clamp: 2;
@@ -309,7 +309,7 @@
     scrollbar-width: thin;
     scrollbar-color: var(--border) transparent;
 
-    .style-scroll-item {
+    .style-scroll__item {
       flex-shrink: 0;
       display: flex;
 
@@ -318,7 +318,7 @@
       &:nth-child(4n + 3) { --card-accent-color: var(--brand-green); }
       &:nth-child(4n + 4) { --card-accent-color: var(--brand-blue); }
 
-      .style-scroll-card {
+      .style-scroll__card {
         display: flex;
         flex-direction: column;
         gap: var(--space-1);
@@ -336,7 +336,7 @@
           opacity: 0.85;
         }
 
-        .style-card-title {
+        .style-scroll__title {
           font-weight: 700;
           line-height: 1.3;
           /* Workaround for https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/line-clamp. */
@@ -347,7 +347,7 @@
           overflow: hidden;
         }
 
-        .style-card-desc {
+        .style-scroll__desc {
           font-size: var(--text-sm);
           color: var(--fg-muted);
           line-height: 1.4;
@@ -359,7 +359,7 @@
           flex: 1;
         }
 
-        .style-card-date {
+        .style-scroll__date {
           font-size: var(--text-xs);
           color: var(--fg-muted);
           margin-top: auto;

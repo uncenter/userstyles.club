@@ -44,8 +44,8 @@
 
 <form {onsubmit} class="form-stack">
   <div class="form-group">
-    <div class="field-row">
-      <label for="title" class="field-label">Title</label>
+    <div class="form-field-row">
+      <label for="title" class="form-field-label">Title</label>
       {@render fieldExtras?.('title')}
     </div>
     <input
@@ -59,24 +59,24 @@
   </div>
 
   <div class="form-group">
-    <div class="field-row">
-      <label for="description" class="field-label">Description</label>
+    <div class="form-field-row">
+      <label for="description" class="form-field-label">Description</label>
       {@render fieldExtras?.('description')}
     </div>
     <input id="description" type="text" bind:value={description} maxlength="300" />
   </div>
 
   <div class="form-group">
-    <div class="field-row">
-      <label for="license" class="field-label">License</label>
+    <div class="form-field-row">
+      <label for="license" class="form-field-label">License</label>
       {@render fieldExtras?.('license')}
     </div>
     <LicenseInput id="license" bind:value={license} />
   </div>
 
   <div class="form-group">
-    <div class="field-row">
-      <label for="homepage-url" class="field-label">Homepage</label>
+    <div class="form-field-row">
+      <label for="homepage-url" class="form-field-label">Homepage</label>
       {@render fieldExtras?.('homepageUrl')}
     </div>
     <input id="homepage-url" type="url" bind:value={homepageUrl} maxlength="100" />
@@ -89,8 +89,8 @@
   />
 
   <div class="form-group">
-    <div class="field-row">
-      <p class="field-label" data-required>CSS</p>
+    <div class="form-field-row">
+      <p class="form-field-label" data-required>CSS</p>
       {@render fieldExtras?.('sourceCode')}
     </div>
     <CssEditor bind:code={sourceCode} />
