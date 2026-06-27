@@ -9,7 +9,7 @@
   import { getPreferredActorIdentifier } from '$lib/preferences.svelte';
   import type { ImportResult } from './import';
 
-  import { Spinner, Dialog } from '$components/ui';
+  import { Loading, Dialog } from '$components/ui';
   import { BlueskyIcon } from '$components';
 
   import ImportFromUrl from './import/ImportFromUrl.svelte';
@@ -129,7 +129,7 @@
       class="btn btn--primary"
       disabled={pending || !fields.title.trim() || !fields.sourceCode.trim()}
     >
-      {#if publishing}<Spinner size="sm" /> Publishing…{:else}Publish{/if}
+      <Loading pending={publishing} idle="Publish" active="Publishing…" />
     </button>
   {/snippet}
 

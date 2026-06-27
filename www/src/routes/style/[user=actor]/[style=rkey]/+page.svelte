@@ -19,7 +19,7 @@
   } from '$lib/at';
   import { getPreferredActorIdentifier } from '$lib/preferences.svelte';
 
-  import { Spinner, Alert, Dialog } from '$components/ui';
+  import { Loading, Alert, Dialog } from '$components/ui';
   import { ActorHandle, CssPreview, PreviewImage, StarRating, StarRatingAverage, StarRatingInput } from '$components';
 
   import { ScaleIcon } from '@lucide/svelte';
@@ -241,11 +241,11 @@
     </button>
     {#if myRating}
       <button class="btn btn--secondary" type="button" onclick={removeRating} disabled={ratingDialog.deleting || ratingDialog.submitting}>
-        {#if ratingDialog.deleting}<Spinner size="sm" /> Removing…{:else}Remove{/if}
+        <Loading pending={ratingDialog.deleting} idle="Remove" active="Removing…" />
       </button>
     {/if}
     <button class="btn btn--primary" type="button" onclick={submitRating} disabled={ratingDialog.submitting || ratingDialog.deleting || !ratingDialog.selected}>
-      {#if ratingDialog.submitting}<Spinner size="sm" /> Saving…{:else}{myRating ? 'Update' : 'Submit'}{/if}
+      <Loading pending={ratingDialog.submitting} idle={myRating ? 'Update' : 'Submit'} active="Saving…" />
     </button>
   {/snippet}
 </Dialog>

@@ -9,7 +9,7 @@
     type UserstyleFeedback,
   } from '$lib/at';
 
-  import { Spinner, Alert } from '$components/ui';
+  import { Loading, Alert } from '$components/ui';
 
   import CommentItem from './CommentItem.svelte';
 
@@ -77,7 +77,7 @@
           class="btn btn--primary"
           disabled={submitting || !comment.trim()}
         >
-          {#if submitting}<Spinner size="sm" /> Posting…{:else}Post{/if}
+          <Loading pending={submitting} idle="Post" active="Posting…" />
         </button>
       </form>
     </div>

@@ -7,7 +7,7 @@
 
   import { getBlobCdnUrl, updateUserstyle, user } from '$lib/at';
 
-  import { BackLink, Spinner } from '$components/ui';
+  import { BackLink, Loading } from '$components/ui';
 
   import UserstyleForm from '../../../../new/UserstyleForm.svelte';
 
@@ -91,7 +91,7 @@
       class="btn btn--primary"
       disabled={saving || !title.trim() || !sourceCode.trim()}
     >
-      {#if saving}<Spinner size="sm" /> Saving…{:else}Save{/if}
+      <Loading pending={saving} idle="Save" active="Saving…" />
     </button>
     <a
       href={resolve('/style/[user=actor]/[style=rkey]', { user: data.user, style: data.style })}

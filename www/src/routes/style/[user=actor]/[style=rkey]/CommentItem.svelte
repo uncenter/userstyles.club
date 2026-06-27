@@ -12,7 +12,7 @@
     type ReviewThread,
   } from '$lib/at';
 
-  import { Spinner, Alert, Dialog } from '$components/ui';
+  import { Loading, Alert, Dialog } from '$components/ui';
   import { ActorHandle, StarRating } from '$components';
 
   import { PencilIcon, Trash2Icon } from '@lucide/svelte';
@@ -132,7 +132,7 @@
     ></textarea>
     <div class="inline-editor__actions">
       <button type="submit" class="btn btn--primary btn--sm" disabled={submitting || !ctx.value.trim()}>
-        {#if submitting}<Spinner size="sm" /> {pendingLabel}…{:else}{submitLabel}{/if}
+        <Loading pending={submitting} idle={submitLabel} active="{pendingLabel}…" />
       </button>
       <button type="button" class="btn btn--outline btn--sm" onclick={onCancel}>Cancel</button>
     </div>
@@ -171,7 +171,7 @@
               disabled={submitting || editing.state}
               onclick={() => (confirmDeleteOpen = true)}
             >
-              {#if submitting}<Spinner size="sm" />{:else}<Trash2Icon size={14} />{/if}
+              <Loading pending={submitting}>{#snippet idle()}<Trash2Icon size={14} />{/snippet}</Loading>
             </button>
           </div>
         {/if}

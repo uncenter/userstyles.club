@@ -5,7 +5,7 @@
 
   import { login, signup, user } from '$lib/at';
 
-  import { BackLink, Spinner, Alert } from '$components/ui';
+  import { BackLink, Loading, Alert } from '$components/ui';
 
   let handle = $state('');
   let error = $state<string | null>(null);
@@ -63,7 +63,7 @@
         <Alert variant="error">{error}</Alert>
       {/if}
       <button type="submit" class="btn btn--primary" disabled={loading || !handle.trim()}>
-        {#if loading}<Spinner size="sm" /> Signing in…{:else}Continue{/if}
+        <Loading pending={loading} idle="Continue" active="Signing in…" />
       </button>
       <button type="button" class="btn btn--outline" onclick={signup}> Create account </button>
     </form>

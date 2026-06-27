@@ -2,7 +2,7 @@
   import type { UserstyleContent } from '$lib/at';
   import type { UserstyleFormState } from '../fields.svelte';
 
-  import { Spinner, Alert } from '$components/ui';
+  import { Loading, Alert } from '$components/ui';
 
   import { type ImportResult } from '.';
   import { getUsercssMetadata } from './metadata';
@@ -70,7 +70,7 @@
         aria-describedby="import-from-url-desc"
       />
       <button class="form-input-group__btn" type="submit" disabled={pending || !importUrl.trim()}>
-        {#if pending}<Spinner size="sm" /> Importing…{:else}Import{/if}
+        <Loading {pending} idle="Import" active="Importing…" />
       </button>
     </div>
   </label>

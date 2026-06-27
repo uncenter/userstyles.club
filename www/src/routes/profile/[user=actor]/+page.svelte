@@ -4,7 +4,7 @@
 
   import { user, setClubProfile } from '$lib/at';
 
-  import { Alert, Avatar, Spinner } from '$components/ui';
+  import { Alert, Avatar, Loading } from '$components/ui';
   import { UserstylesSection, BlueskyIcon } from '$components';
 
   import { PencilIcon } from '@lucide/svelte';
@@ -87,7 +87,7 @@
           Cancel
         </button>
         <button type="submit" class="btn btn--primary" disabled={saving}>
-          {#if saving}<Spinner size="sm" /> Saving…{:else}Save{/if}
+          <Loading pending={saving} idle="Save" active="Saving…" />
         </button>
       </div>
     </form>

@@ -9,7 +9,7 @@
   import { importFromProviders } from '../../../../new/import/providers';
   import { getUsercssMetadata } from '../../../../new/import/metadata';
 
-  import { BackLink, Spinner, Alert, Dialog } from '$components/ui';
+  import { BackLink, Loading, Alert, Dialog } from '$components/ui';
   import { ExternalLinkIcon, PencilIcon, RefreshCwIcon, Trash2Icon } from '@lucide/svelte';
 
   import SyncDiffTable from './SyncDiffTable.svelte';
@@ -172,7 +172,7 @@
           disabled={sync.fetching}
           onclick={fetchSync}
         >
-          {#if sync.fetching}<Spinner size="sm" /> Syncing…{:else}<RefreshCwIcon size={14} /> Sync{/if}
+          <Loading pending={sync.fetching} active="Syncing…">{#snippet idle()}<RefreshCwIcon size={14} /> Sync{/snippet}</Loading>
         </button>
       </li>
     {/if}
@@ -193,7 +193,7 @@
         onclick={() => (deletion.dialogOpen = true)}
         disabled={deletion.running}
       >
-        {#if deletion.running}<Spinner size="sm" /> Deleting…{:else}<Trash2Icon size={14} /> Delete{/if}
+        <Loading pending={deletion.running} active="Deleting…">{#snippet idle()}<Trash2Icon size={14} /> Delete{/snippet}</Loading>
       </button>
     </li>
   </ul>
@@ -236,7 +236,7 @@
     </button>
     {#if diff.hasChanges}
       <button class="btn btn--primary" type="button" onclick={applySync} disabled={sync.saving}>
-        {#if sync.saving}<Spinner size="sm" /> Syncing…{:else}Sync{/if}
+        <Loading pending={sync.saving} idle="Sync" active="Syncing…" />
       </button>
     {/if}
   {/snippet}
@@ -253,7 +253,7 @@
       Cancel
     </button>
     <button class="btn btn--danger" type="button" onclick={deleteAndRedirect} disabled={deletion.running}>
-      {#if deletion.running}<Spinner size="sm" /> Deleting…{:else}Delete{/if}
+      <Loading pending={deletion.running} idle="Delete" active="Deleting…" />
     </button>
   {/snippet}
 </Dialog>
