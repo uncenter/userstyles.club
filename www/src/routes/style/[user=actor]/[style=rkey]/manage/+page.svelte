@@ -15,7 +15,7 @@
   import SyncDiffTable from './SyncDiffTable.svelte';
 
   let { data }: PageProps = $props();
-
+  let userstyle = $derived(data.userstyle.value);
 
   $effect(() => {
     if (!user.isLoggedIn) {
@@ -36,14 +36,14 @@
   });
 
   let diff = $derived.by(() => {
-    const currentVersion = getUsercssMetadata(data.userstyle.sourceCode).version;
+    const currentVersion = getUsercssMetadata(userstyle.sourceCode).version;
     const newVersion = sync.newSourceCode
       ? getUsercssMetadata(sync.newSourceCode).version
       : undefined;
     return {
-      hasChanges: sync.newSourceCode !== null && sync.newSourceCode !== data.userstyle.sourceCode,
-      currentLines: data.userstyle.sourceCode.split('\n').length,
-      currentBytes: data.userstyle.sourceCode.length,
+      hasChanges: sync.newSourceCode !== null && sync.newSourceCode !== userstyle.sourceCode,
+      currentLines: userstyle.sourceCode.split('\n').length,
+      currentBytes: userstyle.sourceCode.length,
       newLines: sync.newSourceCode?.split('\n').length ?? 0,
       newBytes: sync.newSourceCode?.length ?? 0,
       currentVersion,
@@ -64,12 +64,12 @@
   }
 
   async function fetchSync() {
-    if (!data.userstyle.upstreamUrl || sync.fetching) return;
+    if (!userstyle.upstreamUrl || sync.fetching) return;
     sync.fetching = true;
     sync.error = null;
     sync.newSourceCode = null;
     try {
-      const result = await importFromProviders(data.userstyle.upstreamUrl);
+      const result = await importFromProviders(userstyle.upstreamUrl);
       sync.newSourceCode = result.sourceCode ?? null;
     } catch (e) {
       sync.error = e instanceof Error ? e.message : 'Failed to fetch from upstream.';
@@ -85,15 +85,15 @@
     sync.error = null;
     try {
       await updateUserstyle(data.style, {
-        title: data.userstyle.title,
-        description: data.userstyle.description,
-        license: data.userstyle.license,
-        homepageUrl: data.userstyle.homepageUrl,
+        title: userstyle.title,
+        description: userstyle.description,
+        license: userstyle.license,
+        homepageUrl: userstyle.homepageUrl,
         sourceCode: sync.newSourceCode,
-        upstreamUrl: data.userstyle.upstreamUrl,
-        stripUpdateUrl: data.userstyle.stripUpdateUrl,
-        previewImage: data.userstyle.previewImage,
-        createdAt: data.userstyle.createdAt,
+        upstreamUrl: userstyle.upstreamUrl,
+        stripUpdateUrl: userstyle.stripUpdateUrl,
+        previewImage: userstyle.previewImage,
+        createdAt: userstyle.createdAt,
       });
       sync.dialogOpen = false;
       sync.newSourceCode = null;
@@ -126,7 +126,7 @@
 </script>
 
 <svelte:head>
-  <title>{joinPageTitle('Manage', data.userstyle.title)}</title>
+  <title>{joinPageTitle('Manage', userstyle.title)}</title>
 </svelte:head>
 
 <div class="page-section">
@@ -137,7 +137,7 @@
         user: getPreferredActorIdentifier(data.profile),
         style: data.style,
       })}
-    >← {data.userstyle.title}</a>
+    >← {userstyle.title}</a>
     <h1>Manage</h1>
   </div>
 </div>
@@ -160,7 +160,7 @@
       </a>
     </li>
 
-    {#if data.userstyle.upstreamUrl}
+    {#if userstyle.upstreamUrl}
       <li class="action-item">
         <div class="action-info">
           <p class="action-title">Sync</p>
@@ -225,9 +225,9 @@
     {:else if sync.newSourceCode !== null}
       <p class="text-muted">No changes detected! This userstyle is already in sync with upstream.</p>
     {/if}
-    <a class="upstream-url" href={data.userstyle.upstreamUrl} target="_blank" rel="noopener noreferrer">
+    <a class="upstream-url" href={userstyle.upstreamUrl} target="_blank" rel="noopener noreferrer">
       <ExternalLinkIcon size={11} />
-      <span>{data.userstyle.upstreamUrl}</span>
+      <span>{userstyle.upstreamUrl}</span>
     </a>
   {/snippet}
   {#snippet actions()}
@@ -245,7 +245,7 @@
 <Dialog bind:open={deletion.dialogOpen} title="Delete userstyle?">
   {#snippet children()}
     <p class="text-muted">
-      This will permanently delete <strong>{data.userstyle.title}</strong>. This cannot be undone.
+      This will permanently delete <strong>{userstyle.title}</strong>. This cannot be undone.
     </p>
   {/snippet}
   {#snippet actions()}

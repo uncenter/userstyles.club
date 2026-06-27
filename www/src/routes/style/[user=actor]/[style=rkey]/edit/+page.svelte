@@ -12,22 +12,23 @@
   import UserstyleForm from '../../../../new/UserstyleForm.svelte';
 
   let { data }: PageProps = $props();
+  let userstyle = $derived(data.userstyle.value);
 
-  let title = $derived(data.userstyle.title);
-  let description = $derived(data.userstyle.description);
-  let license = $derived(data.userstyle.license);
-  let upstreamUrl = $derived(data.userstyle.upstreamUrl);
-  let homepageUrl = $derived(data.userstyle.homepageUrl);
-  let sourceCode = $derived(data.userstyle.sourceCode);
+  let title = $derived(userstyle.title);
+  let description = $derived(userstyle.description);
+  let license = $derived(userstyle.license);
+  let upstreamUrl = $derived(userstyle.upstreamUrl);
+  let homepageUrl = $derived(userstyle.homepageUrl);
+  let sourceCode = $derived(userstyle.sourceCode);
 
   let trackUpstreamUrl = $derived(upstreamUrl !== undefined);
-  let stripUpdateUrl = $derived(data.userstyle.stripUpdateUrl ?? !sourceCode.includes('@updateURL'));
+  let stripUpdateUrl = $derived(userstyle.stripUpdateUrl ?? !sourceCode.includes('@updateURL'));
 
   let saving = $state(false);
   let error = $state<string | null>(null);
 
   let previewFile = $state<File | null>(null);
-  let keepExistingPreview = $derived(!!data.userstyle.previewImage);
+  let keepExistingPreview = $derived(!!userstyle.previewImage);
 
   $effect(() => {
     if (!user.isLoggedIn) {
@@ -57,8 +58,8 @@
         sourceCode,
         stripUpdateUrl,
         previewImage:
-          previewFile ?? (keepExistingPreview ? data.userstyle.previewImage : undefined),
-        createdAt: data.userstyle.createdAt,
+          previewFile ?? (keepExistingPreview ? userstyle.previewImage : undefined),
+        createdAt: userstyle.createdAt,
       });
       goto(resolve('/style/[user=actor]/[style=rkey]', { user: data.user, style: data.style }));
     } catch (e) {
@@ -70,7 +71,7 @@
 </script>
 
 <svelte:head>
-  <title>{joinPageTitle('Editing', data.userstyle.title)}</title>
+  <title>{joinPageTitle('Editing', userstyle.title)}</title>
 </svelte:head>
 
 <div class="page-section">
@@ -105,8 +106,8 @@
     bind:stripUpdateUrl
     bind:previewFile
     bind:keepExistingPreview
-    existingImageSrc={data.userstyle.previewImage
-      ? getBlobCdnUrl(data.profile.did, data.userstyle.previewImage, 'feed_fullsize')
+    existingImageSrc={userstyle.previewImage
+      ? getBlobCdnUrl(data.profile.did, userstyle.previewImage, 'feed_fullsize')
       : null}
     {error}
     onsubmit={submit}

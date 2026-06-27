@@ -15,6 +15,7 @@
     deleteRating,
     getCommentThreads,
     type ReviewThread,
+    type UserstyleFeedback,
   } from '$lib/at';
   import { getPreferredActorIdentifier } from '$lib/preferences.svelte';
 
@@ -31,8 +32,10 @@
   import { proxify } from '$lib/proxify.svelte';
 
   let { data, params }: PageProps = $props();
+  let userstyle = $derived(data.userstyle.value);
 
-  let feedback = $derived(proxify(data.feedback));
+  let feedback = $state<UserstyleFeedback>({ comments: [], ratings: {} });
+  $effect(() => { data.feedback.then(fb => { feedback = proxify(fb); }); });
 
   const threads: ReviewThread[] = $derived(getCommentThreads(feedback.comments).map((thread) => {
     const did = parseResourceUri(thread.comment.uri).repo!;
@@ -51,8 +54,8 @@
     error: null as string | null,
   });
 
-  let lineCount = $derived(data.userstyle.value.sourceCode.split('\n').length);
-  let byteCount = $derived(data.userstyle.value.sourceCode.length);
+  let lineCount = $derived(userstyle.sourceCode.split('\n').length);
+  let byteCount = $derived(userstyle.sourceCode.length);
 
   function openRatingDialog() {
     ratingDialog.selected = myRating?.value.rating;
@@ -100,48 +103,48 @@
 </script>
 
 <svelte:head>
-  <title>{joinPageTitle(data.userstyle.value.title)}</title>
+  <title>{joinPageTitle(userstyle.title)}</title>
 </svelte:head>
 
 <div class="page-wrapper">
   <section class="page-section userstyle-section">
-    {#if data.userstyle.value.previewImage}
+    {#if userstyle.previewImage}
       <div class="style-preview grid-background">
         <PreviewImage
           src={getBlobCdnUrl(
             data.profile.did,
-            data.userstyle.value.previewImage,
+            userstyle.previewImage,
             'feed_fullsize',
           )}
-          alt={data.userstyle.value.title}
+          alt={userstyle.title}
         />
       </div>
     {/if}
 
     <div class="style-header">
       <div class="style-header-info">
-        <h1 class="style-title">{data.userstyle.value.title}</h1>
+        <h1 class="style-title">{userstyle.title}</h1>
         <p class="style-subtitle">
-          {#if data.userstyle.value.updatedAt}
-            Updated <time>{formatDate(data.userstyle.value.updatedAt)}</time>
+          {#if userstyle.updatedAt}
+            Updated <time>{formatDate(userstyle.updatedAt)}</time>
           {:else}
-            Published <time>{formatDate(data.userstyle.value.createdAt)}</time>
+            Published <time>{formatDate(userstyle.createdAt)}</time>
           {/if}
-          {#if data.userstyle.value.license}
+          {#if userstyle.license}
             · <a
               class="subtitle-link"
-              href="https://spdx.org/licenses/{data.userstyle.value.license}.html"
+              href="https://spdx.org/licenses/{userstyle.license}.html"
               target="_blank"
               rel="noopener noreferrer"
-            >{data.userstyle.value.license}<ScaleIcon size={10} /></a>
+            >{userstyle.license}<ScaleIcon size={10} /></a>
           {/if}
         </p>
       </div>
       <ActorHandle profile={data.profile} />
     </div>
 
-    {#if data.userstyle.value.description}
-      <p class="style-description">{data.userstyle.value.description}</p>
+    {#if userstyle.description}
+      <p class="style-description">{userstyle.description}</p>
     {/if}
 
     <div class="style-info">
@@ -190,14 +193,14 @@
     </div>
 
     <div class="code-preview">
-      <CssPreview source={data.userstyle.value.sourceCode} />
+      <CssPreview source={userstyle.sourceCode} />
       <div class="code-footer">
-        {#if data.userstyle.value.upstreamUrl}
+        {#if userstyle.upstreamUrl}
           <span class="upstream-source">Upstreamed from <a
-            href={data.userstyle.value.upstreamUrl}
+            href={userstyle.upstreamUrl}
             target="_blank"
             rel="noopener noreferrer"
-          >{data.userstyle.value.upstreamUrl}</a>.</span>
+          >{userstyle.upstreamUrl}</a>.</span>
         {/if}
         <p class="source-stats">{bytes(byteCount)} · {lineCount} lines</p>
       </div>
