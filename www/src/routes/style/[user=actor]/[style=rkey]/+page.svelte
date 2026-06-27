@@ -14,8 +14,8 @@
     updateRating,
     deleteRating,
     getCommentThreads,
+    type CommentRecord,
     type ReviewThread,
-    type UserstyleFeedback,
   } from '$lib/at';
   import { getPreferredActorIdentifier } from '$lib/preferences.svelte';
 
@@ -34,17 +34,25 @@
   let { data, params }: PageProps = $props();
   let userstyle = $derived(data.userstyle.value);
 
-  let feedback = $state<UserstyleFeedback>({ comments: [], ratings: {} });
-  $effect(() => { data.feedback.then(fb => { feedback = proxify(fb); }); });
+  let feedback = $derived(proxify(data.feedback));
 
-  const threads: ReviewThread[] = $derived(getCommentThreads(feedback.comments).map((thread) => {
-    const did = parseResourceUri(thread.comment.uri).repo!;
-    return { ...thread, rating: feedback.ratings[did] };
-  }));
+  const threads: ReviewThread[] = $derived(
+    getCommentThreads(feedback.comments).map((thread) => {
+      const did = parseResourceUri(thread.comment.uri).repo!;
+      return { ...thread, rating: feedback!.ratings[did] };
+    })
+  );
 
   let averageRating = $derived(computeAverageRating(Object.values(feedback.ratings)));
   let myRating = $derived(user.isLoggedIn ? feedback.ratings[user.did!] : undefined);
   let canRate = $derived(user.isLoggedIn && user.did !== data.profile.did);
+
+  function onCommentAdded(comment: CommentRecord) {
+    feedback.comments.push(comment);
+  }
+  function onCommentDeleted(uri: string) {
+    feedback.comments = feedback.comments.filter((c) => c.uri !== uri);
+  }
 
   let ratingDialog = $state({
     open: false,
@@ -211,8 +219,10 @@
     <Comments
       userstyle={data.userstyle.uri}
       owner={data.profile.did}
-      bind:feedback
+      {feedback}
       {threads}
+      {onCommentAdded}
+      {onCommentDeleted}
     />
   </div>
 </div>

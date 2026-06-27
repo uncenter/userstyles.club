@@ -7,8 +7,9 @@
     updateComment,
     deleteComment,
     createComment,
+    type CommentRecord,
+    type RatingRecord,
     type ReviewThread,
-    type UserstyleFeedback
   } from '$lib/at';
 
   import { Spinner, Alert, Dialog } from '$components/ui';
@@ -22,14 +23,16 @@
 
   interface Props {
     thread: ReviewThread;
-    feedback: UserstyleFeedback;
+    ratings: Record<string, RatingRecord>;
     userstyle: ResourceUri;
+    onCommentAdded: (comment: CommentRecord) => void;
+    onCommentDeleted: (uri: string) => void;
   }
 
-  let { thread, feedback = $bindable(), userstyle }: Props = $props();
+  let { thread, ratings, userstyle, onCommentAdded, onCommentDeleted }: Props = $props();
 
   let { repo: actor, rkey } = $derived(parseResourceUri(thread.comment.uri));
-  let rating = $derived(feedback.ratings?.[actor!]);
+  let rating = $derived(ratings?.[actor!]);
   let isMyComment = $derived(user.isLoggedIn && user.did === actor);
 
   let commenter = $derived(isMyComment ? user.profile! : await getProfile(actor));
@@ -90,7 +93,7 @@
         comment: replying.value,
         parent: thread.comment.uri,
       });
-      feedback.comments.push({ uri: reply.response.uri, value: reply.record });
+      onCommentAdded({ uri: reply.response.uri, value: reply.record });
       replying.value = '';
     } catch (e) {
       error = e instanceof Error ? e.message : 'Failed to submit comment reply.';
@@ -105,7 +108,7 @@
     submitting = true;
     try {
       await deleteComment(rkey!);
-      feedback.comments = feedback.comments.filter((c) => c.uri !== thread.comment.uri);
+      onCommentDeleted(thread.comment.uri);
     } catch (e) {
       error = e instanceof Error ? e.message : 'Failed to delete comment.';
     } finally {
@@ -194,8 +197,10 @@
       {#each thread.replies as reply}
         <Self
           thread={reply}
-          bind:feedback
+          {ratings}
           {userstyle}
+          {onCommentAdded}
+          {onCommentDeleted}
         />
       {/each}
     </ul>

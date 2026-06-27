@@ -4,8 +4,9 @@
   import {
     user,
     createComment,
+    type CommentRecord,
     type ReviewThread,
-    type UserstyleFeedback
+    type UserstyleFeedback,
   } from '$lib/at';
 
   import { Spinner, Alert } from '$components/ui';
@@ -17,9 +18,11 @@
     owner: Did;
     feedback: UserstyleFeedback;
     threads: ReviewThread[];
+    onCommentAdded: (comment: CommentRecord) => void;
+    onCommentDeleted: (uri: string) => void;
   }
 
-  let { userstyle, owner, feedback = $bindable(), threads }: Props = $props();
+  let { userstyle, owner, feedback, threads, onCommentAdded, onCommentDeleted }: Props = $props();
 
   let comment = $state('');
 
@@ -33,7 +36,7 @@
     submitting = true;
     try {
       let created = await createComment({ subject: userstyle, comment });
-      feedback.comments.push({ uri: created.response.uri, value: created.record });
+      onCommentAdded({ uri: created.response.uri, value: created.record });
       comment = '';
     } catch (e) {
       error = e instanceof Error ? e.message : 'Failed to submit commit.';
@@ -87,8 +90,10 @@
       {#each threads as thread (thread.comment.uri)}
         <CommentItem
           {thread}
-          bind:feedback
+          ratings={feedback.ratings}
           {userstyle}
+          {onCommentAdded}
+          {onCommentDeleted}
         />
       {/each}
     </ul>
