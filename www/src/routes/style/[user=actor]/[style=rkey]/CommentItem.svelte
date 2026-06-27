@@ -132,7 +132,7 @@
     ></textarea>
     <div class="inline-editor__actions">
       <button type="submit" class="btn btn--primary btn--sm" disabled={submitting || !ctx.value.trim()}>
-        {#if submitting}<Spinner size="sm" /> {pendingLabel}...{:else}{submitLabel}{/if}
+        {#if submitting}<Spinner size="sm" /> {pendingLabel}…{:else}{submitLabel}{/if}
       </button>
       <button type="button" class="btn btn--outline btn--sm" onclick={onCancel}>Cancel</button>
     </div>

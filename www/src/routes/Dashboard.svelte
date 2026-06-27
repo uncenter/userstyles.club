@@ -105,13 +105,13 @@
 <div class="page-section">
   <h2 class="section-heading">Recent comments</h2>
   {#await comments}
-    <div class="section-loading"><Spinner size="md" /> Loading…</div>
+    <div class="inline-loading"><Spinner size="md" /> Loading…</div>
   {:then comments}
     {#if comments.length === 0}
       <p class="text-muted no-content">No comments on your styles yet.</p>
     {:else}
       {@const recents = comments.slice(0, 5)}
-      <ul class="comment-list" role="list">
+      <ul class="comment-list list-reset" role="list">
         {#each recents as { style, comment } (comment.uri)}
           {@const did = parseResourceUri(comment.uri).repo}
           {@const commenter = await getProfile(did)}
@@ -127,7 +127,7 @@
                 <time class="comment-list__date">{formatDate(comment.value.updatedAt ?? comment.value.createdAt)}</time>
               </div>
             </div>
-            <p class="comment-list__content">{comment.value.comment}</p>
+            <p class="comment-list__content truncate-2">{comment.value.comment}</p>
           </li>
         {/each}
       </ul>
@@ -138,7 +138,7 @@
 <div class="page-section">
   <h2 class="section-heading">Your styles</h2>
   {#await userstyles}
-    <div class="section-loading"><Spinner size="md" /> Loading…</div>
+    <div class="inline-loading"><Spinner size="md" /> Loading…</div>
   {:then userstyles}
     {#if userstyles.length === 0}
       <p class="text-muted no-content">
@@ -150,9 +150,9 @@
         {#each recents as style (style.uri)}
           <li class="style-scroll__item">
             <a href={getLinkToUserOwnStyle(style.uri)} class="style-scroll__card">
-              <span class="style-scroll__title">{style.value.title}</span>
+              <span class="style-scroll__title truncate-2">{style.value.title}</span>
               {#if style.value.description}
-                <span class="style-scroll__desc">{style.value.description}</span>
+                <span class="style-scroll__desc truncate-2">{style.value.description}</span>
               {/if}
               <time class="style-scroll__date">
                 {formatDate(style.value.updatedAt ?? style.value.createdAt)}
@@ -226,14 +226,6 @@
     margin-bottom: var(--space-4);
   }
 
-  .section-loading {
-    display: flex;
-    align-items: center;
-    gap: var(--space-2);
-    color: var(--fg-muted);
-    font-size: var(--text-sm);
-  }
-
   .no-content {
     padding: var(--space-2) 0;
   }
@@ -241,9 +233,6 @@
   .comment-list {
     display: flex;
     flex-direction: column;
-    list-style: none;
-    padding: 0;
-    margin: 0;
 
     .comment-list__item {
       padding: var(--space-3) 0;
@@ -289,11 +278,6 @@
 
       .comment-list__content {
         line-height: 1.5;
-        display: -webkit-box;
-        -webkit-line-clamp: 2;
-        line-clamp: 2;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
       }
     }
   }
@@ -303,8 +287,6 @@
     gap: var(--space-3);
     overflow-x: auto;
     padding-bottom: var(--space-2);
-    list-style: none;
-    margin: 0;
     padding-inline: 0;
     scrollbar-width: thin;
     scrollbar-color: var(--border) transparent;
@@ -339,23 +321,12 @@
         .style-scroll__title {
           font-weight: 700;
           line-height: 1.3;
-          /* Workaround for https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/line-clamp. */
-          display: -webkit-box;
-          -webkit-line-clamp: 2;
-          -webkit-box-orient: vertical;
-          line-clamp: 2;
-          overflow: hidden;
         }
 
         .style-scroll__desc {
           font-size: var(--text-sm);
           color: var(--fg-muted);
           line-height: 1.4;
-          display: -webkit-box;
-          -webkit-line-clamp: 2;
-          -webkit-box-orient: vertical;
-          line-clamp: 2;
-          overflow: hidden;
           flex: 1;
         }
 

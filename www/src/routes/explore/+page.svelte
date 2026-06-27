@@ -17,7 +17,7 @@
   <h1>Explore</h1>
 </div>
 {#await userstyles}
-  <div class="loading-state"><Spinner /></div>
+  <div class="section-fill"><Spinner size="lg" /></div>
 {:then userstyles}
   <UserstylesSection {userstyles}>
     {#snippet empty()}<p>No userstyles published yet.</p>{/snippet}
@@ -25,11 +25,3 @@
 {:catch error}
   <Alert variant="error">{error}</Alert>
 {/await}
-
-<style>
-  .loading-state {
-    display: flex;
-    justify-content: center;
-    padding: var(--space-8) 0;
-  }
-</style>

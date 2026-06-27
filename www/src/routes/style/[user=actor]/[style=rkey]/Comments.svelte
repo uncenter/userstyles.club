@@ -77,7 +77,7 @@
           class="btn btn--primary"
           disabled={submitting || !comment.trim()}
         >
-          {#if submitting}<Spinner size="sm" /> Posting...{:else}Post{/if}
+          {#if submitting}<Spinner size="sm" /> Posting…{:else}Post{/if}
         </button>
       </form>
     </div>
@@ -86,7 +86,7 @@
   {#if threads.length === 0}
     <p class="comments-section__empty">No comments yet.</p>
   {:else}
-    <ul class="comments-section__list">
+    <ul class="comments-section__list list-reset">
       {#each threads as thread (thread.comment.uri)}
         <CommentItem
           {thread}
@@ -145,9 +145,6 @@
     }
 
     .comments-section__list {
-      list-style: none;
-      padding: 0;
-      margin: 0;
       display: flex;
       flex-direction: column;
       gap: var(--space-4);

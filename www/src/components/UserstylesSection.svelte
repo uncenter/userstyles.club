@@ -14,11 +14,11 @@
 
 <section class="userstyles-section">
   {#if userstyles.length === 0}
-    <div class="userstyles-section__empty">
+    <div class="section-fill">
       {#if empty}{@render empty()}{:else}No userstyles yet.{/if}
     </div>
   {:else}
-    <ul class="userstyles-section__list">
+    <ul class="userstyles-section__list list-reset">
       {#each userstyles as userstyle}
         <li class="userstyles-section__list-item"><UserstylesListItem {userstyle} {author} /></li>
       {/each}
@@ -31,16 +31,7 @@
     margin-top: var(--space-6);
     margin-bottom: var(--space-5);
 
-    .userstyles-section__empty {
-      display: flex;
-      justify-content: center;
-      padding: var(--space-8) 0;
-      color: var(--fg-muted);
-    }
-
     .userstyles-section__list {
-      list-style: none;
-      padding: 0;
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
       gap: var(--space-4);

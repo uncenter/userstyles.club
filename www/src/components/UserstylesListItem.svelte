@@ -47,7 +47,7 @@
   </div>
   <div class="userstyle-card__body">
     <div class="userstyle-card__title-row">
-      <h3 class="userstyle-card__title">
+      <h3 class="userstyle-card__title truncate-1">
         <a
           href={resolve('/style/[user=actor]/[style=rkey]', {
             user: getPreferredActorIdentifier(profile),
@@ -57,7 +57,7 @@
       </h3>
       <ActorHandle {profile} style='minimal' />
     </div>
-    <p class="userstyle-card__description">{userstyle.value.description ?? ''}</p>
+    <p class="userstyle-card__description truncate-1">{userstyle.value.description ?? ''}</p>
     <footer class="userstyle-card__meta">
       <span class="userstyle-card__meta-item">
         <CalendarIcon size={12} />
@@ -121,10 +121,6 @@
         font-weight: 700;
         margin: 0;
         line-height: 1.2;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        min-width: 0;
 
         a:not(:hover) {
           text-decoration: none;
@@ -137,9 +133,6 @@
         line-height: 1.4;
         min-height: 1.4em;
         margin: 0;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
       }
 
       .userstyle-card__meta {

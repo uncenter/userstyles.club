@@ -227,7 +227,7 @@
     {/if}
     <a class="manage-page__upstream-url" href={userstyle.upstreamUrl} target="_blank" rel="noopener noreferrer">
       <ExternalLinkIcon size={11} />
-      <span class="manage-page__upstream-url-text">{userstyle.upstreamUrl}</span>
+      <span class="manage-page__upstream-url-text truncate-1">{userstyle.upstreamUrl}</span>
     </a>
   {/snippet}
   {#snippet actions()}
@@ -310,13 +310,6 @@
     font-size: var(--text-xs);
     color: var(--fg-muted);
     text-decoration: none;
-
-    .manage-page__upstream-url-text {
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      min-width: 0;
-    }
 
     &:hover {
       color: var(--foreground);
