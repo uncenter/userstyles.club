@@ -23,7 +23,7 @@
   import { Spinner, Alert, Dialog } from '$components/ui';
   import { ActorHandle, CssPreview, PreviewImage, StarRating, StarRatingAverage, StarRatingInput } from '$components';
 
-  import { PencilIcon, Trash2Icon } from '@lucide/svelte';
+  import { PencilIcon, Trash2Icon, ScaleIcon } from '@lucide/svelte';
 
   import bytes from 'pretty-bytes';
   import { formatDate } from '$lib/date';
@@ -155,10 +155,11 @@
           {/if}
           {#if data.userstyle.value.license}
             · <a
+              class="subtitle-link"
               href="https://spdx.org/licenses/{data.userstyle.value.license}.html"
               target="_blank"
-              rel="noopener noreferrer">{data.userstyle.value.license}</a
-            >
+              rel="noopener noreferrer"
+            >{data.userstyle.value.license}<ScaleIcon size={10} /></a>
           {/if}
         </p>
       </div>
@@ -209,7 +210,16 @@
 
     <div class="code-preview">
       <CssPreview source={data.userstyle.value.sourceCode} />
-      <p class="code-meta">{bytes(byteCount)} · {lineCount} lines</p>
+      <div class="code-footer">
+        {#if data.userstyle.value.upstreamUrl}
+          <span class="upstream-source">Upstreamed from <a
+            href={data.userstyle.value.upstreamUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+          >{data.userstyle.value.upstreamUrl}</a>.</span>
+        {/if}
+        <p class="source-stats">{bytes(byteCount)} · {lineCount} lines</p>
+      </div>
     </div>
   </section>
 
@@ -349,6 +359,13 @@
       time {
         font-weight: 600;
       }
+
+      .subtitle-link {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--space-1);
+        vertical-align: middle;
+      }
     }
   }
 
@@ -437,10 +454,27 @@
     padding: 0 var(--space-6) var(--space-6);
   }
 
-  .code-meta {
-    font-size: var(--text-xs);
-    color: var(--fg-muted);
-    text-align: right;
+  .code-footer {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
     padding: var(--space-1) var(--space-2);
+    gap: var(--space-4);
+    font-size: var(--text-sm);
+    color: var(--fg-muted);
+
+    .upstream-source {
+      min-width: 0;
+
+      a {
+        overflow-wrap: break-word;
+        word-break: break-all;
+      }
+    }
+
+    .source-stats {
+      margin-left: auto;
+      white-space: nowrap;
+    }
   }
 </style>
