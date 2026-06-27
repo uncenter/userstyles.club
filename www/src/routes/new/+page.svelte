@@ -5,7 +5,7 @@
 
   import { parseResourceUri } from '@atcute/lexicons';
 
-  import { createUserstyle, removeUpdateUrlFromSource, user, type UserstyleContent } from '$lib/at';
+  import { createUserstyle, user, type UserstyleContent } from '$lib/at';
   import { getPreferredActorIdentifier } from '$lib/preferences.svelte';
   import type { ImportResult } from './import';
 
@@ -45,24 +45,20 @@
     error = null;
 
     try {
-      const sourceCode = fields.removeUpdateUrl
-        ? removeUpdateUrlFromSource(fields.sourceCode)
-        : fields.sourceCode;
       let userstyle = await createUserstyle({
         title: fields.title,
         description: fields.description,
         license: fields.license,
         upstreamUrl: fields.trackUpstreamUrl ? fields.upstreamUrl : undefined,
         homepageUrl: fields.homepageUrl,
-        sourceCode,
+        sourceCode: fields.sourceCode,
+        stripUpdateUrl: fields.stripUpdateUrl,
         previewImage: previewFile ?? undefined,
       });
       let uri = parseResourceUri(userstyle.response.uri);
       publishedUrl = `/style/${getPreferredActorIdentifier(user.profile!)}/${uri.rkey}`;
       shareText = `Just published "${fields.title}" on userstyles.club!\n\nhttps://userstyles.club${publishedUrl}`;
       shareDialogOpen = true;
-
-      fields.reset();
     } catch (e) {
       error = e instanceof Error ? e.message : 'Failed to create userstyle.';
     } finally {
@@ -76,9 +72,9 @@
     clearDialogOpen = false;
   }
 
-  function skipShare() {
+  function goToStyle() {
     shareDialogOpen = false;
-    goto(publishedUrl);
+    goto(publishedUrl).then(() => fields.reset());
   }
 
   function openInBluesky() {
@@ -87,8 +83,7 @@
       '_blank',
       'noopener,noreferrer',
     );
-    shareDialogOpen = false;
-    goto(publishedUrl);
+    goToStyle();
   }
 </script>
 
@@ -146,7 +141,7 @@
     bind:sourceCode={fields.sourceCode}
     bind:upstreamUrl={fields.upstreamUrl}
     bind:trackUpstreamUrl={fields.trackUpstreamUrl}
-    bind:removeUpdateUrl={fields.removeUpdateUrl}
+    bind:stripUpdateUrl={fields.stripUpdateUrl}
     bind:previewFile
     {error}
     onsubmit={submit}
@@ -162,7 +157,7 @@
     </p>
   {/snippet}
   {#snippet actions()}
-    <button class="btn btn-outline" type="button" onclick={skipShare}>Maybe later</button>
+    <button class="btn btn-outline" type="button" onclick={goToStyle}>Maybe later</button>
     <button class="btn btn-bsky" type="button" onclick={openInBluesky}>
       <BlueskyIcon size={16} /> Open in Bluesky
     </button>

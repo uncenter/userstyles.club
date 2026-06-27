@@ -29,6 +29,7 @@
   import { formatDate } from '$lib/date';
 
   import Comments from './Comments.svelte';
+  import SyncFromUpstream from './SyncFromUpstream.svelte';
 
   import { proxify } from '$lib/proxify.svelte';
 
@@ -224,6 +225,9 @@
       >
         <PencilIcon size={14} />
       </a>
+      {#if data.userstyle.value.upstreamUrl}
+        <SyncFromUpstream userstyle={data.userstyle.value} rkey={data.style} />
+      {/if}
       <button
         type="button"
         class="btn btn-danger btn-sm btn-icon"

@@ -28,7 +28,7 @@
     upstreamUrl = $bindable(undefined),
 
     trackUpstreamUrl = $bindable(false),
-    removeUpdateUrl = $bindable(false),
+    stripUpdateUrl = $bindable(false),
 
     previewFile = $bindable(null),
     keepExistingPreview = $bindable(false),
@@ -118,7 +118,7 @@
     <label class="form-check">
       <input
         type="checkbox"
-        bind:checked={removeUpdateUrl}
+        bind:checked={stripUpdateUrl}
         aria-describedby="remove-update-url-desc"
       />
       Check for updates from <Wordmark --height="1rem" /> instead of original update URL?

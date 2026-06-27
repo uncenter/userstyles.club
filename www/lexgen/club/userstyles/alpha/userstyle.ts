@@ -1,4 +1,4 @@
-import { blob, document, object, record, required, string } from '@atcute/lexicon-doc/builder';
+import { blob, boolean, document, object, record, required, string } from '@atcute/lexicon-doc/builder';
 
 export default document({
   id: 'club.userstyles.alpha.userstyle',
@@ -15,6 +15,7 @@ export default document({
           license: string({ maxLength: 100 }),
           upstreamUrl: string({ format: 'uri' }),
           homepageUrl: string({ format: 'uri' }),
+          stripUpdateUrl: boolean(),
           createdAt: required(string({ format: 'datetime' })),
           updatedAt: string({ format: 'datetime' }),
         },

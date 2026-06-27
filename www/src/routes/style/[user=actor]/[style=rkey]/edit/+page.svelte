@@ -5,7 +5,7 @@
 
   import { joinPageTitle } from '$lib/constants';
 
-  import { getBlobCdnUrl, removeUpdateUrlFromSource, updateUserstyle, user } from '$lib/at';
+  import { getBlobCdnUrl, updateUserstyle, user } from '$lib/at';
 
   import { Spinner } from '$components/ui';
 
@@ -20,8 +20,8 @@
   let homepageUrl = $derived(data.userstyle.homepageUrl);
   let sourceCode = $derived(data.userstyle.sourceCode);
 
-  let trackUpstreamUrl = $state(false);
-  let removeUpdateUrl = $state(false);
+  let trackUpstreamUrl = $derived(upstreamUrl !== undefined);
+  let stripUpdateUrl = $derived(data.userstyle.stripUpdateUrl ?? !sourceCode.includes('@updateURL'));
 
   let saving = $state(false);
   let error = $state<string | null>(null);
@@ -48,16 +48,14 @@
     error = null;
 
     try {
-      let processedSourceCode = removeUpdateUrl
-        ? removeUpdateUrlFromSource(sourceCode)
-        : sourceCode;
       await updateUserstyle(data.style, {
         title,
         description,
         license,
         upstreamUrl: trackUpstreamUrl ? upstreamUrl : undefined,
         homepageUrl,
-        sourceCode: processedSourceCode,
+        sourceCode,
+        stripUpdateUrl,
         previewImage:
           previewFile ?? (keepExistingPreview ? data.userstyle.previewImage : undefined),
         createdAt: data.userstyle.createdAt,
@@ -104,7 +102,7 @@
     bind:homepageUrl
     bind:sourceCode
     bind:trackUpstreamUrl
-    bind:removeUpdateUrl
+    bind:stripUpdateUrl
     bind:previewFile
     bind:keepExistingPreview
     existingImageSrc={data.userstyle.previewImage

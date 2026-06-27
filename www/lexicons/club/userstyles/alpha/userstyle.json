@@ -34,6 +34,9 @@
             "type": "string",
             "format": "uri"
           },
+          "stripUpdateUrl": {
+            "type": "boolean"
+          },
           "createdAt": {
             "type": "string",
             "format": "datetime"
