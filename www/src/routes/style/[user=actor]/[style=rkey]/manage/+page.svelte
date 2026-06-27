@@ -9,7 +9,7 @@
   import { importFromProviders } from '../../../../new/import/providers';
   import { getUsercssMetadata } from '../../../../new/import/metadata';
 
-  import { Spinner, Alert, Dialog } from '$components/ui';
+  import { BackLink, Spinner, Alert, Dialog } from '$components/ui';
   import { ExternalLinkIcon, PencilIcon, RefreshCwIcon, Trash2Icon } from '@lucide/svelte';
 
   import SyncDiffTable from './SyncDiffTable.svelte';
@@ -131,13 +131,13 @@
 
 <div class="page-section">
   <div class="manage-page__header">
-    <a
-      class="manage-page__back text-muted"
+    <BackLink
       href={resolve('/style/[user=actor]/[style=rkey]', {
         user: getPreferredActorIdentifier(data.profile),
         style: data.style,
       })}
-    >← {userstyle.title}</a>
+      label={userstyle.title}
+    />
     <h1>Manage</h1>
   </div>
 </div>
@@ -263,15 +263,6 @@
     display: flex;
     flex-direction: column;
     gap: var(--space-1);
-  }
-
-  .manage-page__back {
-    font-size: var(--text-sm);
-    text-decoration: none;
-
-    &:hover {
-      text-decoration: underline;
-    }
   }
 
   .action-list {

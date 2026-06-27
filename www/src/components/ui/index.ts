@@ -1,3 +1,4 @@
+export { default as BackLink } from './BackLink.svelte';
 export { default as Badge } from './Badge.svelte';
 export { default as Alert } from './Alert.svelte';
 export { default as Avatar } from './Avatar.svelte';

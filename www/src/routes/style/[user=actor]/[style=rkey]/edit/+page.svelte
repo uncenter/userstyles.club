@@ -7,7 +7,7 @@
 
   import { getBlobCdnUrl, updateUserstyle, user } from '$lib/at';
 
-  import { Spinner } from '$components/ui';
+  import { BackLink, Spinner } from '$components/ui';
 
   import UserstyleForm from '../../../../new/UserstyleForm.svelte';
 
@@ -75,6 +75,10 @@
 </svelte:head>
 
 <div class="page-section">
+  <BackLink
+    href={resolve('/style/[user=actor]/[style=rkey]/manage', { user: data.user, style: data.style })}
+    label="Back to Manage"
+  />
   <h1>Edit Userstyle</h1>
 </div>
 

@@ -4,9 +4,8 @@
   import { joinPageTitle } from '$lib/constants';
 
   import { login, signup, user } from '$lib/at';
-  import type { ActorIdentifier } from '@atcute/lexicons';
 
-  import { Spinner, Alert } from '$components/ui';
+  import { BackLink, Spinner, Alert } from '$components/ui';
 
   let handle = $state('');
   let error = $state<string | null>(null);
@@ -69,9 +68,7 @@
       <button type="button" class="btn btn--outline" onclick={signup}> Create account </button>
     </form>
 
-    <p class="login-card__back">
-      <a href={resolve('/')} class="login-card__back-link text-muted">← Back home</a>
-    </p>
+    <BackLink href={resolve('/')} label="Back to Home" />
   </section>
 </div>
 
@@ -85,18 +82,6 @@
       display: grid;
       gap: var(--space-1);
       margin-bottom: var(--space-5);
-    }
-
-    .login-card__back {
-      margin-top: var(--space-5);
-      font-size: var(--text-sm);
-
-      .login-card__back-link {
-        text-decoration: none;
-        &:hover {
-          text-decoration: underline;
-        }
-      }
     }
   }
 </style>
