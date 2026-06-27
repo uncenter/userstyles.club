@@ -29,7 +29,9 @@ export type UserstyleInput<Options extends { previewImage?: any; createdAt?: Use
 
 export type UserstyleRecord = RepoRecord<Userstyle>;
 
-const builder = makeRecordBuilder(ClubUserstylesAlphaUserstyle.mainSchema, CLUB_USERSTYLE_COLLECTION);
+const builder = makeRecordBuilder(ClubUserstylesAlphaUserstyle.mainSchema, CLUB_USERSTYLE_COLLECTION, {
+  keepAsIsStringFields: ['sourceCode'],
+});
 
 export function removeUpdateUrlFromSource(sourceCode: string): string {
   return sourceCode
