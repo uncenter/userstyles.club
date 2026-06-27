@@ -2,8 +2,6 @@
   import type { PageProps } from './$types';
   import { joinPageTitle } from '$lib/constants';
 
-  import { invalidateAll } from '$app/navigation';
-
   import { user, setClubProfile } from '$lib/at';
 
   import { Alert, Avatar, Spinner } from '$components/ui';
@@ -15,7 +13,8 @@
 
   let isOwner = $derived(user.isLoggedIn && user.did === data.profile.did);
 
-  let displayName = $derived(data.profile.displayName || data.profile.handle);
+  let displayName = $derived(data.profile.displayName);
+  let displayNameSafe = $derived(displayName || data.profile.handle);
   let description = $derived(data.profile.description);
 
   let editing = $state(false);
@@ -26,8 +25,8 @@
   let saveError = $state<string | null>(null);
 
   function startEditing() {
-    editDisplayName = data.profile.displayName ?? '';
-    editDescription = data.profile.description ?? '';
+    editDisplayName = displayName ?? '';
+    editDescription = description ?? '';
     saveError = null;
     editing = true;
   }
@@ -41,7 +40,8 @@
 
     try {
       await setClubProfile({ displayName: editDisplayName, description: editDescription }, data.profile.club?.createdAt);
-      await invalidateAll();
+      displayName = editDisplayName;
+      description = editDescription;
       editing = false;
     } catch (e) {
       saveError = e instanceof Error ? e.message : 'Failed to save profile.';
@@ -56,7 +56,7 @@
 </svelte:head>
 
 <section class="page-section profile-header">
-  <Avatar src={data.profile.avatar} alt={data.profile.handle} name={displayName} size="lg" />
+  <Avatar src={data.profile.avatar} alt={data.profile.handle} name={displayNameSafe} size="lg" />
   {#if editing}
     <form onsubmit={saveProfile} class="form-stack profile-edit-form">
       <div class="form-group">
@@ -66,7 +66,7 @@
           type="text"
           bind:value={editDisplayName}
           maxlength="64"
-          placeholder={data.profile.bsky.displayName ?? data.profile.handle}
+          placeholder={displayNameSafe}
         />
       </div>
       <div class="form-group">
@@ -93,7 +93,7 @@
     </form>
   {:else}
     <div class="profile-info">
-      <h1>{displayName}</h1>
+      <h1>{displayNameSafe}</h1>
       <div class="profile-handle-row">
         <p class="text-muted">@{data.profile.handle}</p>
         <a
