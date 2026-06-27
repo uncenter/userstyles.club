@@ -1,7 +1,6 @@
 <script lang="ts">
   import type { PageProps } from './$types';
   import { resolve } from '$app/paths';
-  import { goto } from '$app/navigation';
 
   import { joinPageTitle } from '$lib/constants';
 
@@ -9,7 +8,6 @@
 
   import {
     user,
-    deleteUserstyle,
     getBlobCdnUrl,
     computeAverageRating,
     createRating,
@@ -23,18 +21,14 @@
   import { Spinner, Alert, Dialog } from '$components/ui';
   import { ActorHandle, CssPreview, PreviewImage, StarRating, StarRatingAverage, StarRatingInput } from '$components';
 
-  import { PencilIcon, Trash2Icon, ScaleIcon } from '@lucide/svelte';
+  import { ScaleIcon } from '@lucide/svelte';
 
   import bytes from 'pretty-bytes';
   import { formatDate } from '$lib/date';
 
   import Comments from './Comments.svelte';
-  import SyncFromUpstream from './SyncFromUpstream.svelte';
 
   import { proxify } from '$lib/proxify.svelte';
-
-  let deleting = $state(false);
-  let error = $state<string | null>(null);
 
   let { data, params }: PageProps = $props();
 
@@ -44,8 +38,6 @@
     const did = parseResourceUri(thread.comment.uri).repo!;
     return { ...thread, rating: feedback.ratings[did] };
   }));
-
-  let confirmDialogOpen = $state(false);
 
   let averageRating = $derived(computeAverageRating(Object.values(feedback.ratings)));
   let myRating = $derived(user.isLoggedIn ? feedback.ratings[user.did!] : undefined);
@@ -105,24 +97,6 @@
     }
   }
 
-  async function removeUserstyle() {
-    error = null;
-    deleting = true;
-
-    try {
-      await deleteUserstyle(data.style);
-      goto(resolve('/'));
-    } catch (e) {
-      error = e instanceof Error ? e.message : 'Failed to delete userstyle.';
-    } finally {
-      deleting = false;
-    }
-  }
-
-  async function confirmDelete() {
-    confirmDialogOpen = false;
-    await removeUserstyle();
-  }
 </script>
 
 <svelte:head>
@@ -189,24 +163,31 @@
         {/if}
       </div>
 
-      <a
-        // Explicitly do not use getPreferredActorIdentifier given the install URL will be used for future updates and *should* be permanent.
-        href={resolve('/style/[user=actor]/[style=rkey].user.css', {
-          user: data.profile.did,
-          style: params.style,
-        })}
-        target="_blank"
-        class="btn btn-primary btn-lg"
-      >
-        Install
-      </a>
-    </div>
-
-    {#if error}
-      <div class="section-pad">
-        <Alert variant="error">{error}</Alert>
+      <div class="style-actions">
+        {#if user.isLoggedIn && user.did === data.profile.did}
+          <a
+            href={resolve('/style/[user=actor]/[style=rkey]/manage', {
+              user: getPreferredActorIdentifier(data.profile),
+              style: params.style,
+            })}
+            class="btn btn-secondary btn-lg"
+          >
+            Manage
+          </a>
+        {/if}
+        <a
+          // Explicitly do not use getPreferredActorIdentifier given the install URL will be used for future updates and *should* be permanent.
+          href={resolve('/style/[user=actor]/[style=rkey].user.css', {
+            user: data.profile.did,
+            style: params.style,
+          })}
+          target="_blank"
+          class="btn btn-primary btn-lg"
+        >
+          Install
+        </a>
       </div>
-    {/if}
+    </div>
 
     <div class="code-preview">
       <CssPreview source={data.userstyle.value.sourceCode} />
@@ -222,32 +203,6 @@
       </div>
     </div>
   </section>
-
-  {#if user.isLoggedIn && user.did === data.profile.did}
-    <div class="owner-actions">
-      <a
-        href={resolve('/style/[user=actor]/[style=rkey]/edit', {
-          user: getPreferredActorIdentifier(data.profile),
-          style: params.style,
-        })}
-        class="btn btn-secondary btn-sm btn-icon"
-        aria-label="Edit userstyle"
-      >
-        <PencilIcon size={14} />
-      </a>
-      {#if data.userstyle.value.upstreamUrl}
-        <SyncFromUpstream userstyle={data.userstyle.value} rkey={data.style} />
-      {/if}
-      <button
-        type="button"
-        class="btn btn-danger btn-sm btn-icon"
-        aria-label="Delete userstyle"
-        onclick={() => (confirmDialogOpen = true)}
-      >
-        <Trash2Icon size={14} />
-      </button>
-    </div>
-  {/if}
 
   <div class="comments-wrapper">
     <Comments
@@ -281,56 +236,7 @@
   {/snippet}
 </Dialog>
 
-<Dialog bind:open={confirmDialogOpen} title="Delete userstyle?">
-  {#snippet children()}
-    <p class="text-muted">
-      This will permanently delete <strong>{data.userstyle.value.title}</strong>. This cannot be
-      undone.
-    </p>
-  {/snippet}
-  {#snippet actions()}
-    <button class="btn btn-outline" type="button" onclick={() => (confirmDialogOpen = false)}>
-      Cancel
-    </button>
-    <button class="btn btn-danger" type="button" onclick={confirmDelete} disabled={deleting}>
-      {#if deleting}<Spinner size="sm" /> Deleting…{:else}Yes, delete!{/if}
-    </button>
-  {/snippet}
-</Dialog>
-
 <style>
-  .page-wrapper {
-    display: grid;
-    grid-template-columns: 1fr auto;
-    column-gap: var(--space-3);
-
-    @media (max-width: 40rem) {
-      grid-template-columns: 1fr;
-    }
-  }
-
-  .comments-wrapper {
-    grid-column: 1 / -1;
-  }
-
-  .owner-actions {
-    grid-column: 2;
-    grid-row: 1;
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-2);
-    padding-top: calc(var(--space-6) + 5px);
-
-    @media (max-width: 40rem) {
-      grid-column: 1;
-      grid-row: auto;
-      flex-direction: row;
-      justify-content: flex-end;
-      padding-top: 0;
-      margin-bottom: var(--space-3);
-    }
-  }
-
   .userstyle-section {
     border-top: 5px solid var(--brand-purple);
     overflow: hidden;
@@ -391,10 +297,21 @@
       flex-direction: column;
       align-items: stretch;
 
+      .style-actions {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
       .btn {
         justify-content: center;
       }
     }
+  }
+
+  .style-actions {
+    display: flex;
+    gap: var(--space-2);
+    align-items: center;
   }
 
   .style-meta {
@@ -439,10 +356,6 @@
         }
       }
     }
-  }
-
-  .section-pad {
-    padding: 0 var(--space-6) var(--space-4);
   }
 
   .style-preview {
