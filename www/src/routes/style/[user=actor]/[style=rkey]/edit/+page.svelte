@@ -75,11 +75,13 @@
 </svelte:head>
 
 <div class="page-section">
-  <BackLink
-    href={resolve('/style/[user=actor]/[style=rkey]/manage', { user: data.user, style: data.style })}
-    label="Back to Manage"
-  />
-  <h1>Edit Userstyle</h1>
+  <div class="page-header">
+    <BackLink
+      href={resolve('/style/[user=actor]/[style=rkey]/manage', { user: data.user, style: data.style })}
+      label="Back to Manage"
+    />
+    <h1>Edit Userstyle</h1>
+  </div>
 </div>
 
 <div class="page-section">

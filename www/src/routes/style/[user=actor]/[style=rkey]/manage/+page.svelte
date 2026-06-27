@@ -130,7 +130,7 @@
 </svelte:head>
 
 <div class="page-section">
-  <div class="manage-page__header">
+  <div class="page-header">
     <BackLink
       href={resolve('/style/[user=actor]/[style=rkey]', {
         user: getPreferredActorIdentifier(data.profile),
@@ -259,12 +259,6 @@
 </Dialog>
 
 <style>
-  .manage-page__header {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-1);
-  }
-
   .action-list {
     list-style: none;
     padding: 0;

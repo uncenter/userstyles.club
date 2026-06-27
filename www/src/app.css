@@ -220,6 +220,12 @@ main.container {
   border-radius: var(--radius);
 }
 
+.page-header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
 /* Utilities */
 
 .text-muted {
