@@ -60,7 +60,7 @@
   </div>
 {:else}
   <nav class="navbar">
-    <div class="navbar__stripe" aria-hidden="true">
+    <div class="navbar__stripe accent-cycle" aria-hidden="true">
       <span class="navbar__stripe-segment"></span><span class="navbar__stripe-segment"></span><span class="navbar__stripe-segment"></span><span class="navbar__stripe-segment"></span>
     </div>
     <div class="navbar__inner">
@@ -172,6 +172,7 @@
         <p class="site-footer__tagline">{TAGLINE}</p>
       </div>
       <div class="site-footer__links">
+        <a href={resolve('/about')} class="btn btn--outline btn--primary btn--sm">About</a>
         <a
           href={REPO_URL}
           target="_blank"
@@ -288,11 +289,10 @@
     height: 4px;
     flex-shrink: 0;
 
-    .navbar__stripe-segment { flex: 1; }
-    .navbar__stripe-segment:nth-child(1) { background: var(--brand-purple); }
-    .navbar__stripe-segment:nth-child(2) { background: var(--brand-red); }
-    .navbar__stripe-segment:nth-child(3) { background: var(--brand-green); }
-    .navbar__stripe-segment:nth-child(4) { background: var(--brand-blue); }
+    .navbar__stripe-segment {
+      flex: 1;
+      background: var(--accent-cycle-color);
+    }
   }
 
   .navbar {

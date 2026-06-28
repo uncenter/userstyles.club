@@ -260,6 +260,13 @@ main.container {
   color: var(--fg-muted);
 }
 
+.accent-cycle {
+  > :nth-child(4n + 1) { --accent-cycle-color: var(--brand-purple); }
+  > :nth-child(4n + 2) { --accent-cycle-color: var(--brand-red); }
+  > :nth-child(4n + 3) { --accent-cycle-color: var(--brand-green); }
+  > :nth-child(4n + 4) { --accent-cycle-color: var(--brand-blue); }
+}
+
 .inline-loading {
   display: flex;
   align-items: center;

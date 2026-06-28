@@ -82,7 +82,7 @@
     flex-direction: column;
     overflow: hidden;
     background: var(--card-bg);
-    border-top: 5px solid var(--card-accent-color, var(--brand-purple));
+    border-top: 5px solid var(--accent-cycle-color, var(--brand-purple));
     border-radius: var(--radius);
 
     .userstyle-card__thumbnail {
@@ -90,7 +90,7 @@
       flex-shrink: 0;
       overflow: hidden;
 
-      --grid-background-accent: var(--card-accent-color);
+      --grid-background-accent: var(--accent-cycle-color);
 
       .userstyle-card__thumbnail-img {
         display: block;

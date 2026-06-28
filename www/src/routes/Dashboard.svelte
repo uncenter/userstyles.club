@@ -146,7 +146,7 @@
       </p>
     {:else}
       {@const recents = sortRecordsByCreation(userstyles).slice(0, 6)}
-      <ul class="style-scroll" role="list">
+      <ul class="style-scroll accent-cycle" role="list">
         {#each recents as style (style.uri)}
           <li class="style-scroll__item">
             <a href={getLinkToUserOwnStyle(style.uri)} class="style-scroll__card">
@@ -295,11 +295,6 @@
       flex-shrink: 0;
       display: flex;
 
-      &:nth-child(4n + 1) { --card-accent-color: var(--brand-purple); }
-      &:nth-child(4n + 2) { --card-accent-color: var(--brand-red); }
-      &:nth-child(4n + 3) { --card-accent-color: var(--brand-green); }
-      &:nth-child(4n + 4) { --card-accent-color: var(--brand-blue); }
-
       .style-scroll__card {
         display: flex;
         flex-direction: column;
@@ -308,7 +303,7 @@
         height: 100%;
         padding: var(--space-3) var(--space-4);
         background: var(--background);
-        border-top: 4px solid var(--card-accent-color, var(--brand-purple));
+        border-top: 4px solid var(--accent-cycle-color, var(--brand-purple));
         border-radius: var(--radius);
         text-decoration: none;
         color: var(--foreground);
