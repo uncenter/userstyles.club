@@ -22,7 +22,7 @@
   import { Loading, Alert, Dialog } from '$components/ui';
   import { ActorHandle, CssPreview, PreviewImage, StarRating, StarRatingAverage, StarRatingInput } from '$components';
 
-  import { ScaleIcon } from '@lucide/svelte';
+  import { DownloadIcon, ExternalLinkIcon, HouseIcon, PencilIcon, ScaleIcon } from '@lucide/svelte';
 
   import bytes from 'pretty-bytes';
   import { formatDate } from '$lib/date';
@@ -107,7 +107,6 @@
       ratingDialog.deleting = false;
     }
   }
-
 </script>
 
 <svelte:head>
@@ -175,6 +174,16 @@
       </div>
 
       <div class="userstyle-section__actions">
+        {#if userstyle.homepageUrl}
+          <a
+            href={userstyle.homepageUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="btn btn--outline btn--lg"
+          >
+            <ExternalLinkIcon size={16} />Homepage
+          </a>
+        {/if}
         {#if user.isLoggedIn && user.did === data.profile.did}
           <a
             href={resolve('/style/[user=actor]/[style=rkey]/manage', {
@@ -183,7 +192,7 @@
             })}
             class="btn btn--secondary btn--lg"
           >
-            Manage
+            <PencilIcon size={16} />Manage
           </a>
         {/if}
         <a
@@ -195,7 +204,7 @@
           target="_blank"
           class="btn btn--primary btn--lg"
         >
-          Install
+          <DownloadIcon size={16} />Install
         </a>
       </div>
     </div>
@@ -286,6 +295,7 @@
         gap: var(--space-1);
         vertical-align: middle;
       }
+
     }
   }
 
