@@ -6,7 +6,7 @@ settings:
 
 importers:
 
-  www:
+  .:
     dependencies:
       '@atcute/atproto':
         specifier: ^4.0.0
@@ -190,9 +190,6 @@ packages:
     peerDependencies:
       '@atcute/cbor': ^2.0.0
       '@atcute/cid': ^2.0.0
-
-  '@atcute/multibase@1.2.0':
-    resolution: {integrity: sha512-ZK2GRra+qIYq9nNuQB52m2ul0hOmCQEtPobGfTSUxm7pF0OGEkWGkWHugFhNEDVzHzTwPxHp6VGotdZFue4lYQ==}
 
   '@atcute/multibase@1.2.3':
     resolution: {integrity: sha512-hliOXcgYS3x0afs8JsjSvA5c15Zf36ggCcxIHspSM7wrae3zhwaTigYRU6NvghkPMAal4tRRbhv98AuP5YzJ6w==}
@@ -1542,7 +1539,7 @@ snapshots:
 
   '@atcute/crypto@2.4.1':
     dependencies:
-      '@atcute/multibase': 1.2.0
+      '@atcute/multibase': 1.2.3
       '@atcute/uint8array': 1.1.2
       '@noble/secp256k1': 3.1.0
 
@@ -1621,10 +1618,6 @@ snapshots:
       '@atcute/cid': 2.4.1
       '@atcute/uint8array': 1.1.2
 
-  '@atcute/multibase@1.2.0':
-    dependencies:
-      '@atcute/uint8array': 1.1.2
-
   '@atcute/multibase@1.2.3':
     dependencies:
       '@atcute/uint8array': 1.1.2
@@ -1634,7 +1627,7 @@ snapshots:
       '@atcute/client': 5.0.0(@atcute/lexicons@2.0.0)(typescript@5.9.3)
       '@atcute/identity-resolver': 2.0.0(@atcute/identity@2.0.0(@atcute/lexicons@2.0.0)(typescript@5.9.3))(@atcute/lexicons@2.0.0)(typescript@5.9.3)
       '@atcute/lexicons': 2.0.0
-      '@atcute/multibase': 1.2.0
+      '@atcute/multibase': 1.2.3
       '@atcute/oauth-crypto': 1.0.0(typescript@5.9.3)
       '@atcute/oauth-types': 1.0.0(typescript@5.9.3)
       nanoid: 5.1.11
@@ -1643,7 +1636,7 @@ snapshots:
 
   '@atcute/oauth-crypto@1.0.0(typescript@5.9.3)':
     dependencies:
-      '@atcute/multibase': 1.2.0
+      '@atcute/multibase': 1.2.3
       '@atcute/uint8array': 1.1.2
       nanoid: 5.1.11
       valibot: 1.4.1(typescript@5.9.3)

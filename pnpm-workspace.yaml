@@ -4,6 +4,4 @@ allowBuilds:
   workerd: true
 trustPolicyExclude:
   - chokidar@4.0.3
-packages:
-  - 'www'
-  - 'packages/*'
+packages: ['.']

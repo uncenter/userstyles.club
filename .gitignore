@@ -6,4 +6,4 @@ build/
 .env
 .env.*
 
-www/src/lib/at/lexicons
+src/lib/at/lexicons
