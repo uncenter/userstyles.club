@@ -8,7 +8,7 @@ import { StateField, RangeSetBuilder, EditorState, type Extension } from '@codem
 const urlRegex = /\b((?:https?|ftp):\/\/[^\s/$.?#].[^\s]*\b(?:\/)?)/gi;
 
 function buildDecorations(state: EditorState) {
-  const builder = new RangeSetBuilder();
+  const builder = new RangeSetBuilder<Decoration>();
   const text = state.doc.toString();
 
   let match;

@@ -108,7 +108,7 @@
         <button
           type="button"
           class="btn btn--warning btn--sm"
-          onclick={() => (fields[field] = importedValue)}>Import</button
+          onclick={() => ((fields as any)[field] = importedValue)}>Import</button
         >
       {/if}
     {/if}

@@ -1,4 +1,5 @@
 <script lang="ts">
+  import type { GenericUri } from '@atcute/lexicons';
   import type { UserstyleContent } from '$lib/at';
   import type { UserstyleFormState } from '../fields.svelte';
 
@@ -34,19 +35,21 @@
 
       if (result.sourceCode) {
         const usercss = getUsercssMetadata(result.sourceCode);
-        for (const key of Object.keys(usercss) as Array<keyof UserstyleContent>) {
-          if (result[key] === undefined && usercss[key] !== undefined)
-            (result as any)[key] = usercss[key];
+        for (const [key, value] of Object.entries(usercss)) {
+          if ((result as any)[key] === undefined && value !== undefined)
+            (result as any)[key] = value;
         }
       }
 
       // Merge into form fields only where the field is currently empty.
       for (const key of Object.keys(result) as Array<keyof UserstyleContent>) {
         const value = result[key];
-        if (value && !fields[key]?.trim()) (fields as any)[key] = value;
+        const current = fields[key];
+        if (value && !(typeof current === 'string' ? current.trim() : current))
+          (fields as any)[key] = value;
       }
 
-      fields.upstreamUrl = importUrl;
+      fields.upstreamUrl = importUrl as GenericUri;
       fields.trackUpstreamUrl = true;
 
       imported = result;

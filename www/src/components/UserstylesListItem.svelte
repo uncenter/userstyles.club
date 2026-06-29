@@ -38,7 +38,7 @@
         class="userstyle-card__thumbnail-img"
         src={getBlobCdnUrl(
           uri.repo as Did,
-          userstyle.value.previewImage.ref.$link,
+          userstyle.value.previewImage,
           'feed_thumbnail',
         )}
         alt={userstyle.value.title}
