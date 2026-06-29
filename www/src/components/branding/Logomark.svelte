@@ -7,11 +7,7 @@
   let { size = '2.5rem' }: Props = $props();
 </script>
 
-<span
-  class="mark"
-  style="height: {size}; width: {size}"
-  aria-hidden="true"
->
+<span class="mark" style="height: {size}; width: {size}" aria-hidden="true">
   {@html logomark}
 </span>
 

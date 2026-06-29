@@ -261,10 +261,18 @@ main.container {
 }
 
 .accent-cycle {
-  > :nth-child(4n + 1) { --accent-cycle-color: var(--brand-purple); }
-  > :nth-child(4n + 2) { --accent-cycle-color: var(--brand-red); }
-  > :nth-child(4n + 3) { --accent-cycle-color: var(--brand-green); }
-  > :nth-child(4n + 4) { --accent-cycle-color: var(--brand-blue); }
+  > :nth-child(4n + 1) {
+    --accent-cycle-color: var(--brand-purple);
+  }
+  > :nth-child(4n + 2) {
+    --accent-cycle-color: var(--brand-red);
+  }
+  > :nth-child(4n + 3) {
+    --accent-cycle-color: var(--brand-green);
+  }
+  > :nth-child(4n + 4) {
+    --accent-cycle-color: var(--brand-blue);
+  }
 }
 
 .inline-loading {
@@ -279,12 +287,34 @@ main.container {
   /* Inspired by https://projects.verou.me/css3patterns/#blueprint-grid. */
   background-color: color-mix(in srgb, var(--grid-background-accent) 12%, var(--card-bg));
   background-image:
-    linear-gradient(color-mix(in srgb, var(--grid-background-accent) 35%, transparent) 1px, transparent 1px),
-    linear-gradient(90deg, color-mix(in srgb, var(--grid-background-accent) 35%, transparent) 1px, transparent 1px),
-    linear-gradient(color-mix(in srgb, var(--grid-background-accent) 14%, transparent) 1px, transparent 1px),
-    linear-gradient(90deg, color-mix(in srgb, var(--grid-background-accent) 14%, transparent) 1px, transparent 1px);
-  background-size: 50px 50px, 50px 50px, 10px 10px, 10px 10px;
-  background-position: -1px -1px, -1px -1px, -1px -1px, -1px -1px;
+    linear-gradient(
+      color-mix(in srgb, var(--grid-background-accent) 35%, transparent) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      90deg,
+      color-mix(in srgb, var(--grid-background-accent) 35%, transparent) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      color-mix(in srgb, var(--grid-background-accent) 14%, transparent) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      90deg,
+      color-mix(in srgb, var(--grid-background-accent) 14%, transparent) 1px,
+      transparent 1px
+    );
+  background-size:
+    50px 50px,
+    50px 50px,
+    10px 10px,
+    10px 10px;
+  background-position:
+    -1px -1px,
+    -1px -1px,
+    -1px -1px,
+    -1px -1px;
 }
 
 .sr-only {

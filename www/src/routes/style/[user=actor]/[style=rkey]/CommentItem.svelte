@@ -17,7 +17,7 @@
 
   import { PencilIcon, Trash2Icon } from '@lucide/svelte';
 
-  import Self from './CommentItem.svelte'
+  import Self from './CommentItem.svelte';
 
   import { formatDate } from '$lib/date';
 
@@ -117,10 +117,19 @@
   }
 </script>
 
-{#snippet InlineEditor(ctx: { value: string }, onSubmit: () => void, onCancel: () => void, submitLabel: string, pendingLabel: string)}
+{#snippet InlineEditor(
+  ctx: { value: string },
+  onSubmit: () => void,
+  onCancel: () => void,
+  submitLabel: string,
+  pendingLabel: string,
+)}
   <form
     class="inline-editor"
-    onsubmit={(e) => { e.preventDefault(); onSubmit(); }}
+    onsubmit={(e) => {
+      e.preventDefault();
+      onSubmit();
+    }}
   >
     <textarea
       class="inline-editor__textarea"
@@ -131,7 +140,11 @@
       required
     ></textarea>
     <div class="inline-editor__actions">
-      <button type="submit" class="btn btn--primary btn--sm" disabled={submitting || !ctx.value.trim()}>
+      <button
+        type="submit"
+        class="btn btn--primary btn--sm"
+        disabled={submitting || !ctx.value.trim()}
+      >
         <Loading pending={submitting} idle={submitLabel} active="{pendingLabel}…" />
       </button>
       <button type="button" class="btn btn--outline btn--sm" onclick={onCancel}>Cancel</button>
@@ -147,7 +160,8 @@
 
     <div class="comment-card__header">
       <div class="comment-card__commenter">
-        <ActorHandle profile={commenter} style='small' />{#if rating} rated <StarRating value={rating.value.rating} />{/if}
+        <ActorHandle profile={commenter} style="small" />{#if rating}
+          rated <StarRating value={rating.value.rating} />{/if}
       </div>
       <div class="comment-card__meta">
         <time class="comment-card__date"
@@ -171,7 +185,9 @@
               disabled={submitting || editing.state}
               onclick={() => (confirmDeleteOpen = true)}
             >
-              <Loading pending={submitting}>{#snippet idle()}<Trash2Icon size={14} />{/snippet}</Loading>
+              <Loading pending={submitting}
+                >{#snippet idle()}<Trash2Icon size={14} />{/snippet}</Loading
+              >
             </button>
           </div>
         {/if}
@@ -186,7 +202,12 @@
       {#if replying.state}
         {@render InlineEditor(replying, submitReply, cancelReply, 'Reply', 'Replying')}
       {:else}
-        <button type="button" class="comment-card__reply-trigger" disabled={submitting} onclick={startReply}>
+        <button
+          type="button"
+          class="comment-card__reply-trigger"
+          disabled={submitting}
+          onclick={startReply}
+        >
           Reply to comment...
         </button>
       {/if}
@@ -195,13 +216,7 @@
   {#if thread.replies.length > 0}
     <ul class="comment-tree__replies">
       {#each thread.replies as reply}
-        <Self
-          thread={reply}
-          {ratings}
-          {userstyle}
-          {onCommentAdded}
-          {onCommentDeleted}
-        />
+        <Self thread={reply} {ratings} {userstyle} {onCommentAdded} {onCommentDeleted} />
       {/each}
     </ul>
   {/if}

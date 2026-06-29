@@ -1,5 +1,5 @@
 <script lang="ts">
-  import StarRating from "./StarRating.svelte";
+  import StarRating from './StarRating.svelte';
 
   interface Props {
     average: number | undefined;

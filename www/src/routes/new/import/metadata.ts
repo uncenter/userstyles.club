@@ -4,7 +4,13 @@ const parser = usercss.createParser({
   mandatoryKeys: [],
 });
 
-export function getUsercssMetadata(source: string): { title?: string, description?: string, license?: string, homepageUrl?: string, version?: string } {
+export function getUsercssMetadata(source: string): {
+  title?: string;
+  description?: string;
+  license?: string;
+  homepageUrl?: string;
+  version?: string;
+} {
   let { metadata } = parser.parse(source.replace(/\r\n/g, '')); // parser errors on \r
 
   return {

@@ -39,7 +39,7 @@
 </ExpandedDialog>
 
 <style>
-  @import "@catppuccin/palette/css/catppuccin.css";
+  @import '@catppuccin/palette/css/catppuccin.css';
 
   .preview-wrap {
     position: relative;

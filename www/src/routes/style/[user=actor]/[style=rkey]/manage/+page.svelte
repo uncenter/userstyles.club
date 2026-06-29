@@ -147,7 +147,9 @@
     <li class="action-list__item">
       <div class="action-list__info">
         <p class="action-list__title">Edit</p>
-        <p class="action-list__desc text-muted">Update title, description, license, source code, and more.</p>
+        <p class="action-list__desc text-muted">
+          Update title, description, license, source code, and more.
+        </p>
       </div>
       <a
         href={resolve('/style/[user=actor]/[style=rkey]/edit', {
@@ -164,7 +166,9 @@
       <li class="action-list__item">
         <div class="action-list__info">
           <p class="action-list__title">Sync</p>
-          <p class="action-list__desc text-muted">Fetch the latest source code from the upstream URL.</p>
+          <p class="action-list__desc text-muted">
+            Fetch the latest source code from the upstream URL.
+          </p>
         </div>
         <button
           type="button"
@@ -172,7 +176,9 @@
           disabled={sync.fetching}
           onclick={fetchSync}
         >
-          <Loading pending={sync.fetching} active="Syncing…">{#snippet idle()}<RefreshCwIcon size={14} /> Sync{/snippet}</Loading>
+          <Loading pending={sync.fetching} active="Syncing…"
+            >{#snippet idle()}<RefreshCwIcon size={14} /> Sync{/snippet}</Loading
+          >
         </button>
       </li>
     {/if}
@@ -185,7 +191,9 @@
     <li class="action-list__item">
       <div class="action-list__info">
         <p class="action-list__title">Delete</p>
-        <p class="action-list__desc text-muted">Permanently delete this userstyle. This cannot be undone.</p>
+        <p class="action-list__desc text-muted">
+          Permanently delete this userstyle. This cannot be undone.
+        </p>
       </div>
       <button
         type="button"
@@ -193,7 +201,9 @@
         onclick={() => (deletion.dialogOpen = true)}
         disabled={deletion.running}
       >
-        <Loading pending={deletion.running} active="Deleting…">{#snippet idle()}<Trash2Icon size={14} /> Delete{/snippet}</Loading>
+        <Loading pending={deletion.running} active="Deleting…"
+          >{#snippet idle()}<Trash2Icon size={14} /> Delete{/snippet}</Loading
+        >
       </button>
     </li>
   </ul>
@@ -210,7 +220,10 @@
     {/if}
     {#if diff.hasChanges}
       {#if diff.isRegression}
-        <Alert variant="warning">The upstream version ({diff.newVersion}) is older than the current version ({diff.currentVersion}). Syncing might downgrade your source code.</Alert>
+        <Alert variant="warning"
+          >The upstream version ({diff.newVersion}) is older than the current version ({diff.currentVersion}).
+          Syncing might downgrade your source code.</Alert
+        >
       {:else}
         <p class="text-muted">The source code has changed since the last sync.</p>
       {/if}
@@ -223,9 +236,16 @@
         newVersion={diff.newVersion}
       />
     {:else if sync.newSourceCode !== null}
-      <p class="text-muted">No changes detected! This userstyle is already in sync with upstream.</p>
+      <p class="text-muted">
+        No changes detected! This userstyle is already in sync with upstream.
+      </p>
     {/if}
-    <a class="manage-page__upstream-url" href={userstyle.upstreamUrl} target="_blank" rel="noopener noreferrer">
+    <a
+      class="manage-page__upstream-url"
+      href={userstyle.upstreamUrl}
+      target="_blank"
+      rel="noopener noreferrer"
+    >
       <ExternalLinkIcon size={11} />
       <span class="manage-page__upstream-url-text truncate-1">{userstyle.upstreamUrl}</span>
     </a>
@@ -252,7 +272,12 @@
     <button class="btn btn--outline" type="button" onclick={() => (deletion.dialogOpen = false)}>
       Cancel
     </button>
-    <button class="btn btn--danger" type="button" onclick={deleteAndRedirect} disabled={deletion.running}>
+    <button
+      class="btn btn--danger"
+      type="button"
+      onclick={deleteAndRedirect}
+      disabled={deletion.running}
+    >
       <Loading pending={deletion.running} idle="Delete" active="Deleting…" />
     </button>
   {/snippet}

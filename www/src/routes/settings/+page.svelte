@@ -25,9 +25,7 @@
     </div>
     <select
       id="appearance-select"
-      bind:value={
-        () => preferences.get('appearance'), (val) => preferences.set('appearance', val)
-      }
+      bind:value={() => preferences.get('appearance'), (val) => preferences.set('appearance', val)}
       class="appearance-select"
     >
       {#each appearances as opt}
@@ -37,7 +35,9 @@
   </div>
   <div class="settings-list__row">
     <div class="settings-list__label">
-      <label for="use-permanent-urls-toggle" class="settings-list__label-text">Use Permanent URLs</label>
+      <label for="use-permanent-urls-toggle" class="settings-list__label-text"
+        >Use Permanent URLs</label
+      >
       <p class="settings-list__label-desc text-muted">
         Prefer permanent URLs over shorter URLs by using DIDs instead of handles.
       </p>
@@ -46,8 +46,7 @@
       type="checkbox"
       id="use-permanent-urls-toggle"
       bind:checked={
-        () => preferences.get('usePermanentUrls'),
-        (val) => preferences.set('usePermanentUrls', val)
+        () => preferences.get('usePermanentUrls'), (val) => preferences.set('usePermanentUrls', val)
       }
       class="use-permanent-urls-toggle"
     />

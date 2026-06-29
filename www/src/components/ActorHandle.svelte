@@ -17,7 +17,7 @@
 
 <a
   href={resolve('/profile/[user=actor]', { user: getPreferredActorIdentifier(profile) })}
-  class={["actor-handle", "actor-handle--style-" + style]}
+  class={['actor-handle', 'actor-handle--style-' + style]}
 >
   {#if style !== 'minimal'}
     <Avatar

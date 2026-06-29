@@ -47,7 +47,9 @@
 </script>
 
 <section class="page-section comments-section">
-  <h2 class="comments-section__heading">Comments{feedback.comments.length > 0 ? ` (${feedback.comments.length})` : ''}</h2>
+  <h2 class="comments-section__heading">
+    Comments{feedback.comments.length > 0 ? ` (${feedback.comments.length})` : ''}
+  </h2>
 
   {#if error}
     <Alert variant="error">{error}</Alert>
@@ -57,7 +59,10 @@
     <div class="comments-section__form-wrapper">
       <form
         class="comments-section__form"
-        onsubmit={(e) => { e.preventDefault(); submitComment(); }}
+        onsubmit={(e) => {
+          e.preventDefault();
+          submitComment();
+        }}
       >
         <div class="form-group">
           <label>
@@ -72,11 +77,7 @@
             ></textarea>
           </label>
         </div>
-        <button
-          type="submit"
-          class="btn btn--primary"
-          disabled={submitting || !comment.trim()}
-        >
+        <button type="submit" class="btn btn--primary" disabled={submitting || !comment.trim()}>
           <Loading pending={submitting} idle="Post" active="Posting…" />
         </button>
       </form>

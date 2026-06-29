@@ -36,7 +36,7 @@ export {
   type UserstyleInput,
   type UserstyleRecord,
   type ReviewThread,
-  type UserstyleFeedback
+  type UserstyleFeedback,
 } from './services/userstyles';
 export {
   listCommentsForStyle,
@@ -61,5 +61,5 @@ export {
   CLUB_USERSTYLE_COLLECTION,
   CLUB_PROFILE_COLLECTION,
   CLUB_COMMENT_COLLECTION,
-  CLUB_RATING_COLLECTION
+  CLUB_RATING_COLLECTION,
 } from './settings';

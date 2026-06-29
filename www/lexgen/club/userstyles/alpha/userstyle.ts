@@ -1,4 +1,12 @@
-import { blob, boolean, document, object, record, required, string } from '@atcute/lexicon-doc/builder';
+import {
+  blob,
+  boolean,
+  document,
+  object,
+  record,
+  required,
+  string,
+} from '@atcute/lexicon-doc/builder';
 
 export default document({
   id: 'club.userstyles.alpha.userstyle',

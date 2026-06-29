@@ -21,7 +21,10 @@ export type ClubProfile = ClubUserstylesAlphaActorProfile.Main;
 
 export type ClubProfileRecord = RepoRecord<ClubProfile>;
 
-const builder = makeRecordBuilder(ClubUserstylesAlphaActorProfile.mainSchema, CLUB_PROFILE_COLLECTION);
+const builder = makeRecordBuilder(
+  ClubUserstylesAlphaActorProfile.mainSchema,
+  CLUB_PROFILE_COLLECTION,
+);
 
 const SELF_RKEY = 'self';
 

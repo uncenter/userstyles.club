@@ -1,7 +1,13 @@
 import type { RecordKey, ResourceUri } from '@atcute/lexicons';
 import { is } from '@atcute/lexicons/validations';
 
-import { createRecord, deleteRecord, getBacklinkedRecords, putRecord, type RepoRecord } from '../records';
+import {
+  createRecord,
+  deleteRecord,
+  getBacklinkedRecords,
+  putRecord,
+  type RepoRecord,
+} from '../records';
 
 import { makeRecordBuilder, type RecordCreateInput, type RecordUpdateInput } from '../builder';
 import { CLUB_COMMENT_COLLECTION } from '../settings';
@@ -16,11 +22,16 @@ export type CommentThread = {
   replies: CommentThread[];
 };
 
-const builder = makeRecordBuilder(ClubUserstylesAlphaGraphComment.mainSchema, CLUB_COMMENT_COLLECTION);
+const builder = makeRecordBuilder(
+  ClubUserstylesAlphaGraphComment.mainSchema,
+  CLUB_COMMENT_COLLECTION,
+);
 
 export async function listCommentsForStyle(uri: ResourceUri): Promise<CommentRecord[]> {
   const records = await getBacklinkedRecords(uri, CLUB_COMMENT_COLLECTION, 'subject');
-  return records.filter((r): r is CommentRecord => is(ClubUserstylesAlphaGraphComment.mainSchema, r.value));
+  return records.filter((r): r is CommentRecord =>
+    is(ClubUserstylesAlphaGraphComment.mainSchema, r.value),
+  );
 }
 
 export function getCommentThreads(comments: CommentRecord[]): CommentThread[] {

@@ -1,6 +1,11 @@
 <script lang="ts">
   import { CLUB_BRAND_DID, joinPageTitle, TAGLINE, CLUB_AUTHOR_DID } from '$lib/constants';
-  import { CLUB_USERSTYLE_COLLECTION, CLUB_PROFILE_COLLECTION, CLUB_COMMENT_COLLECTION, CLUB_RATING_COLLECTION } from '$lib/at/settings';
+  import {
+    CLUB_USERSTYLE_COLLECTION,
+    CLUB_PROFILE_COLLECTION,
+    CLUB_COMMENT_COLLECTION,
+    CLUB_RATING_COLLECTION,
+  } from '$lib/at/settings';
 
   import type { Snippet } from 'svelte';
   import { getProfile } from '$lib/at';
@@ -35,19 +40,33 @@
   </a>
 {/snippet}
 
-
 <div class="about">
   <h1 class="about__title">About</h1>
 
   <section class="about-section">
     <dl class="faq">
-      {@render FaqItem('What is userstyles.club?', 'A website for sharing, discovering, and installing userstyles. Publish your own userstyles, explore the community of published userstyles from others, rate and comment the userstyles you find, and more.')}
-      {@render FaqItem('Why use userstyles.club over other hosting sites?', 'All userstyles you publish are stored as records on your AT Protocol Personal Data Server (PDS). That means your data lives under your account and stays with you, regardless of what happens to userstyles.club.')}
-      {@render FaqItem('How does signing in with Bluesky work?', 'userstyles.club uses your existing Bluesky / AT Protocol account, with no separate signup required. You authorize userstyles.club to read and write only our own userstyles.club records on your behalf.')}
-      {@render FaqItem('What is the AT Protocol?', 'The AT Protocol is an open, federated social networking protocol. userstyles.club uses it to store and retrieve userstyle records in a standardized, interoperable way so that other AT Protocol apps can read and build on the same data.')}
+      {@render FaqItem(
+        'What is userstyles.club?',
+        'A website for sharing, discovering, and installing userstyles. Publish your own userstyles, explore the community of published userstyles from others, rate and comment the userstyles you find, and more.',
+      )}
+      {@render FaqItem(
+        'Why use userstyles.club over other hosting sites?',
+        'All userstyles you publish are stored as records on your AT Protocol Personal Data Server (PDS). That means your data lives under your account and stays with you, regardless of what happens to userstyles.club.',
+      )}
+      {@render FaqItem(
+        'How does signing in with Bluesky work?',
+        'userstyles.club uses your existing Bluesky / AT Protocol account, with no separate signup required. You authorize userstyles.club to read and write only our own userstyles.club records on your behalf.',
+      )}
+      {@render FaqItem(
+        'What is the AT Protocol?',
+        'The AT Protocol is an open, federated social networking protocol. userstyles.club uses it to store and retrieve userstyle records in a standardized, interoperable way so that other AT Protocol apps can read and build on the same data.',
+      )}
 
       {#snippet authorFaqAnswer()}
-        userstyles.club is made by me, <ActorHandle profile={await getProfile(CLUB_AUTHOR_DID)} style="small" />. Say hi on Bluesky!
+        userstyles.club is made by me, <ActorHandle
+          profile={await getProfile(CLUB_AUTHOR_DID)}
+          style="small"
+        />. Say hi on Bluesky!
       {/snippet}
       {@render FaqItem('Who develops userstyles.club?', authorFaqAnswer)}
     </dl>
@@ -55,7 +74,10 @@
 
   <section class="about-section">
     <h2 class="about-section__heading">Lexicons</h2>
-    <p class="about-section__body">userstyles.club defines its own AT Protocol lexicons, published on the club's brand account. These schemas describe the structure of all records the app reads and writes.</p>
+    <p class="about-section__body">
+      userstyles.club defines its own AT Protocol lexicons, published on the club's brand account.
+      These schemas describe the structure of all records the app reads and writes.
+    </p>
     <div class="lexicon-cards accent-cycle">
       {@render LexiconItem('Userstyles', CLUB_USERSTYLE_COLLECTION)}
       {@render LexiconItem('Profiles', CLUB_PROFILE_COLLECTION)}

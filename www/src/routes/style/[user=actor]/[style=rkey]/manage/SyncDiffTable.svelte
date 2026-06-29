@@ -39,7 +39,9 @@
       <tr>
         <td class="diff-table__label">Version</td>
         <td class="diff-table__current">{currentVersion ?? '—'}</td>
-        <td class="diff-table__next" class:diff-table__next--changed={newVersion !== currentVersion}>{newVersion ?? '—'}</td>
+        <td class="diff-table__next" class:diff-table__next--changed={newVersion !== currentVersion}
+          >{newVersion ?? '—'}</td
+        >
       </tr>
     {/if}
     {#snippet TableDeltaCell(prev: number, next: number, fmt: (n: number) => string)}

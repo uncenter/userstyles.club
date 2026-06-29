@@ -39,7 +39,10 @@
     saveError = null;
 
     try {
-      await setClubProfile({ displayName: editDisplayName, description: editDescription }, data.profile.club?.createdAt);
+      await setClubProfile(
+        { displayName: editDisplayName, description: editDescription },
+        data.profile.club?.createdAt,
+      );
       displayName = editDisplayName;
       description = editDescription;
       editing = false;
@@ -111,7 +114,11 @@
       <p class="profile-header__description">{description}</p>
     {/if}
     {#if isOwner}
-      <button type="button" class="btn btn--ghost btn--sm profile-header__edit-btn" onclick={startEditing}>
+      <button
+        type="button"
+        class="btn btn--ghost btn--sm profile-header__edit-btn"
+        onclick={startEditing}
+      >
         <PencilIcon size={14} /> Edit Profile
       </button>
     {/if}

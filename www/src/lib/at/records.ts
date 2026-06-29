@@ -113,7 +113,7 @@ export async function getBacklinkedRecords<NSID extends Nsid>(
   const records = await Promise.all(
     backlinks.records.map(async ({ did, collection, rkey }) => {
       try {
-        return await getRecord({ repo: did, collection, rkey }) as RepoRecord<ValueFor<NSID>>;
+        return (await getRecord({ repo: did, collection, rkey })) as RepoRecord<ValueFor<NSID>>;
       } catch {
         return null;
       }
@@ -141,10 +141,7 @@ export async function getRecord<NSID extends Nsid>(params: {
   return response as RepoRecord<ValueFor<NSID>>;
 }
 
-export async function createRecord<NSID extends Nsid>(
-  collection: NSID,
-  record: ValueFor<NSID>,
-) {
+export async function createRecord<NSID extends Nsid>(collection: NSID, record: ValueFor<NSID>) {
   const { client, did } = getSessionContext('You must be logged in to write records.');
 
   const response = await ok(

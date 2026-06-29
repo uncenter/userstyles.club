@@ -20,7 +20,14 @@
   import { getPreferredActorIdentifier } from '$lib/preferences.svelte';
 
   import { Loading, Alert, Dialog } from '$components/ui';
-  import { ActorHandle, CssPreview, PreviewImage, StarRating, StarRatingAverage, StarRatingInput } from '$components';
+  import {
+    ActorHandle,
+    CssPreview,
+    PreviewImage,
+    StarRating,
+    StarRatingAverage,
+    StarRatingInput,
+  } from '$components';
 
   import { DownloadIcon, ExternalLinkIcon, HouseIcon, PencilIcon, ScaleIcon } from '@lucide/svelte';
 
@@ -40,7 +47,7 @@
     getCommentThreads(feedback.comments).map((thread) => {
       const did = parseResourceUri(thread.comment.uri).repo!;
       return { ...thread, rating: feedback!.ratings[did] };
-    })
+    }),
   );
 
   let averageRating = $derived(computeAverageRating(Object.values(feedback.ratings)));
@@ -78,10 +85,17 @@
     try {
       if (myRating) {
         const { rkey } = parseResourceUri(myRating.uri);
-        await updateRating(rkey!, { subject: data.userstyle.uri, rating: ratingDialog.selected, createdAt: myRating.value.createdAt });
+        await updateRating(rkey!, {
+          subject: data.userstyle.uri,
+          rating: ratingDialog.selected,
+          createdAt: myRating.value.createdAt,
+        });
         feedback.ratings[user.did!].value.rating = ratingDialog.selected;
       } else {
-        const created = await createRating({ subject: data.userstyle.uri, rating: ratingDialog.selected });
+        const created = await createRating({
+          subject: data.userstyle.uri,
+          rating: ratingDialog.selected,
+        });
         feedback.ratings[user.did!] = { uri: created.response.uri, value: created.record };
       }
       ratingDialog.open = false;
@@ -118,11 +132,7 @@
     {#if userstyle.previewImage}
       <div class="userstyle-section__preview grid-background">
         <PreviewImage
-          src={getBlobCdnUrl(
-            data.profile.did,
-            userstyle.previewImage,
-            'feed_fullsize',
-          )}
+          src={getBlobCdnUrl(data.profile.did, userstyle.previewImage, 'feed_fullsize')}
           alt={userstyle.title}
         />
       </div>
@@ -133,17 +143,21 @@
         <h1 class="userstyle-section__title">{userstyle.title}</h1>
         <p class="userstyle-section__subtitle">
           {#if userstyle.updatedAt}
-            Updated <time class="userstyle-section__subtitle-time">{formatDate(userstyle.updatedAt)}</time>
+            Updated <time class="userstyle-section__subtitle-time"
+              >{formatDate(userstyle.updatedAt)}</time
+            >
           {:else}
-            Published <time class="userstyle-section__subtitle-time">{formatDate(userstyle.createdAt)}</time>
+            Published <time class="userstyle-section__subtitle-time"
+              >{formatDate(userstyle.createdAt)}</time
+            >
           {/if}
           {#if userstyle.license}
             · <a
               class="userstyle-section__subtitle-link"
               href="https://spdx.org/licenses/{userstyle.license}.html"
               target="_blank"
-              rel="noopener noreferrer"
-            >{userstyle.license}<ScaleIcon size={10} /></a>
+              rel="noopener noreferrer">{userstyle.license}<ScaleIcon size={10} /></a
+            >
           {/if}
         </p>
       </div>
@@ -157,11 +171,21 @@
     <div class="userstyle-section__info">
       <div class="userstyle-section__meta">
         {#if canRate}
-          <button type="button" class="userstyle-section__item userstyle-section__item--ratable" aria-label="Rate this userstyle" onclick={openRatingDialog}>
+          <button
+            type="button"
+            class="userstyle-section__item userstyle-section__item--ratable"
+            aria-label="Rate this userstyle"
+            onclick={openRatingDialog}
+          >
             <span class="userstyle-section__item-value">
               <StarRatingAverage average={averageRating?.average} count={averageRating?.count} />
             </span>
-            <span class="userstyle-section__item-label">Rating{#if myRating}{' · '}<StarRating value={myRating.value.rating} label="Your rating: {myRating.value.rating}/5" />{/if}</span>
+            <span class="userstyle-section__item-label"
+              >Rating{#if myRating}{' · '}<StarRating
+                  value={myRating.value.rating}
+                  label="Your rating: {myRating.value.rating}/5"
+                />{/if}</span
+            >
           </button>
         {:else}
           <div class="userstyle-section__item">
@@ -213,12 +237,14 @@
       <CssPreview source={userstyle.sourceCode} />
       <div class="userstyle-section__code-footer">
         {#if userstyle.upstreamUrl}
-          <span class="userstyle-section__upstream">Upstreamed from <a
-            class="userstyle-section__upstream-link"
-            href={userstyle.upstreamUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-          >{userstyle.upstreamUrl}</a>.</span>
+          <span class="userstyle-section__upstream"
+            >Upstreamed from <a
+              class="userstyle-section__upstream-link"
+              href={userstyle.upstreamUrl}
+              target="_blank"
+              rel="noopener noreferrer">{userstyle.upstreamUrl}</a
+            >.</span
+          >
         {/if}
         <p class="userstyle-section__stats">{bytes(byteCount)} · {lineCount} lines</p>
       </div>
@@ -237,7 +263,10 @@
   </div>
 </div>
 
-<Dialog bind:open={ratingDialog.open} title={myRating ? 'Update your rating' : 'Rate this userstyle'}>
+<Dialog
+  bind:open={ratingDialog.open}
+  title={myRating ? 'Update your rating' : 'Rate this userstyle'}
+>
   {#snippet children()}
     {#if ratingDialog.error}
       <Alert variant="error">{ratingDialog.error}</Alert>
@@ -249,12 +278,26 @@
       Cancel
     </button>
     {#if myRating}
-      <button class="btn btn--secondary" type="button" onclick={removeRating} disabled={ratingDialog.deleting || ratingDialog.submitting}>
+      <button
+        class="btn btn--secondary"
+        type="button"
+        onclick={removeRating}
+        disabled={ratingDialog.deleting || ratingDialog.submitting}
+      >
         <Loading pending={ratingDialog.deleting} idle="Remove" active="Removing…" />
       </button>
     {/if}
-    <button class="btn btn--primary" type="button" onclick={submitRating} disabled={ratingDialog.submitting || ratingDialog.deleting || !ratingDialog.selected}>
-      <Loading pending={ratingDialog.submitting} idle={myRating ? 'Update' : 'Submit'} active="Saving…" />
+    <button
+      class="btn btn--primary"
+      type="button"
+      onclick={submitRating}
+      disabled={ratingDialog.submitting || ratingDialog.deleting || !ratingDialog.selected}
+    >
+      <Loading
+        pending={ratingDialog.submitting}
+        idle={myRating ? 'Update' : 'Submit'}
+        active="Saving…"
+      />
     </button>
   {/snippet}
 </Dialog>
@@ -295,7 +338,6 @@
         gap: var(--space-1);
         vertical-align: middle;
       }
-
     }
   }
 

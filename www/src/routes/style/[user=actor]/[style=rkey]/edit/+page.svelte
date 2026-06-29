@@ -57,8 +57,7 @@
         homepageUrl,
         sourceCode,
         stripUpdateUrl,
-        previewImage:
-          previewFile ?? (keepExistingPreview ? userstyle.previewImage : undefined),
+        previewImage: previewFile ?? (keepExistingPreview ? userstyle.previewImage : undefined),
         createdAt: userstyle.createdAt,
       });
       goto(resolve('/style/[user=actor]/[style=rkey]', { user: data.user, style: data.style }));
@@ -77,7 +76,10 @@
 <div class="page-section">
   <div class="page-header">
     <BackLink
-      href={resolve('/style/[user=actor]/[style=rkey]/manage', { user: data.user, style: data.style })}
+      href={resolve('/style/[user=actor]/[style=rkey]/manage', {
+        user: data.user,
+        style: data.style,
+      })}
       label="Back to Manage"
     />
     <h1>Edit Userstyle</h1>

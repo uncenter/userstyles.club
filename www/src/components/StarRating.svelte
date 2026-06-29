@@ -1,23 +1,24 @@
 <script lang="ts">
-  import type { Snippet } from "svelte";
+  import type { Snippet } from 'svelte';
 
   interface Props {
     value: number | undefined;
     label?: string;
     text?: Snippet;
-  };
+  }
 
   let { value: rating, label, text }: Props = $props();
 </script>
 
-<span
-  class="star-rating"
-  aria-label={label}
->
+<span class="star-rating" aria-label={label}>
   {#each [1, 2, 3, 4, 5] as n}
     {@const isFilled = rating !== undefined && rating >= n - 0.25}
     {@const isHalf = rating !== undefined && !isFilled && rating >= n - 0.75}
-    <span class="star-rating__star" class:star-rating__star--filled={isFilled} class:star-rating__star--half={isHalf}>★</span>
+    <span
+      class="star-rating__star"
+      class:star-rating__star--filled={isFilled}
+      class:star-rating__star--half={isHalf}>★</span
+    >
   {/each}
   {#if text}
     {@render text()}

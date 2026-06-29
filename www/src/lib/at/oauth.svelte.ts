@@ -6,16 +6,19 @@ import {
   getSession,
   deleteStoredSession,
 } from '@atcute/oauth-browser-client';
-import {
-  type ActorResolver,
-} from '@atcute/identity-resolver';
+import { type ActorResolver } from '@atcute/identity-resolver';
 import { Client, ok, simpleFetchHandler } from '@atcute/client';
 
 import { replaceState } from '$app/navigation';
 import { SvelteURLSearchParams } from 'svelte/reactivity';
 import { REDIRECT_PATH, SLINGSHOT_URL, getSignUpPds } from './settings';
 import { getClientMetadata, oauthScope } from './metadata';
-import { getProfile, setClubProfile, invalidateProfileCaches, type ProfileView } from './services/profiles';
+import {
+  getProfile,
+  setClubProfile,
+  invalidateProfileCaches,
+  type ProfileView,
+} from './services/profiles';
 
 import type { ActorIdentifier, Did, Handle } from '@atcute/lexicons';
 import { isDid } from '@atcute/lexicons/syntax';
@@ -82,10 +85,11 @@ export async function login(input: string) {
   input = input.trim();
   if (!input) throw new Error('Please provide a handle or DID.');
 
-  let actor: ActorIdentifier = isDid(input) ? input : ( // pass DIDs through
-    input.includes('.') ? (input.startsWith('@') ? input.slice(1) : input) as Handle : // trim @ from handles
-    `${input.replace(/^@/, '')}.bsky.social` as Handle // otherwise assume a bsky username and complete the handle
-  );
+  let actor: ActorIdentifier = isDid(input)
+    ? input // pass DIDs through
+    : input.includes('.')
+      ? ((input.startsWith('@') ? input.slice(1) : input) as Handle) // trim @ from handles
+      : (`${input.replace(/^@/, '')}.bsky.social` as Handle); // otherwise assume a bsky username and complete the handle
   return startAuthorization(actor);
 }
 
@@ -172,24 +176,24 @@ async function resumeSession(did: Did) {
 }
 
 class SlingshotActorResolver implements ActorResolver {
-	private client = new Client({
-		handler: simpleFetchHandler({ service: SLINGSHOT_URL }),
-	});
+  private client = new Client({
+    handler: simpleFetchHandler({ service: SLINGSHOT_URL }),
+  });
 
-	async resolve(actor: ActorIdentifier, options?: { signal?: AbortSignal }) {
-		const resolved = await ok(
-			this.client.get('blue.microcosm.identity.resolveMiniDoc', {
-				params: {
-					identifier: actor,
-				},
-				signal: options?.signal,
-			}),
-		);
+  async resolve(actor: ActorIdentifier, options?: { signal?: AbortSignal }) {
+    const resolved = await ok(
+      this.client.get('blue.microcosm.identity.resolveMiniDoc', {
+        params: {
+          identifier: actor,
+        },
+        signal: options?.signal,
+      }),
+    );
 
-		return {
-			did: resolved.did,
-			handle: resolved.handle,
-			pds: new URL(resolved.pds).href,
-		};
-	}
+    return {
+      did: resolved.did,
+      handle: resolved.handle,
+      pds: new URL(resolved.pds).href,
+    };
+  }
 }

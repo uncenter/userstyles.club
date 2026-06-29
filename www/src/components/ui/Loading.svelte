@@ -13,6 +13,4 @@
 
 {#if pending}
   <Spinner size="sm" />{#if active}{active}{/if}
-{:else}
-  {#if typeof idle === 'string'}{idle}{:else}{@render idle()}{/if}
-{/if}
+{:else if typeof idle === 'string'}{idle}{:else}{@render idle()}{/if}

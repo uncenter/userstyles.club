@@ -23,31 +23,52 @@
   type EnrichedComment = { style: UserstyleRecord; comment: CommentRecord };
 
   const userstyles = listMyUserstyles();
-  const comments = userstyles.then((userstyles) => Promise.all(
-    userstyles.map(async (style) => {
-      const comments = await listCommentsForStyle(style.uri);
-      const filtered = comments.filter((comment) => parseResourceUri(comment.uri).repo !== user.did); // filter out user's own comments
-      return filtered.map((comment) => { return { style, comment }; });
-    }),
-  ).then((comments) => comments.flat().sort(
-    (a: EnrichedComment, b: EnrichedComment) =>
-      new Date(b.comment.value.updatedAt ?? b.comment.value.createdAt).getTime() -
-      new Date(a.comment.value.updatedAt ?? a.comment.value.createdAt).getTime(),
-  )));
-  const ratings = userstyles.then((userstyles) => Promise.all(
-    userstyles.map(async (style) => {
-      const ratings = await listRatingsForStyle(style.uri);
-      return ratings.map((rating) => { return { style, rating }})
-    }),
-  ).then((ratings) => ratings.flat()));
+  const comments = userstyles.then((userstyles) =>
+    Promise.all(
+      userstyles.map(async (style) => {
+        const comments = await listCommentsForStyle(style.uri);
+        const filtered = comments.filter(
+          (comment) => parseResourceUri(comment.uri).repo !== user.did,
+        ); // filter out user's own comments
+        return filtered.map((comment) => {
+          return { style, comment };
+        });
+      }),
+    ).then((comments) =>
+      comments
+        .flat()
+        .sort(
+          (a: EnrichedComment, b: EnrichedComment) =>
+            new Date(b.comment.value.updatedAt ?? b.comment.value.createdAt).getTime() -
+            new Date(a.comment.value.updatedAt ?? a.comment.value.createdAt).getTime(),
+        ),
+    ),
+  );
+  const ratings = userstyles.then((userstyles) =>
+    Promise.all(
+      userstyles.map(async (style) => {
+        const ratings = await listRatingsForStyle(style.uri);
+        return ratings.map((rating) => {
+          return { style, rating };
+        });
+      }),
+    ).then((ratings) => ratings.flat()),
+  );
 
-  function sortRecordsByCreation<R extends { value: { createdAt: string }}>(records: Array<R>): Array<R> {
-    return records.toSorted((a, b) => new Date(b.value.createdAt).getTime() - new Date(a.value.createdAt).getTime());
+  function sortRecordsByCreation<R extends { value: { createdAt: string } }>(
+    records: Array<R>,
+  ): Array<R> {
+    return records.toSorted(
+      (a, b) => new Date(b.value.createdAt).getTime() - new Date(a.value.createdAt).getTime(),
+    );
   }
 
   function getLinkToUserOwnStyle(styleUri: string) {
     const { rkey } = parseResourceUri(styleUri);
-    return resolve('/style/[user=actor]/[style=rkey]', { user: getPreferredActorIdentifier(user.profile!), style: rkey! });
+    return resolve('/style/[user=actor]/[style=rkey]', {
+      user: getPreferredActorIdentifier(user.profile!),
+      style: rkey!,
+    });
   }
 </script>
 
@@ -115,16 +136,30 @@
         {#each recents as { style, comment } (comment.uri)}
           {@const did = parseResourceUri(comment.uri).repo}
           {@const commenter = await getProfile(did)}
-          {@const rating = ratings.then((ratings) => ratings.find((rating) => rating.style.uri === style.uri && parseResourceUri(rating.rating.uri).repo! === did)?.rating)}
+          {@const rating = ratings.then(
+            (ratings) =>
+              ratings.find(
+                (rating) =>
+                  rating.style.uri === style.uri &&
+                  parseResourceUri(rating.rating.uri).repo! === did,
+              )?.rating,
+          )}
           <li class="comment-list__item">
             <div class="comment-list__item-header">
-              <ActorHandle profile={commenter} style='small' />
-              <span class="comment-list__item-on">commented on <a href={getLinkToUserOwnStyle(style.uri)} class="comment-list__style-link">{style.value.title}</a></span>
+              <ActorHandle profile={commenter} style="small" />
+              <span class="comment-list__item-on"
+                >commented on <a
+                  href={getLinkToUserOwnStyle(style.uri)}
+                  class="comment-list__style-link">{style.value.title}</a
+                ></span
+              >
               <div class="comment-list__item-end">
                 {#await rating then rating}
                   <StarRating value={rating?.value.rating} />
                 {/await}
-                <time class="comment-list__date">{formatDate(comment.value.updatedAt ?? comment.value.createdAt)}</time>
+                <time class="comment-list__date"
+                  >{formatDate(comment.value.updatedAt ?? comment.value.createdAt)}</time
+                >
               </div>
             </div>
             <p class="comment-list__content truncate-2">{comment.value.comment}</p>

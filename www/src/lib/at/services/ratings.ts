@@ -1,6 +1,12 @@
 import type { RecordKey, ResourceUri } from '@atcute/lexicons';
 import { is } from '@atcute/lexicons/validations';
-import { createRecord, deleteRecord, getBacklinkedRecords, putRecord, type RepoRecord } from '../records';
+import {
+  createRecord,
+  deleteRecord,
+  getBacklinkedRecords,
+  putRecord,
+  type RepoRecord,
+} from '../records';
 
 import { makeRecordBuilder, type RecordCreateInput, type RecordUpdateInput } from '../builder';
 import { CLUB_RATING_COLLECTION } from '../settings';
@@ -10,11 +16,16 @@ export type Rating = ClubUserstylesAlphaGraphRating.Main;
 
 export type RatingRecord = RepoRecord<Rating>;
 
-const builder = makeRecordBuilder(ClubUserstylesAlphaGraphRating.mainSchema, CLUB_RATING_COLLECTION);
+const builder = makeRecordBuilder(
+  ClubUserstylesAlphaGraphRating.mainSchema,
+  CLUB_RATING_COLLECTION,
+);
 
 export async function listRatingsForStyle(uri: ResourceUri): Promise<RatingRecord[]> {
   const records = await getBacklinkedRecords(uri, CLUB_RATING_COLLECTION, 'subject');
-  return records.filter((r): r is RatingRecord => is(ClubUserstylesAlphaGraphRating.mainSchema, r.value));
+  return records.filter((r): r is RatingRecord =>
+    is(ClubUserstylesAlphaGraphRating.mainSchema, r.value),
+  );
 }
 
 export async function createRating(input: RecordCreateInput<Rating>) {

@@ -61,7 +61,9 @@
 {:else}
   <nav class="navbar">
     <div class="navbar__stripe accent-cycle" aria-hidden="true">
-      <span class="navbar__stripe-segment"></span><span class="navbar__stripe-segment"></span><span class="navbar__stripe-segment"></span><span class="navbar__stripe-segment"></span>
+      <span class="navbar__stripe-segment"></span><span class="navbar__stripe-segment"></span><span
+        class="navbar__stripe-segment"
+      ></span><span class="navbar__stripe-segment"></span>
     </div>
     <div class="navbar__inner">
       <a href={resolve('/')} class="navbar__logo"><LogoCombo /></a>
@@ -112,7 +114,9 @@
             </div>
           </li>
         {:else}
-          <li class="navbar__login"><a href={resolve('/login')} class="btn btn--outline">Login</a></li>
+          <li class="navbar__login">
+            <a href={resolve('/login')} class="btn btn--outline">Login</a>
+          </li>
         {/if}
       </ul>
 
@@ -146,7 +150,9 @@
 
       {#if user.isLoggedIn && user.did}
         <a
-          href={resolve('/profile/[user=actor]', { user: getPreferredActorIdentifier(user.profile) })}
+          href={resolve('/profile/[user=actor]', {
+            user: getPreferredActorIdentifier(user.profile),
+          })}
           class="mobile-nav__link"
           role="menuitem">Profile</a
         >

@@ -36,11 +36,7 @@
     {#if userstyle.value.previewImage}
       <img
         class="userstyle-card__thumbnail-img"
-        src={getBlobCdnUrl(
-          uri.repo as Did,
-          userstyle.value.previewImage,
-          'feed_thumbnail',
-        )}
+        src={getBlobCdnUrl(uri.repo as Did, userstyle.value.previewImage, 'feed_thumbnail')}
         alt={userstyle.value.title}
       />
     {/if}
@@ -55,7 +51,7 @@
           })}>{userstyle.value.title}</a
         >
       </h3>
-      <ActorHandle {profile} style='minimal' />
+      <ActorHandle {profile} style="minimal" />
     </div>
     <p class="userstyle-card__description truncate-1">{userstyle.value.description ?? ''}</p>
     <footer class="userstyle-card__meta">
@@ -66,10 +62,14 @@
       {#await listRatingsForStyle(userstyle.uri) then ratings}
         {@const computed = computeAverageRating(ratings)}
         {#if computed}
-          <span class="userstyle-card__meta-item userstyle-card__meta-item--rating"><StarRatingAverage average={computed.average} count={computed.count} /></span
+          <span class="userstyle-card__meta-item userstyle-card__meta-item--rating"
+            ><StarRatingAverage average={computed.average} count={computed.count} /></span
           >
         {:else}
-          <span class="userstyle-card__meta-item userstyle-card__meta-item--rating userstyle-card__meta-item--na">Unrated</span>
+          <span
+            class="userstyle-card__meta-item userstyle-card__meta-item--rating userstyle-card__meta-item--na"
+            >Unrated</span
+          >
         {/if}
       {/await}
     </footer>

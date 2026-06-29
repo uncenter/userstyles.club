@@ -57,8 +57,8 @@ export async function getPdsClient(actor: ActorIdentifier): Promise<Client> {
     slingshot.get('blue.microcosm.identity.resolveMiniDoc', {
       params: {
         identifier: actor,
-      }
-    })
+      },
+    }),
   );
   const client = new Client({
     handler: simpleFetchHandler({ service: doc.pds }),

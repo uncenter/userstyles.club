@@ -1,4 +1,9 @@
-import { parse, type BaseSchema, type InferInput, type InferOutput } from '@atcute/lexicons/validations';
+import {
+  parse,
+  type BaseSchema,
+  type InferInput,
+  type InferOutput,
+} from '@atcute/lexicons/validations';
 
 export type RecordCreateInput<T> = Omit<T, '$type' | 'createdAt' | 'updatedAt'>;
 export type RecordUpdateInput<T> = Omit<T, '$type' | 'updatedAt'>;
