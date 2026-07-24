@@ -150,7 +150,7 @@
               <span class="comment-list__item-on"
                 >commented on <a
                   href={getLinkToUserOwnStyle(style.uri)}
-                  class="comment-list__style-link">{style.value.title}</a
+                  class="link link--quiet comment-list__style-link">{style.value.title}</a
                 ></span
               >
               <div class="comment-list__item-end">
@@ -289,13 +289,7 @@
         }
 
         .comment-list__style-link {
-          color: var(--brand-purple);
           font-weight: 600;
-          text-decoration: none;
-
-          &:hover {
-            text-decoration: underline;
-          }
         }
 
         .comment-list__item-end {

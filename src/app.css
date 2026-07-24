@@ -446,6 +446,49 @@ main.container {
   }
 }
 
+/* Links */
+
+.link {
+  border: none;
+  background: none;
+  padding: 0;
+  font: inherit;
+  color: var(--link-fg, var(--brand-purple));
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+
+  &:hover {
+    color: var(--link-hover-fg, var(--link-fg, var(--brand-purple-hover)));
+  }
+
+  &.link--quiet {
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  &.link--muted {
+    --link-fg: var(--fg-muted);
+  }
+
+  &.link--icon {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+  }
+
+  &.link--sm {
+    font-size: var(--text-sm);
+  }
+
+  &.link--xs {
+    font-size: var(--text-xs);
+  }
+}
+
 /* Forms */
 
 input[type='text'],

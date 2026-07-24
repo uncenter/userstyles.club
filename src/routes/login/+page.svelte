@@ -7,6 +7,8 @@
 
   import { BackLink, Loading, Alert } from '$components/ui';
 
+  import { isActorIdentifier } from '@atcute/lexicons/syntax';
+
   let handle = $state('');
   let error = $state<string | null>(null);
   let loading = $state(false);
@@ -42,8 +44,8 @@
 <div class="centered-col">
   <section class="page-section login-card">
     <div class="login-card__header">
-      <h1 class="login-card__title">Sign in</h1>
-      <p class="text-muted">Enter your Bluesky handle or DID to continue.</p>
+      <h1 class="login-card__title">Sign In</h1>
+      <p class="text-muted">Enter your Bluesky (Atmosphere) handle or DID to continue.</p>
     </div>
 
     <form onsubmit={submit} class="form-stack">
@@ -62,10 +64,12 @@
       {#if error}
         <Alert variant="error">{error}</Alert>
       {/if}
-      <button type="submit" class="btn btn--primary" disabled={loading || !handle.trim()}>
+      <button type="submit" class="btn btn--primary" disabled={loading || !isActorIdentifier(handle)}>
         <Loading pending={loading} idle="Continue" active="Signing in…" />
       </button>
-      <button type="button" class="btn btn--outline" onclick={signup}> Create account </button>
+      <button type="button" class="link" onclick={signup}>
+        Don't have a Bluesky (Atmosphere) account?
+      </button>
     </form>
 
     <BackLink href={resolve('/')} label="Back to Home" />

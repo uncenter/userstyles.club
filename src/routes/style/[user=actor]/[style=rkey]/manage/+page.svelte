@@ -241,7 +241,7 @@
       </p>
     {/if}
     <a
-      class="manage-page__upstream-url"
+      class="link link--quiet link--muted link--xs link--icon manage-page__upstream-url"
       href={userstyle.upstreamUrl}
       target="_blank"
       rel="noopener noreferrer"
@@ -327,18 +327,11 @@
   }
 
   .manage-page__upstream-url {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--space-1);
     margin-top: var(--space-3);
     max-width: 100%;
-    font-size: var(--text-xs);
-    color: var(--fg-muted);
-    text-decoration: none;
 
     &:hover {
       color: var(--foreground);
-      text-decoration: underline;
     }
   }
 </style>
