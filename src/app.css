@@ -15,7 +15,7 @@
 
   --pastel-yellow: light-dark(#ffc96d, #fde68a);
 
-  --bsky-blue: #1185fe;
+  --bsky-accent: #1185fe;
   --stylus-accent: #28fefe;
 
   /* Backgrounds */
@@ -406,9 +406,9 @@ main.container {
   }
 
   &.btn--bsky {
-    --btn-bg: var(--bsky-blue);
+    --btn-bg: var(--bsky-accent);
     --btn-fg: #ffffff;
-    --btn-hover-bg: color-mix(in srgb, var(--bsky-blue) 85%, #000);
+    --btn-hover-bg: color-mix(in srgb, var(--bsky-accent) 85%, #000);
     --btn-hover-fg: #ffffff;
   }
 

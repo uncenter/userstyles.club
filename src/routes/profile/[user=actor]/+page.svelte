@@ -164,7 +164,7 @@
       transition: color var(--ease-fast);
 
       &:hover {
-        color: var(--bsky-blue);
+        color: var(--bsky-accent);
       }
     }
 
