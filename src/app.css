@@ -16,6 +16,7 @@
   --pastel-yellow: light-dark(#ffc96d, #fde68a);
 
   --bsky-blue: #1185fe;
+  --stylus-accent: #28fefe;
 
   /* Backgrounds */
   --background: light-dark(#edeaf8, #09090b);
@@ -409,6 +410,19 @@ main.container {
     --btn-fg: #ffffff;
     --btn-hover-bg: color-mix(in srgb, var(--bsky-blue) 85%, #000);
     --btn-hover-fg: #ffffff;
+  }
+
+  &.btn--stylus {
+    --btn-bg: var(--stylus-accent);
+    --btn-fg: #04302f;
+    --btn-hover-bg: color-mix(in srgb, var(--stylus-accent) 85%, #000);
+    --btn-hover-fg: #04302f;
+
+    &.btn--outline {
+      --btn-outline-fg: var(--stylus-accent);
+      border: 2px solid var(--stylus-accent);
+      padding: calc(var(--space-2) - 2px) calc(var(--space-4) - 2px);
+    }
   }
 
   &.btn--outline {

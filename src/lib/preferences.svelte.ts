@@ -38,6 +38,7 @@ class UserPreferences<T extends Record<string, unknown>> {
 export const preferences = new UserPreferences({
   appearance: 'system',
   usePermanentUrls: true,
+  hasStylusInstalled: false,
 });
 
 export function getPreferredActorIdentifier(profile: ProfileView): ActorIdentifier {

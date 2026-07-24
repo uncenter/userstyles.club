@@ -3,6 +3,7 @@
   import { resolve } from '$app/paths';
 
   import { joinPageTitle } from '$lib/constants';
+  import { proxify } from '$lib/proxify.svelte';
 
   import { parseResourceUri } from '@atcute/lexicons';
 
@@ -17,7 +18,7 @@
     type CommentRecord,
     type ReviewThread,
   } from '$lib/at';
-  import { getPreferredActorIdentifier } from '$lib/preferences.svelte';
+  import { getPreferredActorIdentifier, preferences } from '$lib/preferences.svelte';
 
   import { Loading, Alert, Dialog } from '$components/ui';
   import {
@@ -28,15 +29,13 @@
     StarRatingAverage,
     StarRatingInput,
   } from '$components';
+  import Comments from './Comments.svelte';
 
-  import { DownloadIcon, ExternalLinkIcon, HouseIcon, PencilIcon, ScaleIcon } from '@lucide/svelte';
+  import { DownloadIcon, ExternalLinkIcon, ArrowRightIcon, PencilIcon, ScaleIcon } from '@lucide/svelte';
+  import StylusIcon from '$lib/assets/stylus.png';
 
   import bytes from 'pretty-bytes';
   import { formatDate } from '$lib/date';
-
-  import Comments from './Comments.svelte';
-
-  import { proxify } from '$lib/proxify.svelte';
 
   let { data, params }: PageProps = $props();
   let userstyle = $derived(data.userstyle.value);
@@ -76,6 +75,36 @@
     ratingDialog.selected = myRating?.value.rating;
     ratingDialog.error = null;
     ratingDialog.open = true;
+  }
+
+  const installUrl = $derived(
+    // Explicitly do not use getPreferredActorIdentifier given the install URL will be used for future updates and *should* be permanent.
+    resolve('/style/[user=actor]/[style=rkey].user.css', {
+      user: data.profile.did,
+      style: params.style,
+    }),
+  );
+
+  let stylusDialog = $state({
+    open: false,
+    step: 'ask' as 'ask' | 'confirm',
+  });
+
+  function onInstallClick(e: MouseEvent) {
+    if (preferences.get('hasStylusInstalled')) return;
+    e.preventDefault();
+    stylusDialog.step = 'ask';
+    stylusDialog.open = true;
+  }
+
+  function onGetStylusClick() {
+    stylusDialog.step = 'confirm';
+  }
+
+  function continueToInstall() {
+    preferences.set('hasStylusInstalled', true);
+    stylusDialog.open = false;
+    window.open(installUrl, '_blank');
   }
 
   async function submitRating() {
@@ -220,13 +249,10 @@
           </a>
         {/if}
         <a
-          // Explicitly do not use getPreferredActorIdentifier given the install URL will be used for future updates and *should* be permanent.
-          href={resolve('/style/[user=actor]/[style=rkey].user.css', {
-            user: data.profile.did,
-            style: params.style,
-          })}
+          href={installUrl}
           target="_blank"
           class="btn btn--primary btn--lg"
+          onclick={onInstallClick}
         >
           <DownloadIcon size={16} />Install
         </a>
@@ -299,6 +325,47 @@
         active="Saving…"
       />
     </button>
+  {/snippet}
+</Dialog>
+
+<Dialog
+  bind:open={stylusDialog.open}
+  title={stylusDialog.step === 'ask' ? 'Do you have Stylus?' : 'Stylus installed?'}
+>
+  {#snippet children()}
+    <div class="stylus-dialog__body">
+      {#if stylusDialog.step === 'ask'}
+        <p>
+          Userstyles are installed using the <img
+            class="stylus-dialog__icon"
+            alt="Stylus extension logo"
+            src={StylusIcon}
+          /><strong>Stylus</strong> browser extension. Get Stylus below before installing.
+        </p>
+      {:else}
+        <p>Once Stylus is installed, continue below to install this userstyle.</p>
+      {/if}
+    </div>
+  {/snippet}
+  {#snippet actions()}
+    {#if stylusDialog.step === 'ask'}
+      <button class="btn btn--outline" type="button" onclick={continueToInstall}>
+        Already have it!
+      </button>
+      <a
+        href="https://add0n.com/stylus.html"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="btn btn--stylus"
+        onclick={onGetStylusClick}
+      >
+        <ExternalLinkIcon size={16} />Get Stylus
+      </a>
+    {:else}
+      <button class="btn btn--primary" type="button" onclick={continueToInstall}>
+        <ArrowRightIcon size={16} /> Install
+      </button>
+    {/if}
   {/snippet}
 </Dialog>
 
@@ -454,6 +521,20 @@
     .userstyle-section__stats {
       margin-left: auto;
       white-space: nowrap;
+    }
+  }
+
+  .stylus-dialog__body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+
+    .stylus-dialog__icon {
+      width: 1em;
+      height: 1em;
+      vertical-align: -0.15em;
+      margin-right: 0.25em;
+      border-radius: var(--radius-sm);
     }
   }
 </style>
