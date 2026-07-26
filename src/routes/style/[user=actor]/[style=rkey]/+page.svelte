@@ -154,6 +154,7 @@
 
 <svelte:head>
   <title>{joinPageTitle(userstyle.title)}</title>
+  <meta name="at:canonical" content={data.userstyle.uri} />
 </svelte:head>
 
 <div class="page-wrapper">

@@ -2,7 +2,7 @@
   import type { PageProps } from './$types';
   import { joinPageTitle } from '$lib/constants';
 
-  import { user, setClubProfile } from '$lib/at';
+  import { user, setClubProfile, CLUB_PROFILE_COLLECTION } from '$lib/at';
 
   import { Alert, Avatar, Loading } from '$components/ui';
   import { UserstylesSection, BlueskyIcon } from '$components';
@@ -56,6 +56,7 @@
 
 <svelte:head>
   <title>{joinPageTitle(`@${data.profile.handle}`)}</title>
+  <meta name="at:canonical" content={`at://${data.profile.did}/${CLUB_PROFILE_COLLECTION}/self`} />
 </svelte:head>
 
 <section class="page-section profile-header">
