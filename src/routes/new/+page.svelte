@@ -3,7 +3,7 @@
   import { resolve } from '$app/paths';
   import { joinPageTitle } from '$lib/constants';
 
-  import { parseResourceUri } from '@atcute/lexicons';
+  import { parseCanonicalResourceUri } from '@atcute/lexicons';
 
   import { createUserstyle, user, type UserstyleContent } from '$lib/at';
   import { getPreferredActorIdentifier } from '$lib/preferences.svelte';
@@ -55,7 +55,7 @@
         stripUpdateUrl: fields.stripUpdateUrl,
         previewImage: previewFile ?? undefined,
       });
-      let uri = parseResourceUri(userstyle.response.uri);
+      let uri = parseCanonicalResourceUri(userstyle.response.uri);
       publishedUrl = `/style/${getPreferredActorIdentifier(user.profile!)}/${uri.rkey}`;
       shareText = `Just published "${fields.title}" on userstyles.club!\n\nhttps://userstyles.club${publishedUrl}`;
       shareDialogOpen = true;

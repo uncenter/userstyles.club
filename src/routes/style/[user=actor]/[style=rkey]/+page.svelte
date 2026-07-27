@@ -5,7 +5,7 @@
   import { joinPageTitle } from '$lib/constants';
   import { proxify } from '$lib/proxify.svelte';
 
-  import { parseResourceUri } from '@atcute/lexicons';
+  import { parseCanonicalResourceUri, type CanonicalResourceUri } from '@atcute/lexicons';
 
   import {
     user,
@@ -50,7 +50,7 @@
 
   const threads: ReviewThread[] = $derived(
     getCommentThreads(feedback.comments).map((thread) => {
-      const did = parseResourceUri(thread.comment.uri).repo!;
+      const did = parseCanonicalResourceUri(thread.comment.uri).repo;
       return { ...thread, rating: feedback!.ratings[did] };
     }),
   );
@@ -119,8 +119,8 @@
     ratingDialog.submitting = true;
     try {
       if (myRating) {
-        const { rkey } = parseResourceUri(myRating.uri);
-        await updateRating(rkey!, {
+        const { rkey } = parseCanonicalResourceUri(myRating.uri);
+        await updateRating(rkey, {
           subject: { uri: data.userstyle.uri, cid: data.userstyle.cid! },
           rating: ratingDialog.selected,
           createdAt: myRating.value.createdAt,
@@ -131,7 +131,10 @@
           subject: { uri: data.userstyle.uri, cid: data.userstyle.cid! },
           rating: ratingDialog.selected,
         });
-        feedback.ratings[user.did!] = { uri: created.response.uri, value: created.record };
+        feedback.ratings[user.did!] = {
+          uri: created.response.uri as CanonicalResourceUri,
+          value: created.record,
+        };
       }
       ratingDialog.open = false;
     } catch (e) {
@@ -146,8 +149,8 @@
     ratingDialog.error = null;
     ratingDialog.deleting = true;
     try {
-      const { rkey } = parseResourceUri(myRating.uri);
-      await deleteRating(rkey!);
+      const { rkey } = parseCanonicalResourceUri(myRating.uri);
+      await deleteRating(rkey);
       delete feedback.ratings[user.did!];
       ratingDialog.open = false;
     } catch (e) {

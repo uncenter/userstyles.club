@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { type Did } from '@atcute/lexicons';
+  import { type CanonicalResourceUri, type Did } from '@atcute/lexicons';
   import type { ComAtprotoRepoStrongRef } from '@atcute/atproto';
 
   import {
@@ -37,7 +37,10 @@
     submitting = true;
     try {
       let created = await createComment({ subject: userstyle, comment });
-      onCommentAdded({ uri: created.response.uri, value: created.record });
+      onCommentAdded({
+        uri: created.response.uri as CanonicalResourceUri,
+        value: created.record,
+      });
       comment = '';
     } catch (e) {
       error = e instanceof Error ? e.message : 'Failed to submit commit.';

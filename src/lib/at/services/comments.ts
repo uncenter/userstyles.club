@@ -1,4 +1,4 @@
-import type { RecordKey, ResourceUri } from '@atcute/lexicons';
+import type { CanonicalResourceUri, RecordKey } from '@atcute/lexicons';
 import { is } from '@atcute/lexicons/validations';
 
 import {
@@ -27,7 +27,7 @@ const builder = makeRecordBuilder(
   CLUB_COMMENT_COLLECTION,
 );
 
-export async function listCommentsForStyle(uri: ResourceUri): Promise<CommentRecord[]> {
+export async function listCommentsForStyle(uri: CanonicalResourceUri): Promise<CommentRecord[]> {
   const records = await getBacklinkedRecords(uri, CLUB_COMMENT_COLLECTION, 'subject.uri');
   return records.filter((r): r is CommentRecord =>
     is(ClubUserstylesAlphaFeedComment.mainSchema, r.value),
@@ -35,7 +35,7 @@ export async function listCommentsForStyle(uri: ResourceUri): Promise<CommentRec
 }
 
 export function getCommentThreads(comments: CommentRecord[]): CommentThread[] {
-  const nodes = new Map<ResourceUri, CommentThread>();
+  const nodes = new Map<CanonicalResourceUri, CommentThread>();
 
   for (const comment of comments) {
     nodes.set(comment.uri, {
@@ -50,7 +50,8 @@ export function getCommentThreads(comments: CommentRecord[]): CommentThread[] {
     const node = nodes.get(comment.uri)!;
 
     if (comment.value.parent) {
-      const parent = nodes.get(comment.value.parent.uri);
+      // The strongRef refers to the uri of another comment.
+      const parent = nodes.get(comment.value.parent.uri as CanonicalResourceUri);
 
       if (parent) {
         parent.replies.push(node);

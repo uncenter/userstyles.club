@@ -9,8 +9,7 @@
     listRatingsForStyle,
     computeAverageRating,
   } from '$lib/at';
-  import { parseResourceUri } from '@atcute/lexicons';
-  import type { Did } from '@atcute/lexicons';
+  import { parseCanonicalResourceUri } from '@atcute/lexicons';
 
   import StarRatingAverage from './StarRatingAverage.svelte';
   import ActorHandle from './ActorHandle.svelte';
@@ -27,7 +26,7 @@
 
   let { userstyle, author }: Props = $props();
 
-  let uri = $derived.by(() => parseResourceUri(userstyle.uri));
+  let uri = $derived.by(() => parseCanonicalResourceUri(userstyle.uri));
   let profile = $derived(author || (await getProfile(uri.repo)));
 </script>
 
@@ -36,7 +35,7 @@
     {#if userstyle.value.previewImage}
       <img
         class="userstyle-card__thumbnail-img"
-        src={getBlobCdnUrl(uri.repo as Did, userstyle.value.previewImage, 'feed_thumbnail')}
+        src={getBlobCdnUrl(uri.repo, userstyle.value.previewImage, 'feed_thumbnail')}
         alt={userstyle.value.title}
       />
     {/if}
@@ -47,7 +46,7 @@
         <a
           href={resolve('/style/[user=actor]/[style=rkey]', {
             user: getPreferredActorIdentifier(profile),
-            style: uri.rkey!,
+            style: uri.rkey,
           })}>{userstyle.value.title}</a
         >
       </h3>

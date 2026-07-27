@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { parseResourceUri } from '@atcute/lexicons';
+  import { parseCanonicalResourceUri, type CanonicalResourceUri } from '@atcute/lexicons';
   import type { ComAtprotoRepoStrongRef } from '@atcute/atproto';
 
   import {
@@ -32,7 +32,7 @@
 
   let { thread, ratings, userstyle, onCommentAdded, onCommentDeleted }: Props = $props();
 
-  let { repo: actor, rkey } = $derived(parseResourceUri(thread.comment.uri));
+  let { repo: actor, rkey } = $derived(parseCanonicalResourceUri(thread.comment.uri));
   let rating = $derived(ratings?.[actor!]);
   let isMyComment = $derived(user.isLoggedIn && user.did === actor);
 
@@ -60,7 +60,7 @@
     error = null;
     submitting = true;
     try {
-      let updated = await updateComment(rkey!, {
+      let updated = await updateComment(rkey, {
         subject: userstyle,
         comment: editing.value,
         createdAt: thread.comment.value.createdAt,
@@ -94,7 +94,7 @@
         comment: replying.value,
         parent: { uri: thread.comment.uri, cid: thread.comment.cid! },
       });
-      onCommentAdded({ uri: reply.response.uri, value: reply.record });
+      onCommentAdded({ uri: reply.response.uri as CanonicalResourceUri, value: reply.record });
       replying.value = '';
     } catch (e) {
       error = e instanceof Error ? e.message : 'Failed to submit comment reply.';
@@ -108,7 +108,7 @@
     confirmDeleteOpen = false;
     submitting = true;
     try {
-      await deleteComment(rkey!);
+      await deleteComment(rkey);
       onCommentDeleted(thread.comment.uri);
     } catch (e) {
       error = e instanceof Error ? e.message : 'Failed to delete comment.';

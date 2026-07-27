@@ -1,4 +1,8 @@
-import { parseResourceUri, type RecordKey, type ResourceUri } from '@atcute/lexicons';
+import {
+  parseCanonicalResourceUri,
+  type CanonicalResourceUri,
+  type RecordKey,
+} from '@atcute/lexicons';
 import { is } from '@atcute/lexicons/validations';
 import {
   createRecord,
@@ -18,7 +22,7 @@ export type RatingRecord = RepoRecord<Rating>;
 
 const builder = makeRecordBuilder(ClubUserstylesAlphaFeedRating.mainSchema, CLUB_RATING_COLLECTION);
 
-export async function listRatingsForStyle(uri: ResourceUri): Promise<RatingRecord[]> {
+export async function listRatingsForStyle(uri: CanonicalResourceUri): Promise<RatingRecord[]> {
   const records = await getBacklinkedRecords(uri, CLUB_RATING_COLLECTION, 'subject.uri');
 
   // A user may end up with multiple rating records for the same userstyle.
@@ -28,10 +32,10 @@ export async function listRatingsForStyle(uri: ResourceUri): Promise<RatingRecor
     if (!is(ClubUserstylesAlphaFeedRating.mainSchema, record.value)) continue;
     const rating = record as RatingRecord;
 
-    const { repo, rkey } = parseResourceUri(rating.uri);
-    const existing = newestByAuthor.get(repo!);
-    if (!existing || rkey! > parseResourceUri(existing.uri).rkey!) {
-      newestByAuthor.set(repo!, rating);
+    const { repo, rkey } = parseCanonicalResourceUri(rating.uri);
+    const existing = newestByAuthor.get(repo);
+    if (!existing || rkey > parseCanonicalResourceUri(existing.uri).rkey) {
+      newestByAuthor.set(repo, rating);
     }
   }
 

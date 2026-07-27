@@ -1,10 +1,10 @@
 import type {
   ActorIdentifier,
   Blob as BlobRef,
+  CanonicalResourceUri,
   Did,
   Nsid,
   RecordKey,
-  ResourceUri,
 } from '@atcute/lexicons';
 import type { Records } from '@atcute/lexicons/ambient';
 import type * as v from '@atcute/lexicons/validations';
@@ -14,7 +14,7 @@ import { getSessionContext } from './auth';
 import { ok } from '@atcute/client';
 
 export type RepoRecord<T extends Record<string, unknown> = Record<string, unknown>> = {
-  uri: ResourceUri;
+  uri: CanonicalResourceUri;
   cid?: string;
   value: T;
 };
@@ -98,7 +98,7 @@ export async function listRecordsForCollection<NSID extends Nsid>(params: {
 }
 
 export async function getBacklinkedRecords<NSID extends Nsid>(
-  subject: ResourceUri,
+  subject: CanonicalResourceUri,
   collection: NSID,
   path: string,
 ): Promise<RepoRecord<ValueFor<NSID>>[]> {

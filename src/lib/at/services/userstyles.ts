@@ -17,8 +17,8 @@ import {
   type ActorIdentifier,
   type RecordKey,
   type Blob as BlobRef,
-  type ResourceUri,
-  parseResourceUri,
+  type CanonicalResourceUri,
+  parseCanonicalResourceUri,
 } from '@atcute/lexicons';
 import { is } from '@atcute/lexicons/validations';
 
@@ -125,7 +125,9 @@ export type UserstyleFeedback = {
   ratings: Record<string, RatingRecord>;
 };
 
-export async function getUserstyleFeedback(userstyle: ResourceUri): Promise<UserstyleFeedback> {
+export async function getUserstyleFeedback(
+  userstyle: CanonicalResourceUri,
+): Promise<UserstyleFeedback> {
   let st = performance.now();
   const [comments, ratings]: [CommentRecord[], RatingRecord[]] = await Promise.all([
     listCommentsForStyle(userstyle),
@@ -134,7 +136,7 @@ export async function getUserstyleFeedback(userstyle: ResourceUri): Promise<User
   console.log(`Fetched feedback in ${performance.now() - st} ms.`);
 
   const ratingsByDid: Record<string, RatingRecord> = Object.fromEntries(
-    ratings.map((r) => [parseResourceUri(r.uri).repo!, r]),
+    ratings.map((r) => [parseCanonicalResourceUri(r.uri).repo, r]),
   );
 
   return { comments, ratings: ratingsByDid };

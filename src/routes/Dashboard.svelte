@@ -1,6 +1,6 @@
 <script lang="ts">
   import { resolve } from '$app/paths';
-  import { parseResourceUri } from '@atcute/lexicons/syntax';
+  import { parseCanonicalResourceUri, type CanonicalResourceUri } from '@atcute/lexicons/syntax';
 
   import {
     type UserstyleRecord,
@@ -69,7 +69,7 @@
   }
 
   function isFromOther(record: CommentRecord | RatingRecord) {
-    return parseResourceUri(record.uri).repo !== user.did;
+    return parseCanonicalResourceUri(record.uri).repo !== user.did;
   }
 
   const userstyles = listMyUserstyles();
@@ -80,7 +80,7 @@
     const resolveCommenter =
       (style: UserstyleRecord) => async (record: CommentRecord | RatingRecord) => ({
         style,
-        profile: await getProfile(parseResourceUri(record.uri).repo),
+        profile: await getProfile(parseCanonicalResourceUri(record.uri).repo),
       });
 
     const events = await Promise.all(
@@ -99,9 +99,11 @@
 
   const receivedActivity = loadReceivedActivity();
 
-  async function resolveOtherUsersStyle(subjectUri: string): Promise<ResolvedStyle | undefined> {
-    const { repo, rkey } = parseResourceUri(subjectUri);
-    if (repo === user.did || !rkey) return undefined; // skip the user's own styles
+  async function resolveOtherUsersStyle(
+    subjectUri: CanonicalResourceUri,
+  ): Promise<ResolvedStyle | undefined> {
+    const { repo, rkey } = parseCanonicalResourceUri(subjectUri);
+    if (repo === user.did) return undefined; // skip the user's own styles
     try {
       const [style, profile] = await Promise.all([getUserstyle(repo, rkey), getProfile(repo)]);
       return { style, profile };
@@ -121,8 +123,12 @@
     ]);
 
     const [commentEvents, ratingEvents] = await Promise.all([
-      toEvents(comments, 'comment', (record) => resolveOtherUsersStyle(record.value.subject.uri)),
-      toEvents(ratings, 'rating', (record) => resolveOtherUsersStyle(record.value.subject.uri)),
+      toEvents(comments, 'comment', (record) =>
+        resolveOtherUsersStyle(record.value.subject.uri as CanonicalResourceUri),
+      ),
+      toEvents(ratings, 'rating', (record) =>
+        resolveOtherUsersStyle(record.value.subject.uri as CanonicalResourceUri),
+      ),
     ]);
 
     return [...commentEvents, ...ratingEvents].sort(byDateDesc);
@@ -158,15 +164,15 @@
 
   const recentStyles = loadRecentStyles();
 
-  function getLinkToStyle(styleUri: string, profile: ProfileView) {
-    const { rkey } = parseResourceUri(styleUri);
+  function getLinkToStyle(styleUri: CanonicalResourceUri, profile: ProfileView) {
+    const { rkey } = parseCanonicalResourceUri(styleUri);
     return resolve('/style/[user=actor]/[style=rkey]', {
       user: getPreferredActorIdentifier(profile),
-      style: rkey!,
+      style: rkey,
     });
   }
 
-  function getLinkToUserOwnStyle(styleUri: string) {
+  function getLinkToUserOwnStyle(styleUri: CanonicalResourceUri) {
     return getLinkToStyle(styleUri, user.profile!);
   }
 </script>
