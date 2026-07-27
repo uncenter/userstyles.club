@@ -78,8 +78,7 @@
     </div>
   </label>
   <p class="form-hint" id="import-from-url-desc">
-    Import from GitHub, Tangled, Userstyles.world, USo Archive, or any other CSS file on the
-    internet.
+    Import from GitHub, Tangled, Userstyles.world, USo Archive, or just any CSS file on the internet.
   </p>
 </form>
 

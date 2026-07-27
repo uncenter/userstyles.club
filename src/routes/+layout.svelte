@@ -178,7 +178,6 @@
         <p class="site-footer__tagline">{TAGLINE}</p>
       </div>
       <div class="site-footer__links">
-        <a href={resolve('/about')} class="btn btn--outline btn--primary btn--sm">About</a>
         <a
           href={REPO_URL}
           target="_blank"
