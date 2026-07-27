@@ -1,4 +1,4 @@
-import type { RecordKey, ResourceUri } from '@atcute/lexicons';
+import { parseResourceUri, type RecordKey, type ResourceUri } from '@atcute/lexicons';
 import { is } from '@atcute/lexicons/validations';
 import {
   createRecord,
@@ -20,9 +20,22 @@ const builder = makeRecordBuilder(ClubUserstylesAlphaFeedRating.mainSchema, CLUB
 
 export async function listRatingsForStyle(uri: ResourceUri): Promise<RatingRecord[]> {
   const records = await getBacklinkedRecords(uri, CLUB_RATING_COLLECTION, 'subject.uri');
-  return records.filter((r): r is RatingRecord =>
-    is(ClubUserstylesAlphaFeedRating.mainSchema, r.value),
-  );
+
+  // A user may end up with multiple rating records for the same userstyle.
+  // In this case, we keep the newest (by TID, which are lexicographically sortable).
+  const newestByAuthor = new Map<string, RatingRecord>();
+  for (const record of records) {
+    if (!is(ClubUserstylesAlphaFeedRating.mainSchema, record.value)) continue;
+    const rating = record as RatingRecord;
+
+    const { repo, rkey } = parseResourceUri(rating.uri);
+    const existing = newestByAuthor.get(repo!);
+    if (!existing || rkey! > parseResourceUri(existing.uri).rkey!) {
+      newestByAuthor.set(repo!, rating);
+    }
+  }
+
+  return [...newestByAuthor.values()];
 }
 
 export async function createRating(input: RecordCreateInput<Rating>) {
