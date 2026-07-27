@@ -163,26 +163,28 @@
       </a>
     </li>
 
-    {#if userstyle.upstreamUrl}
-      <li class="action-list__item">
-        <div class="action-list__info">
-          <p class="action-list__title">Sync</p>
-          <p class="action-list__desc text-muted">
-            Fetch the latest source code from the upstream URL.
-          </p>
-        </div>
-        <button
-          type="button"
-          class="btn btn--secondary btn--lg"
-          disabled={sync.fetching}
-          onclick={fetchSync}
+    <li class={["action-list__item", !userstyle.upstreamUrl && "action-list__item--disabled"]}>
+      <div class="action-list__info">
+        <p class="action-list__title">Sync</p>
+        <p class="action-list__desc text-muted">
+          Fetch the latest source code from the upstream URL.
+        </p>
+        {#if !userstyle.upstreamUrl}
+          <p class="action-list__note text-muted">No upstream URL is configured.</p>
+        {/if}
+      </div>
+      <button
+        type="button"
+        class="btn btn--secondary btn--lg"
+        disabled={!userstyle.upstreamUrl || sync.fetching}
+        title={userstyle.upstreamUrl ? undefined : 'No upstream URL is configured for this userstyle.'}
+        onclick={fetchSync}
+      >
+        <Loading pending={sync.fetching} active="Syncing…"
+          >{#snippet idle()}<RefreshCwIcon size={14} /> Sync{/snippet}</Loading
         >
-          <Loading pending={sync.fetching} active="Syncing…"
-            >{#snippet idle()}<RefreshCwIcon size={14} /> Sync{/snippet}</Loading
-          >
-        </button>
-      </li>
-    {/if}
+      </button>
+    </li>
   </ul>
 </div>
 
@@ -303,6 +305,10 @@
     & + & {
       border-top: 1px solid var(--border);
     }
+
+    &.action-list__item--disabled {
+      opacity: 0.55;
+    }
   }
 
   .action-list__info {
@@ -317,6 +323,11 @@
 
   .action-list__desc {
     font-size: var(--text-sm);
+  }
+
+  .action-list__note {
+    font-size: var(--text-xs);
+    font-style: italic;
   }
 
   .manage-page__danger-zone {
