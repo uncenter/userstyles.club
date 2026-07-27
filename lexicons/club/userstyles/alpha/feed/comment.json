@@ -6,12 +6,12 @@
       "record": {
         "properties": {
           "subject": {
-            "type": "string",
-            "format": "at-uri"
+            "ref": "com.atproto.repo.strongRef",
+            "type": "ref"
           },
           "parent": {
-            "type": "string",
-            "format": "at-uri"
+            "ref": "com.atproto.repo.strongRef",
+            "type": "ref"
           },
           "comment": {
             "type": "string",
@@ -33,6 +33,6 @@
       "type": "record"
     }
   },
-  "id": "club.userstyles.alpha.graph.comment",
+  "id": "club.userstyles.alpha.feed.comment",
   "lexicon": 1
 }

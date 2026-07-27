@@ -6,8 +6,8 @@
       "record": {
         "properties": {
           "subject": {
-            "type": "string",
-            "format": "at-uri"
+            "ref": "com.atproto.repo.strongRef",
+            "type": "ref"
           },
           "rating": {
             "maximum": 5,
@@ -29,6 +29,6 @@
       "type": "record"
     }
   },
-  "id": "club.userstyles.alpha.graph.rating",
+  "id": "club.userstyles.alpha.feed.rating",
   "lexicon": 1
 }

@@ -1,5 +1,6 @@
 <script lang="ts">
-  import { parseResourceUri, type ResourceUri } from '@atcute/lexicons';
+  import { parseResourceUri } from '@atcute/lexicons';
+  import type { ComAtprotoRepoStrongRef } from '@atcute/atproto';
 
   import {
     user,
@@ -24,7 +25,7 @@
   interface Props {
     thread: ReviewThread;
     ratings: Record<string, RatingRecord>;
-    userstyle: ResourceUri;
+    userstyle: ComAtprotoRepoStrongRef.Main;
     onCommentAdded: (comment: CommentRecord) => void;
     onCommentDeleted: (uri: string) => void;
   }
@@ -91,7 +92,7 @@
       let reply = await createComment({
         subject: userstyle,
         comment: replying.value,
-        parent: thread.comment.uri,
+        parent: { uri: thread.comment.uri, cid: thread.comment.cid! },
       });
       onCommentAdded({ uri: reply.response.uri, value: reply.record });
       replying.value = '';

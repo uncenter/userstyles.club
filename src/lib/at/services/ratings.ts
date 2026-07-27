@@ -10,21 +10,18 @@ import {
 
 import { makeRecordBuilder, type RecordCreateInput, type RecordUpdateInput } from '../builder';
 import { CLUB_RATING_COLLECTION } from '../settings';
-import { ClubUserstylesAlphaGraphRating } from '$lib/at/lexicons';
+import { ClubUserstylesAlphaFeedRating } from '$lib/at/lexicons';
 
-export type Rating = ClubUserstylesAlphaGraphRating.Main;
+export type Rating = ClubUserstylesAlphaFeedRating.Main;
 
 export type RatingRecord = RepoRecord<Rating>;
 
-const builder = makeRecordBuilder(
-  ClubUserstylesAlphaGraphRating.mainSchema,
-  CLUB_RATING_COLLECTION,
-);
+const builder = makeRecordBuilder(ClubUserstylesAlphaFeedRating.mainSchema, CLUB_RATING_COLLECTION);
 
 export async function listRatingsForStyle(uri: ResourceUri): Promise<RatingRecord[]> {
-  const records = await getBacklinkedRecords(uri, CLUB_RATING_COLLECTION, 'subject');
+  const records = await getBacklinkedRecords(uri, CLUB_RATING_COLLECTION, 'subject.uri');
   return records.filter((r): r is RatingRecord =>
-    is(ClubUserstylesAlphaGraphRating.mainSchema, r.value),
+    is(ClubUserstylesAlphaFeedRating.mainSchema, r.value),
   );
 }
 

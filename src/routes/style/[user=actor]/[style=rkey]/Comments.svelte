@@ -1,5 +1,6 @@
 <script lang="ts">
-  import { type Did, type ResourceUri } from '@atcute/lexicons';
+  import { type Did } from '@atcute/lexicons';
+  import type { ComAtprotoRepoStrongRef } from '@atcute/atproto';
 
   import {
     user,
@@ -14,7 +15,7 @@
   import CommentItem from './CommentItem.svelte';
 
   interface Props {
-    userstyle: ResourceUri;
+    userstyle: ComAtprotoRepoStrongRef.Main;
     owner: Did;
     feedback: UserstyleFeedback;
     threads: ReviewThread[];

@@ -11,9 +11,9 @@ import {
 
 import { makeRecordBuilder, type RecordCreateInput, type RecordUpdateInput } from '../builder';
 import { CLUB_COMMENT_COLLECTION } from '../settings';
-import { ClubUserstylesAlphaGraphComment } from '$lib/at/lexicons';
+import { ClubUserstylesAlphaFeedComment } from '$lib/at/lexicons';
 
-export type Comment = ClubUserstylesAlphaGraphComment.Main;
+export type Comment = ClubUserstylesAlphaFeedComment.Main;
 
 export type CommentRecord = RepoRecord<Comment>;
 
@@ -23,14 +23,14 @@ export type CommentThread = {
 };
 
 const builder = makeRecordBuilder(
-  ClubUserstylesAlphaGraphComment.mainSchema,
+  ClubUserstylesAlphaFeedComment.mainSchema,
   CLUB_COMMENT_COLLECTION,
 );
 
 export async function listCommentsForStyle(uri: ResourceUri): Promise<CommentRecord[]> {
-  const records = await getBacklinkedRecords(uri, CLUB_COMMENT_COLLECTION, 'subject');
+  const records = await getBacklinkedRecords(uri, CLUB_COMMENT_COLLECTION, 'subject.uri');
   return records.filter((r): r is CommentRecord =>
-    is(ClubUserstylesAlphaGraphComment.mainSchema, r.value),
+    is(ClubUserstylesAlphaFeedComment.mainSchema, r.value),
   );
 }
 
@@ -50,7 +50,7 @@ export function getCommentThreads(comments: CommentRecord[]): CommentThread[] {
     const node = nodes.get(comment.uri)!;
 
     if (comment.value.parent) {
-      const parent = nodes.get(comment.value.parent);
+      const parent = nodes.get(comment.value.parent.uri);
 
       if (parent) {
         parent.replies.push(node);

@@ -115,14 +115,14 @@
       if (myRating) {
         const { rkey } = parseResourceUri(myRating.uri);
         await updateRating(rkey!, {
-          subject: data.userstyle.uri,
+          subject: { uri: data.userstyle.uri, cid: data.userstyle.cid! },
           rating: ratingDialog.selected,
           createdAt: myRating.value.createdAt,
         });
         feedback.ratings[user.did!].value.rating = ratingDialog.selected;
       } else {
         const created = await createRating({
-          subject: data.userstyle.uri,
+          subject: { uri: data.userstyle.uri, cid: data.userstyle.cid! },
           rating: ratingDialog.selected,
         });
         feedback.ratings[user.did!] = { uri: created.response.uri, value: created.record };
@@ -280,7 +280,7 @@
 
   <div class="page-wrapper__comments">
     <Comments
-      userstyle={data.userstyle.uri}
+      userstyle={{ uri: data.userstyle.uri, cid: data.userstyle.cid! }}
       owner={data.profile.did}
       {feedback}
       {threads}

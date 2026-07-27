@@ -108,8 +108,8 @@
     ]);
 
     const [commentEvents, ratingEvents] = await Promise.all([
-      toEvents(comments, 'comment', (record) => resolveOtherUsersStyle(record.value.subject)),
-      toEvents(ratings, 'rating', (record) => resolveOtherUsersStyle(record.value.subject)),
+      toEvents(comments, 'comment', (record) => resolveOtherUsersStyle(record.value.subject.uri)),
+      toEvents(ratings, 'rating', (record) => resolveOtherUsersStyle(record.value.subject.uri)),
     ]);
 
     return [...commentEvents, ...ratingEvents].sort(byDateDesc);
