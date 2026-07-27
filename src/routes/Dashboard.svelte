@@ -26,8 +26,20 @@
   import { ClockIcon, ActivityIcon } from '@lucide/svelte';
 
   type ActivityEvent =
-    | { kind: 'comment'; date: string; style: UserstyleRecord; profile: ProfileView; record: CommentRecord }
-    | { kind: 'rating'; date: string; style: UserstyleRecord; profile: ProfileView; record: RatingRecord };
+    | {
+        kind: 'comment';
+        date: string;
+        style: UserstyleRecord;
+        profile: ProfileView;
+        record: CommentRecord;
+      }
+    | {
+        kind: 'rating';
+        date: string;
+        style: UserstyleRecord;
+        profile: ProfileView;
+        record: RatingRecord;
+      };
 
   type ResolvedStyle = { style: UserstyleRecord; profile: ProfileView };
 
@@ -65,10 +77,11 @@
   async function loadReceivedActivity(): Promise<ActivityEvent[]> {
     const styles = await userstyles;
 
-    const resolveCommenter = (style: UserstyleRecord) => async (record: CommentRecord | RatingRecord) => ({
-      style,
-      profile: await getProfile(parseResourceUri(record.uri).repo),
-    });
+    const resolveCommenter =
+      (style: UserstyleRecord) => async (record: CommentRecord | RatingRecord) => ({
+        style,
+        profile: await getProfile(parseResourceUri(record.uri).repo),
+      });
 
     const events = await Promise.all(
       styles.flatMap((style) => [
@@ -132,7 +145,11 @@
     for (const event of given) {
       // `given` is already sorted by date descending, so the first event seen per style is the most recent.
       if (!others.has(event.style.uri)) {
-        others.set(event.style.uri, { style: event.style, profile: event.profile, date: event.date });
+        others.set(event.style.uri, {
+          style: event.style,
+          profile: event.profile,
+          date: event.date,
+        });
       }
     }
 
@@ -166,9 +183,7 @@
         {@render loading()}
       {:then recentStyles}
         {#if recentStyles.length === 0}
-          <p class="text-muted no-content">
-            No recent activity yet.
-          </p>
+          <p class="text-muted no-content">No recent activity yet.</p>
         {:else}
           {@const recents = recentStyles.slice(0, 6)}
           <ul class="style-list list-reset accent-cycle" role="list">

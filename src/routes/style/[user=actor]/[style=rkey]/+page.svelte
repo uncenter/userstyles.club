@@ -31,7 +31,13 @@
   } from '$components';
   import Comments from './Comments.svelte';
 
-  import { DownloadIcon, ExternalLinkIcon, ArrowRightIcon, PencilIcon, ScaleIcon } from '@lucide/svelte';
+  import {
+    DownloadIcon,
+    ExternalLinkIcon,
+    ArrowRightIcon,
+    PencilIcon,
+    ScaleIcon,
+  } from '@lucide/svelte';
   import StylusIcon from '$lib/assets/stylus.png';
 
   import bytes from 'pretty-bytes';

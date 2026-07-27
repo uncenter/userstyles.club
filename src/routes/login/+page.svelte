@@ -64,7 +64,11 @@
       {#if error}
         <Alert variant="error">{error}</Alert>
       {/if}
-      <button type="submit" class="btn btn--primary" disabled={loading || !isActorIdentifier(handle)}>
+      <button
+        type="submit"
+        class="btn btn--primary"
+        disabled={loading || !isActorIdentifier(handle)}
+      >
         <Loading pending={loading} idle="Continue" active="Signing in…" />
       </button>
       <button type="button" class="link" onclick={signup}>
