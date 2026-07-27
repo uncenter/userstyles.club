@@ -52,7 +52,7 @@
         upstreamUrl: fields.trackUpstreamUrl ? fields.upstreamUrl : undefined,
         homepageUrl: fields.homepageUrl,
         sourceCode: fields.sourceCode,
-        stripUpdateUrl: fields.stripUpdateUrl,
+        ignoreUpdateUrl: fields.ignoreUpdateUrl,
         previewImage: previewFile ?? undefined,
       });
       let uri = parseCanonicalResourceUri(userstyle.response.uri);
@@ -141,7 +141,7 @@
     bind:sourceCode={fields.sourceCode}
     bind:upstreamUrl={fields.upstreamUrl}
     bind:trackUpstreamUrl={fields.trackUpstreamUrl}
-    bind:stripUpdateUrl={fields.stripUpdateUrl}
+    bind:ignoreUpdateUrl={fields.ignoreUpdateUrl}
     bind:previewFile
     {error}
     onsubmit={submit}

@@ -15,7 +15,9 @@
             "maxGraphemes": 300
           },
           "sourceCode": {
-            "type": "string"
+            "accept": ["text/plain"],
+            "maxSize": 5000000,
+            "type": "blob"
           },
           "previewImage": {
             "accept": ["image/*"],
@@ -34,7 +36,7 @@
             "type": "string",
             "format": "uri"
           },
-          "stripUpdateUrl": {
+          "ignoreUpdateUrl": {
             "type": "boolean"
           },
           "createdAt": {

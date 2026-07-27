@@ -1,7 +1,7 @@
 import type { UserstyleContent } from '$lib/at';
 
 export interface UserstyleFormFields extends UserstyleContent {
-  stripUpdateUrl: boolean;
+  ignoreUpdateUrl: boolean;
   trackUpstreamUrl: boolean;
 }
 
@@ -14,7 +14,7 @@ const DEFAULTS: UserstyleFormFields = {
   sourceCode: '',
   upstreamUrl: undefined,
   homepageUrl: undefined,
-  stripUpdateUrl: true,
+  ignoreUpdateUrl: true,
   trackUpstreamUrl: false,
 };
 
@@ -25,7 +25,7 @@ export class UserstyleFormState {
   sourceCode = $state(DEFAULTS.sourceCode);
   upstreamUrl = $state(DEFAULTS.upstreamUrl);
   homepageUrl = $state(DEFAULTS.homepageUrl);
-  stripUpdateUrl = $state(DEFAULTS.stripUpdateUrl);
+  ignoreUpdateUrl = $state(DEFAULTS.ignoreUpdateUrl);
   trackUpstreamUrl = $state(DEFAULTS.trackUpstreamUrl);
 
   constructor() {
@@ -45,7 +45,7 @@ export class UserstyleFormState {
             sourceCode: this.sourceCode,
             upstreamUrl: this.upstreamUrl,
             homepageUrl: this.homepageUrl,
-            stripUpdateUrl: this.stripUpdateUrl,
+            ignoreUpdateUrl: this.ignoreUpdateUrl,
             trackUpstreamUrl: this.trackUpstreamUrl,
           }),
         );

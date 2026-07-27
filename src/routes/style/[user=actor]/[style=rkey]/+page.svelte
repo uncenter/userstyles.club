@@ -15,6 +15,7 @@
     updateRating,
     deleteRating,
     getCommentThreads,
+    getUserstyleSourceCode,
     type CommentRecord,
     type ReviewThread,
   } from '$lib/at';
@@ -45,6 +46,7 @@
 
   let { data, params }: PageProps = $props();
   let userstyle = $derived(data.userstyle.value);
+  let sourceCode = $derived(await getUserstyleSourceCode(data.userstyle));
 
   let feedback = $derived(proxify(data.feedback));
 
@@ -74,8 +76,8 @@
     error: null as string | null,
   });
 
-  let lineCount = $derived(userstyle.sourceCode.split('\n').length);
-  let byteCount = $derived(userstyle.sourceCode.length);
+  let lineCount = $derived(sourceCode.split('\n').length);
+  let byteCount = $derived(sourceCode.length);
 
   function openRatingDialog() {
     ratingDialog.selected = myRating?.value.rating;
@@ -270,7 +272,7 @@
     </div>
 
     <div class="userstyle-section__code">
-      <CssPreview source={userstyle.sourceCode} />
+      <CssPreview source={sourceCode} />
       <div class="userstyle-section__code-footer">
         {#if userstyle.upstreamUrl}
           <span class="userstyle-section__upstream"

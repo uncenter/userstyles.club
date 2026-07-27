@@ -5,7 +5,7 @@
 
   import { joinPageTitle } from '$lib/constants';
 
-  import { getBlobCdnUrl, updateUserstyle, user } from '$lib/at';
+  import { getBlobCdnUrl, getUserstyleSourceCode, updateUserstyle, user } from '$lib/at';
 
   import { BackLink, Loading } from '$components/ui';
 
@@ -19,10 +19,10 @@
   let license = $derived(userstyle.license);
   let upstreamUrl = $derived(userstyle.upstreamUrl);
   let homepageUrl = $derived(userstyle.homepageUrl);
-  let sourceCode = $derived(userstyle.sourceCode);
+  let sourceCode = $derived(await getUserstyleSourceCode(data.userstyle));
 
   let trackUpstreamUrl = $derived(upstreamUrl !== undefined);
-  let stripUpdateUrl = $derived(userstyle.stripUpdateUrl ?? !sourceCode.includes('@updateURL'));
+  let ignoreUpdateUrl = $derived(userstyle.ignoreUpdateUrl ?? !sourceCode.includes('@updateURL'));
 
   let saving = $state(false);
   let error = $state<string | null>(null);
@@ -56,7 +56,7 @@
         upstreamUrl: trackUpstreamUrl ? upstreamUrl : undefined,
         homepageUrl,
         sourceCode,
-        stripUpdateUrl,
+        ignoreUpdateUrl,
         previewImage: previewFile ?? (keepExistingPreview ? userstyle.previewImage : undefined),
         createdAt: userstyle.createdAt,
       });
@@ -111,7 +111,7 @@
     bind:homepageUrl
     bind:sourceCode
     bind:trackUpstreamUrl
-    bind:stripUpdateUrl
+    bind:ignoreUpdateUrl
     bind:previewFile
     bind:keepExistingPreview
     existingImageSrc={userstyle.previewImage

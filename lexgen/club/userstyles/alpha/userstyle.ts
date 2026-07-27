@@ -18,14 +18,12 @@ export default document({
         properties: {
           title: required(string({ maxGraphemes: 140, minGraphemes: 1 })),
           description: string({ maxGraphemes: 300 }),
-          // TODO: Move source code field to blob.
-          sourceCode: required(string()),
+          sourceCode: required(blob({ accept: ['text/plain'], maxSize: 5000000 })),
           previewImage: blob({ accept: ['image/*'], maxSize: 1000000 }),
           license: string({ maxLength: 100 }),
           upstreamUrl: string({ format: 'uri' }),
           homepageUrl: string({ format: 'uri' }),
-          // TODO: Potentially rename/rethink field.
-          stripUpdateUrl: boolean(),
+          ignoreUpdateUrl: boolean(),
           createdAt: required(string({ format: 'datetime' })),
           updatedAt: string({ format: 'datetime' }),
         },

@@ -4,7 +4,7 @@
   import type { PageProps } from './$types';
 
   import { joinPageTitle } from '$lib/constants';
-  import { deleteUserstyle, updateUserstyle, user } from '$lib/at';
+  import { deleteUserstyle, getUserstyleSourceCode, updateUserstyle, user } from '$lib/at';
   import { getPreferredActorIdentifier } from '$lib/preferences.svelte';
   import { importFromProviders } from '../../../../new/import/providers';
   import { getUsercssMetadata } from '../../../../new/import/metadata';
@@ -16,6 +16,7 @@
 
   let { data }: PageProps = $props();
   let userstyle = $derived(data.userstyle.value);
+  let currentSourceCode = $derived(await getUserstyleSourceCode(data.userstyle));
 
   $effect(() => {
     if (!user.isLoggedIn) {
@@ -36,14 +37,14 @@
   });
 
   let diff = $derived.by(() => {
-    const currentVersion = getUsercssMetadata(userstyle.sourceCode).version;
+    const currentVersion = getUsercssMetadata(currentSourceCode).version;
     const newVersion = sync.newSourceCode
       ? getUsercssMetadata(sync.newSourceCode).version
       : undefined;
     return {
-      hasChanges: sync.newSourceCode !== null && sync.newSourceCode !== userstyle.sourceCode,
-      currentLines: userstyle.sourceCode.split('\n').length,
-      currentBytes: userstyle.sourceCode.length,
+      hasChanges: sync.newSourceCode !== null && sync.newSourceCode !== currentSourceCode,
+      currentLines: currentSourceCode.split('\n').length,
+      currentBytes: currentSourceCode.length,
       newLines: sync.newSourceCode?.split('\n').length ?? 0,
       newBytes: sync.newSourceCode?.length ?? 0,
       currentVersion,
@@ -91,7 +92,7 @@
         homepageUrl: userstyle.homepageUrl,
         sourceCode: sync.newSourceCode,
         upstreamUrl: userstyle.upstreamUrl,
-        stripUpdateUrl: userstyle.stripUpdateUrl,
+        ignoreUpdateUrl: userstyle.ignoreUpdateUrl,
         previewImage: userstyle.previewImage,
         createdAt: userstyle.createdAt,
       });

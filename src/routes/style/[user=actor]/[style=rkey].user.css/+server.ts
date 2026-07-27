@@ -1,11 +1,10 @@
 import type { RequestHandler } from './$types';
-import { getUserstyle, removeUpdateUrlFromSource } from '$lib/at';
+import { getUserstyle, getUserstyleSourceCode, removeSourceCodeUpdateUrl } from '$lib/at';
 
 export const GET: RequestHandler = async ({ params }) => {
   let { user, style } = params;
-  let { value: userstyle } = await getUserstyle(user, style);
-  const source = userstyle.stripUpdateUrl
-    ? removeUpdateUrlFromSource(userstyle.sourceCode)
-    : userstyle.sourceCode;
-  return new Response(source);
+  let record = await getUserstyle(user, style);
+  const sourceCode = await getUserstyleSourceCode(record);
+  const processedSourceCode = record.value.ignoreUpdateUrl ? removeSourceCodeUpdateUrl(sourceCode) : sourceCode;
+  return new Response(processedSourceCode);
 };

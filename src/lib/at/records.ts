@@ -3,6 +3,7 @@ import type {
   Blob as BlobRef,
   CanonicalResourceUri,
   Did,
+  LegacyBlob,
   Nsid,
   RecordKey,
 } from '@atcute/lexicons';
@@ -189,6 +190,20 @@ export async function uploadBlob(blob: Blob): Promise<BlobRef> {
   );
 
   return response.blob;
+}
+
+export async function getBlobText(did: Did, blob: BlobRef | LegacyBlob): Promise<string> {
+  const client = await getPdsClient(did);
+  const cid = '$type' in blob ? blob.ref.$link : blob.cid;
+
+  const response = await ok(
+    client.get('com.atproto.sync.getBlob', {
+      params: { did, cid },
+      as: 'blob',
+    }),
+  );
+
+  return await response.text();
 }
 
 export async function deleteRecord(collection: Nsid, rkey: RecordKey) {

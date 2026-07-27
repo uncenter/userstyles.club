@@ -2,6 +2,7 @@ import { getSessionContext } from '../auth';
 import {
   createRecord,
   deleteRecord,
+  getBlobText,
   getRecord,
   listRecordsForCollection,
   listRecordsForRepo,
@@ -30,8 +31,10 @@ export type Userstyle = ClubUserstylesAlphaUserstyle.Main;
 
 export type UserstyleContent = Omit<
   Userstyle,
-  '$type' | 'previewImage' | 'createdAt' | 'updatedAt'
->;
+  '$type' | 'previewImage' | 'sourceCode' | 'createdAt' | 'updatedAt'
+> & {
+  sourceCode: string;
+};
 
 export type UserstyleInput<
   Options extends { previewImage?: any; createdAt?: Userstyle['createdAt'] } = Record<never, never>,
@@ -42,12 +45,14 @@ export type UserstyleRecord = RepoRecord<Userstyle>;
 const builder = makeRecordBuilder(
   ClubUserstylesAlphaUserstyle.mainSchema,
   CLUB_USERSTYLE_COLLECTION,
-  {
-    keepAsIsStringFields: ['sourceCode'],
-  },
 );
 
-export function removeUpdateUrlFromSource(sourceCode: string): string {
+export async function getUserstyleSourceCode(userstyle: UserstyleRecord): Promise<string> {
+  const { repo } = parseCanonicalResourceUri(userstyle.uri);
+  return await getBlobText(repo, userstyle.value.sourceCode);
+}
+
+export function removeSourceCodeUpdateUrl(sourceCode: string): string {
   return sourceCode
     .split('\n')
     .filter((line) => !/^\s*@updateURL\s/.test(line))
@@ -77,9 +82,10 @@ export async function createUserstyle(userstyle: UserstyleInput<{ previewImage?:
   const previewImage = userstyle.previewImage
     ? await uploadBlob(userstyle.previewImage)
     : undefined;
+  const sourceCode = await uploadBlob(new Blob([userstyle.sourceCode], { type: 'text/plain' }));
   return await createRecord(
     CLUB_USERSTYLE_COLLECTION,
-    builder.create({ ...userstyle, previewImage }),
+    builder.create({ ...userstyle, previewImage, sourceCode }),
   );
 }
 
@@ -99,11 +105,12 @@ export async function updateUserstyle(
     userstyle.previewImage instanceof File
       ? await uploadBlob(userstyle.previewImage)
       : userstyle.previewImage;
+  const sourceCode = await uploadBlob(new Blob([userstyle.sourceCode], { type: 'text/plain' }));
 
   return await putRecord(
     CLUB_USERSTYLE_COLLECTION,
     rkey,
-    builder.update({ ...userstyle, previewImage }),
+    builder.update({ ...userstyle, previewImage, sourceCode }),
   );
 }
 

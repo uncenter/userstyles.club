@@ -28,7 +28,7 @@
     upstreamUrl = $bindable(undefined),
 
     trackUpstreamUrl = $bindable(false),
-    stripUpdateUrl = $bindable(false),
+    ignoreUpdateUrl = $bindable(false),
 
     previewFile = $bindable(null),
     keepExistingPreview = $bindable(false),
@@ -118,15 +118,15 @@
     <label class="form-check">
       <input
         type="checkbox"
-        bind:checked={stripUpdateUrl}
-        aria-describedby="remove-update-url-desc"
+        bind:checked={ignoreUpdateUrl}
+        aria-describedby="ignore-update-url-desc"
       />
       Check for updates from <Wordmark --height="1rem" /> instead of original update URL?
     </label>
-    <p class="form-hint" id="remove-update-url-desc">
+    <p class="form-hint" id="ignore-update-url-desc">
       If there is a configured update URL within the userstyle source code, Stylus will check for
-      updates from that URL instead of <strong>userstyles.club</strong>. Removes the
-      <code>@updateURL</code> field from the userstyle's metadata.
+      updates from that URL. Enabling this option ignores the
+      <code>@updateURL</code> field from the userstyle's metadata and updates directly from <strong>userstyles.club</strong>.
     </p>
   </div>
 
