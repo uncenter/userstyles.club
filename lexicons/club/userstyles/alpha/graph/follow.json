@@ -1,0 +1,25 @@
+{
+  "defs": {
+    "main": {
+      "description": "A follow toward another user.",
+      "key": "tid",
+      "record": {
+        "properties": {
+          "subject": {
+            "type": "string",
+            "format": "did"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "datetime"
+          }
+        },
+        "required": ["subject", "createdAt"],
+        "type": "object"
+      },
+      "type": "record"
+    }
+  },
+  "id": "club.userstyles.alpha.graph.follow",
+  "lexicon": 1
+}

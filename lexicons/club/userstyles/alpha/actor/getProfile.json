@@ -1,0 +1,32 @@
+{
+  "defs": {
+    "main": {
+      "description": "Get an actor's userstyles.club profile.",
+      "errors": [
+        {
+          "name": "ProfileNotFound"
+        }
+      ],
+      "output": {
+        "encoding": "application/json",
+        "schema": {
+          "ref": "club.userstyles.alpha.defs#profileView",
+          "type": "ref"
+        }
+      },
+      "parameters": {
+        "properties": {
+          "actor": {
+            "type": "string",
+            "format": "did"
+          }
+        },
+        "required": ["actor"],
+        "type": "params"
+      },
+      "type": "query"
+    }
+  },
+  "id": "club.userstyles.alpha.actor.getProfile",
+  "lexicon": 1
+}

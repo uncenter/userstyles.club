@@ -1,0 +1,48 @@
+{
+  "defs": {
+    "main": {
+      "description": "Get the global activity feed, optionally scoped to an actor's social graph activity.",
+      "output": {
+        "encoding": "application/json",
+        "schema": {
+          "properties": {
+            "cursor": {
+              "type": "string"
+            },
+            "feed": {
+              "items": {
+                "ref": "club.userstyles.alpha.defs#feedViewItem",
+                "type": "ref"
+              },
+              "type": "array"
+            }
+          },
+          "required": ["feed"],
+          "type": "object"
+        }
+      },
+      "parameters": {
+        "properties": {
+          "actor": {
+            "type": "string",
+            "description": "Filter the feed to accounts this actor follows, rather than the global feed.",
+            "format": "did"
+          },
+          "limit": {
+            "default": 50,
+            "maximum": 100,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "cursor": {
+            "type": "string"
+          }
+        },
+        "type": "params"
+      },
+      "type": "query"
+    }
+  },
+  "id": "club.userstyles.alpha.feed.getTimeline",
+  "lexicon": 1
+}

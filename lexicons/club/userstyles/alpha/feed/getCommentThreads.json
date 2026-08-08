@@ -1,0 +1,37 @@
+{
+  "defs": {
+    "main": {
+      "description": "Get every comment on a subject userstyle, flattened across every top-level thread and ordered so that each node follows its parent.",
+      "output": {
+        "encoding": "application/json",
+        "schema": {
+          "properties": {
+            "comments": {
+              "items": {
+                "ref": "club.userstyles.alpha.defs#commentThreadView",
+                "type": "ref"
+              },
+              "type": "array"
+            }
+          },
+          "required": ["comments"],
+          "type": "object"
+        }
+      },
+      "parameters": {
+        "properties": {
+          "subject": {
+            "type": "string",
+            "description": "uri of the subject userstyle",
+            "format": "at-uri"
+          }
+        },
+        "required": ["subject"],
+        "type": "params"
+      },
+      "type": "query"
+    }
+  },
+  "id": "club.userstyles.alpha.feed.getCommentThreads",
+  "lexicon": 1
+}

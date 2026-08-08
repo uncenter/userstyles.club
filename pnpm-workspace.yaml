@@ -2,6 +2,10 @@ allowBuilds:
   esbuild: true
   sharp: true
   workerd: true
+  core-js: false
 trustPolicyExclude:
   - chokidar@4.0.3
-packages: ['.']
+packages: ['.', 'crayon']
+overrides:
+  '@atcute/lexicons': 2.0.0
+  usercss-parser: link:../usercss/packages/usercss-parser

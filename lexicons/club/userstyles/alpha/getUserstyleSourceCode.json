@@ -1,0 +1,35 @@
+{
+  "defs": {
+    "main": {
+      "description": "A userstyle's source code.",
+      "errors": [
+        {
+          "name": "UserstyleNotFound"
+        },
+        {
+          "name": "SourceUnavailable"
+        }
+      ],
+      "output": {
+        "encoding": "text/css"
+      },
+      "parameters": {
+        "properties": {
+          "actor": {
+            "type": "string",
+            "format": "did"
+          },
+          "rkey": {
+            "type": "string",
+            "format": "record-key"
+          }
+        },
+        "required": ["actor", "rkey"],
+        "type": "params"
+      },
+      "type": "query"
+    }
+  },
+  "id": "club.userstyles.alpha.getUserstyleSourceCode",
+  "lexicon": 1
+}

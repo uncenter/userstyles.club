@@ -1,0 +1,36 @@
+{
+  "defs": {
+    "main": {
+      "description": "Get a single userstyle by its author and record key.",
+      "errors": [
+        {
+          "name": "UserstyleNotFound"
+        }
+      ],
+      "output": {
+        "encoding": "application/json",
+        "schema": {
+          "ref": "club.userstyles.alpha.defs#userstyleView",
+          "type": "ref"
+        }
+      },
+      "parameters": {
+        "properties": {
+          "actor": {
+            "type": "string",
+            "format": "did"
+          },
+          "rkey": {
+            "type": "string",
+            "format": "record-key"
+          }
+        },
+        "required": ["actor", "rkey"],
+        "type": "params"
+      },
+      "type": "query"
+    }
+  },
+  "id": "club.userstyles.alpha.getUserstyle",
+  "lexicon": 1
+}

@@ -1,0 +1,40 @@
+{
+  "defs": {
+    "main": {
+      "description": "Count current ratings and their average, optionally filtered by subject and/or author.",
+      "output": {
+        "encoding": "application/json",
+        "schema": {
+          "properties": {
+            "count": {
+              "type": "integer"
+            },
+            "average": {
+              "type": "string"
+            }
+          },
+          "required": ["count"],
+          "type": "object"
+        }
+      },
+      "parameters": {
+        "properties": {
+          "subject": {
+            "type": "string",
+            "description": "uri of the subject userstyle",
+            "format": "at-uri"
+          },
+          "author": {
+            "type": "string",
+            "description": "rater's did",
+            "format": "did"
+          }
+        },
+        "type": "params"
+      },
+      "type": "query"
+    }
+  },
+  "id": "club.userstyles.alpha.feed.countRatings",
+  "lexicon": 1
+}

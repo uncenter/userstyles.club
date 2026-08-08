@@ -1,0 +1,37 @@
+{
+  "defs": {
+    "main": {
+      "description": "Count comments, optionally filtered by subject and/or author.",
+      "output": {
+        "encoding": "application/json",
+        "schema": {
+          "properties": {
+            "count": {
+              "type": "integer"
+            }
+          },
+          "required": ["count"],
+          "type": "object"
+        }
+      },
+      "parameters": {
+        "properties": {
+          "subject": {
+            "type": "string",
+            "description": "uri of the subject userstyle",
+            "format": "at-uri"
+          },
+          "author": {
+            "type": "string",
+            "description": "comment author's did",
+            "format": "did"
+          }
+        },
+        "type": "params"
+      },
+      "type": "query"
+    }
+  },
+  "id": "club.userstyles.alpha.feed.countComments",
+  "lexicon": 1
+}

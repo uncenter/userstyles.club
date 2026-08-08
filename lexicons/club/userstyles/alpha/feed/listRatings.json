@@ -1,0 +1,53 @@
+{
+  "defs": {
+    "main": {
+      "description": "List ratings, optionally filtered by subject and/or author.",
+      "output": {
+        "encoding": "application/json",
+        "schema": {
+          "properties": {
+            "cursor": {
+              "type": "string"
+            },
+            "ratings": {
+              "items": {
+                "ref": "club.userstyles.alpha.defs#ratingView",
+                "type": "ref"
+              },
+              "type": "array"
+            }
+          },
+          "required": ["ratings"],
+          "type": "object"
+        }
+      },
+      "parameters": {
+        "properties": {
+          "subject": {
+            "type": "string",
+            "description": "uri of the subject userstyle",
+            "format": "at-uri"
+          },
+          "author": {
+            "type": "string",
+            "description": "rater's did",
+            "format": "did"
+          },
+          "limit": {
+            "default": 50,
+            "maximum": 100,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "cursor": {
+            "type": "string"
+          }
+        },
+        "type": "params"
+      },
+      "type": "query"
+    }
+  },
+  "id": "club.userstyles.alpha.feed.listRatings",
+  "lexicon": 1
+}

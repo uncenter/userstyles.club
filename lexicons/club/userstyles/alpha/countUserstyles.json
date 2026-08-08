@@ -1,0 +1,31 @@
+{
+  "defs": {
+    "main": {
+      "description": "Count userstyles. Optionally filter to userstyles from a given author.",
+      "output": {
+        "encoding": "application/json",
+        "schema": {
+          "properties": {
+            "count": {
+              "type": "integer"
+            }
+          },
+          "required": ["count"],
+          "type": "object"
+        }
+      },
+      "parameters": {
+        "properties": {
+          "actor": {
+            "type": "string",
+            "format": "did"
+          }
+        },
+        "type": "params"
+      },
+      "type": "query"
+    }
+  },
+  "id": "club.userstyles.alpha.countUserstyles",
+  "lexicon": 1
+}

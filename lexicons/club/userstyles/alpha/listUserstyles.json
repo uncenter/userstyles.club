@@ -1,0 +1,47 @@
+{
+  "defs": {
+    "main": {
+      "description": "List userstyles, most recently indexed first. Optionally filter to userstyles from a given author.",
+      "output": {
+        "encoding": "application/json",
+        "schema": {
+          "properties": {
+            "cursor": {
+              "type": "string"
+            },
+            "userstyles": {
+              "items": {
+                "ref": "club.userstyles.alpha.defs#userstyleView",
+                "type": "ref"
+              },
+              "type": "array"
+            }
+          },
+          "required": ["userstyles"],
+          "type": "object"
+        }
+      },
+      "parameters": {
+        "properties": {
+          "actor": {
+            "type": "string",
+            "format": "did"
+          },
+          "limit": {
+            "default": 50,
+            "maximum": 100,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "cursor": {
+            "type": "string"
+          }
+        },
+        "type": "params"
+      },
+      "type": "query"
+    }
+  },
+  "id": "club.userstyles.alpha.listUserstyles",
+  "lexicon": 1
+}

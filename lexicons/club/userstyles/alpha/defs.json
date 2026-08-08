@@ -1,0 +1,340 @@
+{
+  "defs": {
+    "mozDocumentFunction": {
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string"
+        }
+      },
+      "required": ["name", "value"],
+      "type": "object"
+    },
+    "userstyleView": {
+      "properties": {
+        "uri": {
+          "type": "string",
+          "format": "at-uri"
+        },
+        "cid": {
+          "type": "string",
+          "format": "cid"
+        },
+        "author": {
+          "type": "string",
+          "format": "did"
+        },
+        "title": {
+          "type": "string",
+          "maxGraphemes": 140,
+          "minGraphemes": 1
+        },
+        "description": {
+          "type": "string",
+          "maxGraphemes": 300
+        },
+        "license": {
+          "type": "string",
+          "maxLength": 100
+        },
+        "upstreamUrl": {
+          "type": "string",
+          "format": "uri"
+        },
+        "homepageUrl": {
+          "type": "string",
+          "format": "uri"
+        },
+        "ignoreUpdateUrl": {
+          "type": "boolean"
+        },
+        "sourceCodeCid": {
+          "type": "string",
+          "format": "cid"
+        },
+        "previewImageCid": {
+          "type": "string",
+          "format": "cid"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "datetime"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "datetime"
+        },
+        "indexedAt": {
+          "type": "string",
+          "format": "datetime"
+        },
+        "mozDocumentFunctions": {
+          "items": {
+            "ref": "club.userstyles.alpha.defs#mozDocumentFunction",
+            "type": "ref"
+          },
+          "type": "array"
+        },
+        "isConfigurable": {
+          "type": "boolean"
+        },
+        "commentCount": {
+          "type": "integer"
+        },
+        "ratingCount": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "uri",
+        "cid",
+        "author",
+        "title",
+        "sourceCodeCid",
+        "createdAt",
+        "indexedAt",
+        "commentCount",
+        "ratingCount"
+      ],
+      "type": "object"
+    },
+    "profileView": {
+      "properties": {
+        "did": {
+          "type": "string",
+          "format": "did"
+        },
+        "displayName": {
+          "type": "string",
+          "maxGraphemes": 64,
+          "maxLength": 640
+        },
+        "description": {
+          "type": "string",
+          "maxGraphemes": 256,
+          "maxLength": 2560
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "datetime"
+        },
+        "indexedAt": {
+          "type": "string",
+          "format": "datetime"
+        }
+      },
+      "required": ["did", "createdAt", "indexedAt"],
+      "type": "object"
+    },
+    "ratingView": {
+      "properties": {
+        "uri": {
+          "type": "string",
+          "format": "at-uri"
+        },
+        "cid": {
+          "type": "string",
+          "format": "cid"
+        },
+        "author": {
+          "type": "string",
+          "format": "did"
+        },
+        "subjectUri": {
+          "type": "string",
+          "format": "at-uri"
+        },
+        "rating": {
+          "maximum": 5,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "datetime"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "datetime"
+        },
+        "indexedAt": {
+          "type": "string",
+          "format": "datetime"
+        }
+      },
+      "required": [
+        "uri",
+        "cid",
+        "author",
+        "subjectUri",
+        "rating",
+        "createdAt",
+        "indexedAt"
+      ],
+      "type": "object"
+    },
+    "commentView": {
+      "properties": {
+        "uri": {
+          "type": "string",
+          "format": "at-uri"
+        },
+        "cid": {
+          "type": "string",
+          "format": "cid"
+        },
+        "author": {
+          "type": "string",
+          "format": "did"
+        },
+        "subjectUri": {
+          "type": "string",
+          "format": "at-uri"
+        },
+        "parentUri": {
+          "type": "string",
+          "format": "at-uri"
+        },
+        "comment": {
+          "type": "string",
+          "maxGraphemes": 256,
+          "maxLength": 2560
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "datetime"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "datetime"
+        },
+        "indexedAt": {
+          "type": "string",
+          "format": "datetime"
+        }
+      },
+      "required": [
+        "uri",
+        "cid",
+        "author",
+        "subjectUri",
+        "comment",
+        "createdAt",
+        "indexedAt"
+      ],
+      "type": "object"
+    },
+    "commentThreadView": {
+      "properties": {
+        "uri": {
+          "type": "string",
+          "format": "at-uri"
+        },
+        "parentUri": {
+          "type": "string",
+          "format": "at-uri"
+        },
+        "deleted": {
+          "type": "boolean"
+        },
+        "cid": {
+          "type": "string",
+          "format": "cid"
+        },
+        "author": {
+          "type": "string",
+          "format": "did"
+        },
+        "subjectUri": {
+          "type": "string",
+          "format": "at-uri"
+        },
+        "comment": {
+          "type": "string",
+          "maxGraphemes": 256,
+          "maxLength": 2560
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "datetime"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "datetime"
+        },
+        "indexedAt": {
+          "type": "string",
+          "format": "datetime"
+        }
+      },
+      "required": ["uri", "deleted", "createdAt", "indexedAt"],
+      "type": "object"
+    },
+    "followView": {
+      "properties": {
+        "did": {
+          "type": "string",
+          "format": "did"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "datetime"
+        }
+      },
+      "required": ["did", "createdAt"],
+      "type": "object"
+    },
+    "feedViewItem": {
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["userstyle", "comment", "rating"]
+        },
+        "userstyle": {
+          "ref": "club.userstyles.alpha.defs#userstyleView",
+          "type": "ref"
+        },
+        "comment": {
+          "ref": "club.userstyles.alpha.defs#commentView",
+          "type": "ref"
+        },
+        "rating": {
+          "ref": "club.userstyles.alpha.defs#ratingView",
+          "type": "ref"
+        }
+      },
+      "required": ["type"],
+      "type": "object"
+    },
+    "notificationView": {
+      "properties": {
+        "reason": {
+          "type": "string",
+          "enum": ["comment", "reply", "rating", "follow"]
+        },
+        "subjectUri": {
+          "type": "string",
+          "format": "at-uri"
+        },
+        "recordUri": {
+          "type": "string",
+          "format": "at-uri"
+        },
+        "author": {
+          "type": "string",
+          "format": "did"
+        },
+        "indexedAt": {
+          "type": "string",
+          "format": "datetime"
+        }
+      },
+      "required": ["reason", "subjectUri", "recordUri", "author", "indexedAt"],
+      "type": "object"
+    }
+  },
+  "id": "club.userstyles.alpha.defs",
+  "lexicon": 1
+}

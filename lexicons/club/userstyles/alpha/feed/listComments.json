@@ -1,0 +1,53 @@
+{
+  "defs": {
+    "main": {
+      "description": "List comments, optionally filtered by subject and/or author.",
+      "output": {
+        "encoding": "application/json",
+        "schema": {
+          "properties": {
+            "cursor": {
+              "type": "string"
+            },
+            "comments": {
+              "items": {
+                "ref": "club.userstyles.alpha.defs#commentView",
+                "type": "ref"
+              },
+              "type": "array"
+            }
+          },
+          "required": ["comments"],
+          "type": "object"
+        }
+      },
+      "parameters": {
+        "properties": {
+          "subject": {
+            "type": "string",
+            "description": "uri of the subject userstyle",
+            "format": "at-uri"
+          },
+          "author": {
+            "type": "string",
+            "description": "comment author's did",
+            "format": "did"
+          },
+          "limit": {
+            "default": 50,
+            "maximum": 100,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "cursor": {
+            "type": "string"
+          }
+        },
+        "type": "params"
+      },
+      "type": "query"
+    }
+  },
+  "id": "club.userstyles.alpha.feed.listComments",
+  "lexicon": 1
+}

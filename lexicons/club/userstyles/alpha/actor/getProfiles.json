@@ -1,0 +1,40 @@
+{
+  "defs": {
+    "main": {
+      "description": "Get userstyles.club profiles for a batch of actors.",
+      "output": {
+        "encoding": "application/json",
+        "schema": {
+          "properties": {
+            "profiles": {
+              "items": {
+                "ref": "club.userstyles.alpha.defs#profileView",
+                "type": "ref"
+              },
+              "type": "array"
+            }
+          },
+          "required": ["profiles"],
+          "type": "object"
+        }
+      },
+      "parameters": {
+        "properties": {
+          "actors": {
+            "items": {
+              "type": "string",
+              "format": "did"
+            },
+            "maxLength": 25,
+            "type": "array"
+          }
+        },
+        "required": ["actors"],
+        "type": "params"
+      },
+      "type": "query"
+    }
+  },
+  "id": "club.userstyles.alpha.actor.getProfiles",
+  "lexicon": 1
+}

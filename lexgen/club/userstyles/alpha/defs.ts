@@ -1,0 +1,137 @@
+import {
+  array,
+  boolean,
+  document,
+  integer,
+  object,
+  ref,
+  required,
+  string,
+} from '@atcute/lexicon-doc/builder';
+
+// A @-moz-document match functionfrom a parsed userstyle's source.
+export const mozDocumentFunction = object({
+  properties: {
+    name: required(string()),
+    value: required(string()),
+  },
+});
+
+export const userstyleView = object({
+  properties: {
+    uri: required(string({ format: 'at-uri' })),
+    cid: required(string({ format: 'cid' })),
+    author: required(string({ format: 'did' })),
+    title: required(string({ maxGraphemes: 140, minGraphemes: 1 })),
+    description: string({ maxGraphemes: 300 }),
+    license: string({ maxLength: 100 }),
+    upstreamUrl: string({ format: 'uri' }),
+    homepageUrl: string({ format: 'uri' }),
+    ignoreUpdateUrl: boolean(),
+    sourceCodeCid: required(string({ format: 'cid' })),
+    previewImageCid: string({ format: 'cid' }),
+    createdAt: required(string({ format: 'datetime' })),
+    updatedAt: string({ format: 'datetime' }),
+    indexedAt: required(string({ format: 'datetime' })),
+    mozDocumentFunctions: array({ items: ref({ ref: 'club.userstyles.alpha.defs#mozDocumentFunction' }) }),
+    isConfigurable: boolean(),
+    // Approximate non-authoritative activity counters, kept for cheap "popular" sorting in search.
+    commentCount: required(integer()),
+    ratingCount: required(integer()),
+  },
+});
+
+export const profileView = object({
+  properties: {
+    did: required(string({ format: 'did' })),
+    displayName: string({ maxGraphemes: 64, maxLength: 640 }),
+    description: string({ maxGraphemes: 256, maxLength: 2560 }),
+    createdAt: required(string({ format: 'datetime' })),
+    indexedAt: required(string({ format: 'datetime' })),
+  },
+});
+
+export const ratingView = object({
+  properties: {
+    uri: required(string({ format: 'at-uri' })),
+    cid: required(string({ format: 'cid' })),
+    author: required(string({ format: 'did' })),
+    subjectUri: required(string({ format: 'at-uri' })),
+    rating: required(integer({ minimum: 1, maximum: 5 })),
+    createdAt: required(string({ format: 'datetime' })),
+    updatedAt: string({ format: 'datetime' }),
+    indexedAt: required(string({ format: 'datetime' })),
+  },
+});
+
+export const commentView = object({
+  properties: {
+    uri: required(string({ format: 'at-uri' })),
+    cid: required(string({ format: 'cid' })),
+    author: required(string({ format: 'did' })),
+    subjectUri: required(string({ format: 'at-uri' })),
+    parentUri: string({ format: 'at-uri' }),
+    comment: required(string({ maxGraphemes: 256, maxLength: 2560 })),
+    createdAt: required(string({ format: 'datetime' })),
+    updatedAt: string({ format: 'datetime' }),
+    indexedAt: required(string({ format: 'datetime' })),
+  },
+});
+
+// A node in getCommentThreads's flattened reply tree.
+// Deleted nodes are kept for intact thread structure (just uri/parentUri).
+export const commentThreadView = object({
+  properties: {
+    uri: required(string({ format: 'at-uri' })),
+    parentUri: string({ format: 'at-uri' }),
+    deleted: required(boolean()),
+    cid: string({ format: 'cid' }),
+    author: string({ format: 'did' }),
+    subjectUri: string({ format: 'at-uri' }),
+    comment: string({ maxGraphemes: 256, maxLength: 2560 }),
+    updatedAt: string({ format: 'datetime' }),
+    createdAt: required(string({ format: 'datetime' })),
+    indexedAt: required(string({ format: 'datetime' })),
+  },
+});
+
+export const followView = object({
+  properties: {
+    did: required(string({ format: 'did' })),
+    createdAt: required(string({ format: 'datetime' })),
+  },
+});
+
+export const feedViewItem = object({
+  properties: {
+    type: required(string({ enum: ['userstyle', 'comment', 'rating'] })),
+    userstyle: ref({ ref: 'club.userstyles.alpha.defs#userstyleView' }),
+    comment: ref({ ref: 'club.userstyles.alpha.defs#commentView' }),
+    rating: ref({ ref: 'club.userstyles.alpha.defs#ratingView' }),
+  },
+});
+
+export const notificationView = object({
+  properties: {
+    reason: required(string({ enum: ['comment', 'reply', 'rating', 'follow'] })),
+    subjectUri: required(string({ format: 'at-uri' })),
+    recordUri: required(string({ format: 'at-uri' })),
+    author: required(string({ format: 'did' })),
+    indexedAt: required(string({ format: 'datetime' })),
+  },
+});
+
+export default document({
+  id: 'club.userstyles.alpha.defs',
+  defs: {
+    mozDocumentFunction,
+    userstyleView,
+    profileView,
+    ratingView,
+    commentView,
+    commentThreadView,
+    followView,
+    feedViewItem,
+    notificationView,
+  },
+});

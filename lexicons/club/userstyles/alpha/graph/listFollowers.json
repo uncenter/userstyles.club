@@ -1,0 +1,48 @@
+{
+  "defs": {
+    "main": {
+      "description": "List the users that follow an actor, most recent first.",
+      "output": {
+        "encoding": "application/json",
+        "schema": {
+          "properties": {
+            "cursor": {
+              "type": "string"
+            },
+            "followers": {
+              "items": {
+                "ref": "club.userstyles.alpha.defs#followView",
+                "type": "ref"
+              },
+              "type": "array"
+            }
+          },
+          "required": ["followers"],
+          "type": "object"
+        }
+      },
+      "parameters": {
+        "properties": {
+          "actor": {
+            "type": "string",
+            "format": "did"
+          },
+          "limit": {
+            "default": 50,
+            "maximum": 100,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "cursor": {
+            "type": "string"
+          }
+        },
+        "required": ["actor"],
+        "type": "params"
+      },
+      "type": "query"
+    }
+  },
+  "id": "club.userstyles.alpha.graph.listFollowers",
+  "lexicon": 1
+}

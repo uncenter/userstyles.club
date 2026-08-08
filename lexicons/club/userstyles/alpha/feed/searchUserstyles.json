@@ -1,0 +1,75 @@
+{
+  "defs": {
+    "main": {
+      "description": "Search over userstyles, with optional querying and filters.",
+      "output": {
+        "encoding": "application/json",
+        "schema": {
+          "properties": {
+            "cursor": {
+              "type": "string"
+            },
+            "userstyles": {
+              "items": {
+                "ref": "club.userstyles.alpha.defs#userstyleView",
+                "type": "ref"
+              },
+              "type": "array"
+            }
+          },
+          "required": ["userstyles"],
+          "type": "object"
+        }
+      },
+      "parameters": {
+        "properties": {
+          "query": {
+            "type": "string",
+            "description": "Search terms, matched against title and description fields."
+          },
+          "sort": {
+            "type": "string",
+            "default": "latest",
+            "description": "Rank by text relevance with 'top'; without a `query`, defaults to 'latest'.Rank by comment and rating activity via 'popular'.",
+            "enum": ["top", "latest", "popular"]
+          },
+          "author": {
+            "type": "string",
+            "format": "did"
+          },
+          "since": {
+            "type": "string",
+            "description": "only userstyles created at or after this time",
+            "format": "datetime"
+          },
+          "before": {
+            "type": "string",
+            "description": "only userstyles created before this time",
+            "format": "datetime"
+          },
+          "homepage": {
+            "type": "string",
+            "description": "substring match against homepageUrl"
+          },
+          "upstream": {
+            "type": "string",
+            "description": "substring match against upstreamUrl"
+          },
+          "limit": {
+            "default": 25,
+            "maximum": 100,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "cursor": {
+            "type": "string"
+          }
+        },
+        "type": "params"
+      },
+      "type": "query"
+    }
+  },
+  "id": "club.userstyles.alpha.feed.searchUserstyles",
+  "lexicon": 1
+}
