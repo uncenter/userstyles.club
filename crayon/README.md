@@ -18,10 +18,9 @@ A colorful Tap-based appview. Uses Postgres via Drizzle for storage.
 ## Usage
 
 ```sh
-docker compose up -d                 # local postgres
-cp .env.example .env                 # then edit as needed
+cp .env.example .env   # then edit as needed
 pnpm install
-pnpm db:generate && pnpm db:migrate  # apply drizzle/*.sql
+just db init           # brings up postgres and then applies migrations
 TAP_URL=http://localhost:2480 pnpm dev
 ```
 
