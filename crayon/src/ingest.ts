@@ -1,6 +1,6 @@
-import type { RecordEvent } from '@atproto/tap';
+import type { TapRecordEvent } from '@atcute/tap';
 import { parseResourceUri } from '@atcute/lexicons';
-import { is } from '@atcute/lexicons/validations';
+import { safeParse, type BaseSchema, type InferOutput } from '@atcute/lexicons/validations';
 
 import {
   ClubUserstylesAlphaActorProfile,
@@ -33,11 +33,31 @@ const FOLLOW = 'club.userstyles.alpha.graph.follow';
 
 export const COLLECTIONS = [USERSTYLE, PROFILE, COMMENT, RATING, FOLLOW];
 
+type UserstyleRecord = InferOutput<typeof ClubUserstylesAlphaUserstyle.mainSchema>;
+type ProfileRecord = InferOutput<typeof ClubUserstylesAlphaActorProfile.mainSchema>;
+type CommentRecord = InferOutput<typeof ClubUserstylesAlphaFeedComment.mainSchema>;
+type RatingRecord = InferOutput<typeof ClubUserstylesAlphaFeedRating.mainSchema>;
+type FollowRecord = InferOutput<typeof ClubUserstylesAlphaGraphFollow.mainSchema>;
+
 function getDidFromUri(uri: string): string {
   return parseResourceUri(uri).repo;
 }
 
-export async function handleRecord(evt: RecordEvent, now: number): Promise<void> {
+function validateRecord<TSchema extends BaseSchema>(
+  nsid: string,
+  uri: string,
+  schema: TSchema,
+  input: unknown,
+): InferOutput<TSchema> | undefined {
+  const parsed = safeParse(schema, input);
+  if (!parsed.ok) {
+    console.warn(`skipping malformed ${nsid} at ${uri}: ${parsed.message}`);
+    return undefined;
+  }
+  return parsed.value;
+}
+
+export async function handleRecord(evt: TapRecordEvent, now: number): Promise<void> {
   if (!COLLECTIONS.includes(evt.collection)) return;
   const uri = `at://${evt.did}/${evt.collection}/${evt.rkey}`;
 
@@ -57,22 +77,33 @@ export async function handleRecord(evt: RecordEvent, now: number): Promise<void>
     return;
   }
 
-  if (evt.cid === undefined || evt.record === undefined) {
-    console.warn(`create/update event at ${uri} missing cid or record body, skipping`);
+  if (evt.record === undefined) {
+    console.warn(`create/update event at ${uri} missing record body, skipping`);
     return;
   }
+  const { cid, did, rkey } = evt;
 
   switch (evt.collection) {
-    case USERSTYLE:
-      return handleUserstyle(uri, evt.cid, evt.did, evt.rkey, evt.record, now);
-    case PROFILE:
-      return handleProfile(evt.cid, evt.did, evt.record, now);
-    case COMMENT:
-      return handleComment(uri, evt.cid, evt.did, evt.rkey, evt.record, now);
-    case RATING:
-      return handleRating(uri, evt.cid, evt.did, evt.rkey, evt.record, now);
-    case FOLLOW:
-      return handleFollow(uri, evt.cid, evt.did, evt.rkey, evt.record, now);
+    case USERSTYLE: {
+      const record = validateRecord(evt.collection, uri, ClubUserstylesAlphaUserstyle.mainSchema, evt.record);
+      return record ? handleUserstyle(uri, cid, did, rkey, record, now) : undefined;
+    }
+    case PROFILE: {
+      const record = validateRecord(evt.collection, uri, ClubUserstylesAlphaActorProfile.mainSchema, evt.record);
+      return record ? handleProfile(cid, did, record, now) : undefined;
+    }
+    case COMMENT: {
+      const record = validateRecord(evt.collection, uri, ClubUserstylesAlphaFeedComment.mainSchema, evt.record);
+      return record ? handleComment(uri, cid, did, rkey, record, now) : undefined;
+    }
+    case RATING: {
+      const record = validateRecord(evt.collection, uri, ClubUserstylesAlphaFeedRating.mainSchema, evt.record);
+      return record ? handleRating(uri, cid, did, rkey, record, now) : undefined;
+    }
+    case FOLLOW: {
+      const record = validateRecord(evt.collection, uri, ClubUserstylesAlphaGraphFollow.mainSchema, evt.record);
+      return record ? handleFollow(uri, cid, did, rkey, record, now) : undefined;
+    }
   }
 }
 
@@ -81,14 +112,9 @@ async function handleUserstyle(
   cid: string,
   did: string,
   rkey: string,
-  record: unknown,
+  record: UserstyleRecord,
   now: number,
 ): Promise<void> {
-  if (!is(ClubUserstylesAlphaUserstyle.mainSchema, record)) {
-    console.warn(`skipping malformed userstyle at ${uri}`);
-    return;
-  }
-
   const usercss = await deriveUsercssMetadata(did, record.sourceCode);
 
   await upsertUserstyle({
@@ -110,14 +136,15 @@ async function handleUserstyle(
     mozDocumentFunctions: usercss?.mozDocumentFunctions ?? null,
     isConfigurable: usercss?.isConfigurable ?? null,
   });
+  console.log(`indexed userstyle at ${uri}`);
 }
 
-async function handleProfile(cid: string, did: string, record: unknown, now: number): Promise<void> {
-  if (!is(ClubUserstylesAlphaActorProfile.mainSchema, record)) {
-    console.warn(`skipping malformed profile for ${did}`);
-    return;
-  }
-
+async function handleProfile(
+  cid: string,
+  did: string,
+  record: ProfileRecord,
+  now: number,
+): Promise<void> {
   await upsertProfile({
     did,
     cid,
@@ -126,6 +153,7 @@ async function handleProfile(cid: string, did: string, record: unknown, now: num
     createdAt: record.createdAt,
     indexedAt: now,
   });
+  console.log(`indexed profile for ${did}`);
 }
 
 async function handleComment(
@@ -133,14 +161,9 @@ async function handleComment(
   cid: string,
   did: string,
   rkey: string,
-  record: unknown,
+  record: CommentRecord,
   now: number,
 ): Promise<void> {
-  if (!is(ClubUserstylesAlphaFeedComment.mainSchema, record)) {
-    console.warn(`skipping malformed comment at ${uri}`);
-    return;
-  }
-
   const inserted = await upsertComment({
     uri,
     cid,
@@ -156,6 +179,7 @@ async function handleComment(
     indexedAt: now,
   });
   if (!inserted) return;
+  console.log(`indexed comment at ${uri}`);
 
   // a reply notifies the parent comment's author, a top-level comment notifies the subject userstyle's author.
   const reason = record.parent ? 'reply' : 'comment';
@@ -178,14 +202,9 @@ async function handleRating(
   cid: string,
   did: string,
   rkey: string,
-  record: unknown,
+  record: RatingRecord,
   now: number,
 ): Promise<void> {
-  if (!is(ClubUserstylesAlphaFeedRating.mainSchema, record)) {
-    console.warn(`skipping malformed rating at ${uri}`);
-    return;
-  }
-
   // rating your own userstyle is rejected
   const subjectDid = getDidFromUri(record.subject.uri);
   if (subjectDid === did) {
@@ -206,6 +225,7 @@ async function handleRating(
     indexedAt: now,
   });
   if (!inserted) return;
+  console.log(`indexed rating at ${uri}`);
 
   await createNotification({
     recipientDid: subjectDid,
@@ -222,14 +242,9 @@ async function handleFollow(
   cid: string,
   did: string,
   rkey: string,
-  record: unknown,
+  record: FollowRecord,
   now: number,
 ): Promise<void> {
-  if (!is(ClubUserstylesAlphaGraphFollow.mainSchema, record)) {
-    console.warn(`skipping malformed follow at ${uri}`);
-    return;
-  }
-
   // following yourself is rejected
   if (record.subject === did) {
     console.warn(`skipping self-follow at ${uri}`);
@@ -246,6 +261,7 @@ async function handleFollow(
     indexedAt: now,
   });
   if (!inserted) return;
+  console.log(`indexed follow at ${uri}`);
 
   await createNotification({
     recipientDid: record.subject,

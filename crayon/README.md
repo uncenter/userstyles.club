@@ -7,7 +7,7 @@ A colorful Tap-based appview. Uses Postgres via Drizzle for storage.
 - `{root}` — `getUserstyle`, `getUserstyleSourceCode` (usercss source, proxied and cached), `listUserstyles`, `countUserstyles` (list/count take an optional `actor` filter)
 - `actor` — `getProfile`, `getProfiles`
 - `graph` — `listFollows`, `listFollowers`
-- `feed` — `listComments`/`countComments`, `listRatings`/`countRatings` (optional `subject` and/or `author`), `searchUserstyles` (`top`/`latest`/`popular` sort, cursor-paginated), `getCommentThreads`, `getTimeline` (optional `actor`, scopes to the follow graph)
+- `feed` — `listComments`/`countComments`, `listRatings`/`countRatings` (optional `subject` and/or `author`), `searchUserstyles` (`top`/`latest`/`popular` sort, cursor-paginated), `getFeedback` (comment threads + rating count/average for a subject, each top-level thread carrying its author's rating), `getTimeline` (optional `actor`, scopes to the follow graph)
 - `notification` — `listNotifications
 
 ## Shortcomings

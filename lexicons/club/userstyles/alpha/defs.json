@@ -85,6 +85,9 @@
         },
         "ratingCount": {
           "type": "integer"
+        },
+        "ratingAverage": {
+          "type": "string"
         }
       },
       "required": [
@@ -267,6 +270,11 @@
         "indexedAt": {
           "type": "string",
           "format": "datetime"
+        },
+        "rating": {
+          "maximum": 5,
+          "minimum": 1,
+          "type": "integer"
         }
       },
       "required": ["uri", "deleted", "createdAt", "indexedAt"],

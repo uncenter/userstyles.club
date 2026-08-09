@@ -56,12 +56,6 @@ CREATE TABLE "ratings" (
 	"indexed_at" bigint NOT NULL
 );
 --> statement-breakpoint
-CREATE TABLE "repos" (
-	"did" text PRIMARY KEY NOT NULL,
-	"handle" text,
-	"updated_at" bigint NOT NULL
-);
---> statement-breakpoint
 CREATE TABLE "userstyles" (
 	"rowid" bigserial NOT NULL,
 	"uri" text PRIMARY KEY NOT NULL,
@@ -85,6 +79,7 @@ CREATE TABLE "userstyles" (
 	"is_configurable" boolean,
 	"comment_count" integer DEFAULT 0 NOT NULL,
 	"rating_count" integer DEFAULT 0 NOT NULL,
+	"rating_sum" integer DEFAULT 0 NOT NULL,
 	"popularity" integer GENERATED ALWAYS AS (comment_count + rating_count) STORED
 );
 --> statement-breakpoint

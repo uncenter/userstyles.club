@@ -4,7 +4,7 @@ import type { PgTable } from 'drizzle-orm/pg-core';
 import postgres from 'postgres';
 
 import * as schema from './schema.ts';
-import { comments, follows, notifications, profiles, ratings, repos, userstyles } from './schema.ts';
+import { comments, follows, notifications, profiles, ratings, userstyles } from './schema.ts';
 
 const connectionString =
   process.env.DATABASE_URL ?? 'postgres://postgres:postgres@localhost:5432/crayon';
@@ -64,16 +64,6 @@ function conflictUpdateColumns<TTable extends PgTable, K extends keyof TTable['_
   ) as Record<K, SQL>;
 }
 
-export async function upsertRepoHandle(did: string, handle: string | null, now: number): Promise<void> {
-  await db
-    .insert(repos)
-    .values({ did, handle, updatedAt: now })
-    .onConflictDoUpdate({
-      target: repos.did,
-      set: { handle: sql`coalesce(excluded.handle, ${repos.handle})`, updatedAt: now },
-    });
-}
-
 export async function upsertUserstyle(r: NewUserstyle): Promise<void> {
   await db
     .insert(userstyles)
@@ -123,17 +113,6 @@ async function incrementCommentCount(subjectUri: string, delta: number): Promise
     .where(eq(userstyles.uri, subjectUri));
 }
 
-async function incrementRatingCount(subjectUri: string, delta: number): Promise<void> {
-  await db
-    .update(userstyles)
-    .set({ ratingCount: sql`${userstyles.ratingCount} + ${delta}` })
-    .where(eq(userstyles.uri, subjectUri));
-}
-
-/** Returns whether `r.uri` didn't exist before this call.
- * `xmax = 0` is postgres's own insert-vs-conflict-update tell, so this stays correct even if a create event is redelivered.
- * Bumps the subject userstyle's ratingCount on a genuine first insert;
- * that happens here (not in upsertUserstyle) since a rating can be ingested before its subject userstyle is. */
 export async function upsertRating(r: NewRating): Promise<boolean> {
   const [row] = await db
     .insert(ratings)
@@ -143,18 +122,11 @@ export async function upsertRating(r: NewRating): Promise<boolean> {
       set: conflictUpdateColumns(ratings, ['cid', 'rating', 'updatedAt', 'indexedAt']),
     })
     .returning({ inserted: sql<boolean>`(xmax = 0)` });
-  const inserted = row?.inserted ?? false;
-  if (inserted) await incrementRatingCount(r.subjectUri, 1);
-  return inserted;
+  return row?.inserted ?? false;
 }
 
 export async function deleteRating(uri: string): Promise<void> {
-  const [row] = await db
-    .delete(ratings)
-    .where(eq(ratings.uri, uri))
-    .returning({ subjectUri: ratings.subjectUri });
-  // only decrements the count the first time a given uri is actually deleted
-  if (row) await incrementRatingCount(row.subjectUri, -1);
+  await db.delete(ratings).where(eq(ratings.uri, uri));
 }
 
 export async function upsertFollow(r: NewFollow): Promise<boolean> {
@@ -284,10 +256,21 @@ export async function listCurrentRatings(
     .limit(limit);
 }
 
-/** Get a summary of the count and average across the same current-ratings set listCurrentRatings pages through. */
+/** Get a summary of the count and average across the same current-ratings set listCurrentRatings pages through.
+ * Subject-only queries (common, e.g. a single userstyle's rating summary) read straight off userstyles.rating_count/rating_sum.
+ * Author-scoped (or unfiltered) queries have no such per-row equivalent and are hence computed live. */
 export async function getRatingSummary(
   filter: SubjectAuthorFilter,
 ): Promise<{ count: number; average: number | null }> {
+  if (filter.subjectUri && !filter.author) {
+    const [row] = await db
+      .select({ count: userstyles.ratingCount, sum: userstyles.ratingSum })
+      .from(userstyles)
+      .where(eq(userstyles.uri, filter.subjectUri));
+    if (!row) return { count: 0, average: null };
+    return { count: row.count, average: row.count > 0 ? row.sum / row.count : null };
+  }
+
   const current = db
     .selectDistinctOn([ratings.subjectUri, ratings.did], { rating: ratings.rating })
     .from(ratings)
@@ -299,6 +282,16 @@ export async function getRatingSummary(
     .select({ count: sql<number>`count(*)::int`, average: sql<number | null>`avg(${current.rating})::float` })
     .from(current);
   return { count: row?.count ?? 0, average: row?.average ?? null };
+}
+
+/** Current rating (latest rkey per rater) for every rater on subjectUri, keyed by rater did. */
+export async function getCurrentRatingsByAuthor(subjectUri: string): Promise<Map<string, number>> {
+  const rows = await db
+    .selectDistinctOn([ratings.did], { did: ratings.did, rating: ratings.rating })
+    .from(ratings)
+    .where(eq(ratings.subjectUri, subjectUri))
+    .orderBy(ratings.did, desc(ratings.rkey));
+  return new Map(rows.map((r) => [r.did, r.rating]));
 }
 
 function commentFilterCondition(filter: SubjectAuthorFilter) {

@@ -8,7 +8,7 @@ import {
   ClubUserstylesAlphaCountUserstyles,
   ClubUserstylesAlphaFeedCountComments,
   ClubUserstylesAlphaFeedCountRatings,
-  ClubUserstylesAlphaFeedGetCommentThreads,
+  ClubUserstylesAlphaFeedGetFeedback,
   ClubUserstylesAlphaFeedGetTimeline,
   ClubUserstylesAlphaFeedListComments,
   ClubUserstylesAlphaFeedListRatings,
@@ -27,6 +27,7 @@ import {
   countUserstyles,
   type FollowRow,
   getCommentThreads,
+  getCurrentRatingsByAuthor,
   getProfile,
   getProfiles,
   getTimeline,
@@ -69,6 +70,7 @@ function toUserstyleView(row: UserstyleRow) {
     isConfigurable: row.isConfigurable ?? undefined,
     commentCount: row.commentCount,
     ratingCount: row.ratingCount,
+    ratingAverage: row.ratingCount > 0 ? (row.ratingSum / row.ratingCount).toFixed(2) : undefined,
   };
 }
 
@@ -167,7 +169,7 @@ function toCommentView(row: CommentRow) {
   };
 }
 
-function toCommentThreadView(row: CommentThreadRow) {
+function toCommentThreadView(row: CommentThreadRow, ratingsByAuthor?: Map<string, number>) {
   const deleted = row.deletedAt !== null;
   return {
     uri: row.uri as ResourceUri,
@@ -180,6 +182,8 @@ function toCommentThreadView(row: CommentThreadRow) {
     subjectUri: deleted ? undefined : (row.subjectUri as ResourceUri),
     comment: deleted ? undefined : row.comment,
     updatedAt: deleted ? undefined : (row.updatedAt ?? undefined),
+    // Only attached to top-level (root) nodes, matching getFeedback's contract.
+    rating: deleted || row.parentUri ? undefined : ratingsByAuthor?.get(row.did),
   };
 }
 
@@ -340,10 +344,21 @@ router.addQuery(ClubUserstylesAlphaFeedSearchUserstyles, {
   },
 });
 
-router.addQuery(ClubUserstylesAlphaFeedGetCommentThreads, {
+router.addQuery(ClubUserstylesAlphaFeedGetFeedback, {
   async handler({ params }) {
-    const rows = await getCommentThreads(params.subject);
-    return json({ comments: rows.map(toCommentThreadView) });
+    const [threadRows, ratingSummary, ratingsByAuthor] = await Promise.all([
+      getCommentThreads(params.subject),
+      getRatingSummary({ subjectUri: params.subject }),
+      getCurrentRatingsByAuthor(params.subject),
+    ]);
+
+    const comments = threadRows.map((row) => toCommentThreadView(row, ratingsByAuthor));
+
+    return json({
+      comments,
+      ratingCount: ratingSummary.count,
+      ratingAverage: ratingSummary.average === null ? undefined : ratingSummary.average.toFixed(2),
+    });
   },
 });
 

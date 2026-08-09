@@ -1,5 +1,5 @@
 {
-  "id": "829657bd-3e68-4c97-9a81-a98d8f308f73",
+  "id": "e9e5da7a-9273-47dd-8096-d621a632566e",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -496,37 +496,6 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.repos": {
-      "name": "repos",
-      "schema": "",
-      "columns": {
-        "did": {
-          "name": "did",
-          "type": "text",
-          "primaryKey": true,
-          "notNull": true
-        },
-        "handle": {
-          "name": "handle",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "updated_at": {
-          "name": "updated_at",
-          "type": "bigint",
-          "primaryKey": false,
-          "notNull": true
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {},
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
     "public.userstyles": {
       "name": "userstyles",
       "schema": "",
@@ -659,6 +628,13 @@
         },
         "rating_count": {
           "name": "rating_count",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "rating_sum": {
+          "name": "rating_sum",
           "type": "integer",
           "primaryKey": false,
           "notNull": true,

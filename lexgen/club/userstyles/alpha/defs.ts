@@ -35,9 +35,10 @@ export const userstyleView = object({
     indexedAt: required(string({ format: 'datetime' })),
     mozDocumentFunctions: array({ items: ref({ ref: 'club.userstyles.alpha.defs#mozDocumentFunction' }) }),
     isConfigurable: boolean(),
-    // Approximate non-authoritative activity counters, kept for cheap "popular" sorting in search.
     commentCount: required(integer()),
     ratingCount: required(integer()),
+    // TODO: Use float type if it becomes a thing?
+    ratingAverage: string(),
   },
 });
 
@@ -78,7 +79,7 @@ export const commentView = object({
   },
 });
 
-// A node in getCommentThreads's flattened reply tree.
+// A node in getFeedback's flattened reply tree.
 // Deleted nodes are kept for intact thread structure (just uri/parentUri).
 export const commentThreadView = object({
   properties: {
@@ -92,6 +93,8 @@ export const commentThreadView = object({
     updatedAt: string({ format: 'datetime' }),
     createdAt: required(string({ format: 'datetime' })),
     indexedAt: required(string({ format: 'datetime' })),
+    // Only set on a top-level (root) node whose author has a current rating on the subject.
+    rating: integer({ minimum: 1, maximum: 5 }),
   },
 });
 

@@ -18,12 +18,6 @@ const tsvector = customType<{ data: string }>({
   dataType: () => 'tsvector',
 });
 
-export const repos = pgTable('repos', {
-  did: text('did').primaryKey(),
-  handle: text('handle'),
-  updatedAt: bigint('updated_at', { mode: 'number' }).notNull(),
-});
-
 export const userstyles = pgTable(
   'userstyles',
   {
@@ -52,11 +46,9 @@ export const userstyles = pgTable(
     // distinct from `[]`/`false` which are actual results from parsing.
     mozDocumentFunctions: jsonb('moz_document_rules').$type<MozDocumentFunction[]>(),
     isConfigurable: boolean('is_configurable'),
-    // Denormalized activity counters, maintained incrementally by db/index.ts's upsert/delete functions.
-    // commentCount mirrors countComments for counting every non-deleted comment, replies included.
-    // ratingCount counts rating records as they arrive rather than getRatingSummary's latest-rkey-per-rater dedup, so a rare re-rate can inflate it slightly.
     commentCount: integer('comment_count').notNull().default(0),
     ratingCount: integer('rating_count').notNull().default(0),
+    ratingSum: integer('rating_sum').notNull().default(0),
     popularity: integer('popularity').generatedAlwaysAs(sql`comment_count + rating_count`),
   },
   (t) => [
