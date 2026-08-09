@@ -12,6 +12,7 @@ import type * as v from '@atcute/lexicons/validations';
 
 import { getPdsClient, getConstellationClient, getPublicClient, getRelayClient } from './client';
 import { getSessionContext } from './auth';
+import { getBlobCid } from './utils';
 import { ok } from '@atcute/client';
 
 export type RepoRecord<T extends Record<string, unknown> = Record<string, unknown>> = {
@@ -78,10 +79,13 @@ export async function listReposByCollection(params: {
   };
 }
 
+/**
+ * Slow relay-fanout fallback for {@link listAllUserstyles}: walks every repo that publishes the collection and fetches each one's records directly.
+ */
 export async function listRecordsForCollection<NSID extends Nsid>(params: {
   collection: NSID;
   limit?: number;
-}): Promise<{ records: RepoRecord<ValueFor<NSID>>[] }> {
+}): Promise<RepoRecord<ValueFor<NSID>>[]> {
   const { repos } = await listReposByCollection(params);
 
   const records: RepoRecord<ValueFor<NSID>>[] = [];
@@ -95,19 +99,22 @@ export async function listRecordsForCollection<NSID extends Nsid>(params: {
     } catch (e) {}
   }
 
-  return { records };
+  return records;
 }
 
-export async function getBacklinkedRecords<NSID extends Nsid>(
-  subject: CanonicalResourceUri,
-  collection: NSID,
-  path: string,
-): Promise<RepoRecord<ValueFor<NSID>>[]> {
+export async function getBacklinkedRecords<NSID extends Nsid>(params: {
+  subject: CanonicalResourceUri;
+  collection: NSID;
+  path: string;
+  did?: Did[];
+}): Promise<RepoRecord<ValueFor<NSID>>[]> {
+  const { subject, collection, path, did } = params;
+
   const client = getConstellationClient();
 
   const backlinks = await ok(
     client.get('blue.microcosm.links.getBacklinks', {
-      params: { subject, source: `${collection}:${path}`, limit: 100 },
+      params: { subject, source: `${collection}:${path}`, limit: 100, did },
     }),
   );
 
@@ -194,7 +201,7 @@ export async function uploadBlob(blob: Blob): Promise<BlobRef> {
 
 export async function getBlobText(did: Did, blob: BlobRef | LegacyBlob): Promise<string> {
   const client = await getPdsClient(did);
-  const cid = '$type' in blob ? blob.ref.$link : blob.cid;
+  const cid = getBlobCid(blob);
 
   const response = await ok(
     client.get('com.atproto.sync.getBlob', {

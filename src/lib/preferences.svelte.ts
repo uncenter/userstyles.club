@@ -1,3 +1,4 @@
+import { browser } from '$app/environment';
 import type { ActorIdentifier } from '@atcute/lexicons';
 import type { ProfileView } from './at';
 
@@ -9,7 +10,7 @@ class UserPreferences<T extends Record<string, unknown>> {
 
     for (const key of Object.keys(defaults) as (keyof T)[]) {
       const defaultValue = defaults[key];
-      const stored = localStorage.getItem(key as string);
+      const stored = browser ? localStorage.getItem(key as string) : null;
 
       if (stored === null) {
         values[key] = defaultValue;
@@ -30,7 +31,7 @@ class UserPreferences<T extends Record<string, unknown>> {
   }
 
   set<K extends keyof T>(key: K, value: T[K]) {
-    localStorage.setItem(key as string, JSON.stringify(value));
+    if (browser) localStorage.setItem(key as string, JSON.stringify(value));
     this.#values[key] = value;
   }
 }
@@ -39,6 +40,11 @@ export const preferences = new UserPreferences({
   appearance: 'system',
   usePermanentUrls: true,
   hasStylusInstalled: false,
+  isAppviewEnabled: true,
+  // empty string means "use the default" for the three below.
+  customAppviewUrl: '',
+  customConstellationUrl: '',
+  customSlingshotUrl: '',
 });
 
 export function getPreferredActorIdentifier(profile: ProfileView): ActorIdentifier {

@@ -13,6 +13,7 @@ export {
 } from './records';
 export {
   getProfile,
+  getProfiles,
   getBskyProfile,
   getClubProfile,
   setClubProfile,
@@ -36,25 +37,29 @@ export {
   type Userstyle,
   type UserstyleInput,
   type UserstyleRecord,
-  type ReviewThread,
+  type UserstyleView,
   type UserstyleFeedback,
 } from './services/userstyles';
 export {
   listCommentsForStyle,
-  getCommentThreads,
   createComment,
   updateComment,
   deleteComment,
+  buildCommentThreads,
+  applyCommentPatches,
+  collectThreadAuthorDids,
   type Comment,
   type CommentRecord,
   type CommentThread,
+  type CommentThreadPatch,
 } from './services/comments';
 export {
   listRatingsForStyle,
+  getUserRatingForStyle,
   createRating,
   updateRating,
   deleteRating,
-  computeAverageRating,
+  computeRatingSummary,
   type Rating,
   type RatingRecord,
 } from './services/ratings';

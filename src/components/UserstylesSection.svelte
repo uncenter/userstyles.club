@@ -1,15 +1,19 @@
 <script lang="ts">
   import type { Snippet } from 'svelte';
-  import type { ProfileView, UserstyleRecord } from '$lib/at';
+  import { parseCanonicalResourceUri } from '@atcute/lexicons';
+  import { getProfiles, type ProfileView, type UserstyleView } from '$lib/at';
   import UserstylesListItem from './UserstylesListItem.svelte';
 
   interface Props {
-    userstyles: UserstyleRecord[];
+    userstyles: UserstyleView[];
     author?: ProfileView;
     empty?: Snippet;
   }
 
   let { userstyles, author, empty }: Props = $props();
+
+  // When a single author isn't already known (e.g. mixed-author feeds like Explore), batch-fetch every author's profile once instead of letting each list item fetch its own.
+  let authors = $derived(author ? undefined : await getProfiles([...new Set(userstyles.map((u) => parseCanonicalResourceUri(u.uri).repo))]));
 </script>
 
 <section class="userstyles-section">
@@ -20,7 +24,12 @@
   {:else}
     <ul class="userstyles-section__list list-reset accent-cycle">
       {#each userstyles as userstyle}
-        <li class="userstyles-section__list-item"><UserstylesListItem {userstyle} {author} /></li>
+        <li class="userstyles-section__list-item">
+          <UserstylesListItem
+            {userstyle}
+            author={author ?? authors?.get(parseCanonicalResourceUri(userstyle.uri).repo)!}
+          />
+        </li>
       {/each}
     </ul>
   {/if}

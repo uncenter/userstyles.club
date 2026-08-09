@@ -1,26 +1,99 @@
-import type { CanonicalResourceUri, RecordKey } from '@atcute/lexicons';
-import { is } from '@atcute/lexicons/validations';
+import { type CanonicalResourceUri, type Did, type RecordKey, parseCanonicalResourceUri } from '@atcute/lexicons';
 
-import {
-  createRecord,
-  deleteRecord,
-  getBacklinkedRecords,
-  putRecord,
-  type RepoRecord,
-} from '../records';
+import { createRecord, deleteRecord, putRecord, type RepoRecord } from '../records';
+
+import { listCommentsFromAppview } from '../backends/appview/comments';
+import { listCommentsFromConstellation } from '../backends/fallback/comments';
 
 import { makeRecordBuilder, type RecordCreateInput, type RecordUpdateInput } from '../builder';
-import { CLUB_COMMENT_COLLECTION } from '../settings';
+import { CLUB_COMMENT_COLLECTION, isAppviewEnabled } from '../settings';
 import { ClubUserstylesAlphaFeedComment } from '$lib/at/lexicons';
 
 export type Comment = ClubUserstylesAlphaFeedComment.Main;
 
 export type CommentRecord = RepoRecord<Comment>;
 
+/** A node in a userstyle's comment tree.
+ * `comment` is present if `!deleted`, as a deleted node keeps only its `uri` (so replies still have somewhere to attach) and `replies`.
+ * Deleted nodes are tombstoned by the appview, but not discoverable when relying on the constellation fallback.
+ * `rating` is set only on a top-level (root) node whose author has a current rating on the subject. */
 export type CommentThread = {
-  comment: CommentRecord;
+  uri: CanonicalResourceUri;
+  deleted: boolean;
+  comment?: CommentRecord;
+  rating?: number;
   replies: CommentThread[];
 };
+
+export type CommentThreads = {
+  threads: CommentThread[];
+  /** Total non-deleted comments across the whole tree.  */
+  count: number;
+};
+
+export type CommentThreadNode = {
+  uri: CanonicalResourceUri;
+  parentUri: CanonicalResourceUri | undefined;
+  deleted: boolean;
+  comment: CommentRecord | undefined;
+  rating?: number;
+};
+
+/** Every non-deleted commenter's did across a thread tree, for batch-fetching profiles once instead of per node. */
+export function collectThreadAuthorDids(threads: CommentThread[]): Did[] {
+  const dids: Did[] = [];
+  const walk = (nodes: CommentThread[]) => {
+    for (const node of nodes) {
+      if (!node.deleted) dids.push(parseCanonicalResourceUri(node.uri).repo);
+      walk(node.replies);
+    }
+  };
+  walk(threads);
+  return dids;
+}
+
+/** Shared flat-list-to-tree nesting, used by both the appview and fallback backends. */
+export function buildCommentThreads(nodes: CommentThreadNode[]): CommentThreads {
+  const byUri = new Map<CanonicalResourceUri, CommentThread>();
+  let count = 0;
+  for (const node of nodes) {
+    if (!node.deleted) count++;
+    byUri.set(node.uri, {
+      uri: node.uri,
+      deleted: node.deleted,
+      comment: node.comment,
+      rating: node.rating,
+      replies: [],
+    });
+  }
+
+  const threads: CommentThread[] = [];
+  for (const node of nodes) {
+    const thread = byUri.get(node.uri)!;
+    if (!node.parentUri) {
+      threads.push(thread);
+      continue;
+    }
+    byUri.get(node.parentUri)?.replies.push(thread);
+  }
+
+  return { threads, count };
+}
+
+export type CommentThreadPatch = Partial<CommentThreadNode>;
+
+/** Folds locally-pending add/edit/delete patches (keyed by uri) over a confirmed flat comment list, for building an optimistic view ahead of the next reload.
+ * A patch for a uri not present in `confirmed` is an optimistic add. */
+export function applyCommentPatches(
+  confirmed: CommentThreadNode[],
+  patches: Record<string, CommentThreadPatch>,
+): CommentThreadNode[] {
+  const byUri = new Map(confirmed.map((node) => [node.uri, node]));
+  for (const uri in patches) {
+    byUri.set(uri as CanonicalResourceUri, { ...byUri.get(uri as CanonicalResourceUri), ...patches[uri] } as CommentThreadNode);
+  }
+  return [...byUri.values()];
+}
 
 const builder = makeRecordBuilder(
   ClubUserstylesAlphaFeedComment.mainSchema,
@@ -28,42 +101,14 @@ const builder = makeRecordBuilder(
 );
 
 export async function listCommentsForStyle(uri: CanonicalResourceUri): Promise<CommentRecord[]> {
-  const records = await getBacklinkedRecords(uri, CLUB_COMMENT_COLLECTION, 'subject.uri');
-  return records.filter((r): r is CommentRecord =>
-    is(ClubUserstylesAlphaFeedComment.mainSchema, r.value),
-  );
-}
-
-export function getCommentThreads(comments: CommentRecord[]): CommentThread[] {
-  const nodes = new Map<CanonicalResourceUri, CommentThread>();
-
-  for (const comment of comments) {
-    nodes.set(comment.uri, {
-      comment,
-      replies: [],
-    });
-  }
-
-  const roots: CommentThread[] = [];
-
-  for (const comment of comments) {
-    const node = nodes.get(comment.uri)!;
-
-    if (comment.value.parent) {
-      // The strongRef refers to the uri of another comment.
-      const parent = nodes.get(comment.value.parent.uri as CanonicalResourceUri);
-
-      if (parent) {
-        parent.replies.push(node);
-      } else {
-        // ignore orphaned replies
-      }
-    } else {
-      roots.push(node);
+  if (isAppviewEnabled()) {
+    try {
+      return await listCommentsFromAppview(uri);
+    } catch (err) {
+      console.warn('crayon appview unavailable, falling back to constellation', err);
     }
   }
-
-  return roots;
+  return await listCommentsFromConstellation(uri);
 }
 
 export async function createComment(input: RecordCreateInput<Comment>) {

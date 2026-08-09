@@ -10,14 +10,16 @@
   import {
     user,
     getBlobCdnUrl,
-    computeAverageRating,
     createRating,
     updateRating,
     deleteRating,
-    getCommentThreads,
+    getUserRatingForStyle,
     getUserstyleSourceCode,
+    buildCommentThreads,
+    applyCommentPatches,
     type CommentRecord,
-    type ReviewThread,
+    type CommentThreadPatch,
+    type RatingRecord,
   } from '$lib/at';
   import { getPreferredActorIdentifier, preferences } from '$lib/preferences.svelte';
 
@@ -48,24 +50,47 @@
   let userstyle = $derived(data.userstyle.value);
   let sourceCode = $derived(await getUserstyleSourceCode(data.userstyle));
 
-  let feedback = $derived(proxify(data.feedback));
-
-  const threads: ReviewThread[] = $derived(
-    getCommentThreads(feedback.comments).map((thread) => {
-      const did = parseCanonicalResourceUri(thread.comment.uri).repo;
-      return { ...thread, rating: feedback!.ratings[did] };
-    }),
-  );
-
-  let averageRating = $derived(computeAverageRating(Object.values(feedback.ratings)));
-  let myRating = $derived(user.isLoggedIn ? feedback.ratings[user.did!] : undefined);
+  let ratingSummary = $derived(proxify(data.feedback.ratingSummary));
+  let myRating = $derived<RatingRecord | undefined>(user.isLoggedIn ? await getUserRatingForStyle(data.userstyle.uri, user.did) : undefined);
   let canRate = $derived(user.isLoggedIn && user.did !== data.profile.did);
 
-  function onCommentAdded(comment: CommentRecord) {
-    feedback.comments.push(comment);
+  function applyRatingToSummary(previous: number | undefined, next: number) {
+    const total = (ratingSummary.average ?? 0) * ratingSummary.count;
+    const count = previous === undefined ? ratingSummary.count + 1 : ratingSummary.count;
+    ratingSummary.count = count;
+    ratingSummary.average = (total - (previous ?? 0) + next) / count;
   }
+
+  function removeRatingFromSummary(previous: number) {
+    const count = ratingSummary.count - 1;
+    const total = (ratingSummary.average ?? 0) * ratingSummary.count - previous;
+    ratingSummary.count = count;
+    ratingSummary.average = count > 0 ? total / count : undefined;
+  }
+
+  // Optimistic local updates, not yet reflected in the initial server response, keyed by comment uri.
+  // An add/edit/delete are all just a patch over that uri's node.
+  let pendingCommentPatches = $state<Record<string, CommentThreadPatch>>({});
+
+  let comments = $derived.by(() =>
+    buildCommentThreads(applyCommentPatches(data.feedback.commentThreadNodes, pendingCommentPatches)),
+  );
+
+  function onCommentAdded(comment: CommentRecord) {
+    pendingCommentPatches[comment.uri] = {
+      uri: comment.uri,
+      parentUri: comment.value.parent?.uri as CanonicalResourceUri | undefined,
+      deleted: false,
+      comment,
+    };
+  }
+
   function onCommentDeleted(uri: string) {
-    feedback.comments = feedback.comments.filter((c) => c.uri !== uri);
+    pendingCommentPatches[uri] = { ...pendingCommentPatches[uri], deleted: true };
+  }
+
+  function onCommentEdited(comment: CommentRecord) {
+    pendingCommentPatches[comment.uri] = { ...pendingCommentPatches[comment.uri], comment };
   }
 
   let ratingDialog = $state({
@@ -127,13 +152,15 @@
           rating: ratingDialog.selected,
           createdAt: myRating.value.createdAt,
         });
-        feedback.ratings[user.did!].value.rating = ratingDialog.selected;
+        applyRatingToSummary(myRating.value.rating, ratingDialog.selected);
+        myRating.value.rating = ratingDialog.selected;
       } else {
         const created = await createRating({
           subject: { uri: data.userstyle.uri, cid: data.userstyle.cid! },
           rating: ratingDialog.selected,
         });
-        feedback.ratings[user.did!] = {
+        applyRatingToSummary(undefined, ratingDialog.selected);
+        myRating = {
           uri: created.response.uri as CanonicalResourceUri,
           value: created.record,
         };
@@ -153,7 +180,8 @@
     try {
       const { rkey } = parseCanonicalResourceUri(myRating.uri);
       await deleteRating(rkey);
-      delete feedback.ratings[user.did!];
+      removeRatingFromSummary(myRating.value.rating);
+      myRating = undefined;
       ratingDialog.open = false;
     } catch (e) {
       ratingDialog.error = e instanceof Error ? e.message : 'Failed to remove rating.';
@@ -219,7 +247,7 @@
             onclick={openRatingDialog}
           >
             <span class="userstyle-section__item-value">
-              <StarRatingAverage average={averageRating?.average} count={averageRating?.count} />
+              <StarRatingAverage {...ratingSummary} />
             </span>
             <span class="userstyle-section__item-label"
               >Rating{#if myRating}{' · '}<StarRating
@@ -231,7 +259,7 @@
         {:else}
           <div class="userstyle-section__item">
             <span class="userstyle-section__item-value">
-              <StarRatingAverage average={averageRating?.average} count={averageRating?.count} />
+              <StarRatingAverage {...ratingSummary} />
             </span>
             <span class="userstyle-section__item-label">Rating</span>
           </div>
@@ -293,10 +321,10 @@
     <Comments
       userstyle={{ uri: data.userstyle.uri, cid: data.userstyle.cid! }}
       owner={data.profile.did}
-      {feedback}
-      {threads}
+      threads={comments.threads}
       {onCommentAdded}
       {onCommentDeleted}
+      {onCommentEdited}
     />
   </div>
 </div>

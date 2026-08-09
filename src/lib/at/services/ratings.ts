@@ -1,19 +1,11 @@
-import {
-  parseCanonicalResourceUri,
-  type CanonicalResourceUri,
-  type RecordKey,
-} from '@atcute/lexicons';
-import { is } from '@atcute/lexicons/validations';
-import {
-  createRecord,
-  deleteRecord,
-  getBacklinkedRecords,
-  putRecord,
-  type RepoRecord,
-} from '../records';
+import type { CanonicalResourceUri, Did, RecordKey } from '@atcute/lexicons';
+import { createRecord, deleteRecord, putRecord, type RepoRecord } from '../records';
+
+import { getRatingFromAppview, listRatingsFromAppview } from '../backends/appview/ratings';
+import { getRatingFromConstellation, listRatingsFromConstellation } from '../backends/fallback/ratings';
 
 import { makeRecordBuilder, type RecordCreateInput, type RecordUpdateInput } from '../builder';
-import { CLUB_RATING_COLLECTION } from '../settings';
+import { CLUB_RATING_COLLECTION, isAppviewEnabled } from '../settings';
 import { ClubUserstylesAlphaFeedRating } from '$lib/at/lexicons';
 
 export type Rating = ClubUserstylesAlphaFeedRating.Main;
@@ -23,23 +15,29 @@ export type RatingRecord = RepoRecord<Rating>;
 const builder = makeRecordBuilder(ClubUserstylesAlphaFeedRating.mainSchema, CLUB_RATING_COLLECTION);
 
 export async function listRatingsForStyle(uri: CanonicalResourceUri): Promise<RatingRecord[]> {
-  const records = await getBacklinkedRecords(uri, CLUB_RATING_COLLECTION, 'subject.uri');
-
-  // A user may end up with multiple rating records for the same userstyle.
-  // In this case, we keep the newest (by TID, which are lexicographically sortable).
-  const newestByAuthor = new Map<string, RatingRecord>();
-  for (const record of records) {
-    if (!is(ClubUserstylesAlphaFeedRating.mainSchema, record.value)) continue;
-    const rating = record as RatingRecord;
-
-    const { repo, rkey } = parseCanonicalResourceUri(rating.uri);
-    const existing = newestByAuthor.get(repo);
-    if (!existing || rkey > parseCanonicalResourceUri(existing.uri).rkey) {
-      newestByAuthor.set(repo, rating);
+  if (isAppviewEnabled()) {
+    try {
+      return await listRatingsFromAppview(uri);
+    } catch (err) {
+      console.warn('crayon appview unavailable, falling back to constellation', err);
     }
   }
+  return await listRatingsFromConstellation(uri);
+}
 
-  return [...newestByAuthor.values()];
+/** A single rater's current rating on a subject. */
+export async function getUserRatingForStyle(
+  uri: CanonicalResourceUri,
+  author: Did,
+): Promise<RatingRecord | undefined> {
+  if (isAppviewEnabled()) {
+    try {
+      return await getRatingFromAppview(uri, author);
+    } catch (err) {
+      console.warn('crayon appview unavailable, falling back to constellation', err);
+    }
+  }
+  return await getRatingFromConstellation(uri, author);
 }
 
 export async function createRating(input: RecordCreateInput<Rating>) {
@@ -54,10 +52,10 @@ export async function deleteRating(rkey: RecordKey): Promise<boolean> {
   return await deleteRecord(CLUB_RATING_COLLECTION, rkey);
 }
 
-export function computeAverageRating(
+export function computeRatingSummary(
   ratings: RatingRecord[],
-): { average: number; count: number } | undefined {
-  if (ratings.length === 0) return undefined;
+): { average: number | undefined; count: number } {
+  if (ratings.length === 0) return { average: undefined, count: 0 };
   return {
     average: ratings.reduce((sum, r) => sum + r.value.rating, 0) / ratings.length,
     count: ratings.length,

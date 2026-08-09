@@ -1,7 +1,8 @@
 import { Client, ok, simpleFetchHandler } from '@atcute/client';
-import type { ActorIdentifier } from '@atcute/lexicons';
+import type { ActorIdentifier, Did } from '@atcute/lexicons';
+import { isDid } from '@atcute/lexicons/syntax';
 import type {} from '@atcute/microcosm';
-import { CONSTELLATION_URL, SLINGSHOT_URL } from './settings';
+import { getConstellationUrl, getCrayonUrl, getSlingshotUrl } from './settings';
 
 const clientCache = new Map<string, Client>();
 
@@ -28,25 +29,45 @@ export function getRelayClient(): Client {
 }
 
 export function getConstellationClient(): Client {
-  const key = 'constellation';
+  const url = getConstellationUrl();
+  const key = `constellation:${url}`;
   if (clientCache.has(key)) return clientCache.get(key)!;
 
-  const client = new Client({
-    handler: simpleFetchHandler({ service: CONSTELLATION_URL }),
-  });
+  const client = new Client({ handler: simpleFetchHandler({ service: url }) });
   clientCache.set(key, client);
   return client;
 }
 
 export function getSlingshotClient(): Client {
-  const key = 'slingshot';
+  const url = getSlingshotUrl();
+  const key = `slingshot:${url}`;
   if (clientCache.has(key)) return clientCache.get(key)!;
 
-  const client = new Client({
-    handler: simpleFetchHandler({ service: SLINGSHOT_URL }),
-  });
+  const client = new Client({ handler: simpleFetchHandler({ service: url }) });
   clientCache.set(key, client);
   return client;
+}
+
+export function getCrayonClient(): Client {
+  const url = getCrayonUrl();
+  const key = `crayon:${url}`;
+  if (clientCache.has(key)) return clientCache.get(key)!;
+
+  const client = new Client({ handler: simpleFetchHandler({ service: url }) });
+  clientCache.set(key, client);
+  return client;
+}
+
+// TODO: Cache DID-handle resolutions to avoid repeat resolves for the same actor.
+/** Crayon's actor params are did-only, handles need resolving first while dids pass through with no extra request. */
+export async function resolveToDid(actor: ActorIdentifier): Promise<Did> {
+  if (isDid(actor)) return actor;
+  const doc = await ok(
+    getSlingshotClient().get('blue.microcosm.identity.resolveMiniDoc', {
+      params: { identifier: actor },
+    }),
+  );
+  return doc.did;
 }
 
 export async function getPdsClient(actor: ActorIdentifier): Promise<Client> {

@@ -3,7 +3,6 @@
   import { parseCanonicalResourceUri, type CanonicalResourceUri } from '@atcute/lexicons/syntax';
 
   import {
-    type UserstyleRecord,
     type ProfileView,
     type CommentRecord,
     type RatingRecord,
@@ -25,23 +24,25 @@
 
   import { ClockIcon, ActivityIcon } from '@lucide/svelte';
 
+  type UserstyleReference = { uri: CanonicalResourceUri; title: string };
+
   type ActivityEvent =
     | {
         kind: 'comment';
         date: string;
-        style: UserstyleRecord;
+        style: UserstyleReference;
         profile: ProfileView;
         record: CommentRecord;
       }
     | {
         kind: 'rating';
         date: string;
-        style: UserstyleRecord;
+        style: UserstyleReference;
         profile: ProfileView;
         record: RatingRecord;
       };
 
-  type ResolvedStyle = { style: UserstyleRecord; profile: ProfileView };
+  type ResolvedStyle = { style: UserstyleReference; profile: ProfileView };
 
   function byDateDesc(a: { date: string }, b: { date: string }) {
     return new Date(b.date).getTime() - new Date(a.date).getTime();
@@ -78,20 +79,24 @@
     const styles = await userstyles;
 
     const resolveCommenter =
-      (style: UserstyleRecord) => async (record: CommentRecord | RatingRecord) => ({
+      (style: UserstyleReference) => async (record: CommentRecord | RatingRecord) => ({
         style,
         profile: await getProfile(parseCanonicalResourceUri(record.uri).repo),
       });
 
     const events = await Promise.all(
-      styles.flatMap((style) => [
-        listCommentsForStyle(style.uri).then((records) =>
-          toEvents(records.filter(isFromOther), 'comment', resolveCommenter(style)),
-        ),
-        listRatingsForStyle(style.uri).then((records) =>
-          toEvents(records.filter(isFromOther), 'rating', resolveCommenter(style)),
-        ),
-      ]),
+      styles.flatMap((style) => {
+        const uri = style.uri as CanonicalResourceUri;
+        const ref: UserstyleReference = { uri, title: style.title };
+        return [
+          listCommentsForStyle(uri).then((records) =>
+            toEvents(records.filter(isFromOther), 'comment', resolveCommenter(ref)),
+          ),
+          listRatingsForStyle(uri).then((records) =>
+            toEvents(records.filter(isFromOther), 'rating', resolveCommenter(ref)),
+          ),
+        ];
+      }),
     );
 
     return events.flat().sort(byDateDesc);
@@ -105,8 +110,8 @@
     const { repo, rkey } = parseCanonicalResourceUri(subjectUri);
     if (repo === user.did) return undefined; // skip the user's own styles
     try {
-      const [style, profile] = await Promise.all([getUserstyle(repo, rkey), getProfile(repo)]);
-      return { style, profile };
+      const [record, profile] = await Promise.all([getUserstyle(repo, rkey), getProfile(repo)]);
+      return { style: { uri: record.uri, title: record.value.title }, profile };
     } catch {
       return undefined; // the referenced style or its author may no longer exist
     }
@@ -136,15 +141,15 @@
 
   const givenActivity = loadGivenActivity();
 
-  type StyleShortcut = { style: UserstyleRecord; profile: ProfileView; date: string };
+  type StyleShortcut = { style: UserstyleReference; profile: ProfileView; date: string };
 
   async function loadRecentStyles(): Promise<StyleShortcut[]> {
     const [ownStyles, given] = await Promise.all([userstyles, givenActivity]);
 
     const own: StyleShortcut[] = ownStyles.map((style) => ({
-      style,
+      style: { uri: style.uri as CanonicalResourceUri, title: style.title },
       profile: user.profile!,
-      date: style.value.updatedAt ?? style.value.createdAt,
+      date: style.updatedAt ?? style.createdAt,
     }));
 
     const others = new Map<string, StyleShortcut>();
@@ -197,7 +202,7 @@
               <li class="style-list__item">
                 <a href={getLinkToStyle(style.uri, profile)} class="style-shortcut">
                   <span class="style-shortcut__dot"></span>
-                  <span class="style-shortcut__title truncate-1">{style.value.title}</span>
+                  <span class="style-shortcut__title truncate-1">{style.title}</span>
                   <span class="style-shortcut__author">@{profile.handle}</span>
                 </a>
               </li>
@@ -228,7 +233,7 @@
                   >{event.kind === 'comment' ? 'commented on' : 'rated'}
                   <a
                     href={getLinkToUserOwnStyle(event.style.uri)}
-                    class="link link--quiet activity-list__style-link">{event.style.value.title}</a
+                    class="link link--quiet activity-list__style-link">{event.style.title}</a
                   ></span
                 >
                 <div class="activity-list__item-end">

@@ -1,33 +1,37 @@
 import { getSessionContext } from '../auth';
 import {
-  createRecord,
-  deleteRecord,
-  getBlobText,
-  getRecord,
-  listRecordsForCollection,
-  listRecordsForRepo,
-  putRecord,
-  uploadBlob,
-  type RepoRecord,
-} from '../records';
-
-import { listCommentsForStyle, type CommentRecord, type CommentThread } from './comments';
-import { listRatingsForStyle, type RatingRecord } from './ratings';
-
+  getUserstyleFromAppview,
+  getUserstyleSourceCodeFromAppview,
+  listAllUserstylesFromAppview,
+  listUserstylesFromAppview,
+} from '../backends/appview/userstyles';
 import {
-  type ActorIdentifier,
-  type RecordKey,
-  type Blob as BlobRef,
-  type CanonicalResourceUri,
-  parseCanonicalResourceUri,
-} from '@atcute/lexicons';
-import { is } from '@atcute/lexicons/validations';
+  getUserstyleFromPds,
+  getUserstyleSourceCodeFromPds,
+  listAllUserstylesFromRelay,
+  listUserstylesFromPds,
+} from '../backends/fallback/userstyles';
+import { getFeedbackFromAppview } from '../backends/appview/feedback';
+import { getFeedbackFromConstellation } from '../backends/fallback/feedback';
+import { createRecord, deleteRecord, putRecord, uploadBlob, type RepoRecord } from '../records';
+
+import type { CommentThreadNode } from './comments';
+
+import { type ActorIdentifier, type RecordKey, type CanonicalResourceUri } from '@atcute/lexicons';
 
 import { makeRecordBuilder } from '../builder';
-import { CLUB_USERSTYLE_COLLECTION } from '../settings';
-import { ClubUserstylesAlphaUserstyle } from '$lib/at/lexicons';
+import { CLUB_USERSTYLE_COLLECTION, isAppviewEnabled } from '../settings';
+import { ClubUserstylesAlphaUserstyle, type ClubUserstylesAlphaDefs } from '$lib/at/lexicons';
 
 export type Userstyle = ClubUserstylesAlphaUserstyle.Main;
+
+export type UserstyleView = Omit<
+  ClubUserstylesAlphaDefs.UserstyleView,
+  'commentCount' | 'ratingAverage'
+> & {
+  commentCount?: number; // comment count loosed to optional here since it is unused by the frontend, returned by the appview by default, but expensive to (needlessly) fetch from the fallback backend.
+  ratingAverage?: number; // widened from the lexicon's string (there is no float type).
+};
 
 export type UserstyleContent = Omit<
   Userstyle,
@@ -47,9 +51,26 @@ const builder = makeRecordBuilder(
   CLUB_USERSTYLE_COLLECTION,
 );
 
+export async function getUserstyle(repo: ActorIdentifier, rkey: RecordKey): Promise<UserstyleRecord> {
+  if (isAppviewEnabled()) {
+    try {
+      return await getUserstyleFromAppview(repo, rkey);
+    } catch (err) {
+      console.warn('crayon appview unavailable, falling back to direct pds fetch', err);
+    }
+  }
+  return await getUserstyleFromPds(repo, rkey);
+}
+
 export async function getUserstyleSourceCode(userstyle: UserstyleRecord): Promise<string> {
-  const { repo } = parseCanonicalResourceUri(userstyle.uri);
-  return await getBlobText(repo, userstyle.value.sourceCode);
+  if (isAppviewEnabled()) {
+    try {
+      return await getUserstyleSourceCodeFromAppview(userstyle);
+    } catch (err) {
+      console.warn('crayon appview unavailable, falling back to direct pds fetch', err);
+    }
+  }
+  return await getUserstyleSourceCodeFromPds(userstyle);
 }
 
 export function removeSourceCodeUpdateUrl(sourceCode: string): string {
@@ -59,18 +80,15 @@ export function removeSourceCodeUpdateUrl(sourceCode: string): string {
     .join('\n');
 }
 
-export async function listUserstyles(repo: ActorIdentifier) {
-  const response = await listRecordsForRepo({
-    repo,
-    collection: CLUB_USERSTYLE_COLLECTION,
-    limit: 50,
-  });
-
-  return response.records
-    .filter((record): record is UserstyleRecord =>
-      is(ClubUserstylesAlphaUserstyle.mainSchema, record.value),
-    )
-    .sort((a, b) => b.value.createdAt.localeCompare(a.value.createdAt));
+export async function listUserstyles(repo: ActorIdentifier): Promise<UserstyleView[]> {
+  if (isAppviewEnabled()) {
+    try {
+      return await listUserstylesFromAppview(repo);
+    } catch (err) {
+      console.warn('crayon appview unavailable, falling back to direct pds listing', err);
+    }
+  }
+  return await listUserstylesFromPds(repo);
 }
 
 export async function listMyUserstyles() {
@@ -87,14 +105,6 @@ export async function createUserstyle(userstyle: UserstyleInput<{ previewImage?:
     CLUB_USERSTYLE_COLLECTION,
     builder.create({ ...userstyle, previewImage, sourceCode }),
   );
-}
-
-export async function getUserstyle(repo: ActorIdentifier, rkey: RecordKey) {
-  return await getRecord({
-    repo,
-    collection: CLUB_USERSTYLE_COLLECTION,
-    rkey,
-  });
 }
 
 export async function updateUserstyle(
@@ -118,33 +128,35 @@ export async function deleteUserstyle(rkey: RecordKey) {
   return await deleteRecord(CLUB_USERSTYLE_COLLECTION, rkey);
 }
 
-export async function listAllUserstyles() {
-  const response = await listRecordsForCollection({ collection: CLUB_USERSTYLE_COLLECTION });
-  return response.records;
+/**
+ * Network-wide discovery feed (the /explore page).
+ * Falls back to the relay-fanout path if the appview is off or unreachable.
+ */
+export async function listAllUserstyles(): Promise<UserstyleView[]> {
+  if (isAppviewEnabled()) {
+    try {
+      return await listAllUserstylesFromAppview();
+    } catch (err) {
+      console.warn('crayon appview unavailable, falling back to relay-based discovery', err);
+    }
+  }
+  return await listAllUserstylesFromRelay();
 }
 
-export type ReviewThread = CommentThread & {
-  rating?: RatingRecord;
-};
-
 export type UserstyleFeedback = {
-  comments: CommentRecord[];
-  ratings: Record<string, RatingRecord>;
+  commentThreadNodes: CommentThreadNode[];
+  ratingSummary: { count: number; average: number | undefined };
 };
 
 export async function getUserstyleFeedback(
   userstyle: CanonicalResourceUri,
 ): Promise<UserstyleFeedback> {
-  let st = performance.now();
-  const [comments, ratings]: [CommentRecord[], RatingRecord[]] = await Promise.all([
-    listCommentsForStyle(userstyle),
-    listRatingsForStyle(userstyle),
-  ]);
-  console.log(`Fetched feedback in ${performance.now() - st} ms.`);
-
-  const ratingsByDid: Record<string, RatingRecord> = Object.fromEntries(
-    ratings.map((r) => [parseCanonicalResourceUri(r.uri).repo, r]),
-  );
-
-  return { comments, ratings: ratingsByDid };
+  if (isAppviewEnabled()) {
+    try {
+      return await getFeedbackFromAppview(userstyle);
+    } catch (err) {
+      console.warn('crayon appview unavailable, falling back to constellation', err);
+    }
+  }
+  return await getFeedbackFromConstellation(userstyle);
 }

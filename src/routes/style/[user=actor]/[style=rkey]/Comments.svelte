@@ -5,9 +5,10 @@
   import {
     user,
     createComment,
+    getProfiles,
+    collectThreadAuthorDids,
     type CommentRecord,
-    type ReviewThread,
-    type UserstyleFeedback,
+    type CommentThread,
   } from '$lib/at';
 
   import { Loading, Alert } from '$components/ui';
@@ -17,13 +18,14 @@
   interface Props {
     userstyle: ComAtprotoRepoStrongRef.Main;
     owner: Did;
-    feedback: UserstyleFeedback;
-    threads: ReviewThread[];
+    threads: CommentThread[];
     onCommentAdded: (comment: CommentRecord) => void;
     onCommentDeleted: (uri: string) => void;
+    onCommentEdited: (comment: CommentRecord) => void;
   }
 
-  let { userstyle, owner, feedback, threads, onCommentAdded, onCommentDeleted }: Props = $props();
+  let { userstyle, owner, threads, onCommentAdded, onCommentDeleted, onCommentEdited }: Props =
+    $props();
 
   let comment = $state('');
 
@@ -31,6 +33,9 @@
   let error = $state<string | null>(null);
 
   let isOwner = $derived(user.isLoggedIn && user.did === owner);
+
+  // Batch-fetch every commenter's profile once for the whole tree.
+  let authors = $derived(threads.length > 0 ? await getProfiles(collectThreadAuthorDids(threads)) : undefined);
 
   async function submitComment() {
     error = null;
@@ -52,7 +57,7 @@
 
 <section class="page-section comments-section">
   <h2 class="comments-section__heading">
-    Comments{feedback.comments.length > 0 ? ` (${feedback.comments.length})` : ''}
+    Comments
   </h2>
 
   {#if error}
@@ -92,13 +97,14 @@
     <p class="comments-section__empty">No comments yet.</p>
   {:else}
     <ul class="comments-section__list list-reset">
-      {#each threads as thread (thread.comment.uri)}
+      {#each threads as thread (thread.uri)}
         <CommentItem
           {thread}
-          ratings={feedback.ratings}
           {userstyle}
+          {authors}
           {onCommentAdded}
           {onCommentDeleted}
+          {onCommentEdited}
         />
       {/each}
     </ul>

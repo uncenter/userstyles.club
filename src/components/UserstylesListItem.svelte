@@ -1,14 +1,7 @@
 <script lang="ts">
   import { resolve } from '$app/paths';
 
-  import {
-    type ProfileView,
-    type UserstyleRecord,
-    getBlobCdnUrl,
-    getProfile,
-    listRatingsForStyle,
-    computeAverageRating,
-  } from '$lib/at';
+  import { type ProfileView, type UserstyleView, getBlobCdnUrl, getProfile } from '$lib/at';
   import { parseCanonicalResourceUri } from '@atcute/lexicons';
 
   import StarRatingAverage from './StarRatingAverage.svelte';
@@ -20,23 +13,22 @@
   import { getPreferredActorIdentifier } from '$lib/preferences.svelte';
 
   interface Props {
-    userstyle: UserstyleRecord;
-    author?: ProfileView;
+    userstyle: UserstyleView;
+    author: ProfileView;
   }
 
   let { userstyle, author }: Props = $props();
 
   let uri = $derived.by(() => parseCanonicalResourceUri(userstyle.uri));
-  let profile = $derived(author || (await getProfile(uri.repo)));
 </script>
 
 <article class="userstyle-card">
   <div class="userstyle-card__thumbnail grid-background">
-    {#if userstyle.value.previewImage}
+    {#if userstyle.previewImageCid}
       <img
         class="userstyle-card__thumbnail-img"
-        src={getBlobCdnUrl(uri.repo, userstyle.value.previewImage, 'feed_thumbnail')}
-        alt={userstyle.value.title}
+        src={getBlobCdnUrl(uri.repo, userstyle.previewImageCid, 'feed_thumbnail')}
+        alt={userstyle.title}
       />
     {/if}
   </div>
@@ -45,32 +37,29 @@
       <h3 class="userstyle-card__title truncate-1">
         <a
           href={resolve('/style/[user=actor]/[style=rkey]', {
-            user: getPreferredActorIdentifier(profile),
+            user: getPreferredActorIdentifier(author),
             style: uri.rkey,
-          })}>{userstyle.value.title}</a
+          })}>{userstyle.title}</a
         >
       </h3>
-      <ActorHandle {profile} style="minimal" />
+      <ActorHandle profile={author} style="minimal" />
     </div>
-    <p class="userstyle-card__description truncate-1">{userstyle.value.description ?? ''}</p>
+    <p class="userstyle-card__description truncate-1">{userstyle.description ?? ''}</p>
     <footer class="userstyle-card__meta">
       <span class="userstyle-card__meta-item">
         <CalendarIcon size={12} />
-        {formatDate(userstyle.value.updatedAt ?? userstyle.value.createdAt)}
+        {formatDate(userstyle.updatedAt ?? userstyle.createdAt)}
       </span>
-      {#await listRatingsForStyle(userstyle.uri) then ratings}
-        {@const computed = computeAverageRating(ratings)}
-        {#if computed}
-          <span class="userstyle-card__meta-item userstyle-card__meta-item--rating"
-            ><StarRatingAverage average={computed.average} count={computed.count} /></span
-          >
-        {:else}
-          <span
-            class="userstyle-card__meta-item userstyle-card__meta-item--rating userstyle-card__meta-item--na"
-            >Unrated</span
-          >
-        {/if}
-      {/await}
+      {#if userstyle.ratingAverage !== undefined}
+        <span class="userstyle-card__meta-item userstyle-card__meta-item--rating"
+          ><StarRatingAverage average={userstyle.ratingAverage} count={userstyle.ratingCount} /></span
+        >
+      {:else}
+        <span
+          class="userstyle-card__meta-item userstyle-card__meta-item--rating userstyle-card__meta-item--na"
+          >Unrated</span
+        >
+      {/if}
     </footer>
   </div>
 </article>

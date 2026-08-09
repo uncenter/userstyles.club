@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { parseCanonicalResourceUri, type CanonicalResourceUri } from '@atcute/lexicons';
+  import { parseCanonicalResourceUri, type CanonicalResourceUri, type Did } from '@atcute/lexicons';
   import type { ComAtprotoRepoStrongRef } from '@atcute/atproto';
 
   import {
@@ -9,8 +9,8 @@
     deleteComment,
     createComment,
     type CommentRecord,
-    type RatingRecord,
-    type ReviewThread,
+    type CommentThread,
+    type ProfileView,
   } from '$lib/at';
 
   import { Loading, Alert, Dialog } from '$components/ui';
@@ -23,20 +23,23 @@
   import { formatDate } from '$lib/date';
 
   interface Props {
-    thread: ReviewThread;
-    ratings: Record<string, RatingRecord>;
+    thread: CommentThread;
     userstyle: ComAtprotoRepoStrongRef.Main;
+    authors?: Map<Did, ProfileView>;
     onCommentAdded: (comment: CommentRecord) => void;
     onCommentDeleted: (uri: string) => void;
+    onCommentEdited: (comment: CommentRecord) => void;
   }
 
-  let { thread, ratings, userstyle, onCommentAdded, onCommentDeleted }: Props = $props();
+  let { thread, userstyle, authors, onCommentAdded, onCommentDeleted, onCommentEdited }: Props =
+    $props();
 
-  let { repo: actor, rkey } = $derived(parseCanonicalResourceUri(thread.comment.uri));
-  let rating = $derived(ratings?.[actor!]);
+  let { repo: actor, rkey } = $derived(parseCanonicalResourceUri(thread.uri));
   let isMyComment = $derived(user.isLoggedIn && user.did === actor);
 
-  let commenter = $derived(isMyComment ? user.profile! : await getProfile(actor));
+  let commenter = $derived(
+    isMyComment ? user.profile! : (authors?.get(actor!) ?? (await getProfile(actor))),
+  );
 
   let editing = $state({ state: false, value: '' });
   let replying = $state({ state: false, value: '' });
@@ -47,6 +50,7 @@
   let confirmDeleteOpen = $state(false);
 
   function startEdit() {
+    if (!thread.comment) return;
     editing.state = true;
     editing.value = thread.comment.value.comment;
   }
@@ -57,6 +61,7 @@
   }
 
   async function saveEdit() {
+    if (!thread.comment) return;
     error = null;
     submitting = true;
     try {
@@ -66,7 +71,7 @@
         createdAt: thread.comment.value.createdAt,
         parent: thread.comment.value.parent,
       });
-      thread.comment.value = updated.record;
+      onCommentEdited({ uri: thread.comment.uri, cid: updated.response.cid, value: updated.record });
     } catch (e) {
       error = e instanceof Error ? e.message : 'Failed to update comment.';
     } finally {
@@ -86,6 +91,7 @@
   }
 
   async function submitReply() {
+    if (!thread.comment) return;
     error = null;
     submitting = true;
     try {
@@ -109,7 +115,7 @@
     submitting = true;
     try {
       await deleteComment(rkey);
-      onCommentDeleted(thread.comment.uri);
+      onCommentDeleted(thread.uri);
     } catch (e) {
       error = e instanceof Error ? e.message : 'Failed to delete comment.';
     } finally {
@@ -154,70 +160,84 @@
 {/snippet}
 
 <li class="comment-tree">
-  <div class="comment-card">
-    {#if error}
-      <Alert variant="error">{error}</Alert>
-    {/if}
+  {#if thread.deleted}
+    <div class="comment-card comment-card--deleted">
+      <p class="comment-card__deleted-text">[deleted]</p>
+    </div>
+  {:else}
+    {@const comment = thread.comment!}
+    <div class="comment-card">
+      {#if error}
+        <Alert variant="error">{error}</Alert>
+      {/if}
 
-    <div class="comment-card__header">
-      <div class="comment-card__commenter">
-        <ActorHandle profile={commenter} style="small" />{#if rating}
-          rated <StarRating value={rating.value.rating} />{/if}
-      </div>
-      <div class="comment-card__meta">
-        <time class="comment-card__date"
-          >{formatDate(thread.comment.value.updatedAt ?? thread.comment.value.createdAt)}</time
-        >
-        {#if isMyComment}
-          <div class="comment-card__actions">
-            <button
-              type="button"
-              class="btn btn--secondary btn--sm btn--icon"
-              aria-label="Edit comment"
-              disabled={submitting || editing.state}
-              onclick={startEdit}
-            >
-              <PencilIcon size={14} />
-            </button>
-            <button
-              type="button"
-              class="btn btn--danger btn--sm btn--icon"
-              aria-label="Delete comment"
-              disabled={submitting || editing.state}
-              onclick={() => (confirmDeleteOpen = true)}
-            >
-              <Loading pending={submitting}
-                >{#snippet idle()}<Trash2Icon size={14} />{/snippet}</Loading
+      <div class="comment-card__header">
+        <div class="comment-card__commenter">
+          <ActorHandle profile={commenter} style="small" />{#if thread.rating}
+            rated <StarRating value={thread.rating} />{/if}
+        </div>
+        <div class="comment-card__meta">
+          <time class="comment-card__date"
+            >{formatDate(comment.value.updatedAt ?? comment.value.createdAt)}</time
+          >
+          {#if isMyComment}
+            <div class="comment-card__actions">
+              <button
+                type="button"
+                class="btn btn--secondary btn--sm btn--icon"
+                aria-label="Edit comment"
+                disabled={submitting || editing.state}
+                onclick={startEdit}
               >
-            </button>
-          </div>
+                <PencilIcon size={14} />
+              </button>
+              <button
+                type="button"
+                class="btn btn--danger btn--sm btn--icon"
+                aria-label="Delete comment"
+                disabled={submitting || editing.state}
+                onclick={() => (confirmDeleteOpen = true)}
+              >
+                <Loading pending={submitting}
+                  >{#snippet idle()}<Trash2Icon size={14} />{/snippet}</Loading
+                >
+              </button>
+            </div>
+          {/if}
+        </div>
+      </div>
+      {#if editing.state}
+        {@render InlineEditor(editing, saveEdit, cancelEdit, 'Save', 'Saving')}
+      {:else}
+        <p class="comment-card__content">{comment.value.comment}</p>
+      {/if}
+      <div class="comment-card__reply">
+        {#if replying.state}
+          {@render InlineEditor(replying, submitReply, cancelReply, 'Reply', 'Replying')}
+        {:else}
+          <button
+            type="button"
+            class="comment-card__reply-trigger"
+            disabled={submitting}
+            onclick={startReply}
+          >
+            Reply to comment...
+          </button>
         {/if}
       </div>
     </div>
-    {#if editing.state}
-      {@render InlineEditor(editing, saveEdit, cancelEdit, 'Save', 'Saving')}
-    {:else}
-      <p class="comment-card__content">{thread.comment.value.comment}</p>
-    {/if}
-    <div class="comment-card__reply">
-      {#if replying.state}
-        {@render InlineEditor(replying, submitReply, cancelReply, 'Reply', 'Replying')}
-      {:else}
-        <button
-          type="button"
-          class="comment-card__reply-trigger"
-          disabled={submitting}
-          onclick={startReply}
-        >
-          Reply to comment...
-        </button>
-      {/if}
-    </div>
-  </div>
+  {/if}
   {#if thread.replies.length > 0}
     <ul class="comment-tree__replies">
       {#each thread.replies as reply}
-        <Self thread={reply} {ratings} {userstyle} {onCommentAdded} {onCommentDeleted} />
+        <Self
+          thread={reply}
+          {userstyle}
+          {authors}
+          {onCommentAdded}
+          {onCommentDeleted}
+          {onCommentEdited}
+        />
       {/each}
     </ul>
   {/if}
@@ -269,6 +289,17 @@
     padding: var(--space-4);
     background: var(--bg-subtle);
     border-radius: var(--radius);
+
+    &.comment-card--deleted {
+      padding: var(--space-3) var(--space-4);
+    }
+
+    .comment-card__deleted-text {
+      margin: 0;
+      font-size: var(--text-sm);
+      font-style: italic;
+      color: var(--fg-muted);
+    }
 
     .comment-card__header {
       display: flex;

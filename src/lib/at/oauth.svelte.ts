@@ -11,7 +11,7 @@ import { Client, ok, simpleFetchHandler } from '@atcute/client';
 
 import { replaceState } from '$app/navigation';
 import { SvelteURLSearchParams } from 'svelte/reactivity';
-import { REDIRECT_PATH, SLINGSHOT_URL, getSignUpPds } from './settings';
+import { REDIRECT_PATH, getSignUpPds, getSlingshotUrl } from './settings';
 import { getClientMetadata, oauthScope } from './metadata';
 import {
   getProfile,
@@ -177,7 +177,7 @@ async function resumeSession(did: Did) {
 
 class SlingshotActorResolver implements ActorResolver {
   private client = new Client({
-    handler: simpleFetchHandler({ service: SLINGSHOT_URL }),
+    handler: simpleFetchHandler({ service: getSlingshotUrl() }),
   });
 
   async resolve(actor: ActorIdentifier, options?: { signal?: AbortSignal }) {
