@@ -1,0 +1,31 @@
+{
+  "defs": {
+    "main": {
+      "description": "Check the follow relationship between two actors: whether `actor` follows `other`, and whether `other` follows `actor` back.",
+      "output": {
+        "encoding": "application/json",
+        "schema": {
+          "ref": "club.userstyles.alpha.defs#relationshipView",
+          "type": "ref"
+        }
+      },
+      "parameters": {
+        "properties": {
+          "actor": {
+            "type": "string",
+            "format": "did"
+          },
+          "other": {
+            "type": "string",
+            "format": "did"
+          }
+        },
+        "required": ["actor", "other"],
+        "type": "params"
+      },
+      "type": "query"
+    }
+  },
+  "id": "club.userstyles.alpha.graph.getRelationship",
+  "lexicon": 1
+}

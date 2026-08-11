@@ -1,0 +1,44 @@
+{
+  "defs": {
+    "main": {
+      "description": "Batch variant of getRelationship: check the follow relationship between `actor` and each of `others`.",
+      "output": {
+        "encoding": "application/json",
+        "schema": {
+          "properties": {
+            "relationships": {
+              "items": {
+                "ref": "club.userstyles.alpha.defs#relationshipView",
+                "type": "ref"
+              },
+              "type": "array"
+            }
+          },
+          "required": ["relationships"],
+          "type": "object"
+        }
+      },
+      "parameters": {
+        "properties": {
+          "actor": {
+            "type": "string",
+            "format": "did"
+          },
+          "others": {
+            "items": {
+              "type": "string",
+              "format": "did"
+            },
+            "maxLength": 25,
+            "type": "array"
+          }
+        },
+        "required": ["actor", "others"],
+        "type": "params"
+      },
+      "type": "query"
+    }
+  },
+  "id": "club.userstyles.alpha.graph.getRelationships",
+  "lexicon": 1
+}

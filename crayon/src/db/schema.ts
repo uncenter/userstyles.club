@@ -45,7 +45,7 @@ export const userstyles = pgTable(
     // null means "not derived yet" (fetch/parse failed, or ingested before this field existed),
     // distinct from `[]`/`false` which are actual results from parsing.
     mozDocumentFunctions: jsonb('moz_document_rules').$type<MozDocumentFunction[]>(),
-    isConfigurable: boolean('is_configurable'),
+    userCssVars: integer('user_css_vars'),
     commentCount: integer('comment_count').notNull().default(0),
     ratingCount: integer('rating_count').notNull().default(0),
     ratingSum: integer('rating_sum').notNull().default(0),
@@ -63,7 +63,6 @@ export const userstyles = pgTable(
 
 export const profiles = pgTable('profiles', {
   did: text('did').primaryKey(),
-  displayName: text('display_name'),
   description: text('description'),
   createdAt: text('created_at').notNull(),
   cid: text('cid').notNull(),
@@ -148,6 +147,7 @@ export const notifications = pgTable(
   },
   (t) => [
     index('notifications_recipient_idx').on(t.recipientDid, t.createdAt),
-    uniqueIndex('notifications_record_uri_idx').on(t.recordUri),
+    // A single record (e.g. a reply) can notify more than one recipient (the parent comment's author and the userstyle owner).
+    uniqueIndex('notifications_record_recipient_idx').on(t.recordUri, t.recipientDid),
   ],
 );

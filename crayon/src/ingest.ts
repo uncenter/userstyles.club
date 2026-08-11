@@ -17,6 +17,7 @@ import {
   deleteProfile,
   deleteRating,
   deleteUserstyle,
+  getThreadAncestorAuthors,
   upsertComment,
   upsertFollow,
   upsertProfile,
@@ -134,7 +135,7 @@ async function handleUserstyle(
     updatedAt: record.updatedAt ?? null,
     indexedAt: now,
     mozDocumentFunctions: usercss?.mozDocumentFunctions ?? null,
-    isConfigurable: usercss?.isConfigurable ?? null,
+    userCssVars: usercss?.userCssVars ?? null,
   });
   console.log(`indexed userstyle at ${uri}`);
 }
@@ -148,7 +149,6 @@ async function handleProfile(
   await upsertProfile({
     did,
     cid,
-    displayName: record.displayName ?? null,
     description: record.description ?? null,
     createdAt: record.createdAt,
     indexedAt: now,
@@ -181,20 +181,31 @@ async function handleComment(
   if (!inserted) return;
   console.log(`indexed comment at ${uri}`);
 
-  // a reply notifies the parent comment's author, a top-level comment notifies the subject userstyle's author.
-  const reason = record.parent ? 'reply' : 'comment';
-  const subjectUri = record.parent?.uri ?? record.subject.uri;
-  const recipientDid = getDidFromUri(subjectUri);
-  if (recipientDid !== did) {
+  // A top-level comment notifies the userstyle's owner.
+  // A reply also notifies the parent comment's author, plus everyone else already participating in the thread above it.s
+  const notified = new Set<string>([did]); // never notify the actor about their own comment
+
+  async function notify(recipientDid: string, reason: 'reply' | 'thread' | 'comment') {
+    if (notified.has(recipientDid)) return;
+    notified.add(recipientDid);
     await createNotification({
       recipientDid,
       reason,
-      subjectUri,
+      subjectUri: record.subject.uri,
       recordUri: uri,
       actorDid: did,
       createdAt: now,
     });
   }
+
+  if (record.parent) {
+    await notify(getDidFromUri(record.parent.uri), 'reply');
+    for (const ancestorDid of await getThreadAncestorAuthors(record.parent.uri)) {
+      await notify(ancestorDid, 'thread');
+    }
+  }
+
+  await notify(getDidFromUri(record.subject.uri), 'comment');
 }
 
 async function handleRating(

@@ -17,6 +17,7 @@ import { createRecord, deleteRecord, putRecord, uploadBlob, type RepoRecord } fr
 
 import type { CommentThreadNode } from './comments';
 
+import { ClientResponseError } from '@atcute/client';
 import { type ActorIdentifier, type RecordKey, type CanonicalResourceUri } from '@atcute/lexicons';
 
 import { makeRecordBuilder } from '../builder';
@@ -56,6 +57,7 @@ export async function getUserstyle(repo: ActorIdentifier, rkey: RecordKey): Prom
     try {
       return await getUserstyleFromAppview(repo, rkey);
     } catch (err) {
+      if (err instanceof ClientResponseError && err.error === 'UserstyleNotFound') throw err;
       console.warn('crayon appview unavailable, falling back to direct pds fetch', err);
     }
   }

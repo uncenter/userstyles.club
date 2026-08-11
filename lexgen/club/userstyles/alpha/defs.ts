@@ -33,8 +33,10 @@ export const userstyleView = object({
     createdAt: required(string({ format: 'datetime' })),
     updatedAt: string({ format: 'datetime' }),
     indexedAt: required(string({ format: 'datetime' })),
-    mozDocumentFunctions: array({ items: ref({ ref: 'club.userstyles.alpha.defs#mozDocumentFunction' }) }),
-    isConfigurable: boolean(),
+    mozDocumentFunctions: array({
+      items: ref({ ref: 'club.userstyles.alpha.defs#mozDocumentFunction' }),
+    }),
+    userCssVars: integer(),
     commentCount: required(integer()),
     ratingCount: required(integer()),
     // TODO: Use float type if it becomes a thing?
@@ -45,7 +47,6 @@ export const userstyleView = object({
 export const profileView = object({
   properties: {
     did: required(string({ format: 'did' })),
-    displayName: string({ maxGraphemes: 64, maxLength: 640 }),
     description: string({ maxGraphemes: 256, maxLength: 2560 }),
     createdAt: required(string({ format: 'datetime' })),
     indexedAt: required(string({ format: 'datetime' })),
@@ -105,6 +106,16 @@ export const followView = object({
   },
 });
 
+export const relationshipView = object({
+  properties: {
+    did: required(string({ format: 'did' })),
+    // Present with the follow record's uri if the queried actor follows `did`.
+    following: string({ format: 'at-uri' }),
+    // Present with the follow record's uri if `did` follows the queried actor back.
+    followedBy: string({ format: 'at-uri' }),
+  },
+});
+
 export const feedViewItem = object({
   properties: {
     type: required(string({ enum: ['userstyle', 'comment', 'rating'] })),
@@ -116,7 +127,7 @@ export const feedViewItem = object({
 
 export const notificationView = object({
   properties: {
-    reason: required(string({ enum: ['comment', 'reply', 'rating', 'follow'] })),
+    reason: required(string({ enum: ['comment', 'reply', 'thread', 'rating', 'follow'] })),
     subjectUri: required(string({ format: 'at-uri' })),
     recordUri: required(string({ format: 'at-uri' })),
     author: required(string({ format: 'did' })),
@@ -134,6 +145,7 @@ export default document({
     commentView,
     commentThreadView,
     followView,
+    relationshipView,
     feedViewItem,
     notificationView,
   },

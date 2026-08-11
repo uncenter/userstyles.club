@@ -10,11 +10,6 @@
             "maxGraphemes": 256,
             "maxLength": 2560
           },
-          "displayName": {
-            "type": "string",
-            "maxGraphemes": 64,
-            "maxLength": 640
-          },
           "createdAt": {
             "type": "string",
             "format": "datetime"

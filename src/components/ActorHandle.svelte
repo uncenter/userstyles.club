@@ -5,7 +5,7 @@
 
   import Avatar from './ui/Avatar.svelte';
 
-  import { getPreferredActorIdentifier } from '$lib/preferences.svelte';
+  import { getPreferredActorIdentifier, formatActorLabel } from '$lib/preferences.svelte';
 
   interface Props {
     profile: ProfileView;
@@ -13,6 +13,8 @@
   }
 
   let { profile, style = 'large' }: Props = $props();
+
+  let identityLabel = $derived(profile.handle ?? profile.did);
 </script>
 
 <a
@@ -22,12 +24,12 @@
   {#if style !== 'minimal'}
     <Avatar
       src={profile.avatar}
-      name={profile.displayName ?? profile.handle}
-      alt={profile.handle ?? ''}
+      name={identityLabel}
+      alt={identityLabel}
       size={style == 'small' ? 'xs' : 'sm'}
     />
   {/if}
-  <span class="actor-handle__label">@{profile.handle}</span>
+  <span class="actor-handle__label">{formatActorLabel(profile)}</span>
 </a>
 
 <style>

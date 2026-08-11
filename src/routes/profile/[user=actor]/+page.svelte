@@ -1,31 +1,70 @@
 <script lang="ts">
   import type { PageProps } from './$types';
+  import { resolve } from '$app/paths';
   import { joinPageTitle } from '$lib/constants';
+  import { getPreferredActorIdentifier, formatActorLabel } from '$lib/preferences.svelte';
 
-  import { user, setClubProfile, CLUB_PROFILE_COLLECTION } from '$lib/at';
+  import { parseCanonicalResourceUri, type ResourceUri } from '@atcute/lexicons';
+
+  import {
+    user,
+    setClubProfile,
+    followActor,
+    unfollowActor,
+    getRelationship,
+    CLUB_PROFILE_COLLECTION,
+  } from '$lib/at';
 
   import { Alert, Avatar, Loading } from '$components/ui';
   import { UserstylesSection, BlueskyIcon } from '$components';
 
-  import { PencilIcon } from '@lucide/svelte';
+  import { PencilIcon, UserPlusIcon, UserMinusIcon } from '@lucide/svelte';
 
   let { data }: PageProps = $props();
 
   let isOwner = $derived(user.isLoggedIn && user.did === data.profile.did);
+  let canFollow = $derived(user.isLoggedIn && user.did && user.did !== data.profile.did);
 
-  let displayName = $derived(data.profile.displayName);
-  let displayNameSafe = $derived(displayName || data.profile.handle);
+  let identityLabel = $derived(data.profile.handle ?? data.profile.did);
   let description = $derived(data.profile.description);
 
+  let following = $derived<ResourceUri | undefined>(
+    canFollow
+      ? await getRelationship(user.did!, data.profile.did)
+          .then((rel) => rel.following)
+          .catch(() => undefined)
+      : undefined,
+  );
+  let followLoading = $state(false);
+  let followError = $state<string | null>(null);
+
+  async function toggleFollow() {
+    if (!user.isLoggedIn || followLoading) return;
+    followLoading = true;
+    followError = null;
+    try {
+      if (following) {
+        const { rkey } = parseCanonicalResourceUri(following);
+        await unfollowActor(rkey);
+        following = undefined;
+      } else {
+        const created = await followActor(data.profile.did);
+        following = created.response.uri;
+      }
+    } catch (e) {
+      followError = e instanceof Error ? e.message : 'Failed to update follow.';
+    } finally {
+      followLoading = false;
+    }
+  }
+
   let editing = $state(false);
-  let editDisplayName = $state('');
   let editDescription = $state('');
 
   let saving = $state(false);
   let saveError = $state<string | null>(null);
 
   function startEditing() {
-    editDisplayName = displayName ?? '';
     editDescription = description ?? '';
     saveError = null;
     editing = true;
@@ -39,11 +78,7 @@
     saveError = null;
 
     try {
-      await setClubProfile(
-        { displayName: editDisplayName, description: editDescription },
-        data.profile.club?.createdAt,
-      );
-      displayName = editDisplayName;
+      await setClubProfile({ description: editDescription }, data.profile.club?.createdAt);
       description = editDescription;
       editing = false;
     } catch (e) {
@@ -55,24 +90,14 @@
 </script>
 
 <svelte:head>
-  <title>{joinPageTitle(`@${data.profile.handle}`)}</title>
+  <title>{joinPageTitle(formatActorLabel(data.profile))}</title>
   <meta name="at:canonical" content={`at://${data.profile.did}/${CLUB_PROFILE_COLLECTION}/self`} />
 </svelte:head>
 
 <section class="page-section profile-header">
-  <Avatar src={data.profile.avatar} alt={data.profile.handle} name={displayNameSafe} size="lg" />
+  <Avatar src={data.profile.avatar} alt={identityLabel} name={identityLabel} size="lg" />
   {#if editing}
     <form onsubmit={saveProfile} class="form-stack profile-edit-form">
-      <div class="form-group">
-        <label for="edit-display-name" class="form-field-label">Display name</label>
-        <input
-          id="edit-display-name"
-          type="text"
-          bind:value={editDisplayName}
-          maxlength="64"
-          placeholder={displayNameSafe}
-        />
-      </div>
       <div class="form-group">
         <label for="edit-description" class="form-field-label">Description</label>
         <textarea id="edit-description" bind:value={editDescription} maxlength="256" rows="3"
@@ -97,31 +122,70 @@
     </form>
   {:else}
     <div class="profile-header__info">
-      <h1 class="profile-header__name">{displayNameSafe}</h1>
       <div class="profile-header__handle-row">
-        <p class="text-muted">@{data.profile.handle}</p>
+        <h1 class="profile-header__name">{formatActorLabel(data.profile)}</h1>
+        {#if data.profile.bsky}
+          <a
+            class="profile-header__bsky-link"
+            href="https://bsky.app/profile/{identityLabel}"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="View on Bluesky"
+          >
+            <BlueskyIcon size={16} />
+          </a>
+        {/if}
+      </div>
+      {#if description}
+        <p class="profile-header__description">{description}</p>
+      {/if}
+    </div>
+    <div class="profile-header__side">
+      <div class="profile-header__follow-counts">
         <a
-          class="profile-header__bsky-link"
-          href="https://bsky.app/profile/{data.profile.handle}"
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label="View on Bluesky"
+          class="link link--quiet link--muted link--sm"
+          href={resolve('/profile/[user=actor]/followers', {
+            user: getPreferredActorIdentifier(data.profile),
+          })}
         >
-          <BlueskyIcon size={16} />
+          <strong>{data.followerCount ?? '-'}</strong> Followers
+        </a>
+        <a
+          class="link link--quiet link--muted link--sm"
+          href={resolve('/profile/[user=actor]/following', {
+            user: getPreferredActorIdentifier(data.profile),
+          })}
+        >
+          <strong>{data.followingCount ?? '-'}</strong> Following
         </a>
       </div>
+      {#if canFollow}
+        <button
+          type="button"
+          class={['btn', 'btn--sm', following ? 'btn--outline' : 'btn--primary']}
+          disabled={followLoading}
+          onclick={toggleFollow}
+        >
+          <Loading pending={followLoading} active={following ? 'Unfollowing…' : 'Following…'}>
+            {#snippet idle()}
+              {#if following}<UserMinusIcon size={14} /> Unfollow{:else}<UserPlusIcon size={14} /> Follow{/if}
+            {/snippet}
+          </Loading>
+        </button>
+      {/if}
     </div>
-    {#if description}
-      <p class="profile-header__description">{description}</p>
-    {/if}
     {#if isOwner}
       <button
         type="button"
-        class="btn btn--ghost btn--sm profile-header__edit-btn"
+        class="btn btn--ghost btn--icon profile-header__edit-btn"
+        aria-label="Edit profile"
         onclick={startEditing}
       >
-        <PencilIcon size={14} /> Edit Profile
+        <PencilIcon size={14} />
       </button>
+    {/if}
+    {#if followError}
+      <div class="profile-header__error"><Alert variant="error">{followError}</Alert></div>
     {/if}
   {/if}
 </section>
@@ -133,21 +197,25 @@
     --card-border: var(--border);
     position: relative;
     display: flex;
-    flex-direction: column;
-    gap: var(--space-3);
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: var(--space-4);
     background: var(--bg-subtle);
 
     .profile-header__edit-btn {
       position: absolute;
-      top: var(--space-3);
+      bottom: var(--space-3);
       right: var(--space-3);
     }
 
     .profile-header__info {
       display: grid;
       gap: var(--space-1);
+      flex: 1;
+      min-width: 12rem;
 
       .profile-header__name {
+        margin: 0;
         font-size: var(--text-2xl);
       }
     }
@@ -175,8 +243,38 @@
       margin-top: var(--space-1);
     }
 
+    .profile-header__side {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: var(--space-3);
+      flex-shrink: 0;
+    }
+
+    .profile-header__follow-counts {
+      display: flex;
+      gap: var(--space-3);
+
+      strong {
+        color: var(--foreground);
+      }
+    }
+
     .profile-edit-form {
       width: 100%;
+    }
+
+    .profile-header__error {
+      flex-basis: 100%;
+    }
+
+    @media (max-width: 639px) {
+      flex-direction: column;
+
+      .profile-header__side {
+        align-items: flex-start;
+        width: 100%;
+      }
     }
   }
 </style>

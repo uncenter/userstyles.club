@@ -36,7 +36,6 @@ CREATE TABLE "notifications" (
 --> statement-breakpoint
 CREATE TABLE "profiles" (
 	"did" text PRIMARY KEY NOT NULL,
-	"display_name" text,
 	"description" text,
 	"created_at" text NOT NULL,
 	"cid" text NOT NULL,
@@ -76,7 +75,7 @@ CREATE TABLE "userstyles" (
 	"search_vector" "tsvector" GENERATED ALWAYS AS (setweight(to_tsvector('english', coalesce(title, '')), 'A') ||
           setweight(to_tsvector('english', coalesce(description, '')), 'B')) STORED,
 	"moz_document_rules" jsonb,
-	"is_configurable" boolean,
+	"user_css_vars" integer,
 	"comment_count" integer DEFAULT 0 NOT NULL,
 	"rating_count" integer DEFAULT 0 NOT NULL,
 	"rating_sum" integer DEFAULT 0 NOT NULL,
@@ -89,7 +88,7 @@ CREATE INDEX "comments_did_idx" ON "comments" USING btree ("did");--> statement-
 CREATE INDEX "follows_did_idx" ON "follows" USING btree ("did","indexed_at" DESC NULLS LAST);--> statement-breakpoint
 CREATE INDEX "follows_subject_did_idx" ON "follows" USING btree ("subject_did","indexed_at" DESC NULLS LAST);--> statement-breakpoint
 CREATE INDEX "notifications_recipient_idx" ON "notifications" USING btree ("recipient_did","created_at");--> statement-breakpoint
-CREATE UNIQUE INDEX "notifications_record_uri_idx" ON "notifications" USING btree ("record_uri");--> statement-breakpoint
+CREATE UNIQUE INDEX "notifications_record_recipient_idx" ON "notifications" USING btree ("record_uri","recipient_did");--> statement-breakpoint
 CREATE INDEX "ratings_subject_did_rkey_idx" ON "ratings" USING btree ("subject_uri","did","rkey" DESC NULLS LAST);--> statement-breakpoint
 CREATE INDEX "ratings_did_idx" ON "ratings" USING btree ("did");--> statement-breakpoint
 CREATE INDEX "userstyles_did_idx" ON "userstyles" USING btree ("did");--> statement-breakpoint

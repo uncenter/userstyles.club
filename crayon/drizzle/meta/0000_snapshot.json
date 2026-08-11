@@ -1,5 +1,5 @@
 {
-  "id": "e9e5da7a-9273-47dd-8096-d621a632566e",
+  "id": "f39818b7-4bac-4d5b-b292-1373f8e1c993",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -308,11 +308,17 @@
           "method": "btree",
           "with": {}
         },
-        "notifications_record_uri_idx": {
-          "name": "notifications_record_uri_idx",
+        "notifications_record_recipient_idx": {
+          "name": "notifications_record_recipient_idx",
           "columns": [
             {
               "expression": "record_uri",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "recipient_did",
               "isExpression": false,
               "asc": true,
               "nulls": "last"
@@ -340,12 +346,6 @@
           "type": "text",
           "primaryKey": true,
           "notNull": true
-        },
-        "display_name": {
-          "name": "display_name",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
         },
         "description": {
           "name": "description",
@@ -613,9 +613,9 @@
           "primaryKey": false,
           "notNull": false
         },
-        "is_configurable": {
-          "name": "is_configurable",
-          "type": "boolean",
+        "user_css_vars": {
+          "name": "user_css_vars",
+          "type": "integer",
           "primaryKey": false,
           "notNull": false
         },

@@ -615,6 +615,9 @@ input[type='checkbox'] {
   }
 
   .form-input-group__btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     border: 2px solid var(--input-border);
     border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
     background: var(--bg-muted);

@@ -1,6 +1,17 @@
+import { untrack } from 'svelte';
 import { browser } from '$app/environment';
-import type { ActorIdentifier } from '@atcute/lexicons';
+import type { ActorIdentifier, CanonicalResourceUri, Did, Handle } from '@atcute/lexicons';
 import type { ProfileView } from './at';
+
+export type RecentlyVisitedStyle = {
+  uri: CanonicalResourceUri;
+  title: string;
+  authorDid: Did;
+  authorHandle: Handle | undefined;
+  visitedAt: string;
+};
+
+const MAX_RECENTLY_VISITED = 10;
 
 class UserPreferences<T extends Record<string, unknown>> {
   #values = $state<T>({} as T);
@@ -45,8 +56,34 @@ export const preferences = new UserPreferences({
   customAppviewUrl: '',
   customConstellationUrl: '',
   customSlingshotUrl: '',
+  // empty string means "never viewed".
+  lastViewedNotificationsAt: '',
+  recentlyVisitedStyles: [] as RecentlyVisitedStyle[],
 });
 
-export function getPreferredActorIdentifier(profile: ProfileView): ActorIdentifier {
-  return preferences.get('usePermanentUrls') ? profile.did : profile.handle;
+export function getPreferredActorIdentifier(
+  profile: Pick<ProfileView, 'did' | 'handle'>,
+): ActorIdentifier {
+  // Falls back to the DID regardless of preference when there's no handle to link with.
+  if (!profile.handle || preferences.get('usePermanentUrls')) return profile.did;
+  return profile.handle;
+}
+
+/** "@handle", or the raw DID if the actor has no resolved or verified handle. */
+export function formatActorLabel(profile: Pick<ProfileView, 'did' | 'handle'>): string {
+  return profile.handle ? `@${profile.handle}` : profile.did;
+}
+
+/** Records a style-page visit for the Dashboard's "Recents" list (LRU-capped, most recent first). */
+export function recordStyleVisit(entry: Omit<RecentlyVisitedStyle, 'visitedAt'>) {
+  untrack(() => {
+    const existing = preferences.get('recentlyVisitedStyles').filter((s) => s.uri !== entry.uri);
+    preferences.set(
+      'recentlyVisitedStyles',
+      [{ ...entry, visitedAt: new Date().toISOString() }, ...existing].slice(
+        0,
+        MAX_RECENTLY_VISITED,
+      ),
+    );
+  });
 }

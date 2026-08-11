@@ -1,0 +1,32 @@
+{
+  "defs": {
+    "main": {
+      "description": "Count the users an actor follows.",
+      "output": {
+        "encoding": "application/json",
+        "schema": {
+          "properties": {
+            "count": {
+              "type": "integer"
+            }
+          },
+          "required": ["count"],
+          "type": "object"
+        }
+      },
+      "parameters": {
+        "properties": {
+          "actor": {
+            "type": "string",
+            "format": "did"
+          }
+        },
+        "required": ["actor"],
+        "type": "params"
+      },
+      "type": "query"
+    }
+  },
+  "id": "club.userstyles.alpha.graph.countFollows",
+  "lexicon": 1
+}

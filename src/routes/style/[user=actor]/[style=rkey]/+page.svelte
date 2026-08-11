@@ -21,7 +21,7 @@
     type CommentThreadPatch,
     type RatingRecord,
   } from '$lib/at';
-  import { getPreferredActorIdentifier, preferences } from '$lib/preferences.svelte';
+  import { getPreferredActorIdentifier, preferences, recordStyleVisit } from '$lib/preferences.svelte';
 
   import { Loading, Alert, Dialog } from '$components/ui';
   import {
@@ -53,6 +53,15 @@
   let ratingSummary = $derived(proxify(data.feedback.ratingSummary));
   let myRating = $derived<RatingRecord | undefined>(user.isLoggedIn ? await getUserRatingForStyle(data.userstyle.uri, user.did) : undefined);
   let canRate = $derived(user.isLoggedIn && user.did !== data.profile.did);
+
+  $effect(() => {
+    recordStyleVisit({
+      uri: data.userstyle.uri,
+      title: data.userstyle.value.title,
+      authorDid: data.profile.did,
+      authorHandle: data.profile.handle,
+    });
+  });
 
   function applyRatingToSummary(previous: number | undefined, next: number) {
     const total = (ratingSummary.average ?? 0) * ratingSummary.count;

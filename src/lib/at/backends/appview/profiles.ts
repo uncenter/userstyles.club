@@ -5,14 +5,9 @@ import { getCrayonClient } from '../../client';
 import { CLUB_PROFILE_COLLECTION } from '../../settings';
 import type { ClubProfile } from '../../services/profiles';
 
-function toClubProfile(response: {
-  displayName?: string;
-  description?: string;
-  createdAt: string;
-}): ClubProfile {
+function toClubProfile(response: { description?: string; createdAt: string }): ClubProfile {
   return {
     $type: CLUB_PROFILE_COLLECTION,
-    displayName: response.displayName,
     description: response.description,
     createdAt: response.createdAt,
   };

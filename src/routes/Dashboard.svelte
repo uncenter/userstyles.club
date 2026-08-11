@@ -1,184 +1,63 @@
 <script lang="ts">
+  import type { Did } from '@atcute/lexicons';
   import { resolve } from '$app/paths';
-  import { parseCanonicalResourceUri, type CanonicalResourceUri } from '@atcute/lexicons/syntax';
+  import { parseCanonicalResourceUri } from '@atcute/lexicons/syntax';
 
+  import { type ProfileView, type FeedViewItem, user, getProfiles, getTimeline } from '$lib/at';
   import {
-    type ProfileView,
-    type CommentRecord,
-    type RatingRecord,
-    user,
-    listMyUserstyles,
-    listCommentsForStyle,
-    listRatingsForStyle,
-    listRecordsForRepo,
-    getUserstyle,
-    getProfile,
-    CLUB_COMMENT_COLLECTION,
-    CLUB_RATING_COLLECTION,
-  } from '$lib/at';
-  import { getPreferredActorIdentifier } from '$lib/preferences.svelte';
-  import { formatDateTime, formatDateTimeRelative } from '$lib/date';
+    getPreferredActorIdentifier,
+    formatActorLabel,
+    preferences,
+    type RecentlyVisitedStyle,
+  } from '$lib/preferences.svelte';
+  import { PaginatedList } from '$lib/pagination.svelte';
 
-  import { ActorHandle, StarRating } from '$components';
-  import { Alert, Spinner } from '$components/ui';
+  import { FeedItem } from '$components';
+  import { Alert, Loading, Spinner } from '$components/ui';
 
   import { ClockIcon, ActivityIcon } from '@lucide/svelte';
 
-  type UserstyleReference = { uri: CanonicalResourceUri; title: string };
+  let recentStyles = $derived(preferences.get('recentlyVisitedStyles'));
 
-  type ActivityEvent =
-    | {
-        kind: 'comment';
-        date: string;
-        style: UserstyleReference;
-        profile: ProfileView;
-        record: CommentRecord;
-      }
-    | {
-        kind: 'rating';
-        date: string;
-        style: UserstyleReference;
-        profile: ProfileView;
-        record: RatingRecord;
-      };
-
-  type ResolvedStyle = { style: UserstyleReference; profile: ProfileView };
-
-  function byDateDesc(a: { date: string }, b: { date: string }) {
-    return new Date(b.date).getTime() - new Date(a.date).getTime();
-  }
-
-  // Resolves each record to an ActivityEvent.
-  async function toEvents<T extends CommentRecord | RatingRecord>(
-    records: T[],
-    kind: ActivityEvent['kind'],
-    resolve: (record: T) => Promise<ResolvedStyle | undefined>,
-  ): Promise<ActivityEvent[]> {
-    const events = await Promise.all(
-      records.map(async (record) => {
-        const resolved = await resolve(record);
-        if (!resolved) return undefined;
-        return {
-          kind,
-          record,
-          date: record.value.updatedAt ?? record.value.createdAt,
-          ...resolved,
-        } as ActivityEvent;
-      }),
-    );
-    return events.filter((event): event is ActivityEvent => event !== undefined);
-  }
-
-  function isFromOther(record: CommentRecord | RatingRecord) {
-    return parseCanonicalResourceUri(record.uri).repo !== user.did;
-  }
-
-  const userstyles = listMyUserstyles();
-
-  async function loadReceivedActivity(): Promise<ActivityEvent[]> {
-    const styles = await userstyles;
-
-    const resolveCommenter =
-      (style: UserstyleReference) => async (record: CommentRecord | RatingRecord) => ({
-        style,
-        profile: await getProfile(parseCanonicalResourceUri(record.uri).repo),
-      });
-
-    const events = await Promise.all(
-      styles.flatMap((style) => {
-        const uri = style.uri as CanonicalResourceUri;
-        const ref: UserstyleReference = { uri, title: style.title };
-        return [
-          listCommentsForStyle(uri).then((records) =>
-            toEvents(records.filter(isFromOther), 'comment', resolveCommenter(ref)),
-          ),
-          listRatingsForStyle(uri).then((records) =>
-            toEvents(records.filter(isFromOther), 'rating', resolveCommenter(ref)),
-          ),
-        ];
-      }),
-    );
-
-    return events.flat().sort(byDateDesc);
-  }
-
-  const receivedActivity = loadReceivedActivity();
-
-  async function resolveOtherUsersStyle(
-    subjectUri: CanonicalResourceUri,
-  ): Promise<ResolvedStyle | undefined> {
-    const { repo, rkey } = parseCanonicalResourceUri(subjectUri);
-    if (repo === user.did) return undefined; // skip the user's own styles
-    try {
-      const [record, profile] = await Promise.all([getUserstyle(repo, rkey), getProfile(repo)]);
-      return { style: { uri: record.uri, title: record.value.title }, profile };
-    } catch {
-      return undefined; // the referenced style or its author may no longer exist
-    }
-  }
-
-  async function loadGivenActivity(): Promise<ActivityEvent[]> {
-    const [comments, ratings] = await Promise.all([
-      listRecordsForRepo({ repo: user.did!, collection: CLUB_COMMENT_COLLECTION }).then(
-        ({ records }) => records,
-      ),
-      listRecordsForRepo({ repo: user.did!, collection: CLUB_RATING_COLLECTION }).then(
-        ({ records }) => records,
-      ),
-    ]);
-
-    const [commentEvents, ratingEvents] = await Promise.all([
-      toEvents(comments, 'comment', (record) =>
-        resolveOtherUsersStyle(record.value.subject.uri as CanonicalResourceUri),
-      ),
-      toEvents(ratings, 'rating', (record) =>
-        resolveOtherUsersStyle(record.value.subject.uri as CanonicalResourceUri),
-      ),
-    ]);
-
-    return [...commentEvents, ...ratingEvents].sort(byDateDesc);
-  }
-
-  const givenActivity = loadGivenActivity();
-
-  type StyleShortcut = { style: UserstyleReference; profile: ProfileView; date: string };
-
-  async function loadRecentStyles(): Promise<StyleShortcut[]> {
-    const [ownStyles, given] = await Promise.all([userstyles, givenActivity]);
-
-    const own: StyleShortcut[] = ownStyles.map((style) => ({
-      style: { uri: style.uri as CanonicalResourceUri, title: style.title },
-      profile: user.profile!,
-      date: style.updatedAt ?? style.createdAt,
-    }));
-
-    const others = new Map<string, StyleShortcut>();
-    for (const event of given) {
-      // `given` is already sorted by date descending, so the first event seen per style is the most recent.
-      if (!others.has(event.style.uri)) {
-        others.set(event.style.uri, {
-          style: event.style,
-          profile: event.profile,
-          date: event.date,
-        });
-      }
-    }
-
-    return [...own, ...others.values()].sort(byDateDesc);
-  }
-
-  const recentStyles = loadRecentStyles();
-
-  function getLinkToStyle(styleUri: CanonicalResourceUri, profile: ProfileView) {
-    const { rkey } = parseCanonicalResourceUri(styleUri);
+  function getLinkToStyle(entry: RecentlyVisitedStyle) {
+    const { rkey } = parseCanonicalResourceUri(entry.uri);
     return resolve('/style/[user=actor]/[style=rkey]', {
-      user: getPreferredActorIdentifier(profile),
+      user: getPreferredActorIdentifier({ did: entry.authorDid, handle: entry.authorHandle }),
       style: rkey,
     });
   }
 
-  function getLinkToUserOwnStyle(styleUri: CanonicalResourceUri) {
-    return getLinkToStyle(styleUri, user.profile!);
+  type FeedScope = 'global' | 'following';
+  let feedScope = $state<FeedScope>('following');
+
+  const feed = new PaginatedList<FeedViewItem>();
+  let feedProfiles = $state(new Map<Did, ProfileView>());
+
+  function authorOfFeedItem(item: FeedViewItem): Did | undefined {
+    return item.userstyle?.author ?? item.comment?.author ?? item.rating?.author;
+  }
+
+  function keyOfFeedItem(item: FeedViewItem, index: number): string {
+    return item.userstyle?.uri ?? item.comment?.uri ?? item.rating?.uri ?? String(index);
+  }
+
+  async function fetchFeedPage(cursor?: string) {
+    const page = await getTimeline({
+      actor: feedScope === 'following' ? user.did! : undefined,
+      cursor,
+    });
+    const dids = [...new Set(page.feed.map(authorOfFeedItem).filter((did): did is Did => !!did))];
+    const resolved = await getProfiles(dids);
+    feedProfiles = new Map([...feedProfiles, ...resolved]);
+    return { items: page.feed, cursor: page.cursor };
+  }
+
+  $effect(() => {
+    feed.load(fetchFeedPage, { reset: true });
+  });
+
+  function loadMoreFeed() {
+    feed.load(fetchFeedPage);
   }
 </script>
 
@@ -190,74 +69,74 @@
   <aside class="dashboard-sidebar">
     <div class="dashboard-sidebar__section">
       <h2 class="section-heading"><ClockIcon size={16} /> Recents</h2>
-      {#await recentStyles}
-        {@render loading()}
-      {:then recentStyles}
-        {#if recentStyles.length === 0}
-          <p class="text-muted no-content">No recent activity yet.</p>
-        {:else}
-          {@const recents = recentStyles.slice(0, 6)}
-          <ul class="style-list list-reset accent-cycle" role="list">
-            {#each recents as { style, profile } (style.uri)}
-              <li class="style-list__item">
-                <a href={getLinkToStyle(style.uri, profile)} class="style-shortcut">
-                  <span class="style-shortcut__dot"></span>
-                  <span class="style-shortcut__title truncate-1">{style.title}</span>
-                  <span class="style-shortcut__author">@{profile.handle}</span>
-                </a>
-              </li>
-            {/each}
-          </ul>
-        {/if}
-      {:catch error}
-        <Alert variant="error">{error}</Alert>
-      {/await}
-    </div>
-  </aside>
-
-  <div class="dashboard-main">
-    <h2 class="section-heading"><ActivityIcon size={16} /> Timeline</h2>
-    {#await receivedActivity}
-      {@render loading()}
-    {:then receivedActivity}
-      {#if receivedActivity.length === 0}
-        <p class="text-muted no-content">No interactions on your userstyles yet.</p>
+      {#if recentStyles.length === 0}
+        <p class="text-muted no-content">No recently visited styles yet.</p>
       {:else}
-        {@const recents = receivedActivity.slice(0, 5)}
-        <ul class="activity-list list-reset" role="list">
-          {#each recents as event (event.record.uri)}
-            <li class="activity-list__item">
-              <div class="activity-list__item-header">
-                <ActorHandle profile={event.profile} style="small" />
-                <span class="activity-list__item-on"
-                  >{event.kind === 'comment' ? 'commented on' : 'rated'}
-                  <a
-                    href={getLinkToUserOwnStyle(event.style.uri)}
-                    class="link link--quiet activity-list__style-link">{event.style.title}</a
-                  ></span
+        {@const recents = recentStyles.slice(0, 6)}
+        <ul class="style-list list-reset accent-cycle" role="list">
+          {#each recents as entry (entry.uri)}
+            <li class="style-list__item">
+              <a href={getLinkToStyle(entry)} class="style-shortcut">
+                <span class="style-shortcut__dot"></span>
+                <span class="style-shortcut__title truncate-1">{entry.title}</span>
+                <span class="style-shortcut__author"
+                  >{formatActorLabel({ did: entry.authorDid, handle: entry.authorHandle })}</span
                 >
-                <div class="activity-list__item-end">
-                  <time
-                    class="activity-list__date"
-                    datetime={event.date}
-                    title={formatDateTime(event.date)}>{formatDateTimeRelative(event.date)}</time
-                  >
-                </div>
-              </div>
-              {#if event.kind === 'comment'}
-                <p class="activity-list__content truncate-2">{event.record.value.comment}</p>
-              {:else}
-                <div class="activity-list__content">
-                  <StarRating value={event.record.value.rating} />
-                </div>
-              {/if}
+              </a>
             </li>
           {/each}
         </ul>
       {/if}
-    {:catch error}
-      <Alert variant="error">{error}</Alert>
-    {/await}
+    </div>
+  </aside>
+
+  <div class="dashboard-main">
+    <div class="dashboard-main__header">
+      <h2 class="section-heading"><ActivityIcon size={16} /> Feed</h2>
+      <div class="feed-scope" role="group" aria-label="Feed scope">
+        <button
+          type="button"
+          class={['btn', 'btn--sm', feedScope === 'following' ? 'btn--secondary' : 'btn--ghost']}
+          onclick={() => (feedScope = 'following')}>Following</button
+        >
+        <button
+          type="button"
+          class={['btn', 'btn--sm', feedScope === 'global' ? 'btn--secondary' : 'btn--ghost']}
+          onclick={() => (feedScope = 'global')}>Global</button
+        >
+      </div>
+    </div>
+    {#if feed.loading}
+      {@render loading()}
+    {:else if feed.error}
+      <Alert variant="error">{feed.error}</Alert>
+    {:else if feed.items.length === 0}
+      <p class="text-muted no-content">
+        {feedScope === 'following' ? 'Nobody you follow has been active yet.' : 'Nothing here yet.'}
+      </p>
+    {:else}
+      <ul class="feed-list list-reset" role="list">
+        {#each feed.items as item, i (keyOfFeedItem(item, i))}
+          {@const did = authorOfFeedItem(item)}
+          {@const author = did ? feedProfiles.get(did) : undefined}
+          {#if author}
+            <FeedItem {item} {author} />
+          {/if}
+        {/each}
+      </ul>
+      {#if feed.hasMore}
+        <div class="feed-list__load-more">
+          <button
+            type="button"
+            class="btn btn--outline"
+            disabled={feed.loadingMore}
+            onclick={loadMoreFeed}
+          >
+            <Loading pending={feed.loadingMore} idle="Load more" active="Loading…" />
+          </button>
+        </div>
+      {/if}
+    {/if}
   </div>
 </div>
 
@@ -338,47 +217,33 @@
     padding: var(--space-2) 0;
   }
 
-  .activity-list {
+  .dashboard-main__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+    flex-wrap: wrap;
+    margin-bottom: var(--space-4);
+
+    .section-heading {
+      margin-bottom: 0;
+    }
+  }
+
+  .feed-scope {
+    display: flex;
+    gap: var(--space-1);
+  }
+
+  .feed-list {
     display: flex;
     flex-direction: column;
     gap: var(--space-3);
+  }
 
-    .activity-list__item {
-      padding: var(--space-4);
-      background: var(--card-bg);
-      border-radius: var(--radius);
-
-      .activity-list__item-header {
-        display: flex;
-        align-items: center;
-        gap: var(--space-1);
-        flex-wrap: wrap;
-        margin-bottom: var(--space-2);
-
-        .activity-list__item-on {
-          color: var(--fg-muted);
-        }
-
-        .activity-list__style-link {
-          font-weight: 600;
-        }
-
-        .activity-list__item-end {
-          margin-left: auto;
-          display: flex;
-          flex-direction: row;
-          gap: var(--space-2);
-        }
-
-        .activity-list__date {
-          font-size: var(--text-sm);
-          color: var(--fg-muted);
-        }
-      }
-
-      .activity-list__content {
-        line-height: 1.5;
-      }
-    }
+  .feed-list__load-more {
+    display: flex;
+    justify-content: center;
+    margin-top: var(--space-4);
   }
 </style>

@@ -70,14 +70,3 @@ Crayon listens at http://127.0.0.1:8080 by default.
 curl http://127.0.0.1:8080/xrpc/club.userstyles.alpha.countUserstyles
 curl 'http://127.0.0.1:8080/xrpc/club.userstyles.alpha.listUserstyles?limit=5'
 ```
-
-## Todo
-
-### Features (new/unblocked)
-
-- [ ] Following: follow/unfollow buttons, counts, indicators + followers/following lists (`graph.listFollows`/`listFollowers`)
-- [ ] Real activity feed via `feed.getTimeline` (global or following-scoped)
-- [ ] Search page and/or search bar (header?) via `feed.searchUserstyles` (query, `top`/`latest`/`popular` sort, filters, cursor)
-- [ ] Notifications via `notification.listNotifications`/`updateNotificationsSeen` (unauthenticated, add page + header notification tray and unread indicator)
-- [ ] Surface `mozDocumentFunctions`/`isConfigurable` on listings (domains a style applies to, a "configurable" badge)
-- [ ] `/explore`: pagination (cursors), `popular` sort/browsing.

@@ -15,6 +15,10 @@ import {
   ClubUserstylesAlphaFeedSearchUserstyles,
   ClubUserstylesAlphaGetUserstyle,
   ClubUserstylesAlphaGetUserstyleSourceCode,
+  ClubUserstylesAlphaGraphCountFollowers,
+  ClubUserstylesAlphaGraphCountFollows,
+  ClubUserstylesAlphaGraphGetRelationship,
+  ClubUserstylesAlphaGraphGetRelationships,
   ClubUserstylesAlphaGraphListFollowers,
   ClubUserstylesAlphaGraphListFollows,
   ClubUserstylesAlphaListUserstyles,
@@ -24,12 +28,16 @@ import {
   type CommentRow,
   type CommentThreadRow,
   countComments,
+  countFollowers,
+  countFollows,
   countUserstyles,
   type FollowRow,
   getCommentThreads,
   getCurrentRatingsByAuthor,
   getProfile,
   getProfiles,
+  getRelationship,
+  getRelationships,
   getTimeline,
   getUserstyle,
   listComments,
@@ -41,6 +49,7 @@ import {
   type NotificationRow,
   type ProfileRow,
   type RatingRow,
+  type RelationshipRow,
   getRatingSummary,
   searchUserstyles,
   type SubjectAuthorFilter,
@@ -67,7 +76,7 @@ function toUserstyleView(row: UserstyleRow) {
     updatedAt: row.updatedAt ?? undefined,
     indexedAt: new Date(row.indexedAt).toISOString(),
     mozDocumentFunctions: row.mozDocumentFunctions ?? undefined,
-    isConfigurable: row.isConfigurable ?? undefined,
+    userCssVars: row.userCssVars ?? undefined,
     commentCount: row.commentCount,
     ratingCount: row.ratingCount,
     ratingAverage: row.ratingCount > 0 ? (row.ratingSum / row.ratingCount).toFixed(2) : undefined,
@@ -114,7 +123,10 @@ function buildCursor<T>(rows: T[], limit: number, keyFn: (row: T) => string): st
   return rows.length === limit && last ? keyFn(last) : undefined;
 }
 
-function buildSubjectAuthorFilter(params: { subject?: string; author?: string }): SubjectAuthorFilter {
+function buildSubjectAuthorFilter(params: {
+  subject?: string;
+  author?: string;
+}): SubjectAuthorFilter {
   return { subjectUri: params.subject, author: params.author };
 }
 
@@ -135,7 +147,6 @@ async function getUserstyleOrThrow(actor: string, rkey: string): Promise<Usersty
 function toProfileView(row: ProfileRow) {
   return {
     did: row.did as Did,
-    displayName: row.displayName ?? undefined,
     description: row.description ?? undefined,
     createdAt: row.createdAt,
     indexedAt: new Date(row.indexedAt).toISOString(),
@@ -189,6 +200,14 @@ function toCommentThreadView(row: CommentThreadRow, ratingsByAuthor?: Map<string
 
 function toFollowView(row: FollowRow) {
   return { did: row.did as Did, createdAt: row.createdAt };
+}
+
+function toRelationshipView(other: Did, row: RelationshipRow) {
+  return {
+    did: other,
+    following: (row.following as ResourceUri) ?? undefined,
+    followedBy: (row.followedBy as ResourceUri) ?? undefined,
+  };
 }
 
 function toNotificationView(row: NotificationRow) {
@@ -283,6 +302,38 @@ router.addQuery(ClubUserstylesAlphaGraphListFollowers, {
     const nextCursor = buildCursor(rows, params.limit, (r) => `${r.indexedAt}_${r.uri}`);
 
     return json({ cursor: nextCursor, followers: rows.map(toFollowView) });
+  },
+});
+
+router.addQuery(ClubUserstylesAlphaGraphCountFollows, {
+  async handler({ params }) {
+    const count = await countFollows(params.actor);
+    return json({ count });
+  },
+});
+
+router.addQuery(ClubUserstylesAlphaGraphCountFollowers, {
+  async handler({ params }) {
+    const count = await countFollowers(params.actor);
+    return json({ count });
+  },
+});
+
+router.addQuery(ClubUserstylesAlphaGraphGetRelationship, {
+  async handler({ params }) {
+    const relationship = await getRelationship(params.actor, params.other);
+    return json(toRelationshipView(params.other as Did, relationship));
+  },
+});
+
+router.addQuery(ClubUserstylesAlphaGraphGetRelationships, {
+  async handler({ params }) {
+    const relationships = await getRelationships(params.actor, [...params.others]);
+    return json({
+      relationships: [...relationships].map(([other, row]) =>
+        toRelationshipView(other as Did, row),
+      ),
+    });
   },
 });
 

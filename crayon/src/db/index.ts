@@ -25,7 +25,11 @@ export type UserstyleRow = Pick<typeof userstyles.$inferSelect, keyof typeof use
 const { cid: _profileCid, ...profileColumns } = getTableColumns(profiles);
 export type ProfileRow = Pick<typeof profiles.$inferSelect, keyof typeof profileColumns>;
 
-const { rkey: _ratingRkey, subjectCid: _ratingSubjectCid, ...ratingColumns } = getTableColumns(ratings);
+const {
+  rkey: _ratingRkey,
+  subjectCid: _ratingSubjectCid,
+  ...ratingColumns
+} = getTableColumns(ratings);
 export type RatingRow = Pick<typeof ratings.$inferSelect, keyof typeof ratingColumns>;
 
 const {
@@ -37,8 +41,12 @@ const {
 } = getTableColumns(comments);
 export type CommentRow = Pick<typeof comments.$inferSelect, keyof typeof commentColumns>;
 
-const { recipientDid: _notificationRecipientDid, ...notificationColumns } = getTableColumns(notifications);
-export type NotificationRow = Pick<typeof notifications.$inferSelect, keyof typeof notificationColumns>;
+const { recipientDid: _notificationRecipientDid, ...notificationColumns } =
+  getTableColumns(notifications);
+export type NotificationRow = Pick<
+  typeof notifications.$inferSelect,
+  keyof typeof notificationColumns
+>;
 
 export interface FollowRow {
   uri: string;
@@ -54,10 +62,10 @@ export interface SubjectAuthorFilter {
 }
 
 /** Builds an object mapping each of `columns` to its own `excluded.<db_column_name>`, for usage with `onConflictDoUpdate`. */
-function conflictUpdateColumns<TTable extends PgTable, K extends keyof TTable['_']['columns'] & string>(
-  table: TTable,
-  columns: readonly K[],
-): Record<K, SQL> {
+function conflictUpdateColumns<
+  TTable extends PgTable,
+  K extends keyof TTable['_']['columns'] & string,
+>(table: TTable, columns: readonly K[]): Record<K, SQL> {
   const tableColumns = getTableColumns(table);
   return Object.fromEntries(
     columns.map((column) => [column, sql.raw(`excluded.${tableColumns[column].name}`)]),
@@ -83,7 +91,7 @@ export async function upsertUserstyle(r: NewUserstyle): Promise<void> {
         'updatedAt',
         'indexedAt',
         'mozDocumentFunctions',
-        'isConfigurable',
+        'userCssVars',
       ]),
     });
 }
@@ -98,7 +106,7 @@ export async function upsertProfile(r: NewProfile): Promise<void> {
     .values(r)
     .onConflictDoUpdate({
       target: profiles.did,
-      set: conflictUpdateColumns(profiles, ['cid', 'displayName', 'description', 'indexedAt']),
+      set: conflictUpdateColumns(profiles, ['cid', 'description', 'indexedAt']),
     });
 }
 
@@ -146,7 +154,10 @@ export async function deleteFollow(uri: string): Promise<void> {
 }
 
 export async function createNotification(n: NewNotification): Promise<void> {
-  await db.insert(notifications).values(n).onConflictDoNothing({ target: notifications.recordUri });
+  await db
+    .insert(notifications)
+    .values(n)
+    .onConflictDoNothing({ target: [notifications.recordUri, notifications.recipientDid] });
 }
 
 export async function upsertComment(r: NewComment): Promise<boolean> {
@@ -279,7 +290,10 @@ export async function getRatingSummary(
     .as('current');
 
   const [row] = await db
-    .select({ count: sql<number>`count(*)::int`, average: sql<number | null>`avg(${current.rating})::float` })
+    .select({
+      count: sql<number>`count(*)::int`,
+      average: sql<number | null>`avg(${current.rating})::float`,
+    })
     .from(current);
   return { count: row?.count ?? 0, average: row?.average ?? null };
 }
@@ -331,7 +345,10 @@ export async function countComments(filter: SubjectAuthorFilter): Promise<number
 }
 
 const commentThreadColumns = { ...commentColumns, deletedAt: commentDeletedAt };
-export type CommentThreadRow = Pick<typeof comments.$inferSelect, keyof typeof commentThreadColumns>;
+export type CommentThreadRow = Pick<
+  typeof comments.$inferSelect,
+  keyof typeof commentThreadColumns
+>;
 
 /** Every comment on subject userstyle uri, flattened across every top-level thread, ordered so a parent always precedes its children. */
 export async function getCommentThreads(subjectUri: string): Promise<CommentThreadRow[]> {
@@ -360,6 +377,23 @@ export async function getCommentThreads(subjectUri: string): Promise<CommentThre
   };
   for (const root of roots) visit(root);
   return thread;
+}
+
+/** DIDs of everyone who authored a comment strictly above `parentUri` in its reply chain. */
+export async function getThreadAncestorAuthors(parentUri: string): Promise<string[]> {
+  const rows = Array.from(
+    await db.execute(sql`
+      WITH RECURSIVE ancestors AS (
+        SELECT did, parent_uri AS "parentUri", 0 AS depth FROM comments WHERE uri = ${parentUri}
+        UNION ALL
+        SELECT c.did, c.parent_uri AS "parentUri", a.depth + 1 AS depth
+        FROM comments c
+        JOIN ancestors a ON c.uri = a."parentUri"
+      )
+      SELECT DISTINCT did FROM ancestors WHERE depth > 0
+    `),
+  ) as unknown as { did: string }[];
+  return rows.map((r) => r.did);
 }
 
 const followingColumns = {
@@ -415,6 +449,78 @@ export async function listFollowers(
     .limit(limit);
 }
 
+/** Number of accounts `actor` follows. */
+export async function countFollows(actor: string): Promise<number> {
+  const [row] = await db
+    .select({ count: sql<number>`count(*)::int` })
+    .from(follows)
+    .where(eq(follows.did, actor));
+  return row?.count ?? 0;
+}
+
+/** Number of accounts that follow `actor`. */
+export async function countFollowers(actor: string): Promise<number> {
+  const [row] = await db
+    .select({ count: sql<number>`count(*)::int` })
+    .from(follows)
+    .where(eq(follows.subjectDid, actor));
+  return row?.count ?? 0;
+}
+
+export interface RelationshipRow {
+  following?: string;
+  followedBy?: string;
+}
+
+/** Whether `actor` follows `other`, and whether `other` follows `actor` back. */
+export async function getRelationship(actor: string, other: string): Promise<RelationshipRow> {
+  const [[followingRow], [followedByRow]] = await Promise.all([
+    db
+      .select({ uri: follows.uri })
+      .from(follows)
+      .where(and(eq(follows.did, actor), eq(follows.subjectDid, other)))
+      .orderBy(desc(follows.indexedAt))
+      .limit(1),
+    db
+      .select({ uri: follows.uri })
+      .from(follows)
+      .where(and(eq(follows.did, other), eq(follows.subjectDid, actor)))
+      .orderBy(desc(follows.indexedAt))
+      .limit(1),
+  ]);
+  return { following: followingRow?.uri, followedBy: followedByRow?.uri };
+}
+
+/** Batch variant of {@link getRelationship}: `actor`'s relationship with each of `others`. */
+export async function getRelationships(
+  actor: string,
+  others: string[],
+): Promise<Map<string, RelationshipRow>> {
+  const result = new Map<string, RelationshipRow>(others.map((other) => [other, {}]));
+  if (others.length === 0) return result;
+
+  const [followingRows, followedByRows] = await Promise.all([
+    db
+      .selectDistinctOn([follows.subjectDid], { subjectDid: follows.subjectDid, uri: follows.uri })
+      .from(follows)
+      .where(and(eq(follows.did, actor), inArray(follows.subjectDid, others)))
+      .orderBy(follows.subjectDid, desc(follows.indexedAt)),
+    db
+      .selectDistinctOn([follows.did], { did: follows.did, uri: follows.uri })
+      .from(follows)
+      .where(and(eq(follows.subjectDid, actor), inArray(follows.did, others)))
+      .orderBy(follows.did, desc(follows.indexedAt)),
+  ]);
+
+  for (const row of followingRows) {
+    result.set(row.subjectDid, { ...result.get(row.subjectDid), following: row.uri });
+  }
+  for (const row of followedByRows) {
+    result.set(row.did, { ...result.get(row.did), followedBy: row.uri });
+  }
+  return result;
+}
+
 export interface SearchUserstylesParams {
   query?: string;
   sort: 'top' | 'latest' | 'popular';
@@ -436,10 +542,14 @@ function likePattern(value: string): string {
 /** `cursor: [sortKey, rowid]` of the last row from the previous page, exclusive.
  * `sortKey`'s meaning depends on `sort` (and, for "top", on whether `query` is set).
  * A cursor from one combination isn't meaningful under a different one. */
-export async function searchUserstyles(params: SearchUserstylesParams): Promise<SearchUserstyleRow[]> {
+export async function searchUserstyles(
+  params: SearchUserstylesParams,
+): Promise<SearchUserstyleRow[]> {
   const conditions = [];
   if (params.query) {
-    conditions.push(sql`${userstyles.searchVector} @@ websearch_to_tsquery('english', ${params.query})`);
+    conditions.push(
+      sql`${userstyles.searchVector} @@ websearch_to_tsquery('english', ${params.query})`,
+    );
   }
   if (params.author) conditions.push(eq(userstyles.did, params.author));
   if (params.since) {
@@ -526,7 +636,10 @@ export async function getTimeline(
 
   const [userstyleRows, commentRows, ratingRows] = await Promise.all([
     urisByType.userstyle.length
-      ? db.select(userstyleColumns).from(userstyles).where(inArray(userstyles.uri, urisByType.userstyle))
+      ? db
+          .select(userstyleColumns)
+          .from(userstyles)
+          .where(inArray(userstyles.uri, urisByType.userstyle))
       : [],
     urisByType.comment.length
       ? db.select(commentColumns).from(comments).where(inArray(comments.uri, urisByType.comment))

@@ -21,7 +21,7 @@ function blobRefFromCid(cid: string, mimeType: string): BlobRef {
   return { $type: 'blob', mimeType, ref: { $link: cid }, size: 0 };
 }
 
-function toUserstyleView(view: ClubUserstylesAlphaDefs.UserstyleView): UserstyleView {
+export function toUserstyleView(view: ClubUserstylesAlphaDefs.UserstyleView): UserstyleView {
   return {
     ...view,
     ratingAverage: view.ratingAverage !== undefined ? Number(view.ratingAverage) : undefined,
@@ -82,8 +82,16 @@ export async function listAllUserstylesFromAppview(): Promise<UserstyleView[]> {
 export async function listUserstylesFromAppview(repo: ActorIdentifier): Promise<UserstyleView[]> {
   const actor = await resolveToDid(repo);
   const client = getCrayonClient();
-  const response = await ok(
-    client.get('club.userstyles.alpha.listUserstyles', { params: { actor, limit: 100 } }),
-  );
-  return response.userstyles.map(toUserstyleView);
+
+  const userstyles: UserstyleView[] = [];
+  let cursor: string | undefined;
+  do {
+    const response = await ok(
+      client.get('club.userstyles.alpha.listUserstyles', { params: { actor, limit: 100, cursor } }),
+    );
+    userstyles.push(...response.userstyles.map(toUserstyleView));
+    cursor = response.cursor;
+  } while (cursor);
+
+  return userstyles;
 }

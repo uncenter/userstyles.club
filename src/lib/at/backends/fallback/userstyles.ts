@@ -54,16 +54,23 @@ export async function listAllUserstylesFromRelay(): Promise<UserstyleView[]> {
 }
 
 export async function listUserstylesFromPds(repo: ActorIdentifier): Promise<UserstyleView[]> {
-  const response = await listRecordsForRepo({
-    repo,
-    collection: CLUB_USERSTYLE_COLLECTION,
-    limit: 50,
-  });
+  const records: UserstyleRecord[] = [];
+  let cursor: string | undefined;
+  do {
+    const response = await listRecordsForRepo({
+      repo,
+      collection: CLUB_USERSTYLE_COLLECTION,
+      limit: 100,
+      cursor,
+    });
+    records.push(
+      ...response.records.filter((record): record is UserstyleRecord =>
+        is(ClubUserstylesAlphaUserstyle.mainSchema, record.value),
+      ),
+    );
+    cursor = response.cursor;
+  } while (cursor);
 
-  const records = response.records
-    .filter((record): record is UserstyleRecord =>
-      is(ClubUserstylesAlphaUserstyle.mainSchema, record.value),
-    )
-    .sort((a, b) => b.value.createdAt.localeCompare(a.value.createdAt));
+  records.sort((a, b) => b.value.createdAt.localeCompare(a.value.createdAt));
   return await Promise.all(records.map(userstyleRecordToView));
 }

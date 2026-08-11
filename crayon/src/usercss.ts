@@ -50,7 +50,7 @@ function aggregateMozDocumentRules(sections: ParseResult['sections']): MozDocume
 
 export interface UsercssMetadata {
   mozDocumentFunctions: MozDocumentFunction[];
-  isConfigurable: boolean;
+  userCssVars: number;
 }
 
 export async function deriveUsercssMetadata(
@@ -62,7 +62,7 @@ export async function deriveUsercssMetadata(
     const { metadata, sections } = parse(source);
     return {
       mozDocumentFunctions: aggregateMozDocumentRules(sections),
-      isConfigurable: (metadata?.vars.length ?? 0) > 0,
+      userCssVars: metadata?.vars.length ?? 0,
     };
   } catch (err) {
     console.warn(`failed to derive usercss metadata for ${did}`, err);

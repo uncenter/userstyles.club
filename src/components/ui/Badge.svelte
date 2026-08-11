@@ -17,18 +17,18 @@
   .badge {
     display: inline-flex;
     align-items: center;
-    padding: 0.2rem var(--space-2);
+    gap: 0.25rem;
+    padding: 0.15rem var(--space-2);
     font-size: var(--text-xs);
-    font-weight: 700;
+    font-weight: 600;
     line-height: 1.4;
     white-space: nowrap;
     border-radius: var(--radius-pill);
-    border: 1.5px solid transparent;
+    border: 1px solid transparent;
 
     &.badge--secondary {
-      background: var(--bg-faint);
+      background: var(--bg-subtle);
       color: var(--fg-muted);
-      border-color: var(--border);
     }
     &.badge--success {
       background: var(--success-bg);

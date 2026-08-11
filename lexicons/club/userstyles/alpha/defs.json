@@ -77,8 +77,8 @@
           },
           "type": "array"
         },
-        "isConfigurable": {
-          "type": "boolean"
+        "userCssVars": {
+          "type": "integer"
         },
         "commentCount": {
           "type": "integer"
@@ -108,11 +108,6 @@
         "did": {
           "type": "string",
           "format": "did"
-        },
-        "displayName": {
-          "type": "string",
-          "maxGraphemes": 64,
-          "maxLength": 640
         },
         "description": {
           "type": "string",
@@ -294,6 +289,24 @@
       "required": ["did", "createdAt"],
       "type": "object"
     },
+    "relationshipView": {
+      "properties": {
+        "did": {
+          "type": "string",
+          "format": "did"
+        },
+        "following": {
+          "type": "string",
+          "format": "at-uri"
+        },
+        "followedBy": {
+          "type": "string",
+          "format": "at-uri"
+        }
+      },
+      "required": ["did"],
+      "type": "object"
+    },
     "feedViewItem": {
       "properties": {
         "type": {
@@ -320,7 +333,7 @@
       "properties": {
         "reason": {
           "type": "string",
-          "enum": ["comment", "reply", "rating", "follow"]
+          "enum": ["comment", "reply", "thread", "rating", "follow"]
         },
         "subjectUri": {
           "type": "string",

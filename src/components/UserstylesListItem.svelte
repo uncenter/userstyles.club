@@ -6,11 +6,15 @@
 
   import StarRatingAverage from './StarRatingAverage.svelte';
   import ActorHandle from './ActorHandle.svelte';
+  import { Badge } from './ui';
 
-  import { CalendarIcon } from '@lucide/svelte';
+  import { CalendarIcon, SlidersHorizontalIcon } from '@lucide/svelte';
 
   import { formatDate } from '$lib/date';
+  import { extractDomains } from '$lib/domains';
   import { getPreferredActorIdentifier } from '$lib/preferences.svelte';
+
+  const MAX_DOMAIN_BADGES = 3;
 
   interface Props {
     userstyle: UserstyleView;
@@ -20,6 +24,14 @@
   let { userstyle, author }: Props = $props();
 
   let uri = $derived.by(() => parseCanonicalResourceUri(userstyle.uri));
+  let domains = $derived(extractDomains(userstyle.mozDocumentFunctions ?? []));
+  let userCssVarsLabel = $derived(
+    userstyle.userCssVars && userstyle.userCssVars > 0
+      ? userstyle.userCssVars > 9
+        ? '9+'
+        : String(userstyle.userCssVars)
+      : undefined,
+  );
 </script>
 
 <article class="userstyle-card">
@@ -45,14 +57,38 @@
       <ActorHandle profile={author} style="minimal" />
     </div>
     <p class="userstyle-card__description truncate-1">{userstyle.description ?? ''}</p>
+    {#if domains.length > 0}
+      <div class="userstyle-card__tags">
+        {#each domains.slice(0, MAX_DOMAIN_BADGES) as domain}
+          <Badge>{domain}</Badge>
+        {/each}
+        {#if domains.length > MAX_DOMAIN_BADGES}
+          <span class="userstyle-card__more">and {domains.length - MAX_DOMAIN_BADGES} more</span>
+        {/if}
+      </div>
+    {/if}
     <footer class="userstyle-card__meta">
       <span class="userstyle-card__meta-item">
         <CalendarIcon size={12} />
         {formatDate(userstyle.updatedAt ?? userstyle.createdAt)}
       </span>
+      {#if userCssVarsLabel}
+        <span
+          class="userstyle-card__meta-item"
+          title="{userstyle.userCssVars} configurable option{userstyle.userCssVars === 1
+            ? ''
+            : 's'}"
+        >
+          <SlidersHorizontalIcon size={12} />
+          {userCssVarsLabel}
+        </span>
+      {/if}
       {#if userstyle.ratingAverage !== undefined}
         <span class="userstyle-card__meta-item userstyle-card__meta-item--rating"
-          ><StarRatingAverage average={userstyle.ratingAverage} count={userstyle.ratingCount} /></span
+          ><StarRatingAverage
+            average={userstyle.ratingAverage}
+            count={userstyle.ratingCount}
+          /></span
         >
       {:else}
         <span
@@ -110,8 +146,12 @@
         margin: 0;
         line-height: 1.2;
 
-        a:not(:hover) {
-          text-decoration: none;
+        a {
+          color: var(--fg);
+
+          &:not(:hover) {
+            text-decoration: none;
+          }
         }
       }
 
@@ -121,6 +161,19 @@
         line-height: 1.4;
         min-height: 1.4em;
         margin: 0;
+      }
+
+      .userstyle-card__tags {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: var(--space-2);
+      }
+
+      .userstyle-card__more {
+        font-size: var(--text-xs);
+        color: var(--fg-muted);
+        font-style: italic;
       }
 
       .userstyle-card__meta {

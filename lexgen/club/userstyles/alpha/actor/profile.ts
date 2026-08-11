@@ -9,7 +9,6 @@ export default document({
       record: object({
         properties: {
           description: string({ maxGraphemes: 256, maxLength: 2560 }),
-          displayName: string({ maxGraphemes: 64, maxLength: 640 }),
           createdAt: required(string({ format: 'datetime' })),
         },
       }),
