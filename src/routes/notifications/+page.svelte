@@ -95,8 +95,8 @@
           <span class="notification-row__label"><NotificationLabel notification={n} /></span>
           <time
             class="notification-row__date"
-            datetime={n.indexedAt}
-            title={formatDateTime(n.indexedAt)}>{formatDateTimeRelative(n.indexedAt)}</time
+            datetime={n.createdAt}
+            title={formatDateTime(n.createdAt)}>{formatDateTimeRelative(n.createdAt)}</time
           >
         </a>
       </li>

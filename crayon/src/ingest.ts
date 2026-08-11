@@ -86,23 +86,48 @@ export async function handleRecord(evt: TapRecordEvent, now: number): Promise<vo
 
   switch (evt.collection) {
     case USERSTYLE: {
-      const record = validateRecord(evt.collection, uri, ClubUserstylesAlphaUserstyle.mainSchema, evt.record);
+      const record = validateRecord(
+        evt.collection,
+        uri,
+        ClubUserstylesAlphaUserstyle.mainSchema,
+        evt.record,
+      );
       return record ? handleUserstyle(uri, cid, did, rkey, record, now) : undefined;
     }
     case PROFILE: {
-      const record = validateRecord(evt.collection, uri, ClubUserstylesAlphaActorProfile.mainSchema, evt.record);
+      const record = validateRecord(
+        evt.collection,
+        uri,
+        ClubUserstylesAlphaActorProfile.mainSchema,
+        evt.record,
+      );
       return record ? handleProfile(cid, did, record, now) : undefined;
     }
     case COMMENT: {
-      const record = validateRecord(evt.collection, uri, ClubUserstylesAlphaFeedComment.mainSchema, evt.record);
+      const record = validateRecord(
+        evt.collection,
+        uri,
+        ClubUserstylesAlphaFeedComment.mainSchema,
+        evt.record,
+      );
       return record ? handleComment(uri, cid, did, rkey, record, now) : undefined;
     }
     case RATING: {
-      const record = validateRecord(evt.collection, uri, ClubUserstylesAlphaFeedRating.mainSchema, evt.record);
+      const record = validateRecord(
+        evt.collection,
+        uri,
+        ClubUserstylesAlphaFeedRating.mainSchema,
+        evt.record,
+      );
       return record ? handleRating(uri, cid, did, rkey, record, now) : undefined;
     }
     case FOLLOW: {
-      const record = validateRecord(evt.collection, uri, ClubUserstylesAlphaGraphFollow.mainSchema, evt.record);
+      const record = validateRecord(
+        evt.collection,
+        uri,
+        ClubUserstylesAlphaGraphFollow.mainSchema,
+        evt.record,
+      );
       return record ? handleFollow(uri, cid, did, rkey, record, now) : undefined;
     }
   }
@@ -194,7 +219,8 @@ async function handleComment(
       userstyleUri: record.subject.uri,
       recordUri: uri,
       actorDid: did,
-      createdAt: now,
+      createdAt: record.createdAt,
+      indexedAt: now,
     });
   }
 
@@ -244,7 +270,8 @@ async function handleRating(
     userstyleUri: record.subject.uri,
     recordUri: uri,
     actorDid: did,
-    createdAt: now,
+    createdAt: record.createdAt,
+    indexedAt: now,
   });
 }
 
@@ -279,6 +306,7 @@ async function handleFollow(
     reason: 'follow',
     recordUri: uri,
     actorDid: did,
-    createdAt: now,
+    createdAt: record.createdAt,
+    indexedAt: now,
   });
 }

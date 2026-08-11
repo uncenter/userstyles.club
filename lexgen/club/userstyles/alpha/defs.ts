@@ -132,6 +132,9 @@ export const notificationView = object({
     userstyle: ref({ ref: 'club.userstyles.alpha.defs#userstyleView' }),
     recordUri: required(string({ format: 'at-uri' })),
     author: required(string({ format: 'did' })),
+    // When the triggering record (comment/rating/follow) was originally created.
+    createdAt: required(string({ format: 'datetime' })),
+    // When this notification was indexed by the appview.
     indexedAt: required(string({ format: 'datetime' })),
   },
 });

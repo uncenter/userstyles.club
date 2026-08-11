@@ -347,12 +347,16 @@
           "type": "string",
           "format": "did"
         },
+        "createdAt": {
+          "type": "string",
+          "format": "datetime"
+        },
         "indexedAt": {
           "type": "string",
           "format": "datetime"
         }
       },
-      "required": ["reason", "recordUri", "author", "indexedAt"],
+      "required": ["reason", "recordUri", "author", "createdAt", "indexedAt"],
       "type": "object"
     }
   },

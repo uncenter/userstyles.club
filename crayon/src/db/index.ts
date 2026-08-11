@@ -174,10 +174,12 @@ export async function upsertRating(r: NewRating): Promise<boolean> {
 
 export async function deleteRating(uri: string): Promise<void> {
   await db.transaction(async (tx) => {
-    const [deleted] = await tx
-      .delete(ratings)
-      .where(eq(ratings.uri, uri))
-      .returning({ subjectUri: ratings.subjectUri, did: ratings.did, rating: ratings.rating, rkey: ratings.rkey });
+    const [deleted] = await tx.delete(ratings).where(eq(ratings.uri, uri)).returning({
+      subjectUri: ratings.subjectUri,
+      did: ratings.did,
+      rating: ratings.rating,
+      rkey: ratings.rkey,
+    });
     if (!deleted) return;
 
     const [remaining] = await tx
@@ -744,7 +746,7 @@ export async function getTimeline(
 }
 
 /** Notifications addressed to `actor`, most recent first.
- * `cursor: [createdAt, id]` of the last row from the previous page, exclusive. */
+ * `cursor: [indexedAt, id]` of the last row from the previous page, exclusive. */
 export async function listNotifications(
   actor: string,
   cursor: [number, number] | null,
@@ -752,14 +754,14 @@ export async function listNotifications(
 ): Promise<NotificationRow[]> {
   const conditions = [eq(notifications.recipientDid, actor)];
   if (cursor) {
-    const [createdAt, id] = cursor;
-    conditions.push(sql`(${notifications.createdAt}, ${notifications.id}) < (${createdAt}, ${id})`);
+    const [indexedAt, id] = cursor;
+    conditions.push(sql`(${notifications.indexedAt}, ${notifications.id}) < (${indexedAt}, ${id})`);
   }
 
   return db
     .select(notificationColumns)
     .from(notifications)
     .where(and(...conditions))
-    .orderBy(desc(notifications.createdAt), desc(notifications.id))
+    .orderBy(desc(notifications.indexedAt), desc(notifications.id))
     .limit(limit);
 }

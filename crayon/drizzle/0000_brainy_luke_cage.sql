@@ -31,7 +31,8 @@ CREATE TABLE "notifications" (
 	"userstyle_uri" text,
 	"record_uri" text NOT NULL,
 	"actor_did" text NOT NULL,
-	"created_at" bigint NOT NULL
+	"created_at" text NOT NULL,
+	"indexed_at" bigint NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE "profiles" (
@@ -87,7 +88,7 @@ CREATE INDEX "comments_parent_idx" ON "comments" USING btree ("parent_uri");--> 
 CREATE INDEX "comments_did_idx" ON "comments" USING btree ("did");--> statement-breakpoint
 CREATE INDEX "follows_did_idx" ON "follows" USING btree ("did","indexed_at" DESC NULLS LAST);--> statement-breakpoint
 CREATE INDEX "follows_subject_did_idx" ON "follows" USING btree ("subject_did","indexed_at" DESC NULLS LAST);--> statement-breakpoint
-CREATE INDEX "notifications_recipient_idx" ON "notifications" USING btree ("recipient_did","created_at");--> statement-breakpoint
+CREATE INDEX "notifications_recipient_idx" ON "notifications" USING btree ("recipient_did","indexed_at");--> statement-breakpoint
 CREATE UNIQUE INDEX "notifications_record_recipient_idx" ON "notifications" USING btree ("record_uri","recipient_did");--> statement-breakpoint
 CREATE INDEX "ratings_subject_did_rkey_idx" ON "ratings" USING btree ("subject_uri","did","rkey" DESC NULLS LAST);--> statement-breakpoint
 CREATE INDEX "ratings_did_idx" ON "ratings" USING btree ("did");--> statement-breakpoint

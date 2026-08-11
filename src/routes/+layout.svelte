@@ -35,8 +35,8 @@
 
     async function checkForNewNotifications() {
       try {
-        const page = await listNotifications(did, { limit: 1 });
-        latestNotificationIndexedAt = page.notifications[0]?.indexedAt;
+        const result = await listNotifications(did, { limit: 1 });
+        latestNotificationIndexedAt = result.notifications[0]?.indexedAt;
       } catch (e) {
         console.warn('failed to check for new notifications', e);
       }

@@ -144,10 +144,12 @@ export const notifications = pgTable(
     userstyleUri: text('userstyle_uri'),
     recordUri: text('record_uri').notNull(),
     actorDid: text('actor_did').notNull(),
-    createdAt: bigint('created_at', { mode: 'number' }).notNull(),
+    // The triggering record's own createdAt (e.g. the comment/rating/follow record).
+    createdAt: text('created_at').notNull(),
+    indexedAt: bigint('indexed_at', { mode: 'number' }).notNull(),
   },
   (t) => [
-    index('notifications_recipient_idx').on(t.recipientDid, t.createdAt),
+    index('notifications_recipient_idx').on(t.recipientDid, t.indexedAt),
     // A single record (e.g. a reply) can notify more than one recipient (the parent comment's author and the userstyle owner).
     uniqueIndex('notifications_record_recipient_idx').on(t.recordUri, t.recipientDid),
   ],

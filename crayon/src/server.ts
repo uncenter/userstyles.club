@@ -217,7 +217,8 @@ function toNotificationView(row: NotificationRow, userstyle: UserstyleRow | unde
     userstyle: userstyle ? toUserstyleView(userstyle) : undefined,
     recordUri: row.recordUri as ResourceUri,
     author: row.actorDid as Did,
-    indexedAt: new Date(row.createdAt).toISOString(),
+    createdAt: row.createdAt,
+    indexedAt: new Date(row.indexedAt).toISOString(),
   };
 }
 
@@ -442,7 +443,7 @@ router.addQuery(ClubUserstylesAlphaNotificationListNotifications, {
   async handler({ params }) {
     const cursor = params.cursor ? parseCursor(params.cursor) : null;
     const rows = await listNotifications(params.actor, cursor, params.limit);
-    const nextCursor = buildCursor(rows, params.limit, (r) => `${r.createdAt}_${r.id}`);
+    const nextCursor = buildCursor(rows, params.limit, (r) => `${r.indexedAt}_${r.id}`);
 
     const userstyleUris = [
       ...new Set(rows.map((r) => r.userstyleUri).filter((uri) => uri !== null)),
@@ -453,7 +454,10 @@ router.addQuery(ClubUserstylesAlphaNotificationListNotifications, {
     return json({
       cursor: nextCursor,
       notifications: rows.map((row) =>
-        toNotificationView(row, row.userstyleUri ? userstyleByUri.get(row.userstyleUri) : undefined),
+        toNotificationView(
+          row,
+          row.userstyleUri ? userstyleByUri.get(row.userstyleUri) : undefined,
+        ),
       ),
     });
   },
