@@ -432,12 +432,19 @@ export async function getCommentThreads(subjectUri: string): Promise<CommentThre
     else repliesByParent.set(row.parentUri, [row]);
   }
 
+  // A thread with nothing left to show (every node tombstoned) isn't worth returning at all.
+  // TODO: Consider deleting all data for an entirely tombstoned thread instead of just filtering?
+  const hasLiveDescendant = (node: CommentThreadRow): boolean =>
+    node.deletedAt === null || (repliesByParent.get(node.uri) ?? []).some(hasLiveDescendant);
+
   const thread: CommentThreadRow[] = [];
   const visit = (node: CommentThreadRow) => {
     thread.push(node);
     for (const reply of repliesByParent.get(node.uri) ?? []) visit(reply);
   };
-  for (const root of roots) visit(root);
+  for (const root of roots) {
+    if (hasLiveDescendant(root)) visit(root);
+  }
   return thread;
 }
 
