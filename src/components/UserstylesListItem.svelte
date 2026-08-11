@@ -13,6 +13,7 @@
   import { formatDate } from '$lib/date';
   import { extractDomains } from '$lib/domains';
   import { getPreferredActorIdentifier } from '$lib/preferences.svelte';
+  import { getLatestDate } from '$lib/at/utils';
 
   const MAX_DOMAIN_BADGES = 3;
 
@@ -70,7 +71,7 @@
     <footer class="userstyle-card__meta">
       <span class="userstyle-card__meta-item">
         <CalendarIcon size={12} />
-        {formatDate(userstyle.updatedAt ?? userstyle.createdAt)}
+        {formatDate(getLatestDate(userstyle))}
       </span>
       {#if userCssVarsLabel}
         <span

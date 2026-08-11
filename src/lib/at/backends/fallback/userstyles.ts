@@ -3,7 +3,7 @@ import { is } from '@atcute/lexicons/validations';
 
 import { getBlobText, getRecord, listRecordsForCollection, listRecordsForRepo } from '../../records';
 import { CLUB_USERSTYLE_COLLECTION } from '../../settings';
-import { getBlobCid } from '../../utils';
+import { getBlobCid, getLatestDate } from '../../utils';
 import { ClubUserstylesAlphaUserstyle } from '$lib/at/lexicons';
 import type { UserstyleView, UserstyleRecord } from '../../services/userstyles';
 import { computeRatingSummary } from '../../services/ratings';
@@ -29,7 +29,7 @@ async function userstyleRecordToView(record: UserstyleRecord): Promise<Userstyle
     previewImageCid: value.previewImage ? getBlobCid(value.previewImage) : undefined,
     createdAt: value.createdAt,
     updatedAt: value.updatedAt,
-    indexedAt: value.updatedAt ?? value.createdAt,
+    indexedAt: getLatestDate(value),
     ratingCount: ratingSummary.count,
     ratingAverage: ratingSummary.average,
   };

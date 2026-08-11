@@ -21,6 +21,7 @@
   import Self from './CommentItem.svelte';
 
   import { formatDate } from '$lib/date';
+  import { getLatestDate } from '$lib/at/utils';
 
   interface Props {
     thread: CommentThread;
@@ -178,7 +179,7 @@
         </div>
         <div class="comment-card__meta">
           <time class="comment-card__date"
-            >{formatDate(comment.value.updatedAt ?? comment.value.createdAt)}</time
+            >{formatDate(getLatestDate(comment.value))}</time
           >
           {#if isMyComment}
             <div class="comment-card__actions">

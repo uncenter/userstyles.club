@@ -7,6 +7,7 @@
   import StarRating from './StarRating.svelte';
 
   import { formatDateTime, formatDateTimeRelative } from '$lib/date';
+  import { getLatestDate } from '$lib/at/utils';
 
   interface Props {
     item: FeedViewItem;
@@ -15,8 +16,8 @@
 
   let { item, author }: Props = $props();
 
-  let date = $derived(
-    item.userstyle?.indexedAt ?? item.comment?.indexedAt ?? item.rating?.indexedAt ?? '',
+  let date = $derived<string>(
+    getLatestDate(item.userstyle ?? item.comment ?? item.rating!),
   );
 
   let styleHref = $derived.by(() => {
