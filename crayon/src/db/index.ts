@@ -121,20 +121,82 @@ async function incrementCommentCount(subjectUri: string, delta: number): Promise
     .where(eq(userstyles.uri, subjectUri));
 }
 
-export async function upsertRating(r: NewRating): Promise<boolean> {
-  const [row] = await db
-    .insert(ratings)
-    .values(r)
-    .onConflictDoUpdate({
-      target: ratings.uri,
-      set: conflictUpdateColumns(ratings, ['cid', 'rating', 'updatedAt', 'indexedAt']),
+type Tx = Parameters<Parameters<typeof db.transaction>[0]>[0];
+
+async function adjustRatingSummary(
+  tx: Tx,
+  subjectUri: string,
+  countDelta: number,
+  sumDelta: number,
+): Promise<void> {
+  if (countDelta === 0 && sumDelta === 0) return;
+  await tx
+    .update(userstyles)
+    .set({
+      ratingCount: sql`${userstyles.ratingCount} + ${countDelta}`,
+      ratingSum: sql`${userstyles.ratingSum} + ${sumDelta}`,
     })
-    .returning({ inserted: sql<boolean>`(xmax = 0)` });
-  return row?.inserted ?? false;
+    .where(eq(userstyles.uri, subjectUri));
+}
+
+/** Upserts a rating record and keeps userstyles.rating_count/rating_sum (the "current ratings" cache read by getRatingSummary)
+ *  in sync via a point lookup + delta. */
+export async function upsertRating(r: NewRating): Promise<boolean> {
+  return db.transaction(async (tx) => {
+    const [previous] = await tx
+      .select({ uri: ratings.uri, rkey: ratings.rkey, rating: ratings.rating })
+      .from(ratings)
+      .where(and(eq(ratings.subjectUri, r.subjectUri), eq(ratings.did, r.did)))
+      .orderBy(desc(ratings.rkey))
+      .limit(1);
+
+    const [row] = await tx
+      .insert(ratings)
+      .values(r)
+      .onConflictDoUpdate({
+        target: ratings.uri,
+        set: conflictUpdateColumns(ratings, ['cid', 'rating', 'updatedAt', 'indexedAt']),
+      })
+      .returning({ inserted: sql<boolean>`(xmax = 0)` });
+
+    if (!previous) {
+      await adjustRatingSummary(tx, r.subjectUri, 1, r.rating);
+    } else if (previous.uri === r.uri || r.rkey > previous.rkey) {
+      // Editing the current record in place, or a new record superseding it.
+      await adjustRatingSummary(tx, r.subjectUri, 0, r.rating - previous.rating);
+    }
+    // Otherwise this write's rkey is older than the rater's existing current record (an
+    // out-of-order/backfill event for an already-superseded rating) -> leave the cache untouched.
+
+    return row?.inserted ?? false;
+  });
 }
 
 export async function deleteRating(uri: string): Promise<void> {
-  await db.delete(ratings).where(eq(ratings.uri, uri));
+  await db.transaction(async (tx) => {
+    const [deleted] = await tx
+      .delete(ratings)
+      .where(eq(ratings.uri, uri))
+      .returning({ subjectUri: ratings.subjectUri, did: ratings.did, rating: ratings.rating, rkey: ratings.rkey });
+    if (!deleted) return;
+
+    const [remaining] = await tx
+      .select({ rating: ratings.rating, rkey: ratings.rkey })
+      .from(ratings)
+      .where(and(eq(ratings.subjectUri, deleted.subjectUri), eq(ratings.did, deleted.did)))
+      .orderBy(desc(ratings.rkey))
+      .limit(1);
+
+    // If a newer record already existed for this rater, `deleted` had already been superseded
+    // and wasn't part of the current-ratings aggregate.
+    if (remaining && remaining.rkey > deleted.rkey) return;
+
+    if (remaining) {
+      await adjustRatingSummary(tx, deleted.subjectUri, 0, remaining.rating - deleted.rating);
+    } else {
+      await adjustRatingSummary(tx, deleted.subjectUri, -1, -deleted.rating);
+    }
+  });
 }
 
 export async function upsertFollow(r: NewFollow): Promise<boolean> {
