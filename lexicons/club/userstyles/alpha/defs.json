@@ -335,9 +335,9 @@
           "type": "string",
           "enum": ["comment", "reply", "thread", "rating", "follow"]
         },
-        "subjectUri": {
-          "type": "string",
-          "format": "at-uri"
+        "userstyle": {
+          "ref": "club.userstyles.alpha.defs#userstyleView",
+          "type": "ref"
         },
         "recordUri": {
           "type": "string",
@@ -352,7 +352,7 @@
           "format": "datetime"
         }
       },
-      "required": ["reason", "subjectUri", "recordUri", "author", "indexedAt"],
+      "required": ["reason", "recordUri", "author", "indexedAt"],
       "type": "object"
     }
   },

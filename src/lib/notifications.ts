@@ -4,25 +4,17 @@ import { resolve } from '$app/paths';
 import type { NotificationView, ProfileView } from './at';
 import { getPreferredActorIdentifier } from './preferences.svelte';
 
-export function labelForNotification(reason: NotificationView['reason']): string {
-  switch (reason) {
-    case 'follow':
-      return 'followed you';
-    case 'comment':
-      return 'commented on your userstyle';
-    case 'reply':
-      return 'replied to your comment';
-    case 'thread':
-      return 'replied in a thread you\'re in';
-    case 'rating':
-      return 'rated your userstyle';
-  }
-}
+/** How long the notifications page must stay open before it's marked read. */
+export const MARK_NOTIFICATIONS_READ_DELAY_MS = 2500;
 
-export function hrefForNotification(n: NotificationView, profile: ProfileView): string {
+/** How often the layout polls for new notifications while the tab is open. */
+export const NOTIFICATION_POLL_INTERVAL_MS = 60_000;
+
+export function hrefForNotification(n: NotificationView, profile: ProfileView): string | undefined {
   if (n.reason === 'follow') {
     return resolve('/profile/[user=actor]', { user: getPreferredActorIdentifier(profile) });
   }
-  const { repo, rkey } = parseCanonicalResourceUri(n.subjectUri);
+  if (!n.userstyle) return undefined;
+  const { repo, rkey } = parseCanonicalResourceUri(n.userstyle.uri);
   return resolve('/style/[user=actor]/[style=rkey]', { user: repo, style: rkey });
 }

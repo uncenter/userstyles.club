@@ -128,7 +128,8 @@ export const feedViewItem = object({
 export const notificationView = object({
   properties: {
     reason: required(string({ enum: ['comment', 'reply', 'thread', 'rating', 'follow'] })),
-    subjectUri: required(string({ format: 'at-uri' })),
+    // The userstyle this notification is about. Absent for `follow` (no userstyle subject) and for a since-deleted userstyle.
+    userstyle: ref({ ref: 'club.userstyles.alpha.defs#userstyleView' }),
     recordUri: required(string({ format: 'at-uri' })),
     author: required(string({ format: 'did' })),
     indexedAt: required(string({ format: 'datetime' })),

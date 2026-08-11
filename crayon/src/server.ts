@@ -40,6 +40,7 @@ import {
   getRelationships,
   getTimeline,
   getUserstyle,
+  getUserstyles,
   listComments,
   listCurrentRatings,
   listFollowers,
@@ -210,10 +211,10 @@ function toRelationshipView(other: Did, row: RelationshipRow) {
   };
 }
 
-function toNotificationView(row: NotificationRow) {
+function toNotificationView(row: NotificationRow, userstyle: UserstyleRow | undefined) {
   return {
-    reason: row.reason as 'comment' | 'reply' | 'rating' | 'follow',
-    subjectUri: row.subjectUri as ResourceUri,
+    reason: row.reason as 'comment' | 'reply' | 'thread' | 'rating' | 'follow',
+    userstyle: userstyle ? toUserstyleView(userstyle) : undefined,
     recordUri: row.recordUri as ResourceUri,
     author: row.actorDid as Did,
     indexedAt: new Date(row.createdAt).toISOString(),
@@ -443,6 +444,17 @@ router.addQuery(ClubUserstylesAlphaNotificationListNotifications, {
     const rows = await listNotifications(params.actor, cursor, params.limit);
     const nextCursor = buildCursor(rows, params.limit, (r) => `${r.createdAt}_${r.id}`);
 
-    return json({ cursor: nextCursor, notifications: rows.map(toNotificationView) });
+    const userstyleUris = [
+      ...new Set(rows.map((r) => r.userstyleUri).filter((uri) => uri !== null)),
+    ];
+    const userstyleRows = await getUserstyles(userstyleUris);
+    const userstyleByUri = new Map(userstyleRows.map((row) => [row.uri, row]));
+
+    return json({
+      cursor: nextCursor,
+      notifications: rows.map((row) =>
+        toNotificationView(row, row.userstyleUri ? userstyleByUri.get(row.userstyleUri) : undefined),
+      ),
+    });
   },
 });

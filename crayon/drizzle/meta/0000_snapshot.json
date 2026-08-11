@@ -1,5 +1,5 @@
 {
-  "id": "f39818b7-4bac-4d5b-b292-1373f8e1c993",
+  "id": "73950173-f539-4d18-bed1-5b9350104f85",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -261,11 +261,11 @@
           "primaryKey": false,
           "notNull": true
         },
-        "subject_uri": {
-          "name": "subject_uri",
+        "userstyle_uri": {
+          "name": "userstyle_uri",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "record_uri": {
           "name": "record_uri",

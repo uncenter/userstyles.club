@@ -255,6 +255,11 @@ export async function getUserstyle(uri: string): Promise<UserstyleRow | null> {
   return row ?? null;
 }
 
+export async function getUserstyles(uris: string[]): Promise<UserstyleRow[]> {
+  if (uris.length === 0) return [];
+  return db.select(userstyleColumns).from(userstyles).where(inArray(userstyles.uri, uris));
+}
+
 /** `cursor: [indexedAt, rowid]` of the last row from the previous page, exclusive. */
 export async function listUserstyles(
   actor: string | null,

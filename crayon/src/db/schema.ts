@@ -140,7 +140,8 @@ export const notifications = pgTable(
     id: bigserial('id', { mode: 'number' }).primaryKey(),
     recipientDid: text('recipient_did').notNull(),
     reason: text('reason').notNull(),
-    subjectUri: text('subject_uri').notNull(),
+    // Absent for `follow`, which has no userstyle subject.
+    userstyleUri: text('userstyle_uri'),
     recordUri: text('record_uri').notNull(),
     actorDid: text('actor_did').notNull(),
     createdAt: bigint('created_at', { mode: 'number' }).notNull(),

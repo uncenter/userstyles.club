@@ -191,7 +191,7 @@ async function handleComment(
     await createNotification({
       recipientDid,
       reason,
-      subjectUri: record.subject.uri,
+      userstyleUri: record.subject.uri,
       recordUri: uri,
       actorDid: did,
       createdAt: now,
@@ -241,7 +241,7 @@ async function handleRating(
   await createNotification({
     recipientDid: subjectDid,
     reason: 'rating',
-    subjectUri: record.subject.uri,
+    userstyleUri: record.subject.uri,
     recordUri: uri,
     actorDid: did,
     createdAt: now,
@@ -277,7 +277,6 @@ async function handleFollow(
   await createNotification({
     recipientDid: record.subject,
     reason: 'follow',
-    subjectUri: uri,
     recordUri: uri,
     actorDid: did,
     createdAt: now,

@@ -28,7 +28,7 @@ CREATE TABLE "notifications" (
 	"id" bigserial PRIMARY KEY NOT NULL,
 	"recipient_did" text NOT NULL,
 	"reason" text NOT NULL,
-	"subject_uri" text NOT NULL,
+	"userstyle_uri" text,
 	"record_uri" text NOT NULL,
 	"actor_did" text NOT NULL,
 	"created_at" bigint NOT NULL

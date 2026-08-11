@@ -7,7 +7,7 @@
   import { preferences } from '$lib/preferences.svelte';
   import { PaginatedList } from '$lib/pagination.svelte';
   import { formatDateTime, formatDateTimeRelative } from '$lib/date';
-  import { labelForNotification, hrefForNotification } from '$lib/notifications';
+  import { hrefForNotification, MARK_NOTIFICATIONS_READ_DELAY_MS } from '$lib/notifications';
 
   import {
     user,
@@ -18,10 +18,15 @@
   } from '$lib/at';
 
   import { Alert, Loading, Spinner } from '$components/ui';
-  import { ActorHandle } from '$components';
+  import { ActorHandle, NotificationLabel } from '$components';
 
   const list = new PaginatedList<NotificationView>();
   let profiles = $state(new Map<Did, ProfileView>());
+  // Snapshot of the read cursor taken before this visit marks things read, so already-open rows keep their unread state.
+  let viewedBefore = $state<string | undefined>(undefined);
+  // Flips once the mark-read delay elapses, clearing unread highlighting in step with the bell dot.
+  let hasMarkedRead = $state(false);
+  let markReadTimeout: ReturnType<typeof setTimeout> | undefined;
 
   $effect(() => {
     if (!user.isInitializing && !user.isLoggedIn) {
@@ -39,11 +44,22 @@
   }
 
   $effect(() => {
-    if (user.isLoggedIn) {
-      list.load(fetchPage, { reset: true }).then(() => {
+    if (!user.isLoggedIn) return;
+    if (viewedBefore === undefined) viewedBefore = preferences.get('lastViewedNotificationsAt');
+
+    let cancelled = false;
+    list.load(fetchPage, { reset: true }).then(() => {
+      if (cancelled) return;
+      markReadTimeout = setTimeout(() => {
         preferences.set('lastViewedNotificationsAt', new Date().toISOString());
-      });
-    }
+        hasMarkedRead = true;
+      }, MARK_NOTIFICATIONS_READ_DELAY_MS);
+    });
+
+    return () => {
+      cancelled = true;
+      clearTimeout(markReadTimeout);
+    };
   });
 
   function loadMore() {
@@ -69,10 +85,14 @@
   <ul class="notification-list list-reset" role="list">
     {#each list.items as n (n.recordUri)}
       {@const profile = profiles.get(n.author)!}
+      {@const unread = !hasMarkedRead && viewedBefore !== undefined && n.indexedAt > viewedBefore}
       <li>
-        <a href={hrefForNotification(n, profile)} class="notification-row">
+        <a
+          href={hrefForNotification(n, profile)}
+          class={['notification-row', unread && 'notification-row--unread']}
+        >
           <ActorHandle {profile} style="small" />
-          <span class="notification-row__label">{labelForNotification(n.reason)}</span>
+          <span class="notification-row__label"><NotificationLabel notification={n} /></span>
           <time
             class="notification-row__date"
             datetime={n.indexedAt}
@@ -114,10 +134,16 @@
     color: var(--foreground);
     font: inherit;
     cursor: pointer;
-    transition: opacity var(--ease-fast);
+    transition:
+      opacity var(--ease-fast),
+      background-color 0.6s ease-out;
 
     &:hover {
       opacity: 0.85;
+    }
+
+    &.notification-row--unread {
+      background: var(--float-bg);
     }
 
     .notification-row__label {

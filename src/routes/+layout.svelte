@@ -4,24 +4,13 @@
   import { resolve } from '$app/paths';
   import '../app.css';
 
-  import type { Did } from '@atcute/lexicons';
-  import {
-    initClient,
-    user,
-    logout,
-    listNotifications,
-    getProfiles,
-    type NotificationView,
-    type ProfileView,
-  } from '$lib/at';
+  import { initClient, user, logout, listNotifications } from '$lib/at';
+  import { NOTIFICATION_POLL_INTERVAL_MS } from '$lib/notifications';
   import { preferences, getPreferredActorIdentifier } from '$lib/preferences.svelte';
-  import { labelForNotification, hrefForNotification } from '$lib/notifications';
-  import { formatDateTimeRelative } from '$lib/date';
   import { TAGLINE, REPO_URL, FEEDBACK_URL } from '$lib/constants';
 
   import { LogoCombo } from '$components/branding';
-  import { Spinner, Avatar, Alert } from '$components/ui';
-  import { ActorHandle } from '$components';
+  import { Spinner, Avatar } from '$components/ui';
 
   import { MenuIcon, MoveUpRightIcon, SearchIcon, InboxIcon, XIcon } from '@lucide/svelte';
 
@@ -33,29 +22,29 @@
     goto(resolve('/search') + (q ? `?q=${encodeURIComponent(q)}` : ''));
   }
 
-  let notifTrayItems = $state<NotificationView[] | undefined>(undefined);
-  let notifTrayProfiles = $state(new Map<Did, ProfileView>());
-  let notifTrayError = $state<string | null>(null);
+  let latestNotificationIndexedAt = $state<string | undefined>(undefined);
   let hasUnreadNotifications = $derived(
-    notifTrayItems !== undefined &&
-      notifTrayItems.length > 0 &&
-      notifTrayItems[0].indexedAt > preferences.get('lastViewedNotificationsAt'),
+    latestNotificationIndexedAt !== undefined &&
+      latestNotificationIndexedAt > preferences.get('lastViewedNotificationsAt'),
   );
 
+  // Polls for new notifications so the bell's unread dot stays fresh without a tray to open.
   $effect(() => {
     if (!user.isLoggedIn || !user.did) return;
-    notifTrayError = null;
-    listNotifications(user.did, { limit: 8 })
-      .then(async (page) => {
-        // Resolve profiles so every notification can be rendered with a matching profile.
-        const profiles = await getProfiles(page.notifications.map((n) => n.author));
-        notifTrayItems = page.notifications;
-        notifTrayProfiles = profiles;
-      })
-      .catch((e) => {
-        notifTrayItems = [];
-        notifTrayError = e instanceof Error ? e.message : 'Failed to load notifications.';
-      });
+    const did = user.did;
+
+    async function checkForNewNotifications() {
+      try {
+        const page = await listNotifications(did, { limit: 1 });
+        latestNotificationIndexedAt = page.notifications[0]?.indexedAt;
+      } catch (e) {
+        console.warn('failed to check for new notifications', e);
+      }
+    }
+
+    checkForNewNotifications();
+    const interval = setInterval(checkForNewNotifications, NOTIFICATION_POLL_INTERVAL_MS);
+    return () => clearInterval(interval);
   });
 
   let { children } = $props();
@@ -73,7 +62,6 @@
   });
 
   let userMenuPopover: HTMLElement | undefined = $state();
-  let notifTrayPopover: HTMLElement | undefined = $state();
   let mobileNavPopover: HTMLElement | undefined = $state();
 
   afterNavigate(() => {
@@ -81,8 +69,6 @@
       mobileNavPopover.hidePopover();
     } else if (userMenuPopover?.matches(':popover-open')) {
       userMenuPopover.hidePopover();
-    } else if (notifTrayPopover?.matches(':popover-open')) {
-      notifTrayPopover.hidePopover();
     }
   });
 
@@ -142,47 +128,15 @@
           <li><a href={resolve('/new')} class="btn btn--primary">New</a></li>
           {#if user.isLoggedIn && user.did}
             <li class="notif-bell">
-              <button
+              <a
+                href={resolve('/notifications')}
                 class="notif-bell__trigger"
-                popovertarget="notif-tray-popover"
-                popovertargetaction="toggle"
-                aria-haspopup="menu"
                 aria-label="Notifications"
               >
                 <InboxIcon size={18} />
                 {#if hasUnreadNotifications}<span class="notif-bell__dot" aria-hidden="true"
                   ></span>{/if}
-              </button>
-              <div
-                id="notif-tray-popover"
-                bind:this={notifTrayPopover}
-                popover
-                class="notif-tray"
-                role="menu"
-              >
-                {#if notifTrayItems === undefined}
-                  <div class="notif-tray__loading"><Spinner size="sm" /></div>
-                {:else if notifTrayError}
-                  <div class="notif-tray__error"><Alert variant="error">{notifTrayError}</Alert></div>
-                {:else if notifTrayItems.length === 0}
-                  <p class="notif-tray__empty text-muted">No notifications yet.</p>
-                {:else}
-                  <ul class="notif-tray__list list-reset" role="list">
-                    {#each notifTrayItems as n (n.recordUri)}
-                      {@const profile = notifTrayProfiles.get(n.author)!}
-                      <li>
-                        <a href={hrefForNotification(n, profile)} class="notif-tray__item">
-                          <ActorHandle {profile} style="minimal" />
-                          <span class="notif-tray__label">{labelForNotification(n.reason)}</span>
-                          <span class="notif-tray__date">{formatDateTimeRelative(n.indexedAt)}</span
-                          >
-                        </a>
-                      </li>
-                    {/each}
-                  </ul>
-                {/if}
-                <a href={resolve('/notifications')} class="notif-tray__view-all">View all</a>
-              </div>
+              </a>
             </li>
             <li class="user-menu">
               <button
@@ -367,6 +321,7 @@
     border-radius: var(--radius-sm);
     cursor: pointer;
     color: var(--foreground);
+    text-decoration: none;
     transition: background-color var(--ease-fast);
 
     &:hover {
@@ -380,7 +335,7 @@
       width: 0.5rem;
       height: 0.5rem;
       border-radius: 50%;
-      background: var(--danger);
+      background: var(--brand-purple);
     }
   }
 
@@ -390,86 +345,8 @@
     width: 0.5rem;
     height: 0.5rem;
     border-radius: 50%;
-    background: var(--danger);
+    background: var(--brand-purple);
     vertical-align: middle;
-  }
-
-  .notif-tray {
-    position: fixed;
-    inset: unset;
-    right: var(--container-pad);
-    top: calc(var(--nav-height) + var(--space-2));
-    margin: 0;
-    padding: 0;
-    background: var(--float-bg);
-    border: none;
-    border-radius: var(--radius);
-    width: 20rem;
-    max-width: calc(100vw - 2 * var(--container-pad));
-    overflow: hidden;
-
-    .notif-tray__loading,
-    .notif-tray__empty {
-      padding: var(--space-4);
-      text-align: center;
-    }
-
-    .notif-tray__error {
-      padding: var(--space-2);
-    }
-
-    .notif-tray__list {
-      max-height: 22rem;
-      overflow-y: auto;
-    }
-
-    .notif-tray__item {
-      display: flex;
-      align-items: center;
-      gap: var(--space-1);
-      flex-wrap: wrap;
-      width: 100%;
-      padding: var(--space-2) var(--space-4);
-      background: none;
-      border: none;
-      text-align: left;
-      text-decoration: none;
-      color: var(--foreground);
-      font: inherit;
-      font-size: var(--text-sm);
-      cursor: pointer;
-      transition: background-color var(--ease-fast);
-
-      &:hover {
-        background: var(--bg-muted);
-      }
-
-      .notif-tray__label {
-        color: var(--fg-muted);
-      }
-
-      .notif-tray__date {
-        margin-left: auto;
-        font-size: var(--text-xs);
-        color: var(--fg-muted);
-        flex-shrink: 0;
-      }
-    }
-
-    .notif-tray__view-all {
-      display: block;
-      padding: var(--space-3) var(--space-4);
-      text-align: center;
-      font-weight: 600;
-      font-size: var(--text-sm);
-      color: var(--brand-purple);
-      text-decoration: none;
-      border-top: 2px solid var(--border);
-
-      &:hover {
-        background: var(--bg-muted);
-      }
-    }
   }
 
   .user-menu__trigger {
