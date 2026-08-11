@@ -8,4 +8,5 @@ trustPolicyExclude:
 packages: ['.', 'crayon']
 overrides:
   '@atcute/lexicons': 2.0.0
-  usercss-parser: link:../usercss/packages/usercss-parser
+minimumReleaseAgeExclude:
+  - usercss-parser@0.0.1

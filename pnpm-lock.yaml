@@ -6,7 +6,6 @@ settings:
 
 overrides:
   '@atcute/lexicons': 2.0.0
-  usercss-parser: link:../usercss/packages/usercss-parser
 
 importers:
 
@@ -149,8 +148,8 @@ importers:
         specifier: ^3.4.9
         version: 3.4.9
       usercss-parser:
-        specifier: link:../../usercss/packages/usercss-parser
-        version: link:../../usercss/packages/usercss-parser
+        specifier: ^0.0.1
+        version: 0.0.1
     devDependencies:
       '@types/node':
         specifier: ^26.1.2
@@ -2115,6 +2114,10 @@ packages:
     resolution: {integrity: sha512-zKrXCKdpeIwtVe87omxGo9URf+7mbozduMZEg79dmT4KB3XJwfIkEi/Uk0PcTwR/nZLtAK1+k7isgbGB/g6E7Q==}
     engines: {node: '>=8.3'}
 
+  usercss-parser@0.0.1:
+    resolution: {integrity: sha512-YX1KErK8dPEHXJKWYnAnmoqd56+/8EmPpy/FDuq056GgvVWmA3j/jItfqiYijOmGsqH4mhSkxam4GGhVIVvg/A==}
+    engines: {node: '>=19.9.0'}
+
   valibot@1.4.1:
     resolution: {integrity: sha512-klCmFTz2jeDluy9RwX+F884TCiogtdBJ/YaxSx1EOBYXa3NXNWj8kR1jjN8rzluwojJVWWaHJ4r1U5LfICnM3g==}
     peerDependencies:
@@ -3870,6 +3873,8 @@ snapshots:
       unist-util-visit-parents: 6.0.2
 
   usercss-meta@0.12.0: {}
+
+  usercss-parser@0.0.1: {}
 
   valibot@1.4.1(typescript@5.9.3):
     optionalDependencies:
