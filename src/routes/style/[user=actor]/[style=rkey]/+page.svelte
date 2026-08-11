@@ -119,6 +119,16 @@
     ratingDialog.open = true;
   }
 
+  // The appview attaches a commenter's current rating to their root-level comment(s).
+  function applyRatingPatchToComments(rating: number | undefined) {
+    if (!user.did) return;
+    for (const thread of comments.threads) {
+      if (!thread.deleted && parseCanonicalResourceUri(thread.uri).repo === user.did) {
+        pendingCommentPatches[thread.uri] = { ...pendingCommentPatches[thread.uri], rating };
+      }
+    }
+  }
+
   const installUrl = $derived(
     // Explicitly do not use getPreferredActorIdentifier given the install URL will be used for future updates and *should* be permanent.
     resolve('/style/[user=actor]/[style=rkey].user.css', {
@@ -162,7 +172,7 @@
           createdAt: myRating.value.createdAt,
         });
         applyRatingToSummary(myRating.value.rating, ratingDialog.selected);
-        myRating.value.rating = ratingDialog.selected;
+        myRating = { ...myRating, value: { ...myRating.value, rating: ratingDialog.selected } };
       } else {
         const created = await createRating({
           subject: { uri: data.userstyle.uri, cid: data.userstyle.cid! },
@@ -174,6 +184,7 @@
           value: created.record,
         };
       }
+      applyRatingPatchToComments(ratingDialog.selected);
       ratingDialog.open = false;
     } catch (e) {
       ratingDialog.error = e instanceof Error ? e.message : 'Failed to save rating.';
@@ -191,6 +202,7 @@
       await deleteRating(rkey);
       removeRatingFromSummary(myRating.value.rating);
       myRating = undefined;
+      applyRatingPatchToComments(undefined);
       ratingDialog.open = false;
     } catch (e) {
       ratingDialog.error = e instanceof Error ? e.message : 'Failed to remove rating.';
