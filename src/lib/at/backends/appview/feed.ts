@@ -4,7 +4,7 @@ import type { Did } from '@atcute/lexicons';
 import { getCrayonClient } from '../../client';
 import { toUserstyleView } from './userstyles';
 import type { UserstyleView } from '../../services/userstyles';
-import type { ClubUserstylesAlphaDefs } from '$lib/at/lexicons';
+import type { ClubUserstylesAlphaDefs } from '@userstyles.club/atcute';
 
 /** Same shape as the lexicon's `feedViewItem`, but `userstyle` uses our widened `UserstyleView`
  * (coerced `ratingAverage`) rather than the raw appview view. */

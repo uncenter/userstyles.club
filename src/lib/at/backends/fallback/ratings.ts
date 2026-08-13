@@ -3,7 +3,7 @@ import { is } from '@atcute/lexicons/validations';
 
 import { getBacklinkedRecords } from '../../records';
 import { CLUB_RATING_COLLECTION } from '../../settings';
-import { ClubUserstylesAlphaFeedRating } from '$lib/at/lexicons';
+import { ClubUserstylesAlphaFeedRating } from '@userstyles.club/atcute';
 import type { RatingRecord } from '../../services/ratings';
 
 /** A user may end up with multiple rating records for the same userstyle (an edit that changed rkey rather than updating in place).

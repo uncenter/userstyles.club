@@ -23,7 +23,7 @@ import {
   ClubUserstylesAlphaGraphListFollows,
   ClubUserstylesAlphaListUserstyles,
   ClubUserstylesAlphaNotificationListNotifications,
-} from '../../src/lib/at/lexicons/index.ts';
+} from '@userstyles.club/atcute';
 import {
   type CommentRow,
   type CommentThreadRow,

@@ -5,7 +5,7 @@ import type {} from '@atcute/microcosm';
 import { parse } from 'usercss-parser';
 import type { MozDocumentFunction, ParseResult } from 'usercss-parser';
 
-import { getBlobCid } from '../../src/lib/at/utils.ts';
+import { getBlobCid } from './utils.ts';
 import { getCachedBlobText, setCachedBlobText } from './cache.ts';
 
 const SLINGSHOT_URL = 'https://slingshot.microcosm.blue';

@@ -6,7 +6,7 @@ import { getRatingFromConstellation, listRatingsFromConstellation } from '../bac
 
 import { makeRecordBuilder, type RecordCreateInput, type RecordUpdateInput } from '../builder';
 import { CLUB_RATING_COLLECTION, isAppviewEnabled } from '../settings';
-import { ClubUserstylesAlphaFeedRating } from '$lib/at/lexicons';
+import { ClubUserstylesAlphaFeedRating } from '@userstyles.club/atcute';
 
 export type Rating = ClubUserstylesAlphaFeedRating.Main;
 

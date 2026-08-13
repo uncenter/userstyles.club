@@ -13,7 +13,7 @@ import { getClubProfileFromPds, getClubProfilesFromPds } from '../backends/fallb
 
 import { makeRecordBuilder, type RecordCreateInput } from '../builder';
 import { CLUB_PROFILE_COLLECTION, isAppviewEnabled } from '../settings';
-import { ClubUserstylesAlphaActorProfile } from '$lib/at/lexicons';
+import { ClubUserstylesAlphaActorProfile } from '@userstyles.club/atcute';
 
 const BSKY_TTL = 5 * 60_000;
 const CLUB_TTL = 5 * 60_000;

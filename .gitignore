@@ -6,5 +6,3 @@ build/
 .env
 .env.*
 tap.db*
-
-src/lib/at/lexicons

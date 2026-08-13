@@ -22,7 +22,7 @@ import { type ActorIdentifier, type RecordKey, type CanonicalResourceUri } from 
 
 import { makeRecordBuilder } from '../builder';
 import { CLUB_USERSTYLE_COLLECTION, isAppviewEnabled } from '../settings';
-import { ClubUserstylesAlphaUserstyle, type ClubUserstylesAlphaDefs } from '$lib/at/lexicons';
+import { ClubUserstylesAlphaUserstyle, type ClubUserstylesAlphaDefs } from '@userstyles.club/atcute';
 
 export type Userstyle = ClubUserstylesAlphaUserstyle.Main;
 

@@ -3,7 +3,7 @@ import { is } from '@atcute/lexicons/validations';
 
 import { getBacklinkedRecords } from '../../records';
 import { CLUB_COMMENT_COLLECTION } from '../../settings';
-import { ClubUserstylesAlphaFeedComment } from '$lib/at/lexicons';
+import { ClubUserstylesAlphaFeedComment } from '@userstyles.club/atcute';
 import type { CommentRecord, CommentThreadNode } from '../../services/comments';
 
 export async function listCommentsFromConstellation(

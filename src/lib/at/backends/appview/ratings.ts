@@ -3,7 +3,7 @@ import type { CanonicalResourceUri, Did } from '@atcute/lexicons';
 
 import { getCrayonClient } from '../../client';
 import { CLUB_RATING_COLLECTION } from '../../settings';
-import type { ClubUserstylesAlphaDefs } from '$lib/at/lexicons';
+import type { ClubUserstylesAlphaDefs } from '@userstyles.club/atcute';
 import type { Rating, RatingRecord } from '../../services/ratings';
 
 /** The `subject.cid` field is a placeholder, as Crayon only carries `subjectUri`.

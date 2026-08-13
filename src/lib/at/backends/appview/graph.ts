@@ -2,7 +2,7 @@ import { ok } from '@atcute/client';
 import type { Did } from '@atcute/lexicons';
 
 import { getCrayonClient } from '../../client';
-import type { ClubUserstylesAlphaDefs } from '$lib/at/lexicons';
+import type { ClubUserstylesAlphaDefs } from '@userstyles.club/atcute';
 
 export type FollowView = ClubUserstylesAlphaDefs.FollowView;
 export type RelationshipView = ClubUserstylesAlphaDefs.RelationshipView;

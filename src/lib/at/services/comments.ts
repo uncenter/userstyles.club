@@ -7,7 +7,7 @@ import { listCommentsFromConstellation } from '../backends/fallback/comments';
 
 import { makeRecordBuilder, type RecordCreateInput, type RecordUpdateInput } from '../builder';
 import { CLUB_COMMENT_COLLECTION, isAppviewEnabled } from '../settings';
-import { ClubUserstylesAlphaFeedComment } from '$lib/at/lexicons';
+import { ClubUserstylesAlphaFeedComment } from '@userstyles.club/atcute';
 
 export type Comment = ClubUserstylesAlphaFeedComment.Main;
 

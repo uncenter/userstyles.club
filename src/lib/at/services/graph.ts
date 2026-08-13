@@ -14,7 +14,7 @@ import {
 import { createRecord, deleteRecord, type RepoRecord } from '../records';
 import { makeRecordBuilder } from '../builder';
 import { CLUB_FOLLOW_COLLECTION, isAppviewEnabled } from '../settings';
-import { ClubUserstylesAlphaGraphFollow } from '$lib/at/lexicons';
+import { ClubUserstylesAlphaGraphFollow } from '@userstyles.club/atcute';
 
 export type Follow = ClubUserstylesAlphaGraphFollow.Main;
 export type FollowRecord = RepoRecord<Follow>;

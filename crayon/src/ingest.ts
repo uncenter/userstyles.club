@@ -8,8 +8,8 @@ import {
   ClubUserstylesAlphaFeedRating,
   ClubUserstylesAlphaGraphFollow,
   ClubUserstylesAlphaUserstyle,
-} from '../../src/lib/at/lexicons/index.ts';
-import { getBlobCid } from '../../src/lib/at/utils.ts';
+} from '@userstyles.club/atcute';
+import { getBlobCid } from './utils.ts';
 import {
   createNotification,
   deleteComment,

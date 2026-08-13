@@ -9,7 +9,7 @@ import {
 
 import { getCrayonClient, resolveToDid } from '../../client';
 import { CLUB_USERSTYLE_COLLECTION } from '../../settings';
-import type { ClubUserstylesAlphaDefs } from '$lib/at/lexicons';
+import type { ClubUserstylesAlphaDefs } from '@userstyles.club/atcute';
 import type { Userstyle, UserstyleView, UserstyleRecord } from '../../services/userstyles';
 
 /**

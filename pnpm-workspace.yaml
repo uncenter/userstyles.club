@@ -5,7 +5,7 @@ allowBuilds:
   core-js: false
 trustPolicyExclude:
   - chokidar@4.0.3
-packages: ['.', 'crayon']
+packages: ['.', 'crayon', 'packages/*']
 overrides:
   '@atcute/lexicons': 2.0.0
 minimumReleaseAgeExclude:

@@ -1,0 +1,23 @@
+{
+  "name": "@userstyles.club/atcute",
+  "private": true,
+  "type": "module",
+  "version": "0.1.0",
+  "files": ["dist"],
+  "exports": {
+    "types": "./dist/index.d.ts",
+    "default": "./dist/index.js"
+  },
+  "scripts": {
+    "generate": "lex-cli generate && tsc",
+    "export": "lex-cli export"
+  },
+  "dependencies": {
+    "@atcute/atproto": "^4.0.0",
+    "@atcute/lexicons": "^2.0.0"
+  },
+  "devDependencies": {
+    "@atcute/lex-cli": "^3.1.0",
+    "typescript": "^5.9.3"
+  }
+}

@@ -9,6 +9,6 @@ declare global {
 }
 
 import type {} from '@atcute/atproto';
-import type {} from '$lib/at/lexicons';
+import type {} from '@userstyles.club/atcute';
 
 export {};

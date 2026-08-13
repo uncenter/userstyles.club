@@ -4,7 +4,7 @@ import { is } from '@atcute/lexicons/validations';
 import { getBlobText, getRecord, listRecordsForCollection, listRecordsForRepo } from '../../records';
 import { CLUB_USERSTYLE_COLLECTION } from '../../settings';
 import { getBlobCid, getLatestDate } from '../../utils';
-import { ClubUserstylesAlphaUserstyle } from '$lib/at/lexicons';
+import { ClubUserstylesAlphaUserstyle } from '@userstyles.club/atcute';
 import type { UserstyleView, UserstyleRecord } from '../../services/userstyles';
 import { computeRatingSummary } from '../../services/ratings';
 import { listRatingsFromConstellation } from './ratings';

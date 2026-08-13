@@ -1,4 +1,4 @@
-import type { ClubUserstylesAlphaDefs } from '$lib/at/lexicons';
+import type { ClubUserstylesAlphaDefs } from '@userstyles.club/atcute';
 
 type MozDocumentFunction = ClubUserstylesAlphaDefs.MozDocumentFunction;
 

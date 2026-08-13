@@ -24,4 +24,4 @@ just db init           # brings up postgres and then applies migrations
 TAP_URL=http://localhost:2480 pnpm dev
 ```
 
-`pnpm build && pnpm start` runs the compiled output — the entry point lands at `dist/crayon/src/main.js`, not `dist/main.js` (a consequence of `tsconfig.json`'s `rootDir: ".."`, needed to reach across to `../../src/lib/at/lexicons`).
+`pnpm build && pnpm start` runs the compiled output.

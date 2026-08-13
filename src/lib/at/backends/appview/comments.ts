@@ -3,7 +3,7 @@ import type { CanonicalResourceUri } from '@atcute/lexicons';
 
 import { getCrayonClient } from '../../client';
 import { CLUB_COMMENT_COLLECTION } from '../../settings';
-import type { ClubUserstylesAlphaDefs } from '$lib/at/lexicons';
+import type { ClubUserstylesAlphaDefs } from '@userstyles.club/atcute';
 import type { Comment, CommentRecord } from '../../services/comments';
 
 /** The `subject`/`parent` `.cid` fields are placeholders: Crayon's comment views only carry `subjectUri`/`parentUri`.
