@@ -162,15 +162,7 @@
           "format": "datetime"
         }
       },
-      "required": [
-        "uri",
-        "cid",
-        "author",
-        "subjectUri",
-        "rating",
-        "createdAt",
-        "indexedAt"
-      ],
+      "required": ["uri", "cid", "author", "subjectUri", "rating", "createdAt", "indexedAt"],
       "type": "object"
     },
     "commentView": {
@@ -213,15 +205,7 @@
           "format": "datetime"
         }
       },
-      "required": [
-        "uri",
-        "cid",
-        "author",
-        "subjectUri",
-        "comment",
-        "createdAt",
-        "indexedAt"
-      ],
+      "required": ["uri", "cid", "author", "subjectUri", "comment", "createdAt", "indexedAt"],
       "type": "object"
     },
     "commentThreadView": {
@@ -307,11 +291,37 @@
       "required": ["did"],
       "type": "object"
     },
+    "feedFollowView": {
+      "properties": {
+        "uri": {
+          "type": "string",
+          "format": "at-uri"
+        },
+        "did": {
+          "type": "string",
+          "format": "did"
+        },
+        "subjectDid": {
+          "type": "string",
+          "format": "did"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "datetime"
+        },
+        "indexedAt": {
+          "type": "string",
+          "format": "datetime"
+        }
+      },
+      "required": ["uri", "did", "subjectDid", "createdAt", "indexedAt"],
+      "type": "object"
+    },
     "feedViewItem": {
       "properties": {
         "type": {
           "type": "string",
-          "enum": ["userstyle", "comment", "rating"]
+          "enum": ["userstyle", "comment", "rating", "follow"]
         },
         "userstyle": {
           "ref": "club.userstyles.alpha.defs#userstyleView",
@@ -323,6 +333,10 @@
         },
         "rating": {
           "ref": "club.userstyles.alpha.defs#ratingView",
+          "type": "ref"
+        },
+        "follow": {
+          "ref": "club.userstyles.alpha.defs#feedFollowView",
           "type": "ref"
         }
       },

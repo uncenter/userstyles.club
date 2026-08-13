@@ -11,6 +11,7 @@
     getProfiles,
     getTimeline,
     authorOfFeedItem,
+    subjectOfFeedItem,
   } from '$lib/at';
   import {
     getPreferredActorIdentifier,
@@ -54,7 +55,9 @@
         ? item.userstyle?.uri
         : item.type === 'comment'
           ? item.comment?.uri
-          : item.rating?.uri;
+          : item.type === 'rating'
+            ? item.rating?.uri
+            : item.follow?.uri;
     return uri ?? String(index);
   }
 
@@ -63,7 +66,13 @@
       actor: feedScope === 'following' ? user.did! : undefined,
       cursor,
     });
-    const dids = [...new Set(page.feed.map(authorOfFeedItem).filter((did): did is Did => !!did))];
+    const dids = [
+      ...new Set(
+        page.feed
+          .flatMap((item) => [authorOfFeedItem(item), subjectOfFeedItem(item)])
+          .filter((did): did is Did => !!did),
+      ),
+    ];
     const resolved = await getProfiles(dids);
     feedProfiles = new Map([...feedProfiles, ...resolved]);
     return { items: page.feed, cursor: page.cursor };
@@ -143,10 +152,12 @@
     {:else}
       <ul class="feed-list list-reset" role="list">
         {#each feed.items as item, i (keyOfFeedItem(item, i))}
-          {@const did = authorOfFeedItem(item)}
-          {@const author = did ? feedProfiles.get(did) : undefined}
-          {#if author}
-            <FeedItem {item} {author} />
+          {@const authorDid = authorOfFeedItem(item)}
+          {@const authorProfile = authorDid ? feedProfiles.get(authorDid) : undefined}
+          {@const subjectDid = subjectOfFeedItem(item)}
+          {@const subjectProfile = subjectDid ? feedProfiles.get(subjectDid) : undefined}
+          {#if authorProfile && (!subjectDid || subjectProfile)}
+            <FeedItem {item} author={authorProfile} subject={subjectProfile} />
           {/if}
         {/each}
       </ul>

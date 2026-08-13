@@ -82,6 +82,7 @@ export {
   searchUserstyles,
   getTimeline,
   authorOfFeedItem,
+  subjectOfFeedItem,
   type SearchUserstylesParams,
   type UserstylesPage,
   type FeedViewItem,

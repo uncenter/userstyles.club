@@ -37,6 +37,7 @@ import {
   countFollowers,
   countFollows,
   countUserstyles,
+  type FollowActivityRow,
   type FollowRow,
   getCommentThreads,
   getCurrentRatingsByAuthor,
@@ -208,6 +209,16 @@ function toCommentThreadView(row: CommentThreadRow, ratingsByAuthor?: Map<string
 
 function toFollowView(row: FollowRow) {
   return { did: row.did as Did, createdAt: row.createdAt };
+}
+
+function toFeedFollowView(row: FollowActivityRow) {
+  return {
+    uri: row.uri as ResourceUri,
+    did: row.did as Did,
+    subjectDid: row.subjectDid as Did,
+    createdAt: row.createdAt,
+    indexedAt: new Date(row.indexedAt).toISOString(),
+  };
 }
 
 function toRelationshipView(other: Did, row: RelationshipRow) {
@@ -496,12 +507,21 @@ router.addQuery(ClubUserstylesAlphaFeedGetTimeline, {
     );
 
     const subjectUriOf = (item: TimelineItem) =>
-      item.type === 'userstyle' ? item.value.uri : item.value.subjectUri;
-    const subjectRows = await getUserstyles([...new Set(items.map(subjectUriOf))]);
+      item.type === 'userstyle'
+        ? item.value.uri
+        : item.type === 'follow'
+          ? undefined
+          : item.value.subjectUri;
+    const subjectRows = await getUserstyles([
+      ...new Set(items.map(subjectUriOf).filter((uri): uri is string => uri !== undefined)),
+    ]);
     const subjectByUri = new Map(subjectRows.map((row) => [row.uri, row]));
 
     const feed = items.map((item) => {
-      const subject = subjectByUri.get(subjectUriOf(item));
+      if (item.type === 'follow') {
+        return { type: 'follow' as const, follow: toFeedFollowView(item.value) };
+      }
+      const subject = subjectByUri.get(subjectUriOf(item)!);
       const userstyle = subject ? toUserstyleView(subject) : undefined;
       if (item.type === 'userstyle') {
         return { type: 'userstyle' as const, userstyle };

@@ -18,7 +18,11 @@ export async function searchUserstyles(params: SearchUserstylesParams): Promise<
 }
 
 export function authorOfFeedItem(item: FeedViewItem): Did | undefined {
-  return item.userstyle?.author ?? item.comment?.author ?? item.rating?.author;
+  return item.userstyle?.author ?? item.comment?.author ?? item.rating?.author ?? item.follow?.did;
+}
+
+export function subjectOfFeedItem(item: FeedViewItem): Did | undefined {
+  return item.follow?.subjectDid;
 }
 
 export async function getTimeline(opts?: {

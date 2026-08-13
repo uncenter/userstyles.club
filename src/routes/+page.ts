@@ -1,5 +1,12 @@
 import type { PageLoad } from './$types';
-import { getTimeline, getProfiles, authorOfFeedItem, type FeedViewItem, type ProfileView } from '$lib/at';
+import {
+  getTimeline,
+  getProfiles,
+  authorOfFeedItem,
+  subjectOfFeedItem,
+  type FeedViewItem,
+  type ProfileView,
+} from '$lib/at';
 import type { Did } from '@atcute/lexicons';
 
 export const ssr = true;
@@ -12,7 +19,13 @@ export const load: PageLoad = async ({ parent }) => {
 
   try {
     const page = await getTimeline({ actor: sessionHintDid });
-    const dids = [...new Set(page.feed.map(authorOfFeedItem).filter((did): did is Did => !!did))];
+    const dids = [
+      ...new Set(
+        page.feed
+          .flatMap((item) => [authorOfFeedItem(item), subjectOfFeedItem(item)])
+          .filter((did): did is Did => !!did),
+      ),
+    ];
     const profiles = await getProfiles(dids);
     return { initial: { items: page.feed, cursor: page.cursor, profiles } as InitialFeed };
   } catch {

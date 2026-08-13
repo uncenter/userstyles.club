@@ -55,6 +55,12 @@ export interface FollowRow {
   indexedAt: number;
 }
 
+const { cid: _followCid, rkey: _followRkey, ...followActivityColumns } = getTableColumns(follows);
+export type FollowActivityRow = Pick<
+  typeof follows.$inferSelect,
+  keyof typeof followActivityColumns
+>;
+
 /** Filter to a subject userstyle and/or to an  `author` did. */
 export interface SubjectAuthorFilter {
   subjectUri?: string;
@@ -663,7 +669,7 @@ export async function searchUserstyles(
 }
 
 interface TimelineIndexRow {
-  type: 'userstyle' | 'comment' | 'rating';
+  type: 'userstyle' | 'comment' | 'rating' | 'follow';
   uri: string;
   indexedAt: number;
 }
@@ -671,9 +677,10 @@ interface TimelineIndexRow {
 export type TimelineItem =
   | { type: 'userstyle'; value: UserstyleRow }
   | { type: 'comment'; value: CommentRow }
-  | { type: 'rating'; value: RatingRow };
+  | { type: 'rating'; value: RatingRow }
+  | { type: 'follow'; value: FollowActivityRow };
 
-/** Activity feed: a fan-in over new userstyles, comments, and ratings, most recently indexed first.
+/** Activity feed: a fan-in over new userstyles, comments, ratings, and follows, most recently indexed first.
  * Global by default; with `actor`, scoped to just the accounts that actor follows.
  * `cursor: [indexedAt, uri]` exclusive. */
 export async function getTimeline(
@@ -696,6 +703,8 @@ export async function getTimeline(
         SELECT 'comment' AS type, uri, indexed_at AS "indexedAt" FROM comments WHERE deleted_at IS NULL ${followingCondition}
         UNION ALL
         SELECT 'rating' AS type, uri, indexed_at AS "indexedAt" FROM ratings WHERE true ${followingCondition}
+        UNION ALL
+        SELECT 'follow' AS type, uri, indexed_at AS "indexedAt" FROM follows WHERE true ${followingCondition}
       ) items
       WHERE true ${cursorCondition}
       ORDER BY "indexedAt" DESC, uri DESC
@@ -708,9 +717,10 @@ export async function getTimeline(
     userstyle: index.filter((i) => i.type === 'userstyle').map((i) => i.uri),
     comment: index.filter((i) => i.type === 'comment').map((i) => i.uri),
     rating: index.filter((i) => i.type === 'rating').map((i) => i.uri),
+    follow: index.filter((i) => i.type === 'follow').map((i) => i.uri),
   };
 
-  const [userstyleRows, commentRows, ratingRows] = await Promise.all([
+  const [userstyleRows, commentRows, ratingRows, followRows] = await Promise.all([
     urisByType.userstyle.length
       ? db
           .select(userstyleColumns)
@@ -723,11 +733,18 @@ export async function getTimeline(
     urisByType.rating.length
       ? db.select(ratingColumns).from(ratings).where(inArray(ratings.uri, urisByType.rating))
       : [],
+    urisByType.follow.length
+      ? db
+          .select(followActivityColumns)
+          .from(follows)
+          .where(inArray(follows.uri, urisByType.follow))
+      : [],
   ]);
 
   const userstyleByUri = new Map(userstyleRows.map((r) => [r.uri, r]));
   const commentByUri = new Map(commentRows.map((r) => [r.uri, r]));
   const ratingByUri = new Map(ratingRows.map((r) => [r.uri, r]));
+  const followByUri = new Map(followRows.map((r) => [r.uri, r]));
 
   const items: TimelineItem[] = [];
   for (const entry of index) {
@@ -737,9 +754,12 @@ export async function getTimeline(
     } else if (entry.type === 'comment') {
       const value = commentByUri.get(entry.uri);
       if (value) items.push({ type: 'comment', value });
-    } else {
+    } else if (entry.type === 'rating') {
       const value = ratingByUri.get(entry.uri);
       if (value) items.push({ type: 'rating', value });
+    } else {
+      const value = followByUri.get(entry.uri);
+      if (value) items.push({ type: 'follow', value });
     }
   }
   return items;

@@ -12,12 +12,13 @@
   interface Props {
     item: FeedViewItem;
     author: ProfileView;
+    subject?: ProfileView;
   }
 
-  let { item, author }: Props = $props();
+  let { item, author, subject }: Props = $props();
 
   let date = $derived<string>(
-    getLatestDate(item.userstyle ?? item.comment ?? item.rating!),
+    getLatestDate(item.userstyle ?? item.comment ?? item.rating ?? item.follow!),
   );
 
   let styleHref = $derived.by(() => {
@@ -41,8 +42,10 @@
         published
       {:else if item.type === 'comment'}
         commented on
-      {:else}
+      {:else if item.type === 'rating'}
         rated
+      {:else}
+        followed
       {/if}
       {#if styleHref}
         <a href={styleHref} class="link link--quiet feed-item__style-link"
@@ -50,6 +53,9 @@
         >
       {/if}
     </span>
+    {#if item.type === 'follow' && subject}
+      <ActorHandle profile={subject} style="small" />
+    {/if}
     <time class="feed-item__date" datetime={date} title={formatDateTime(date)}
       >{formatDateTimeRelative(date)}</time
     >

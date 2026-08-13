@@ -116,12 +116,23 @@ export const relationshipView = object({
   },
 });
 
+export const feedFollowView = object({
+  properties: {
+    uri: required(string({ format: 'at-uri' })),
+    did: required(string({ format: 'did' })),
+    subjectDid: required(string({ format: 'did' })),
+    createdAt: required(string({ format: 'datetime' })),
+    indexedAt: required(string({ format: 'datetime' })),
+  },
+});
+
 export const feedViewItem = object({
   properties: {
-    type: required(string({ enum: ['userstyle', 'comment', 'rating'] })),
+    type: required(string({ enum: ['userstyle', 'comment', 'rating', 'follow'] })),
     userstyle: ref({ ref: 'club.userstyles.alpha.defs#userstyleView' }),
     comment: ref({ ref: 'club.userstyles.alpha.defs#commentView' }),
     rating: ref({ ref: 'club.userstyles.alpha.defs#ratingView' }),
+    follow: ref({ ref: 'club.userstyles.alpha.defs#feedFollowView' }),
   },
 });
 
@@ -150,6 +161,7 @@ export default document({
     commentThreadView,
     followView,
     relationshipView,
+    feedFollowView,
     feedViewItem,
     notificationView,
   },
