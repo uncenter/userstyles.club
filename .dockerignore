@@ -1,0 +1,12 @@
+node_modules/
+.git/
+.svelte-kit/
+.wrangler/
+build/
+crayon/dist/
+packages/*/src/
+packages/*/dist/
+tap.db*
+.env
+.env.*
+.DS_Store
