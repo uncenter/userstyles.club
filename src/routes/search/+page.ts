@@ -9,6 +9,7 @@ function parseSort(value: string | null): Sort {
 }
 
 export const ssr = true;
+export const prerender = false;
 
 export const load: PageLoad = async ({ url }) => {
   const query = url.searchParams.get('q') ?? '';
