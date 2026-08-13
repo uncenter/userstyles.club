@@ -59,7 +59,9 @@
   {:else if item.type === 'rating' && item.rating}
     <div class="feed-item__content"><StarRating value={item.rating.rating} /></div>
   {:else if item.type === 'userstyle' && item.userstyle?.description}
-    <p class="feed-item__content truncate-2">{item.userstyle.description}</p>
+    <p class="feed-item__content feed-item__content--description truncate-2">
+      {item.userstyle.description}
+    </p>
   {/if}
 </li>
 
@@ -94,6 +96,13 @@
     .feed-item__content {
       line-height: 1.5;
       margin: 0;
+
+      &.feed-item__content--description {
+        padding-left: var(--space-3);
+        border-left: 3px solid var(--border);
+        color: var(--fg-muted);
+        font-style: italic;
+      }
     }
   }
 </style>
