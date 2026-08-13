@@ -3,7 +3,6 @@
   import { goto } from '$app/navigation';
   import { resolve } from '$app/paths';
 
-  import { joinPageTitle } from '$lib/constants';
   import { preferences } from '$lib/preferences.svelte';
   import { PaginatedList } from '$lib/pagination.svelte';
   import { formatDateTime, formatDateTimeRelative } from '$lib/date';
@@ -18,7 +17,7 @@
   } from '$lib/at';
 
   import { Alert, Loading, Spinner } from '$components/ui';
-  import { ActorHandle, NotificationLabel } from '$components';
+  import { ActorHandle, NotificationLabel, Meta } from '$components';
 
   const list = new PaginatedList<NotificationView>();
   let profiles = $state(new Map<Did, ProfileView>());
@@ -67,9 +66,7 @@
   }
 </script>
 
-<svelte:head>
-  <title>{joinPageTitle('Notifications')}</title>
-</svelte:head>
+<Meta title="Notifications" description="Your notifications on userstyles.club." />
 
 <div class="page-section">
   <h1>Notifications</h1>

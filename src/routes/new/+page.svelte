@@ -1,7 +1,6 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
   import { resolve } from '$app/paths';
-  import { joinPageTitle } from '$lib/constants';
 
   import { parseCanonicalResourceUri } from '@atcute/lexicons';
 
@@ -10,7 +9,7 @@
   import type { ImportResult } from './import';
 
   import { Loading, Dialog } from '$components/ui';
-  import { BlueskyIcon } from '$components';
+  import { BlueskyIcon, Meta } from '$components';
 
   import ImportFromUrl from './import/ImportFromUrl.svelte';
   import UserstyleForm from './UserstyleForm.svelte';
@@ -31,7 +30,7 @@
   let shareText = $state('');
 
   $effect(() => {
-    if (!user.isLoggedIn) {
+    if (!user.isInitializing && !user.isLoggedIn) {
       goto(resolve('/login'));
       return;
     }
@@ -87,9 +86,10 @@
   }
 </script>
 
-<svelte:head>
-  <title>{joinPageTitle('New Userstyle')}</title>
-</svelte:head>
+<Meta
+  title="New Userstyle"
+  description="Publish a new userstyle on userstyles.club."
+/>
 
 <div class="page-section">
   <h1>New Userstyle</h1>

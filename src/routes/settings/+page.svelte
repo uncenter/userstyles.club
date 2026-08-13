@@ -1,9 +1,9 @@
 <script lang="ts">
-  import { joinPageTitle } from '$lib/constants';
 
   import { ChevronDownIcon } from '@lucide/svelte';
 
   import { preferences } from '$lib/preferences.svelte';
+  import { Meta } from '$components';
 
   const appearances = [
     { value: 'system', label: 'System' },
@@ -12,9 +12,7 @@
   ];
 </script>
 
-<svelte:head>
-  <title>{joinPageTitle('Settings')}</title>
-</svelte:head>
+<Meta title="Settings" description="Manage your userstyles.club local preferences." />
 
 <div class="page-section">
   <h1>Settings</h1>

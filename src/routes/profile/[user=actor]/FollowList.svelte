@@ -1,7 +1,6 @@
 <script lang="ts">
   import type { Did } from '@atcute/lexicons';
   import { resolve } from '$app/paths';
-  import { joinPageTitle } from '$lib/constants';
   import { getPreferredActorIdentifier, formatActorLabel } from '$lib/preferences.svelte';
   import { PaginatedList } from '$lib/pagination.svelte';
 
@@ -9,7 +8,7 @@
   import { fetchFollowPage } from './followList';
 
   import { BackLink, Loading, Alert, Spinner } from '$components/ui';
-  import { ActorHandle } from '$components';
+  import { ActorHandle, Meta } from '$components';
 
   interface Props {
     profile: ProfileView;
@@ -38,9 +37,14 @@
   }
 </script>
 
-<svelte:head>
-  <title>{joinPageTitle(title, formatActorLabel(profile))}</title>
-</svelte:head>
+<Meta
+  title={[title, formatActorLabel(profile)]}
+  description={`${title} of ${formatActorLabel(profile)} on userstyles.club.`}
+  image={profile.avatar}
+  imageAlt={formatActorLabel(profile)}
+  imageSize="small"
+  type="profile"
+/>
 
 <div class="page-section">
   <div class="page-header">

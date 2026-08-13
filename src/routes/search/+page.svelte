@@ -2,9 +2,8 @@
   import type { PageProps } from './$types';
   import { replaceState } from '$app/navigation';
   import { resolve } from '$app/paths';
-  import { joinPageTitle } from '$lib/constants';
 
-  import { UserstyleBrowser } from '$components';
+  import { Meta, UserstyleBrowser } from '$components';
 
   let { data }: PageProps = $props();
 
@@ -20,9 +19,12 @@
   });
 </script>
 
-<svelte:head>
-  <title>{joinPageTitle(query.trim() ? `Search: ${query.trim()}` : 'Search')}</title>
-</svelte:head>
+<Meta
+  title={query.trim() ? `Search: ${query.trim()}` : 'Search'}
+  description={query.trim()
+    ? `Userstyles matching "${query.trim()}" on userstyles.club.`
+    : 'Search userstyles on userstyles.club.'}
+/>
 
 <div class="page-section">
   <h1>Search</h1>

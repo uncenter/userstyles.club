@@ -10,6 +10,7 @@ import { type ActorResolver } from '@atcute/identity-resolver';
 import { Client, ok, simpleFetchHandler } from '@atcute/client';
 
 import { replaceState } from '$app/navigation';
+import { browser } from '$app/environment';
 import { SvelteURLSearchParams } from 'svelte/reactivity';
 import { REDIRECT_PATH, getSignUpPds, getSlingshotUrl } from './settings';
 import { getClientMetadata, oauthScope } from './metadata';
@@ -30,7 +31,18 @@ type LoggedOutUser = {
   did?: Did;
 };
 
-type LoggedInUser = Required<LoggedOutUser>;
+// `did` is known synchronously while the rest ()`agent`/`client`/`profile`) populate slightly later once the stored session and profile are loaded.
+type LoggedInUser = LoggedOutUser & { did: Did };
+
+const STORED_LOGIN_KEY = 'current-login';
+
+// Seeds the initial state from the stored login DID (if any).
+function getInitialUserState() {
+  const did = browser ? ((localStorage.getItem(STORED_LOGIN_KEY) as Did) ?? undefined) : undefined;
+  return did
+    ? { isInitializing: true, isLoggedIn: true as const, did }
+    : { isInitializing: true, isLoggedIn: false as const };
+}
 
 export const user: {
   isInitializing: boolean;
@@ -41,10 +53,7 @@ export const user: {
   | ({
       isLoggedIn: true;
     } & LoggedInUser)
-) = $state({
-  isInitializing: true,
-  isLoggedIn: false,
-});
+) = $state(getInitialUserState());
 
 export async function initClient() {
   user.isInitializing = true;
@@ -112,13 +121,17 @@ async function startAuthorization(identity?: ActorIdentifier) {
 export async function logout() {
   if (!user.isLoggedIn) return;
 
-  const did = user.agent.session.info.sub;
+  const did = user.did;
   localStorage.removeItem('current-login');
   invalidateProfileCaches(did);
 
-  try {
-    await user.agent.signOut();
-  } catch {
+  if (user.agent) {
+    try {
+      await user.agent.signOut();
+    } catch {
+      deleteStoredSession(did);
+    }
+  } else {
     deleteStoredSession(did);
   }
 
@@ -144,13 +157,13 @@ async function finalizeLogin(params: SvelteURLSearchParams, fallbackDid?: Did) {
     const { session } = await finalizeAuthorization(params);
     replaceState(location.pathname + location.search, {});
 
-    user.agent = new OAuthUserAgent(session);
-    user.client = new Client({ handler: user.agent });
-    user.did = session.info.sub;
-    user.isLoggedIn = true;
+    const agent = new OAuthUserAgent(session);
+    const client = new Client({ handler: agent });
+    const did = session.info.sub;
+    const profile = await getProfile(did);
 
-    localStorage.setItem('current-login', session.info.sub);
-    user.profile = await getProfile(session.info.sub);
+    localStorage.setItem('current-login', did);
+    Object.assign(user, { isLoggedIn: true, agent, client, did, profile });
     await ensureClubProfile();
   } catch {
     if (fallbackDid) {
@@ -162,12 +175,10 @@ async function finalizeLogin(params: SvelteURLSearchParams, fallbackDid?: Did) {
 async function resumeSession(did: Did) {
   try {
     const session = await getSession(did, { allowStale: true });
-    user.agent = new OAuthUserAgent(session);
-    user.client = new Client({ handler: user.agent });
-    user.did = session.info.sub;
-    user.isLoggedIn = true;
-
-    user.profile = await getProfile(session.info.sub);
+    const agent = new OAuthUserAgent(session);
+    const client = new Client({ handler: agent });
+    const profile = await getProfile(did);
+    Object.assign(user, { isLoggedIn: true, agent, client, did, profile });
     await ensureClubProfile();
   } catch {
     deleteStoredSession(did);

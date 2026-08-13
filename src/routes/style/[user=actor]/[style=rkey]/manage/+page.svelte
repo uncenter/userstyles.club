@@ -3,13 +3,13 @@
   import { resolve } from '$app/paths';
   import type { PageProps } from './$types';
 
-  import { joinPageTitle } from '$lib/constants';
   import { deleteUserstyle, getUserstyleSourceCode, updateUserstyle, user } from '$lib/at';
   import { getPreferredActorIdentifier } from '$lib/preferences.svelte';
   import { importFromProviders } from '../../../../new/import/providers';
   import { getUsercssMetadata } from '../../../../new/import/metadata';
 
   import { BackLink, Loading, Alert, Dialog } from '$components/ui';
+  import { Meta } from '$components';
   import { ExternalLinkIcon, PencilIcon, RefreshCwIcon, Trash2Icon } from '@lucide/svelte';
 
   import SyncDiffTable from './SyncDiffTable.svelte';
@@ -19,7 +19,7 @@
   let currentSourceCode = $derived(await getUserstyleSourceCode(data.userstyle));
 
   $effect(() => {
-    if (!user.isLoggedIn) {
+    if (!user.isInitializing && !user.isLoggedIn) {
       goto(resolve('/login'));
       return;
     }
@@ -126,9 +126,7 @@
   }
 </script>
 
-<svelte:head>
-  <title>{joinPageTitle('Manage', userstyle.title)}</title>
-</svelte:head>
+<Meta title={['Manage', userstyle.title]} description={`Manage ${userstyle.title} on userstyles.club.`} />
 
 <div class="page-section">
   <div class="page-header">

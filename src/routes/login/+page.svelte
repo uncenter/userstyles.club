@@ -1,11 +1,11 @@
 <script lang="ts">
   import { resolve } from '$app/paths';
   import { goto } from '$app/navigation';
-  import { joinPageTitle } from '$lib/constants';
 
   import { login, signup, user } from '$lib/at';
 
   import { BackLink, Loading, Alert } from '$components/ui';
+  import { Meta } from '$components';
 
   import { isActorIdentifier } from '@atcute/lexicons/syntax';
 
@@ -37,9 +37,7 @@
   }
 </script>
 
-<svelte:head>
-  <title>{joinPageTitle('Login')}</title>
-</svelte:head>
+<Meta title="Login" description="Sign in to userstyles.club." />
 
 <div class="centered-col">
   <section class="page-section login-card">

@@ -1,7 +1,6 @@
 <script lang="ts">
   import type { PageProps } from './$types';
   import { resolve } from '$app/paths';
-  import { joinPageTitle } from '$lib/constants';
   import { getPreferredActorIdentifier, formatActorLabel } from '$lib/preferences.svelte';
 
   import { parseCanonicalResourceUri, type ResourceUri } from '@atcute/lexicons';
@@ -16,7 +15,7 @@
   } from '$lib/at';
 
   import { Alert, Avatar, Loading } from '$components/ui';
-  import { UserstylesSection, BlueskyIcon } from '$components';
+  import { UserstylesSection, BlueskyIcon, Meta } from '$components';
 
   import { PencilIcon, UserPlusIcon, UserMinusIcon } from '@lucide/svelte';
 
@@ -89,8 +88,15 @@
   }
 </script>
 
+<Meta
+  title={formatActorLabel(data.profile)}
+  description={description || `${formatActorLabel(data.profile)}'s profile on userstyles.club.`}
+  image={data.profile.avatar}
+  imageAlt={identityLabel}
+  imageSize="small"
+  type="profile"
+/>
 <svelte:head>
-  <title>{joinPageTitle(formatActorLabel(data.profile))}</title>
   <meta name="at:canonical" content={`at://${data.profile.did}/${CLUB_PROFILE_COLLECTION}/self`} />
 </svelte:head>
 

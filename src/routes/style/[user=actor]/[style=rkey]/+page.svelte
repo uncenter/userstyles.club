@@ -2,7 +2,6 @@
   import type { PageProps } from './$types';
   import { resolve } from '$app/paths';
 
-  import { joinPageTitle } from '$lib/constants';
   import { proxify } from '$lib/proxify.svelte';
 
   import { parseCanonicalResourceUri, type CanonicalResourceUri } from '@atcute/lexicons';
@@ -27,6 +26,7 @@
   import {
     ActorHandle,
     CssPreview,
+    Meta,
     PreviewImage,
     StarRating,
     StarRatingAverage,
@@ -49,6 +49,12 @@
   let { data, params }: PageProps = $props();
   let userstyle = $derived(data.userstyle.value);
   let sourceCode = $derived(await getUserstyleSourceCode(data.userstyle));
+
+  let ogImage = $derived(
+    userstyle.previewImage
+      ? getBlobCdnUrl(data.profile.did, userstyle.previewImage, 'feed_fullsize')
+      : undefined,
+  );
 
   let ratingSummary = $derived(proxify(data.feedback.ratingSummary));
   let myRating = $derived<RatingRecord | undefined>(user.isLoggedIn ? await getUserRatingForStyle(data.userstyle.uri, user.did) : undefined);
@@ -212,8 +218,13 @@
   }
 </script>
 
+<Meta
+  title={userstyle.title}
+  description={userstyle.description || `${userstyle.title}, a userstyle shared on userstyles.club.`}
+  image={ogImage}
+  imageAlt={userstyle.title}
+/>
 <svelte:head>
-  <title>{joinPageTitle(userstyle.title)}</title>
   <meta name="at:canonical" content={data.userstyle.uri} />
 </svelte:head>
 

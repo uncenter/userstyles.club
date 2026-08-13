@@ -3,6 +3,8 @@ import { getProfile, getUserstyle } from '$lib/at';
 import { ClientResponseError } from '@atcute/client';
 import { error } from '@sveltejs/kit';
 
+export const ssr = true;
+
 export const load: LayoutLoad = async ({ params }) => {
   const { user, style } = params;
   try {

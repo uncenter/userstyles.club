@@ -3,7 +3,10 @@
   import { resolve } from '$app/paths';
 
   import { ArrowLeftIcon } from '@lucide/svelte';
+  import { Meta } from '$components';
 </script>
+
+<Meta title={String(page.status)} description={page.error?.message ?? 'Something went wrong.'} />
 
 <div class="centered-col">
   <section class="page-section error-page">

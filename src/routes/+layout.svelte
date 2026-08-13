@@ -10,7 +10,7 @@
   import { TAGLINE, REPO_URL, FEEDBACK_URL } from '$lib/constants';
 
   import { LogoCombo } from '$components/branding';
-  import { Spinner, Avatar } from '$components/ui';
+  import { Avatar } from '$components/ui';
 
   import { MenuIcon, MoveUpRightIcon, SearchIcon, InboxIcon, XIcon } from '@lucide/svelte';
 
@@ -78,8 +78,6 @@
 </script>
 
 <svelte:head>
-  <title>userstyles.club</title>
-  <meta name="description" content={TAGLINE} />
   <link rel="icon" type="image/svg+xml" href="/favicon.svg?v=20260615" />
   <link rel="icon" type="image/png" href="/favicon-96x96.png?v=20260615" sizes="96x96" />
   <link rel="shortcut icon" href="/favicon.ico?v=20260615" />
@@ -88,12 +86,7 @@
   <link rel="manifest" href="/site.webmanifest?v=20260615" />
 </svelte:head>
 
-{#if user.isInitializing}
-  <div class="init-screen">
-    <Spinner size="lg" />
-  </div>
-{:else}
-  <nav class="navbar">
+<nav class="navbar">
     <div class="navbar__stripe accent-cycle" aria-hidden="true">
       <span class="navbar__stripe-segment"></span><span class="navbar__stripe-segment"></span><span
         class="navbar__stripe-segment"
@@ -163,7 +156,7 @@
                 <a
                   class="user-menu__item"
                   href={resolve('/profile/[user=actor]', {
-                    user: getPreferredActorIdentifier(user.profile),
+                    user: user.profile ? getPreferredActorIdentifier(user.profile) : user.did,
                   })}
                   role="menuitem">Profile</a
                 >
@@ -240,7 +233,7 @@
         </a>
         <a
           href={resolve('/profile/[user=actor]', {
-            user: getPreferredActorIdentifier(user.profile),
+            user: user.profile ? getPreferredActorIdentifier(user.profile) : user.did,
           })}
           class="mobile-nav__link"
           role="menuitem">Profile</a
@@ -282,15 +275,8 @@
       </div>
     </div>
   </footer>
-{/if}
 
 <style>
-  .init-screen {
-    min-height: 100vh;
-    display: grid;
-    place-items: center;
-  }
-
   .navbar__toggle {
     display: flex;
     align-items: center;

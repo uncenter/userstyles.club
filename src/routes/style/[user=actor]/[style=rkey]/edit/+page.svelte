@@ -3,11 +3,11 @@
   import { resolve } from '$app/paths';
   import type { PageProps } from './$types';
 
-  import { joinPageTitle } from '$lib/constants';
 
   import { getBlobCdnUrl, getUserstyleSourceCode, updateUserstyle, user } from '$lib/at';
 
   import { BackLink, Loading } from '$components/ui';
+  import { Meta } from '$components';
 
   import UserstyleForm from '../../../../new/UserstyleForm.svelte';
 
@@ -31,7 +31,7 @@
   let keepExistingPreview = $derived(!!userstyle.previewImage);
 
   $effect(() => {
-    if (!user.isLoggedIn) {
+    if (!user.isInitializing && !user.isLoggedIn) {
       goto(resolve('/login'));
       return;
     }
@@ -69,9 +69,7 @@
   }
 </script>
 
-<svelte:head>
-  <title>{joinPageTitle('Editing', userstyle.title)}</title>
-</svelte:head>
+<Meta title={['Editing', userstyle.title]} description={`Edit ${userstyle.title} on userstyles.club.`} />
 
 <div class="page-section">
   <div class="page-header">

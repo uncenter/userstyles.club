@@ -1,14 +1,12 @@
 <script lang="ts">
   import { user } from '$lib/at';
-  import { joinPageTitle } from '$lib/constants';
 
+  import { Meta } from '$components';
   import Dashboard from './Dashboard.svelte';
   import Welcome from './Welcome.svelte';
 </script>
 
-<svelte:head>
-  <title>{joinPageTitle()}</title>
-</svelte:head>
+<Meta />
 
 {#if user.isLoggedIn}
   <Dashboard />

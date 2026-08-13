@@ -1,3 +1,4 @@
+export { default as Meta } from './Meta.svelte';
 export { default as ActorHandle } from './ActorHandle.svelte';
 export { default as NotificationLabel } from './NotificationLabel.svelte';
 export { default as UserstylesSection } from './UserstylesSection.svelte';
