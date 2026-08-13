@@ -1,9 +1,17 @@
 <script lang="ts">
   import type { Did } from '@atcute/lexicons';
+  import { untrack } from 'svelte';
   import { resolve } from '$app/paths';
   import { parseCanonicalResourceUri } from '@atcute/lexicons/syntax';
 
-  import { type ProfileView, type FeedViewItem, user, getProfiles, getTimeline } from '$lib/at';
+  import {
+    type ProfileView,
+    type FeedViewItem,
+    user,
+    getProfiles,
+    getTimeline,
+    authorOfFeedItem,
+  } from '$lib/at';
   import {
     getPreferredActorIdentifier,
     formatActorLabel,
@@ -16,6 +24,13 @@
   import { Alert, Loading, Spinner } from '$components/ui';
 
   import { ClockIcon, ActivityIcon } from '@lucide/svelte';
+
+  interface Props {
+    // First page of the "following" feed, fetched server-side using the SSR session hint.
+    initial?: { items: FeedViewItem[]; cursor?: string; profiles: Map<Did, ProfileView> };
+  }
+
+  let { initial }: Props = $props();
 
   let recentStyles = $derived(preferences.get('recentlyVisitedStyles'));
 
@@ -30,12 +45,8 @@
   type FeedScope = 'global' | 'following';
   let feedScope = $state<FeedScope>('following');
 
-  const feed = new PaginatedList<FeedViewItem>();
-  let feedProfiles = $state(new Map<Did, ProfileView>());
-
-  function authorOfFeedItem(item: FeedViewItem): Did | undefined {
-    return item.userstyle?.author ?? item.comment?.author ?? item.rating?.author;
-  }
+  const feed = new PaginatedList<FeedViewItem>(untrack(() => initial));
+  let feedProfiles = $state(untrack(() => initial?.profiles ?? new Map<Did, ProfileView>()));
 
   function keyOfFeedItem(item: FeedViewItem, index: number): string {
     const uri =
@@ -58,7 +69,16 @@
     return { items: page.feed, cursor: page.cursor };
   }
 
+  // Skips the first effect run when seeded.
+  let skipNextFeedLoad = untrack(() => !!initial);
+
   $effect(() => {
+    feedScope;
+    user.did;
+    if (skipNextFeedLoad) {
+      skipNextFeedLoad = false;
+      return;
+    }
     feed.load(fetchFeedPage, { reset: true });
   });
 

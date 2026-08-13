@@ -1,5 +1,6 @@
 <script lang="ts">
   import type { Did } from '@atcute/lexicons';
+  import { untrack } from 'svelte';
   import { resolve } from '$app/paths';
   import { getPreferredActorIdentifier, formatActorLabel } from '$lib/preferences.svelte';
   import { PaginatedList } from '$lib/pagination.svelte';
@@ -13,14 +14,16 @@
   interface Props {
     profile: ProfileView;
     kind: 'followers' | 'following';
+    // First page fetched server-side.
+    initial?: { items: FollowView[]; cursor?: string; profiles: Map<Did, ProfileView> };
   }
 
-  let { profile, kind }: Props = $props();
+  let { profile, kind, initial }: Props = $props();
 
   let title = $derived(kind === 'followers' ? 'Followers' : 'Following');
 
-  const list = new PaginatedList<FollowView>();
-  let profiles = $state(new Map<Did, ProfileView>());
+  const list = new PaginatedList<FollowView>(untrack(() => initial));
+  let profiles = $state(untrack(() => initial?.profiles ?? new Map<Did, ProfileView>()));
 
   async function fetchPage(cursor?: string) {
     const page = await fetchFollowPage(profile.did, kind, cursor);
@@ -28,7 +31,16 @@
     return { items: page.items, cursor: page.cursor };
   }
 
+  // Skips the first effect run when seeded, so the server-fetched initial page isn't immediately discarded.
+  let skipNextLoad = untrack(() => !!initial);
+
   $effect(() => {
+    profile.did;
+    kind;
+    if (skipNextLoad) {
+      skipNextLoad = false;
+      return;
+    }
     list.load(fetchPage, { reset: true });
   });
 

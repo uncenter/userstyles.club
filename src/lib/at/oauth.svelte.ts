@@ -10,10 +10,11 @@ import { type ActorResolver } from '@atcute/identity-resolver';
 import { Client, ok, simpleFetchHandler } from '@atcute/client';
 
 import { replaceState } from '$app/navigation';
-import { browser } from '$app/environment';
+import { browser, dev } from '$app/environment';
 import { SvelteURLSearchParams } from 'svelte/reactivity';
 import { REDIRECT_PATH, getSignUpPds, getSlingshotUrl } from './settings';
 import { getClientMetadata, oauthScope } from './metadata';
+import { SESSION_HINT_COOKIE } from '$lib/constants';
 import {
   getProfile,
   setClubProfile,
@@ -35,6 +36,15 @@ type LoggedOutUser = {
 type LoggedInUser = LoggedOutUser & { did: Did };
 
 const STORED_LOGIN_KEY = 'current-login';
+
+function setSessionHintCookie(did: Did) {
+  const secure = dev ? '' : '; secure';
+  document.cookie = `${SESSION_HINT_COOKIE}=${encodeURIComponent(did)}; path=/; max-age=${60 * 60 * 24 * 365}; samesite=lax${secure}`;
+}
+
+function clearSessionHintCookie() {
+  document.cookie = `${SESSION_HINT_COOKIE}=; path=/; max-age=0; samesite=lax`;
+}
 
 // Seeds the initial state from the stored login DID (if any).
 function getInitialUserState() {
@@ -79,7 +89,7 @@ export async function initClient() {
   });
 
   const params = new SvelteURLSearchParams(location.hash.slice(1));
-  const did = (localStorage.getItem('current-login') as Did) ?? undefined;
+  const did = (localStorage.getItem(STORED_LOGIN_KEY) as Did) ?? undefined;
 
   if (params.size > 0) {
     await finalizeLogin(params, did);
@@ -122,7 +132,8 @@ export async function logout() {
   if (!user.isLoggedIn) return;
 
   const did = user.did;
-  localStorage.removeItem('current-login');
+  localStorage.removeItem(STORED_LOGIN_KEY);
+  clearSessionHintCookie();
   invalidateProfileCaches(did);
 
   if (user.agent) {
@@ -162,7 +173,8 @@ async function finalizeLogin(params: SvelteURLSearchParams, fallbackDid?: Did) {
     const did = session.info.sub;
     const profile = await getProfile(did);
 
-    localStorage.setItem('current-login', did);
+    localStorage.setItem(STORED_LOGIN_KEY, did);
+    setSessionHintCookie(did);
     Object.assign(user, { isLoggedIn: true, agent, client, did, profile });
     await ensureClubProfile();
   } catch {
@@ -178,11 +190,13 @@ async function resumeSession(did: Did) {
     const agent = new OAuthUserAgent(session);
     const client = new Client({ handler: agent });
     const profile = await getProfile(did);
+    setSessionHintCookie(did); // refreshes the cookie's expiry on each successful resume
     Object.assign(user, { isLoggedIn: true, agent, client, did, profile });
     await ensureClubProfile();
   } catch {
     deleteStoredSession(did);
-    localStorage.removeItem('current-login');
+    localStorage.removeItem(STORED_LOGIN_KEY);
+    clearSessionHintCookie();
   }
 }
 

@@ -5,4 +5,4 @@
   let { data }: PageProps = $props();
 </script>
 
-<FollowList profile={data.profile} kind="followers" />
+<FollowList profile={data.profile} kind="followers" initial={data.initial} />

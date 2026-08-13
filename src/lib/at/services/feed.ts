@@ -17,6 +17,10 @@ export async function searchUserstyles(params: SearchUserstylesParams): Promise<
   return await searchUserstylesFromAppview(params);
 }
 
+export function authorOfFeedItem(item: FeedViewItem): Did | undefined {
+  return item.userstyle?.author ?? item.comment?.author ?? item.rating?.author;
+}
+
 export async function getTimeline(opts?: {
   actor?: Did;
   cursor?: string;

@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { untrack } from 'svelte';
   import { searchUserstyles, type UserstyleView } from '$lib/at';
   import { PaginatedList } from '$lib/pagination.svelte';
 
@@ -12,20 +13,31 @@
   interface Props {
     query?: string;
     sort?: Sort;
+    // First page fetched server-side.
+    initial?: { items: UserstyleView[]; cursor?: string };
   }
 
-  let { query = $bindable(''), sort = $bindable('latest') }: Props = $props();
+  let { query = $bindable(''), sort = $bindable('latest'), initial }: Props = $props();
 
   let searchInput = $state(query);
 
-  const list = new PaginatedList<UserstyleView>();
+  const list = new PaginatedList<UserstyleView>(untrack(() => initial));
 
   async function fetchPage(cursor?: string) {
     const page = await searchUserstyles({ query: query.trim() || undefined, sort, cursor });
     return { items: page.userstyles, cursor: page.cursor };
   }
 
+  // Skips the first effect run when seeded, so the server-fetched initial page isn't immediately discarded.
+  let skipNextLoad = untrack(() => !!initial);
+
   $effect(() => {
+    query;
+    sort;
+    if (skipNextLoad) {
+      skipNextLoad = false;
+      return;
+    }
     list.load(fetchPage, { reset: true });
   });
 

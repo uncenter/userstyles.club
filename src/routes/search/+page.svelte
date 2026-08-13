@@ -29,4 +29,4 @@
 <div class="page-section">
   <h1>Search</h1>
 </div>
-<UserstyleBrowser bind:query bind:sort />
+<UserstyleBrowser bind:query bind:sort initial={data.initial} />
