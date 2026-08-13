@@ -60,6 +60,7 @@ import {
   getRatingSummary,
   searchUserstyles,
   type SubjectAuthorFilter,
+  type TimelineItem,
   type UserstyleRow,
 } from './db/index.ts';
 import { getCachedBlobTextFor } from './usercss.ts';
@@ -494,14 +495,21 @@ router.addQuery(ClubUserstylesAlphaFeedGetTimeline, {
       (item) => `${item.value.indexedAt}_${item.value.uri}`,
     );
 
+    const subjectUriOf = (item: TimelineItem) =>
+      item.type === 'userstyle' ? item.value.uri : item.value.subjectUri;
+    const subjectRows = await getUserstyles([...new Set(items.map(subjectUriOf))]);
+    const subjectByUri = new Map(subjectRows.map((row) => [row.uri, row]));
+
     const feed = items.map((item) => {
+      const subject = subjectByUri.get(subjectUriOf(item));
+      const userstyle = subject ? toUserstyleView(subject) : undefined;
       if (item.type === 'userstyle') {
-        return { type: 'userstyle' as const, userstyle: toUserstyleView(item.value) };
+        return { type: 'userstyle' as const, userstyle };
       }
       if (item.type === 'comment') {
-        return { type: 'comment' as const, comment: toCommentView(item.value) };
+        return { type: 'comment' as const, comment: toCommentView(item.value), userstyle };
       }
-      return { type: 'rating' as const, rating: toRatingView(item.value) };
+      return { type: 'rating' as const, rating: toRatingView(item.value), userstyle };
     });
 
     return json({ cursor: nextCursor, feed });

@@ -38,7 +38,13 @@
   }
 
   function keyOfFeedItem(item: FeedViewItem, index: number): string {
-    return item.userstyle?.uri ?? item.comment?.uri ?? item.rating?.uri ?? String(index);
+    const uri =
+      item.type === 'userstyle'
+        ? item.userstyle?.uri
+        : item.type === 'comment'
+          ? item.comment?.uri
+          : item.rating?.uri;
+    return uri ?? String(index);
   }
 
   async function fetchFeedPage(cursor?: string) {
