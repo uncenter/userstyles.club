@@ -40,7 +40,7 @@ You'll likely want to run the entire appview at once, a combination of the Crayo
 
 To just run one component of the appview or another, use `just crayon` or `just tap`.
 
-The Crayon/appview instance URL can be configured in the frontend via Settings → Network, or set `VITE_CRAYON_URL`.
+The Crayon/appview instance URL can be configured in the frontend via Settings → Network, or set `VITE_CRAYON_URL`. In development, this defaults to `http://127.0.0.1:8080`, or in production, `https://crayon.userstyles.club`.
 
 ### Debugging
 
