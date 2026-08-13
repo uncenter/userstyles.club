@@ -1,5 +1,11 @@
 import type { Did, GenericUri, ResourceUri } from '@atcute/lexicons';
-import { InvalidRequestError, json, XRPCError, XRPCRouter } from '@atcute/xrpc-server';
+import {
+  type FetchMiddleware,
+  InvalidRequestError,
+  json,
+  XRPCError,
+  XRPCRouter,
+} from '@atcute/xrpc-server';
 import { cors } from '@atcute/xrpc-server/middlewares/cors';
 
 import {
@@ -222,8 +228,71 @@ function toNotificationView(row: NotificationRow, userstyle: UserstyleRow | unde
   };
 }
 
+// Every registered query lexicon.
+const XRPC_QUERIES = [
+  ClubUserstylesAlphaGetUserstyle,
+  ClubUserstylesAlphaGetUserstyleSourceCode,
+  ClubUserstylesAlphaListUserstyles,
+  ClubUserstylesAlphaCountUserstyles,
+  ClubUserstylesAlphaActorGetProfile,
+  ClubUserstylesAlphaActorGetProfiles,
+  ClubUserstylesAlphaGraphListFollows,
+  ClubUserstylesAlphaGraphListFollowers,
+  ClubUserstylesAlphaGraphCountFollows,
+  ClubUserstylesAlphaGraphCountFollowers,
+  ClubUserstylesAlphaGraphGetRelationship,
+  ClubUserstylesAlphaGraphGetRelationships,
+  ClubUserstylesAlphaFeedListComments,
+  ClubUserstylesAlphaFeedCountComments,
+  ClubUserstylesAlphaFeedListRatings,
+  ClubUserstylesAlphaFeedCountRatings,
+  ClubUserstylesAlphaFeedSearchUserstyles,
+  ClubUserstylesAlphaFeedGetFeedback,
+  ClubUserstylesAlphaFeedGetTimeline,
+  ClubUserstylesAlphaNotificationListNotifications,
+];
+
+function nsidOf(query: { nsid: string } | { mainSchema: { nsid: string } }): string {
+  return 'mainSchema' in query ? query.mainSchema.nsid : query.nsid;
+}
+
+const ROOT_TEXT = `
+
+                        #
+         ###           ###            #
+         #--##       #*==#          #=#
+         #----##    #=====#      ##===#
+        #-###::#    #-----##    ####===#
+        #:::::::#   *--:---#   #-----###
+         #:::::::# #--:----#   #--:----#
+         #:::::::# #-------#  #-------#
+          #:::::::##-------# #-------#
+           #::##...#######-####------#
+           #.......#.......##.....#-#
+            #.....##.......#.......#
+            ####:::#------#---#+...#
+             #:::::#------#-------#
+              #::::#----:#-----:-#
+              #::::#-----#------##
+               #:::#-----##-----#
+                             ###
+
+This is Crayon, an AT Protocol [https://atproto.com] appview server for userstyles.club [https://userstyles.club].
+
+Available routes:
+${XRPC_QUERIES.map((query) => `- /xrpc/${nsidOf(query)}`).join('\n')}
+`;
+
+const index: FetchMiddleware = async (request, next) => {
+  const { pathname } = new URL(request.url);
+  if (pathname === '/') {
+    return new Response(ROOT_TEXT, { headers: { 'content-type': 'text/plain; charset=utf-8' } });
+  }
+  return next(request);
+};
+
 export const router = new XRPCRouter({
-  middlewares: [cors()],
+  middlewares: [cors(), index],
 });
 
 router.addQuery(ClubUserstylesAlphaGetUserstyle, {
