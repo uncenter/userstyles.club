@@ -44,7 +44,7 @@ The Crayon/appview instance URL can be configured in the frontend via Settings â
 
 ### Debugging
 
-Both Tap and crayon expose plain HTTP endpoints you can `curl`.
+Both Tap and Crayon expose plain HTTP endpoints you can `curl`.
 
 #### Tap
 
@@ -56,7 +56,7 @@ curl http://localhost:2480/stats/record-count    # total tracked records, across
 curl http://localhost:2480/info/did:plc:example  # state/rev/record count/errors for one repo
 ```
 
-`/stats/record-count` counts every record Tap has backfilled for every tracked repo (not just userstyles.club collections), so it's typically dominated by unrelated records. To count just userstyles, query Tap's own SQLite DB directly (`tap.db`, created at the repo root by default) instead:
+To count just userstyles, query Tap's own SQLite DB directly (`tap.db`, created at the repo root by default) instead:
 
 ```sh
 sqlite3 tap.db "SELECT COUNT(*) FROM repo_records WHERE collection = 'club.userstyles.alpha.userstyle';"
