@@ -18,7 +18,7 @@ export async function searchUserstyles(params: SearchUserstylesParams): Promise<
 }
 
 export function authorOfFeedItem(item: FeedViewItem): Did | undefined {
-  return item.userstyle?.author ?? item.comment?.author ?? item.rating?.author ?? item.follow?.did;
+  return item.comment?.author ?? item.rating?.author ?? item.follow?.did ?? item.userstyle?.author;
 }
 
 export function subjectOfFeedItem(item: FeedViewItem): Did | undefined {

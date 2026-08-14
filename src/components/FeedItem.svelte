@@ -18,7 +18,7 @@
   let { item, author, subject }: Props = $props();
 
   let date = $derived<string>(
-    getLatestDate(item.userstyle ?? item.comment ?? item.rating ?? item.follow!),
+    getLatestDate(item.comment ?? item.rating ?? item.follow ?? item.userstyle!),
   );
 
   let styleHref = $derived.by(() => {
