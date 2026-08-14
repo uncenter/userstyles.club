@@ -2,9 +2,8 @@ import type { AppBskyActorDefs } from '@atcute/bluesky';
 import type { ActorIdentifier, Did, Handle } from '@atcute/lexicons';
 
 import { getPublicClient, getSlingshotClient, resolveToDid } from '../client';
-import { getSessionContext } from '../auth';
 import { ok, ClientResponseError } from '@atcute/client';
-import { putRecord, type RepoRecord } from '../records';
+import type { RepoRecord } from '../records';
 import { getCacheEntry, writeCacheEntry, invalidateCacheEntries } from '$lib/cache';
 import { chunk } from '../utils';
 
@@ -14,8 +13,7 @@ import {
 } from '../backends/appview/profiles';
 import { getClubProfileFromPds, getClubProfilesFromPds } from '../backends/fallback/profiles';
 
-import { makeRecordBuilder, type RecordCreateInput } from '../builder';
-import { CLUB_PROFILE_COLLECTION, isAppviewEnabled } from '../settings';
+import { isAppviewEnabled } from '../settings';
 import { ClubUserstylesAlphaActorProfile } from '@userstyles.club/atcute';
 
 const BSKY_TTL = 5 * 60_000;
@@ -27,13 +25,6 @@ const CLUB_CACHE_KEY = (did: Did) => `club:${did}`;
 export type ClubProfile = ClubUserstylesAlphaActorProfile.Main;
 
 export type ClubProfileRecord = RepoRecord<ClubProfile>;
-
-const builder = makeRecordBuilder(
-  ClubUserstylesAlphaActorProfile.mainSchema,
-  CLUB_PROFILE_COLLECTION,
-);
-
-const SELF_RKEY = 'self';
 
 export async function getClubProfile(did: Did): Promise<ClubProfile | undefined> {
   const cached = getCacheEntry<ClubProfile>(CLUB_CACHE_KEY(did), CLUB_TTL);
@@ -54,21 +45,9 @@ export async function getClubProfile(did: Did): Promise<ClubProfile | undefined>
   return profile;
 }
 
-export async function setClubProfile(
-  input: RecordCreateInput<ClubProfile>,
-  existingCreatedAt?: string,
-) {
-  const { did } = getSessionContext('You must be logged in to update your profile.');
-
-  // No updatedAt, so we use build() instead of update() and generate the createdAt when necessary.
-  const newProfile = builder.build({
-    ...input,
-    createdAt: existingCreatedAt ?? new Date().toISOString(),
-  });
-
-  const result = await putRecord(CLUB_PROFILE_COLLECTION, SELF_RKEY, newProfile);
-  writeCacheEntry(CLUB_CACHE_KEY(did), newProfile);
-  return result;
+/** Caches a freshly-written club profile client-side, keyed by its owner's did (the server-side write itself doesn't touch this browser-only cache). */
+export function cacheClubProfile(did: Did, profile: ClubProfile): void {
+  writeCacheEntry(CLUB_CACHE_KEY(did), profile);
 }
 
 export async function getBskyProfile(actor: ActorIdentifier) {

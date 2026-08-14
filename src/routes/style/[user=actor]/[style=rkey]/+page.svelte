@@ -187,10 +187,13 @@
       myRating = undefined;
     } else if (myRating) {
       const { rkey } = parseCanonicalResourceUri(myRating.uri);
-      await updateRating(rkey, {
-        subject: { uri: data.userstyle.uri, cid: data.userstyle.cid! },
-        rating: value,
-        createdAt: myRating.value.createdAt,
+      await updateRating({
+        rkey,
+        input: {
+          subject: { uri: data.userstyle.uri, cid: data.userstyle.cid! },
+          rating: value,
+          createdAt: myRating.value.createdAt,
+        },
       });
       applyRatingToSummary(myRating.value.rating, value);
       myRating = { ...myRating, value: { ...myRating.value, rating: value } };

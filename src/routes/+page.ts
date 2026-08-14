@@ -14,11 +14,11 @@ export const ssr = true;
 type InitialFeed = { items: FeedViewItem[]; cursor?: string; profiles: Map<Did, ProfileView> };
 
 export const load: PageLoad = async ({ parent }) => {
-  const { sessionHintDid } = await parent();
-  if (!sessionHintDid) return { initial: undefined as InitialFeed | undefined };
+  const { sessionDid } = await parent();
+  if (!sessionDid) return { initial: undefined as InitialFeed | undefined };
 
   try {
-    const page = await getTimeline({ actor: sessionHintDid });
+    const page = await getTimeline({ actor: sessionDid });
     const dids = [
       ...new Set(
         page.feed

@@ -11,7 +11,6 @@ import type { Records } from '@atcute/lexicons/ambient';
 import type * as v from '@atcute/lexicons/validations';
 
 import { getPdsClient, getConstellationClient, getPublicClient, getRelayClient } from './client';
-import { getSessionContext } from './auth';
 import { getBlobCid } from './utils';
 import { ok } from '@atcute/client';
 
@@ -22,7 +21,7 @@ export type RepoRecord<T extends Record<string, unknown> = Record<string, unknow
 };
 
 /** Maps a lexicon NSID to its record value type via the ambient registry. Falls back to `Record<string, unknown>` for unregistered collections. */
-type ValueFor<NSID extends Nsid> = [NSID] extends [keyof Records]
+export type ValueFor<NSID extends Nsid> = [NSID] extends [keyof Records]
   ? v.InferInput<Records[NSID]>
   : Record<string, unknown>;
 
@@ -149,56 +148,6 @@ export async function getRecord<NSID extends Nsid>(params: {
   return response as RepoRecord<ValueFor<NSID>>;
 }
 
-export async function createRecord<NSID extends Nsid>(collection: NSID, record: ValueFor<NSID>) {
-  const { client, did } = getSessionContext('You must be logged in to write records.');
-
-  const response = await ok(
-    client.post('com.atproto.repo.createRecord', {
-      input: {
-        repo: did,
-        collection,
-        record: record as Record<string, unknown>,
-      },
-    }),
-  );
-
-  return { response, record };
-}
-
-export async function putRecord<NSID extends Nsid>(
-  collection: NSID,
-  rkey: RecordKey,
-  record: ValueFor<NSID>,
-) {
-  const { client, did } = getSessionContext('You must be logged in to write records.');
-
-  const response = await ok(
-    client.post('com.atproto.repo.putRecord', {
-      input: {
-        repo: did,
-        collection,
-        rkey,
-        record: record as Record<string, unknown>,
-      },
-    }),
-  );
-
-  return { response, record };
-}
-
-export async function uploadBlob(blob: Blob): Promise<BlobRef> {
-  const { client } = getSessionContext('You must be logged in to upload files.');
-
-  const response = await ok(
-    client.post('com.atproto.repo.uploadBlob', {
-      encoding: blob.type as `${string}/${string}`,
-      input: blob,
-    }),
-  );
-
-  return response.blob;
-}
-
 export async function getBlobText(did: Did, blob: BlobRef | LegacyBlob): Promise<string> {
   const client = await getPdsClient(did);
   const cid = getBlobCid(blob);
@@ -211,20 +160,4 @@ export async function getBlobText(did: Did, blob: BlobRef | LegacyBlob): Promise
   );
 
   return await response.text();
-}
-
-export async function deleteRecord(collection: Nsid, rkey: RecordKey) {
-  const { client, did } = getSessionContext('You must be logged in to write records.');
-
-  await ok(
-    client.post('com.atproto.repo.deleteRecord', {
-      input: {
-        repo: did,
-        collection,
-        rkey,
-      },
-    }),
-  );
-
-  return true;
 }

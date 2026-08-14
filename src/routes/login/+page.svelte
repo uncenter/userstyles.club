@@ -1,17 +1,12 @@
 <script lang="ts">
   import { resolve } from '$app/paths';
-  import { goto } from '$app/navigation';
 
-  import { user } from '$lib/at';
-
-  import { BackLink } from '$components/ui';
+  import { BackLink, Alert } from '$components/ui';
   import { Meta, LoginForm } from '$components';
 
-  $effect(() => {
-    if (user.isLoggedIn) {
-      goto('/');
-    }
-  });
+  import type { PageProps } from './$types';
+
+  let { data }: PageProps = $props();
 </script>
 
 <Meta title="Login" description="Sign in to userstyles.club." />
@@ -23,6 +18,9 @@
       <p class="text-muted">Enter your Bluesky (Atmosphere) handle or DID to continue.</p>
     </div>
 
+    {#if data.error}
+      <Alert variant="error">{data.error}</Alert>
+    {/if}
     <LoginForm />
 
     <BackLink href={resolve('/')} label="Back to Home" />

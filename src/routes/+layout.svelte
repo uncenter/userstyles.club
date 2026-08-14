@@ -1,10 +1,9 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
   import { afterNavigate, goto } from '$app/navigation';
   import { resolve } from '$app/paths';
   import '../app.css';
 
-  import { initClient, user, logout, listNotifications } from '$lib/at';
+  import { user, setUser, listNotifications } from '$lib/at';
   import { NOTIFICATION_POLL_INTERVAL_MS } from '$lib/notifications';
   import { preferences, getPreferredActorIdentifier } from '$lib/preferences.svelte';
   import { TAGLINE, REPO_URL, FEEDBACK_URL } from '$lib/constants';
@@ -47,7 +46,11 @@
     return () => clearInterval(interval);
   });
 
-  let { children } = $props();
+  let { data, children } = $props();
+
+  $effect(() => {
+    setUser(data.sessionDid ? { did: data.sessionDid, profile: data.profile } : undefined);
+  });
 
   $effect(() => {
     const val = preferences.get('appearance');
@@ -70,10 +73,6 @@
     } else if (userMenuPopover?.matches(':popover-open')) {
       userMenuPopover.hidePopover();
     }
-  });
-
-  onMount(async () => {
-    await initClient();
   });
 </script>
 
@@ -161,14 +160,15 @@
                 role="menuitem">Profile</a
               >
               <a class="user-menu__item" href={resolve('/settings')} role="menuitem">Settings</a>
-              <button
-                type="button"
-                role="menuitem"
-                class="user-menu__item user-menu__item--danger"
-                popovertarget="user-menu-popover"
-                popovertargetaction="hide"
-                onclick={() => logout()}>Logout</button
-              >
+              <form method="POST" action="/logout" style="display: contents">
+                <button
+                  type="submit"
+                  role="menuitem"
+                  class="user-menu__item user-menu__item--danger"
+                  popovertarget="user-menu-popover"
+                  popovertargetaction="hide">Logout</button
+                >
+              </form>
             </div>
           </li>
         {:else}
@@ -239,14 +239,15 @@
         role="menuitem">Profile</a
       >
       <a href={resolve('/settings')} class="mobile-nav__link" role="menuitem">Settings</a>
-      <button
-        type="button"
-        role="menuitem"
-        class="mobile-nav__link mobile-nav__link--danger"
-        popovertarget="mobile-nav-popover"
-        popovertargetaction="hide"
-        onclick={() => logout()}>Logout</button
-      >
+      <form method="POST" action="/logout" style="display: contents">
+        <button
+          type="submit"
+          role="menuitem"
+          class="mobile-nav__link mobile-nav__link--danger"
+          popovertarget="mobile-nav-popover"
+          popovertargetaction="hide">Logout</button
+        >
+      </form>
     {:else}
       <a href={resolve('/login')} class="mobile-nav__link" role="menuitem">Login</a>
     {/if}

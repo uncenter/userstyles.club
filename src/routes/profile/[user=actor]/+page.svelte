@@ -8,6 +8,7 @@
   import {
     user,
     setClubProfile,
+    cacheClubProfile,
     followActor,
     unfollowActor,
     getRelationship,
@@ -77,7 +78,11 @@
     saveError = null;
 
     try {
-      await setClubProfile({ description: editDescription }, data.profile.club?.createdAt);
+      const result = await setClubProfile({
+        input: { description: editDescription },
+        existingCreatedAt: data.profile.club?.createdAt,
+      });
+      if (user.did) cacheClubProfile(user.did, result.record);
       description = editDescription;
       editing = false;
     } catch (e) {

@@ -1,6 +1,5 @@
 <script lang="ts">
   import type { PageProps } from './$types';
-  import { user } from '$lib/at';
 
   import { Meta } from '$components';
   import Dashboard from './Dashboard.svelte';
@@ -8,7 +7,7 @@
 
   let { data }: PageProps = $props();
 
-  let showDashboard = $derived(user.isLoggedIn || (user.isInitializing && !!data.sessionHintDid));
+  let showDashboard = $derived(!!data.sessionDid);
 </script>
 
 <Meta />

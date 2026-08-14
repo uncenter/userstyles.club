@@ -1,38 +1,27 @@
-export { initClient, login, logout, signup, user } from './oauth.svelte';
-export { getSessionContext, type SessionContext } from './auth';
+export { user, setUser } from './oauth.svelte';
 export { getPublicClient } from './client';
 export { getBlobCdnUrl } from './utils';
-export {
-  listRecordsForRepo,
-  getBacklinkedRecords,
-  getRecord,
-  createRecord,
-  putRecord,
-  deleteRecord,
-  type RepoRecord,
-} from './records';
+export { listRecordsForRepo, getBacklinkedRecords, getRecord, type RepoRecord } from './records';
 export {
   getProfile,
   getProfiles,
   getBskyProfile,
   getClubProfile,
-  setClubProfile,
+  cacheClubProfile,
   invalidateProfileCaches,
   type ProfileView,
   type ClubProfile,
   type ClubProfileRecord,
 } from './services/profiles';
+export { setClubProfile } from './services/profiles.remote';
 export {
   listUserstyles,
-  listMyUserstyles,
   listAllUserstyles,
   getUserstyle,
-  createUserstyle,
-  updateUserstyle,
-  deleteUserstyle,
   removeSourceCodeUpdateUrl,
   getUserstyleFeedback,
   getUserstyleSourceCode,
+  blobInputFromFile,
   type UserstyleContent,
   type Userstyle,
   type UserstyleInput,
@@ -40,11 +29,9 @@ export {
   type UserstyleView,
   type UserstyleFeedback,
 } from './services/userstyles';
+export { createUserstyle, updateUserstyle, deleteUserstyle } from './services/userstyles.remote';
 export {
   listCommentsForStyle,
-  createComment,
-  updateComment,
-  deleteComment,
   buildCommentThreads,
   applyCommentPatches,
   collectThreadAuthorDids,
@@ -53,23 +40,20 @@ export {
   type CommentThread,
   type CommentThreadPatch,
 } from './services/comments';
+export { createComment, updateComment, deleteComment } from './services/comments.remote';
 export {
   listRatingsForStyle,
   getUserRatingForStyle,
-  createRating,
-  updateRating,
-  deleteRating,
   computeRatingSummary,
   type Rating,
   type RatingRecord,
 } from './services/ratings';
+export { createRating, updateRating, deleteRating } from './services/ratings.remote';
 export {
   listFollows,
   listFollowers,
   countFollows,
   countFollowers,
-  followActor,
-  unfollowActor,
   getRelationship,
   getRelationships,
   type Follow,
@@ -78,6 +62,7 @@ export {
   type FollowsPage,
   type RelationshipView,
 } from './services/graph';
+export { followActor, unfollowActor } from './services/graph.remote';
 export {
   searchUserstyles,
   getTimeline,

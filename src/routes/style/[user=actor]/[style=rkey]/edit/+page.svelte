@@ -3,7 +3,12 @@
   import { resolve } from '$app/paths';
   import type { PageProps } from './$types';
 
-  import { getBlobCdnUrl, getUserstyleSourceCode, updateUserstyle, user } from '$lib/at';
+  import {
+    blobInputFromFile,
+    getBlobCdnUrl,
+    getUserstyleSourceCode,
+    updateUserstyle,
+  } from '$lib/at';
 
   import { BackLink, Loading } from '$components/ui';
   import { Meta } from '$components';
@@ -29,17 +34,6 @@
   let previewFile = $state<File | null>(null);
   let keepExistingPreview = $derived(!!userstyle.previewImage);
 
-  $effect(() => {
-    if (!user.isInitializing && !user.isLoggedIn) {
-      goto(resolve('/login'));
-      return;
-    }
-    // Redirect non-owners back to the style page.
-    if (user.did && user.did !== data.profile.did) {
-      goto(resolve('/style/[user=actor]/[style=rkey]', { user: data.user, style: data.style }));
-    }
-  });
-
   async function submit(event: Event) {
     event.preventDefault();
     if (saving) return;
@@ -48,16 +42,25 @@
     error = null;
 
     try {
-      await updateUserstyle(data.style, {
-        title,
-        description,
-        license,
-        upstreamUrl: trackUpstreamUrl ? upstreamUrl : undefined,
-        homepageUrl,
-        sourceCode,
-        ignoreUpdateUrl,
-        previewImage: previewFile ?? (keepExistingPreview ? userstyle.previewImage : undefined),
-        createdAt: userstyle.createdAt,
+      const previewImage = previewFile
+        ? await blobInputFromFile(previewFile)
+        : keepExistingPreview
+          ? userstyle.previewImage
+          : undefined;
+
+      await updateUserstyle({
+        rkey: data.style,
+        userstyle: {
+          title,
+          description,
+          license,
+          upstreamUrl: trackUpstreamUrl ? upstreamUrl : undefined,
+          homepageUrl,
+          sourceCode,
+          ignoreUpdateUrl,
+          previewImage,
+          createdAt: userstyle.createdAt,
+        },
       });
       goto(resolve('/style/[user=actor]/[style=rkey]', { user: data.user, style: data.style }));
     } catch (e) {

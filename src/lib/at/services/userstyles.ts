@@ -1,4 +1,3 @@
-import { getSessionContext } from '../auth';
 import {
   getUserstyleFromAppview,
   getUserstyleSourceCodeFromAppview,
@@ -13,15 +12,14 @@ import {
 } from '../backends/fallback/userstyles';
 import { getFeedbackFromAppview } from '../backends/appview/feedback';
 import { getFeedbackFromConstellation } from '../backends/fallback/feedback';
-import { createRecord, deleteRecord, putRecord, uploadBlob, type RepoRecord } from '../records';
+import type { RepoRecord } from '../records';
 
 import type { CommentThreadNode } from './comments';
 
 import { ClientResponseError } from '@atcute/client';
 import { type ActorIdentifier, type RecordKey, type CanonicalResourceUri } from '@atcute/lexicons';
 
-import { makeRecordBuilder } from '../builder';
-import { CLUB_USERSTYLE_COLLECTION, isAppviewEnabled } from '../settings';
+import { isAppviewEnabled } from '../settings';
 import {
   ClubUserstylesAlphaUserstyle,
   type ClubUserstylesAlphaDefs,
@@ -60,11 +58,6 @@ export type UserstyleDetailExtras = {
 };
 
 export type UserstyleRecord = RepoRecord<Userstyle> & { extras?: UserstyleDetailExtras };
-
-const builder = makeRecordBuilder(
-  ClubUserstylesAlphaUserstyle.mainSchema,
-  CLUB_USERSTYLE_COLLECTION,
-);
 
 export async function getUserstyle(
   repo: ActorIdentifier,
@@ -110,41 +103,9 @@ export async function listUserstyles(repo: ActorIdentifier): Promise<UserstyleVi
   return await listUserstylesFromPds(repo);
 }
 
-export async function listMyUserstyles() {
-  const { did } = getSessionContext('You must be logged in to read your userstyles.');
-  return await listUserstyles(did);
-}
-
-export async function createUserstyle(userstyle: UserstyleInput<{ previewImage?: File }>) {
-  const previewImage = userstyle.previewImage
-    ? await uploadBlob(userstyle.previewImage)
-    : undefined;
-  const sourceCode = await uploadBlob(new Blob([userstyle.sourceCode], { type: 'text/plain' }));
-  return await createRecord(
-    CLUB_USERSTYLE_COLLECTION,
-    builder.create({ ...userstyle, previewImage, sourceCode }),
-  );
-}
-
-export async function updateUserstyle(
-  rkey: RecordKey,
-  userstyle: UserstyleInput<{ previewImage?: File | Userstyle['previewImage']; createdAt: string }>,
-) {
-  const previewImage =
-    userstyle.previewImage instanceof File
-      ? await uploadBlob(userstyle.previewImage)
-      : userstyle.previewImage;
-  const sourceCode = await uploadBlob(new Blob([userstyle.sourceCode], { type: 'text/plain' }));
-
-  return await putRecord(
-    CLUB_USERSTYLE_COLLECTION,
-    rkey,
-    builder.update({ ...userstyle, previewImage, sourceCode }),
-  );
-}
-
-export async function deleteUserstyle(rkey: RecordKey) {
-  return await deleteRecord(CLUB_USERSTYLE_COLLECTION, rkey);
+/** Converts a `File` into the wire shape a remote command can carry (see `services/userstyles.remote.ts`). */
+export async function blobInputFromFile(file: File): Promise<{ bytes: Uint8Array; type: string }> {
+  return { bytes: new Uint8Array(await file.arrayBuffer()), type: file.type };
 }
 
 /**

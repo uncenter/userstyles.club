@@ -66,11 +66,14 @@
     error = null;
     submitting = true;
     try {
-      let updated = await updateComment(rkey, {
-        subject: userstyle,
-        comment: editing.value,
-        createdAt: thread.comment.value.createdAt,
-        parent: thread.comment.value.parent,
+      let updated = await updateComment({
+        rkey,
+        input: {
+          subject: userstyle,
+          comment: editing.value,
+          createdAt: thread.comment.value.createdAt,
+          parent: thread.comment.value.parent,
+        },
       });
       onCommentEdited({
         uri: thread.comment.uri,

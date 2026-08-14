@@ -1,13 +1,11 @@
-import { env } from '$env/dynamic/private';
-import { json } from '@sveltejs/kit';
-import { createClientMetadata } from '$lib/at/metadata';
+import { json, error } from '@sveltejs/kit';
+import { getOAuthClient } from '$lib/server/oauth';
+import type { RequestHandler } from './$types';
 
-export const prerender = true;
+// Depends on platform.env (KV/secrets), which aren't available at prerender/build time.
+export const prerender = false;
 
-function getBuildOrigin() {
-  return env.SITE_ORIGIN?.trim() || env.VITE_SITE_ORIGIN?.trim() || 'https://userstyles.club';
-}
-
-export function GET() {
-  return json(createClientMetadata(getBuildOrigin()));
-}
+export const GET: RequestHandler = ({ platform }) => {
+  if (!platform) error(500, 'Platform bindings unavailable');
+  return json(getOAuthClient(platform.env).metadata);
+};

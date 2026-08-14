@@ -4,7 +4,7 @@
 
   import { parseCanonicalResourceUri } from '@atcute/lexicons';
 
-  import { createUserstyle, user, type UserstyleContent } from '$lib/at';
+  import { blobInputFromFile, createUserstyle, user, type UserstyleContent } from '$lib/at';
   import { getPreferredActorIdentifier } from '$lib/preferences.svelte';
   import type { ImportResult } from './import';
 
@@ -34,7 +34,7 @@
   let loginModalOpen = $state(false);
 
   $effect(() => {
-    if (!user.isInitializing && !user.isLoggedIn) {
+    if (!user.isLoggedIn) {
       const timer = setTimeout(() => (loginModalOpen = true), 300);
       return () => clearTimeout(timer);
     }
@@ -57,7 +57,7 @@
         homepageUrl: fields.homepageUrl,
         sourceCode: fields.sourceCode,
         ignoreUpdateUrl: fields.ignoreUpdateUrl,
-        previewImage: previewFile ?? undefined,
+        previewImage: previewFile ? await blobInputFromFile(previewFile) : undefined,
       });
       let uri = parseCanonicalResourceUri(userstyle.response.uri);
       publishedUrl = `/style/${getPreferredActorIdentifier(user.profile!)}/${uri.rkey}`;

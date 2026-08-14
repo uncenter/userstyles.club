@@ -3,7 +3,7 @@
   import { resolve } from '$app/paths';
   import type { PageProps } from './$types';
 
-  import { deleteUserstyle, getUserstyleSourceCode, updateUserstyle, user } from '$lib/at';
+  import { deleteUserstyle, getUserstyleSourceCode, updateUserstyle } from '$lib/at';
   import { getPreferredActorIdentifier } from '$lib/preferences.svelte';
   import { importFromProviders } from '../../../../new/import/providers';
   import { getUsercssMetadata } from '../../../../new/import/metadata';
@@ -17,16 +17,6 @@
   let { data }: PageProps = $props();
   let userstyle = $derived(data.userstyle.value);
   let currentSourceCode = $derived(await getUserstyleSourceCode(data.userstyle));
-
-  $effect(() => {
-    if (!user.isInitializing && !user.isLoggedIn) {
-      goto(resolve('/login'));
-      return;
-    }
-    if (user.did && user.did !== data.profile.did) {
-      goto(resolve('/style/[user=actor]/[style=rkey]', { user: data.user, style: data.style }));
-    }
-  });
 
   let sync = $state({
     fetching: false,
@@ -85,16 +75,19 @@
     sync.saving = true;
     sync.error = null;
     try {
-      await updateUserstyle(data.style, {
-        title: userstyle.title,
-        description: userstyle.description,
-        license: userstyle.license,
-        homepageUrl: userstyle.homepageUrl,
-        sourceCode: sync.newSourceCode,
-        upstreamUrl: userstyle.upstreamUrl,
-        ignoreUpdateUrl: userstyle.ignoreUpdateUrl,
-        previewImage: userstyle.previewImage,
-        createdAt: userstyle.createdAt,
+      await updateUserstyle({
+        rkey: data.style,
+        userstyle: {
+          title: userstyle.title,
+          description: userstyle.description,
+          license: userstyle.license,
+          homepageUrl: userstyle.homepageUrl,
+          sourceCode: sync.newSourceCode,
+          upstreamUrl: userstyle.upstreamUrl,
+          ignoreUpdateUrl: userstyle.ignoreUpdateUrl,
+          previewImage: userstyle.previewImage,
+          createdAt: userstyle.createdAt,
+        },
       });
       sync.dialogOpen = false;
       sync.newSourceCode = null;

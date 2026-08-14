@@ -1,7 +1,7 @@
 import { dev } from '$app/environment';
 import { preferences } from '../preferences.svelte';
 
-export const REDIRECT_PATH = '/';
+export const REDIRECT_PATH = '/oauth/callback';
 
 const DEFAULT_SLINGSHOT_URL = 'https://slingshot.microcosm.blue';
 const DEFAULT_CONSTELLATION_URL = 'https://constellation.microcosm.blue';

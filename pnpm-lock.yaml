@@ -29,9 +29,9 @@ importers:
       '@atcute/microcosm':
         specifier: ^2.0.1
         version: 2.0.1(@atcute/lexicons@2.0.0)
-      '@atcute/oauth-browser-client':
-        specifier: ^4.0.0
-        version: 4.0.0(@atcute/identity-resolver@2.0.0(@atcute/identity@2.0.2(@atcute/lexicons@2.0.0)(typescript@5.9.3))(@atcute/lexicons@2.0.0)(typescript@5.9.3))(@atcute/lexicons@2.0.0)(typescript@5.9.3)
+      '@atcute/oauth-node-client':
+        specifier: ^2.0.1
+        version: 2.0.1(@atcute/identity-resolver@2.0.0(@atcute/identity@2.0.2(@atcute/lexicons@2.0.0)(typescript@5.9.3))(@atcute/lexicons@2.0.0)(typescript@5.9.3))(@atcute/lexicons@2.0.0)(typescript@5.9.3)
       '@catppuccin/codemirror':
         specifier: ^1.0.3
         version: 1.0.3
@@ -294,26 +294,23 @@ packages:
       '@atcute/cbor': ^2.0.0
       '@atcute/cid': ^2.0.0
 
-  '@atcute/multibase@1.2.3':
-    resolution: {integrity: sha512-hliOXcgYS3x0afs8JsjSvA5c15Zf36ggCcxIHspSM7wrae3zhwaTigYRU6NvghkPMAal4tRRbhv98AuP5YzJ6w==}
-
   '@atcute/multibase@1.2.5':
     resolution: {integrity: sha512-cReTONgYpQo/VHD3ZmzPNoyBKJgSk1J4h//cvvdVVJBMar+SjlQ/sUXeTjQfuyfmDKv+TLKhmutLcvbMcQ9Rvw==}
 
-  '@atcute/oauth-browser-client@4.0.0':
-    resolution: {integrity: sha512-rvxmRcA6WOZz5TfcKp1kVtxUioogMzQH5OdCrW3Fm+ldEPPe2ZEyP7x1PzRWo6Es3F8lm4Q7BCJJgJFkQp2a5Q==}
+  '@atcute/oauth-crypto@1.0.1':
+    resolution: {integrity: sha512-ghC8ceFx0r6pi5X3dNoET1K6PNg8afeAOZLD4PKLhrpVYdRtRrgY4uqAe3ojtSIjoS6GXmVm063CoJ2xtg/MoQ==}
+
+  '@atcute/oauth-keyset@0.1.3':
+    resolution: {integrity: sha512-VSNUb2TLUTyntgzfn58kwNL4kp4TD+M868tyyrFWlCaDVy0pDnVFfUXa1z1W+DBWLL9ICy2qTdPitRokAZKivw==}
+
+  '@atcute/oauth-node-client@2.0.1':
+    resolution: {integrity: sha512-MgqN9Rnt5nuUH5zriETtbQrwcx/tWaELKaFVQtqggMtRI4k4IP5+ZbnG40tiJjbZfSclapA2kwOnT14kO0nAxg==}
     peerDependencies:
       '@atcute/identity-resolver': ^2.0.0
       '@atcute/lexicons': 2.0.0
 
-  '@atcute/oauth-crypto@1.0.0':
-    resolution: {integrity: sha512-2UC1msk4PyUArk/5Pl8zgtz1T8O+LZdFfB8ENLHjQVYitpqzGj2ZpDJaWZvCF3Y8lly4KoeUHLpFPDzbP+3u+g==}
-
-  '@atcute/oauth-keyset@0.1.1':
-    resolution: {integrity: sha512-BpaaXSuMawxILhWTOR0YIpKzFSA0MQC1W5Hn0HGE+giTqYFAKcdf0oA+2RZG9ZLVIzfO2txBsTeMpxB5qL6lEQ==}
-
-  '@atcute/oauth-types@1.0.0':
-    resolution: {integrity: sha512-YOpjLU8H5PG6oKfgau+dx7rSmGsLxIA36MeGL7BDeopcyq80RqPSBAzOasEEsmbMRJ/nTsMRJhnmGkp3RCa/Zw==}
+  '@atcute/oauth-types@1.0.1':
+    resolution: {integrity: sha512-9uFP/nK0PgPDsaNbLArzrCHvTZO1k04cSEX5jZ75W2Jh7Jxbh/CSTenSrad3CZXuX6y6hDquEtl6H/IqLtTmHw==}
 
   '@atcute/repo@1.0.1':
     resolution: {integrity: sha512-ufSPhcvtQZ1npiEQla45HmKqfmrlxMeoX5HmudavwpBWE1HZEaxZu1L2qP43K+Ontk0S0Cv5PHQRZTkuIdubzA==}
@@ -2092,8 +2089,8 @@ packages:
     engines: {node: ^10 || ^12 || ^13.7 || ^14 || >=15.0.1}
     hasBin: true
 
-  nanoid@5.1.11:
-    resolution: {integrity: sha512-v+KEsUv2ps74PaSKv0gHTxTCgMXOIfBEbaqa6w6ISIGC7ZsvHN4N9oJ8d4cmf0n5oTzQz2SLmThbQWhjd/8eKg==}
+  nanoid@5.1.16:
+    resolution: {integrity: sha512-kVrnsrJqMR8+oLJnGEmSWw9BivK5mt7H3FZatVRjrc5wGqFYuBxX1yG7+A7Gi5AefkX6t/oCkizcQgpu0cY1dQ==}
     engines: {node: ^18 || >=20}
     hasBin: true
 
@@ -2656,47 +2653,46 @@ snapshots:
       '@atcute/cid': 2.4.1
       '@atcute/uint8array': 1.1.5
 
-  '@atcute/multibase@1.2.3':
-    dependencies:
-      '@atcute/uint8array': 1.1.2
-
   '@atcute/multibase@1.2.5':
     dependencies:
       '@atcute/uint8array': 1.1.5
 
-  '@atcute/oauth-browser-client@4.0.0(@atcute/identity-resolver@2.0.0(@atcute/identity@2.0.2(@atcute/lexicons@2.0.0)(typescript@5.9.3))(@atcute/lexicons@2.0.0)(typescript@5.9.3))(@atcute/lexicons@2.0.0)(typescript@5.9.3)':
+  '@atcute/oauth-crypto@1.0.1(typescript@5.9.3)':
+    dependencies:
+      '@atcute/multibase': 1.2.5
+      '@atcute/uint8array': 1.1.5
+      nanoid: 5.1.16
+      valibot: 1.4.2(typescript@5.9.3)
+    transitivePeerDependencies:
+      - typescript
+
+  '@atcute/oauth-keyset@0.1.3(typescript@5.9.3)':
+    dependencies:
+      '@atcute/oauth-crypto': 1.0.1(typescript@5.9.3)
+    transitivePeerDependencies:
+      - typescript
+
+  '@atcute/oauth-node-client@2.0.1(@atcute/identity-resolver@2.0.0(@atcute/identity@2.0.2(@atcute/lexicons@2.0.0)(typescript@5.9.3))(@atcute/lexicons@2.0.0)(typescript@5.9.3))(@atcute/lexicons@2.0.0)(typescript@5.9.3)':
     dependencies:
       '@atcute/client': 5.1.1(@atcute/lexicons@2.0.0)(typescript@5.9.3)
+      '@atcute/identity': 2.0.2(@atcute/lexicons@2.0.0)(typescript@5.9.3)
       '@atcute/identity-resolver': 2.0.0(@atcute/identity@2.0.2(@atcute/lexicons@2.0.0)(typescript@5.9.3))(@atcute/lexicons@2.0.0)(typescript@5.9.3)
       '@atcute/lexicons': 2.0.0
-      '@atcute/multibase': 1.2.3
-      '@atcute/oauth-crypto': 1.0.0(typescript@5.9.3)
-      '@atcute/oauth-types': 1.0.0(typescript@5.9.3)
-      nanoid: 5.1.11
+      '@atcute/oauth-crypto': 1.0.1(typescript@5.9.3)
+      '@atcute/oauth-keyset': 0.1.3(typescript@5.9.3)
+      '@atcute/oauth-types': 1.0.1(typescript@5.9.3)
+      '@atcute/util-fetch': 2.0.2(typescript@5.9.3)
+      nanoid: 5.1.16
+      valibot: 1.4.2(typescript@5.9.3)
     transitivePeerDependencies:
       - typescript
 
-  '@atcute/oauth-crypto@1.0.0(typescript@5.9.3)':
+  '@atcute/oauth-types@1.0.1(typescript@5.9.3)':
     dependencies:
-      '@atcute/multibase': 1.2.3
-      '@atcute/uint8array': 1.1.2
-      nanoid: 5.1.11
-      valibot: 1.4.1(typescript@5.9.3)
-    transitivePeerDependencies:
-      - typescript
-
-  '@atcute/oauth-keyset@0.1.1(typescript@5.9.3)':
-    dependencies:
-      '@atcute/oauth-crypto': 1.0.0(typescript@5.9.3)
-    transitivePeerDependencies:
-      - typescript
-
-  '@atcute/oauth-types@1.0.0(typescript@5.9.3)':
-    dependencies:
-      '@atcute/identity': 2.0.0(@atcute/lexicons@2.0.0)(typescript@5.9.3)
+      '@atcute/identity': 2.0.2(@atcute/lexicons@2.0.0)(typescript@5.9.3)
       '@atcute/lexicons': 2.0.0
-      '@atcute/oauth-keyset': 0.1.1(typescript@5.9.3)
-      valibot: 1.4.1(typescript@5.9.3)
+      '@atcute/oauth-keyset': 0.1.3(typescript@5.9.3)
+      valibot: 1.4.2(typescript@5.9.3)
     transitivePeerDependencies:
       - typescript
 
@@ -4083,7 +4079,7 @@ snapshots:
 
   nanoid@3.3.12: {}
 
-  nanoid@5.1.11: {}
+  nanoid@5.1.16: {}
 
   nanoid@6.0.0: {}
 

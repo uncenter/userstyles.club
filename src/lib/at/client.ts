@@ -2,6 +2,7 @@ import { Client, ok, simpleFetchHandler } from '@atcute/client';
 import type { ActorIdentifier, Did } from '@atcute/lexicons';
 import { isDid } from '@atcute/lexicons/syntax';
 import type {} from '@atcute/microcosm';
+import type { ActorResolver } from '@atcute/identity-resolver';
 import { getConstellationUrl, getCrayonUrl, getSlingshotUrl } from './settings';
 
 const clientCache = new Map<string, Client>();
@@ -87,4 +88,24 @@ export async function getPdsClient(actor: ActorIdentifier): Promise<Client> {
 
   clientCache.set(actor, client);
   return client;
+}
+
+/** Resolves actors via the project's own slingshot identity service, shared by both the browser and server OAuth clients. */
+export class SlingshotActorResolver implements ActorResolver {
+  async resolve(actor: ActorIdentifier, options?: { signal?: AbortSignal }) {
+    const resolved = await ok(
+      getSlingshotClient().get('blue.microcosm.identity.resolveMiniDoc', {
+        params: {
+          identifier: actor,
+        },
+        signal: options?.signal,
+      }),
+    );
+
+    return {
+      did: resolved.did,
+      handle: resolved.handle,
+      pds: new URL(resolved.pds).href,
+    };
+  }
 }

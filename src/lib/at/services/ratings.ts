@@ -1,5 +1,5 @@
-import type { CanonicalResourceUri, Did, RecordKey } from '@atcute/lexicons';
-import { createRecord, deleteRecord, putRecord, type RepoRecord } from '../records';
+import type { CanonicalResourceUri, Did } from '@atcute/lexicons';
+import type { RepoRecord } from '../records';
 
 import { getRatingFromAppview, listRatingsFromAppview } from '../backends/appview/ratings';
 import {
@@ -7,15 +7,12 @@ import {
   listRatingsFromConstellation,
 } from '../backends/fallback/ratings';
 
-import { makeRecordBuilder, type RecordCreateInput, type RecordUpdateInput } from '../builder';
-import { CLUB_RATING_COLLECTION, isAppviewEnabled } from '../settings';
+import { isAppviewEnabled } from '../settings';
 import { ClubUserstylesAlphaFeedRating } from '@userstyles.club/atcute';
 
 export type Rating = ClubUserstylesAlphaFeedRating.Main;
 
 export type RatingRecord = RepoRecord<Rating>;
-
-const builder = makeRecordBuilder(ClubUserstylesAlphaFeedRating.mainSchema, CLUB_RATING_COLLECTION);
 
 export async function listRatingsForStyle(uri: CanonicalResourceUri): Promise<RatingRecord[]> {
   if (isAppviewEnabled()) {
@@ -41,18 +38,6 @@ export async function getUserRatingForStyle(
     }
   }
   return await getRatingFromConstellation(uri, author);
-}
-
-export async function createRating(input: RecordCreateInput<Rating>) {
-  return await createRecord(CLUB_RATING_COLLECTION, builder.create(input));
-}
-
-export async function updateRating(rkey: RecordKey, input: RecordUpdateInput<Rating>) {
-  return await putRecord(CLUB_RATING_COLLECTION, rkey, builder.update(input));
-}
-
-export async function deleteRating(rkey: RecordKey): Promise<boolean> {
-  return await deleteRecord(CLUB_RATING_COLLECTION, rkey);
 }
 
 export function computeRatingSummary(ratings: RatingRecord[]): {

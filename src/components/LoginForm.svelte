@@ -1,11 +1,19 @@
 <script lang="ts">
   import { untrack } from 'svelte';
+  import { page } from '$app/state';
 
-  import { login, signup, searchActorsTypeahead, type TypeaheadActor } from '$lib/at';
+  import { login, signup } from '$lib/at/login.remote';
+  import { searchActorsTypeahead, type TypeaheadActor } from '$lib/at';
 
   import { Loading, Alert, Avatar, Spinner } from '$components/ui';
 
   import { isActorIdentifier, isDid } from '@atcute/lexicons/syntax';
+
+  // A remote command's own request URL is its internal RPC endpoint, not this page - so we tell it
+  // where to come back to explicitly, falling back to home when standing on /login itself.
+  const returnTo = $derived(
+    page.url.searchParams.get('returnTo') || (page.url.pathname === '/login' ? '/' : page.url.pathname),
+  );
 
   let handle = $state('');
   let error = $state<string | null>(null);
@@ -97,9 +105,22 @@
     loading = true;
     error = null;
     try {
-      await login(handle);
+      const authUrl = await login({ handle, returnTo });
+      window.location.assign(authUrl);
     } catch (e) {
       error = e instanceof Error ? e.message : 'Login failed.';
+      loading = false;
+    }
+  }
+
+  async function startSignup() {
+    loading = true;
+    error = null;
+    try {
+      const authUrl = await signup(returnTo);
+      window.location.assign(authUrl);
+    } catch (e) {
+      error = e instanceof Error ? e.message : 'Sign up failed.';
       loading = false;
     }
   }
@@ -175,7 +196,7 @@
   <button type="submit" class="btn btn--primary" disabled={loading || !isActorIdentifier(handle)}>
     <Loading pending={loading} idle="Continue" active="Signing in…" />
   </button>
-  <button type="button" class="link" onclick={signup}>
+  <button type="button" class="link" onclick={startSignup}>
     Don't have a Bluesky (Atmosphere) account?
   </button>
 </form>

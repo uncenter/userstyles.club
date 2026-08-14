@@ -1,7 +1,5 @@
 <script lang="ts">
   import type { Did } from '@atcute/lexicons';
-  import { goto } from '$app/navigation';
-  import { resolve } from '$app/paths';
 
   import { preferences } from '$lib/preferences.svelte';
   import { PaginatedList } from '$lib/pagination.svelte';
@@ -26,12 +24,6 @@
   // Flips once the mark-read delay elapses, clearing unread highlighting in step with the bell dot.
   let hasMarkedRead = $state(false);
   let markReadTimeout: ReturnType<typeof setTimeout> | undefined;
-
-  $effect(() => {
-    if (!user.isInitializing && !user.isLoggedIn) {
-      goto(resolve('/login'));
-    }
-  });
 
   async function fetchPage(cursor?: string) {
     if (!user.isLoggedIn || !user.did) return { items: [], cursor: undefined };

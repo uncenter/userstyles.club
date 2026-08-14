@@ -1,17 +1,11 @@
-import {
-  type CanonicalResourceUri,
-  type Did,
-  type RecordKey,
-  parseCanonicalResourceUri,
-} from '@atcute/lexicons';
+import { type CanonicalResourceUri, type Did, parseCanonicalResourceUri } from '@atcute/lexicons';
 
-import { createRecord, deleteRecord, putRecord, type RepoRecord } from '../records';
+import type { RepoRecord } from '../records';
 
 import { listCommentsFromAppview } from '../backends/appview/comments';
 import { listCommentsFromConstellation } from '../backends/fallback/comments';
 
-import { makeRecordBuilder, type RecordCreateInput, type RecordUpdateInput } from '../builder';
-import { CLUB_COMMENT_COLLECTION, isAppviewEnabled } from '../settings';
+import { isAppviewEnabled } from '../settings';
 import { ClubUserstylesAlphaFeedComment } from '@userstyles.club/atcute';
 
 export type Comment = ClubUserstylesAlphaFeedComment.Main;
@@ -103,11 +97,6 @@ export function applyCommentPatches(
   return [...byUri.values()];
 }
 
-const builder = makeRecordBuilder(
-  ClubUserstylesAlphaFeedComment.mainSchema,
-  CLUB_COMMENT_COLLECTION,
-);
-
 export async function listCommentsForStyle(uri: CanonicalResourceUri): Promise<CommentRecord[]> {
   if (isAppviewEnabled()) {
     try {
@@ -117,16 +106,4 @@ export async function listCommentsForStyle(uri: CanonicalResourceUri): Promise<C
     }
   }
   return await listCommentsFromConstellation(uri);
-}
-
-export async function createComment(input: RecordCreateInput<Comment>) {
-  return await createRecord(CLUB_COMMENT_COLLECTION, builder.create(input));
-}
-
-export async function updateComment(rkey: RecordKey, input: RecordUpdateInput<Comment>) {
-  return await putRecord(CLUB_COMMENT_COLLECTION, rkey, builder.update(input));
-}
-
-export async function deleteComment(rkey: RecordKey) {
-  return await deleteRecord(CLUB_COMMENT_COLLECTION, rkey);
 }
