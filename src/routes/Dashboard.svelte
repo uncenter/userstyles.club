@@ -197,10 +197,22 @@
     }
   }
 
+  .dashboard-sidebar__section {
+    padding: var(--space-4);
+    background: var(--card-bg);
+    border-radius: var(--radius);
+  }
+
   .style-list {
     display: flex;
     flex-direction: column;
-    gap: var(--space-3);
+    gap: var(--space-2);
+
+    > .style-list__item {
+      .style-shortcut {
+        background: var(--float-bg);
+      }
+    }
   }
 
   .style-shortcut {
@@ -210,7 +222,6 @@
     column-gap: var(--space-3);
     row-gap: var(--space-1);
     padding: var(--space-3) var(--space-4);
-    background: var(--card-bg);
     border-radius: var(--radius);
     text-decoration: none;
     color: var(--foreground);
@@ -269,7 +280,19 @@
 
   .feed-scope {
     display: flex;
-    gap: var(--space-1);
+    gap: 2px;
+    padding: 2px;
+    background: var(--bg-subtle);
+    border-radius: var(--radius-sm);
+
+    .btn--secondary {
+      background: var(--float-bg);
+    }
+
+    .btn--ghost:hover {
+      background: transparent;
+      opacity: 0.7;
+    }
   }
 
   .feed-list {
