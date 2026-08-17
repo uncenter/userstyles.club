@@ -93,6 +93,7 @@ export {
   type NotificationView,
   type NotificationsPage,
 } from './services/notifications';
+export { searchActorsTypeahead, type TypeaheadActor } from './services/typeahead';
 export {
   CLUB_USERSTYLE_COLLECTION,
   CLUB_PROFILE_COLLECTION,
