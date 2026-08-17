@@ -140,6 +140,13 @@ export const ingestCursor = pgTable('ingest_cursor', {
   seq: bigint('seq', { mode: 'number' }).notNull(),
 });
 
+// Persistent content-addressed cache of userstyle source code blobs.
+export const sourceCode = pgTable('source_code', {
+  cid: text('cid').primaryKey(),
+  content: text('content').notNull(),
+  cachedAt: bigint('cached_at', { mode: 'number' }).notNull(),
+});
+
 export const notifications = pgTable(
   'notifications',
   {

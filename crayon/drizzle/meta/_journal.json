@@ -15,6 +15,13 @@
       "when": 1786915883690,
       "tag": "0001_wise_banshee",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1786991625072,
+      "tag": "0002_dizzy_sauron",
+      "breakpoints": true
     }
   ]
 }

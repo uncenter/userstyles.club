@@ -11,6 +11,7 @@ import {
   notifications,
   profiles,
   ratings,
+  sourceCode,
   userstyles,
 } from './schema.ts';
 
@@ -103,6 +104,11 @@ export async function saveIngestCursor(seq: number): Promise<void> {
 }
 
 export async function upsertUserstyle(r: NewUserstyle): Promise<void> {
+  const [previous] = await db
+    .select({ sourceCodeCid: userstyles.sourceCodeCid })
+    .from(userstyles)
+    .where(eq(userstyles.uri, r.uri));
+
   await db
     .insert(userstyles)
     .values(r)
@@ -124,10 +130,47 @@ export async function upsertUserstyle(r: NewUserstyle): Promise<void> {
         'userCssVars',
       ]),
     });
+
+  // Evict the now-superseded blob if orphaned by an edit that now points at new source code.
+  if (previous && previous.sourceCodeCid !== r.sourceCodeCid) {
+    await evictOrphanedSourceCode(previous.sourceCodeCid);
+  }
 }
 
 export async function deleteUserstyle(uri: string): Promise<void> {
-  await db.delete(userstyles).where(eq(userstyles.uri, uri));
+  const [deleted] = await db
+    .delete(userstyles)
+    .where(eq(userstyles.uri, uri))
+    .returning({ sourceCodeCid: userstyles.sourceCodeCid });
+  if (deleted) await evictOrphanedSourceCode(deleted.sourceCodeCid);
+}
+
+/** Deletes the cached source for `cid`, unless some other userstyle still/also references it. */
+async function evictOrphanedSourceCode(cid: string): Promise<void> {
+  const [stillReferenced] = await db
+    .select({ uri: userstyles.uri })
+    .from(userstyles)
+    .where(eq(userstyles.sourceCodeCid, cid))
+    .limit(1);
+  if (!stillReferenced) {
+    await db.delete(sourceCode).where(eq(sourceCode.cid, cid));
+  }
+}
+
+export async function getDbCachedSourceCode(cid: string): Promise<string | null> {
+  const [row] = await db
+    .select({ content: sourceCode.content })
+    .from(sourceCode)
+    .where(eq(sourceCode.cid, cid));
+  return row?.content ?? null;
+}
+
+export async function setDbCachedSourceCode(
+  cid: string,
+  content: string,
+  cachedAt: number,
+): Promise<void> {
+  await db.insert(sourceCode).values({ cid, content, cachedAt }).onConflictDoNothing();
 }
 
 export async function upsertProfile(r: NewProfile): Promise<void> {

@@ -10,7 +10,7 @@ function getLengthInBytes(text: string): number {
   return Buffer.byteLength(text, 'utf8');
 }
 
-export function getCachedBlobText(cid: string): string | undefined {
+export function getMemCachedSourceCode(cid: string): string | undefined {
   const cached = cache.get(cid);
   if (cached === undefined) return undefined;
 
@@ -19,7 +19,7 @@ export function getCachedBlobText(cid: string): string | undefined {
   return cached;
 }
 
-export function setCachedBlobText(cid: string, text: string): void {
+export function setMemCachedSourceCode(cid: string, text: string): void {
   const size = getLengthInBytes(text);
   if (size > MAX_ENTRY_BYTES) return;
 
