@@ -1,6 +1,6 @@
 # Crayon
 
-A colorful Tap-based appview. Uses Postgres via Drizzle for storage.
+A colorful userstyles appview, indexing historical and live events from Jetstream. Uses Postgres via Drizzle for storage.
 
 ## Routes
 
@@ -18,10 +18,15 @@ A colorful Tap-based appview. Uses Postgres via Drizzle for storage.
 ## Usage
 
 ```sh
-cp .env.example .env   # then edit as needed
+cp .env.example .env  # set required JETSTREAM_API_KEY
 pnpm install
 just db init           # brings up postgres and then applies migrations
-TAP_URL=http://localhost:2480 pnpm dev
+pnpm dev
 ```
+
+### Jetstream
+
+Bluesky's Jetstream instances require an API key for replay functionality. Create one at
+https://bsky.network/account#api-keys-section-heading and set `JETSTREAM_API_KEY`. `JETSTREAM_SERVICE` defaults to `https://jetstream.us-east.bsky.network`.
 
 `pnpm build && pnpm start` runs the compiled output.

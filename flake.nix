@@ -23,8 +23,6 @@
             pkgs.nodejs_26
             pkgs.pnpm
 
-            pkgs.tap
-
             pkgs.postgresql_17
           ];
         };

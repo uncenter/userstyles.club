@@ -4,7 +4,7 @@ The one and only decentralized userstyles publishing club. Built on the AT Proto
 
 ## Development
 
-Running `nix develop` provides a shell with the full toolchain of Node, pnpm, [`tap`](https://github.com/bluesky-social/indigo/tree/main/cmd/tap/README.md), and `just`/`podman`/`podman-compose` for running Postgres locally. Commands below are `just` recipes (`just --list` to see them all); run `just <recipe>`.
+Running `nix develop` provides a shell with the full toolchain of Node, pnpm, and `just`/`podman`/`podman-compose` for running Postgres locally. Commands below are `just` recipes (`just --list` to see them all); run `just <recipe>`.
 
 ### Frontend
 
@@ -36,35 +36,11 @@ just db init   # brings up postgres and then applies migrations
 
 #### Usage
 
-You'll likely want to run the entire appview at once, a combination of the Crayon server and the underlying Tap indexer program: `just appview`.
-
-To just run one component of the appview or another, use `just crayon` or `just tap`.
-
-The Crayon/appview instance URL can be configured in the frontend via Settings → Network, or set `VITE_CRAYON_URL`. In development, this defaults to `http://127.0.0.1:8080`, or in production, `https://crayon.userstyles.club`.
+Run the appview with `just crayon`. The Crayon/appview instance URL can be configured in the frontend via Settings → Network, or set `VITE_CRAYON_URL`. In development, this defaults to `http://127.0.0.1:8080`, or in production, `https://crayon.userstyles.club`.
 
 ### Debugging
 
-Both Tap and Crayon expose plain HTTP endpoints you can `curl`.
-
-#### Tap
-
-Tap listens at http://localhost:2480 by default.
-
-```sh
-curl http://localhost:2480/stats/repo-count      # total tracked repos
-curl http://localhost:2480/stats/record-count    # total tracked records, across every collection tap has synced
-curl http://localhost:2480/info/did:plc:example  # state/rev/record count/errors for one repo
-```
-
-To count just userstyles, query Tap's own SQLite DB directly (`tap.db`, created at the repo root by default) instead:
-
-```sh
-sqlite3 tap.db "SELECT COUNT(*) FROM repo_records WHERE collection = 'club.userstyles.alpha.userstyle';"
-```
-
-#### Crayon
-
-Crayon listens at http://127.0.0.1:8080 by default.
+Crayon exposes plain HTTP endpoints you can `curl`, listening at http://127.0.0.1:8080 by default.
 
 ```sh
 curl http://127.0.0.1:8080/xrpc/club.userstyles.alpha.countUserstyles

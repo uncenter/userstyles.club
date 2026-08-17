@@ -3,11 +3,15 @@
   "private": true,
   "type": "module",
   "version": "0.1.0",
-  "files": ["dist", "drizzle", "drizzle.config.ts"],
+  "files": [
+    "dist",
+    "drizzle",
+    "drizzle.config.ts"
+  ],
   "scripts": {
-    "dev": "tsx watch src/main.ts",
+    "dev": "tsx watch --env-file-if-exists=.env src/main.ts",
     "build": "tsc -p tsconfig.json",
-    "start": "node dist/main.js",
+    "start": "node --env-file-if-exists=.env dist/main.js",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate"
   },
@@ -16,8 +20,9 @@
     "@atcute/client": "5.1.1",
     "@atcute/lexicons": "2.0.0",
     "@atcute/microcosm": "2.0.2",
-    "@atcute/tap": "^1.0.2",
     "@atcute/xrpc-server": "^2.0.2",
+    "@atproto/lex": "^0.3.0",
+    "@bsky/jetstream": "^1.0.0",
     "@remix-run/node-fetch-server": "^0.14.0",
     "@userstyles.club/atcute": "workspace:*",
     "drizzle-orm": "^0.45.2",

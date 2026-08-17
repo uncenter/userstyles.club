@@ -134,6 +134,12 @@ export const follows = pgTable(
   ],
 );
 
+// Single-row table tracking the Jetstream cursor (last processed event seq).
+export const ingestCursor = pgTable('ingest_cursor', {
+  id: integer('id').primaryKey(),
+  seq: bigint('seq', { mode: 'number' }).notNull(),
+});
+
 export const notifications = pgTable(
   'notifications',
   {

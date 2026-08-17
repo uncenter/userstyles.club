@@ -4,7 +4,15 @@ import type { PgTable } from 'drizzle-orm/pg-core';
 import postgres from 'postgres';
 
 import * as schema from './schema.ts';
-import { comments, follows, notifications, profiles, ratings, userstyles } from './schema.ts';
+import {
+  comments,
+  follows,
+  ingestCursor,
+  notifications,
+  profiles,
+  ratings,
+  userstyles,
+} from './schema.ts';
 
 const connectionString =
   process.env.DATABASE_URL ?? 'postgres://postgres:postgres@localhost:5432/crayon';
@@ -76,6 +84,22 @@ function conflictUpdateColumns<
   return Object.fromEntries(
     columns.map((column) => [column, sql.raw(`excluded.${tableColumns[column].name}`)]),
   ) as Record<K, SQL>;
+}
+
+/** Last Jetstream event seq successfully processed, or undefined if the indexer has never run. */
+export async function getIngestCursor(): Promise<number | undefined> {
+  const [row] = await db
+    .select({ seq: ingestCursor.seq })
+    .from(ingestCursor)
+    .where(eq(ingestCursor.id, 1));
+  return row?.seq;
+}
+
+export async function saveIngestCursor(seq: number): Promise<void> {
+  await db
+    .insert(ingestCursor)
+    .values({ id: 1, seq })
+    .onConflictDoUpdate({ target: ingestCursor.id, set: { seq } });
 }
 
 export async function upsertUserstyle(r: NewUserstyle): Promise<void> {

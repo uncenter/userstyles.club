@@ -1,4 +1,5 @@
-import type { TapRecordEvent } from '@atcute/tap';
+import { lexToJson } from '@atproto/lex';
+import type { TypedEvent } from '@bsky/jetstream';
 import { parseResourceUri } from '@atcute/lexicons';
 import { safeParse, type BaseSchema, type InferOutput } from '@atcute/lexicons/validations';
 
@@ -32,7 +33,7 @@ const COMMENT = 'club.userstyles.alpha.feed.comment';
 const RATING = 'club.userstyles.alpha.feed.rating';
 const FOLLOW = 'club.userstyles.alpha.graph.follow';
 
-export const COLLECTIONS = [USERSTYLE, PROFILE, COMMENT, RATING, FOLLOW];
+export const COLLECTIONS = [USERSTYLE, PROFILE, COMMENT, RATING, FOLLOW] as const;
 
 type UserstyleRecord = InferOutput<typeof ClubUserstylesAlphaUserstyle.mainSchema>;
 type ProfileRecord = InferOutput<typeof ClubUserstylesAlphaActorProfile.mainSchema>;
@@ -58,16 +59,18 @@ function validateRecord<TSchema extends BaseSchema>(
   return parsed.value;
 }
 
-export async function handleRecord(evt: TapRecordEvent, now: number): Promise<void> {
-  if (!COLLECTIONS.includes(evt.collection)) return;
-  const uri = `at://${evt.did}/${evt.collection}/${evt.rkey}`;
+export async function handleRecord(evt: TypedEvent, now: number): Promise<void> {
+  if (evt.kind !== 'commit') return;
+  const { did, commit } = evt;
+  const { collection, rkey } = commit;
+  const uri = `at://${did}/${collection}/${rkey}`;
 
-  if (evt.action === 'delete') {
-    switch (evt.collection) {
+  if (commit.operation === 'delete') {
+    switch (collection) {
       case USERSTYLE:
         return deleteUserstyle(uri);
       case PROFILE:
-        return deleteProfile(evt.did);
+        return deleteProfile(did);
       case COMMENT:
         return deleteComment(uri, now);
       case RATING:
@@ -78,57 +81,54 @@ export async function handleRecord(evt: TapRecordEvent, now: number): Promise<vo
     return;
   }
 
-  if (evt.record === undefined) {
-    console.warn(`create/update event at ${uri} missing record body, skipping`);
-    return;
-  }
-  const { cid, did, rkey } = evt;
+  const record = lexToJson(commit.record);
+  const { cid } = commit;
 
-  switch (evt.collection) {
+  switch (collection) {
     case USERSTYLE: {
-      const record = validateRecord(
-        evt.collection,
+      const parsed = validateRecord(
+        collection,
         uri,
         ClubUserstylesAlphaUserstyle.mainSchema,
-        evt.record,
+        record,
       );
-      return record ? handleUserstyle(uri, cid, did, rkey, record, now) : undefined;
+      return parsed ? handleUserstyle(uri, cid, did, rkey, parsed, now) : undefined;
     }
     case PROFILE: {
-      const record = validateRecord(
-        evt.collection,
+      const parsed = validateRecord(
+        collection,
         uri,
         ClubUserstylesAlphaActorProfile.mainSchema,
-        evt.record,
+        record,
       );
-      return record ? handleProfile(cid, did, record, now) : undefined;
+      return parsed ? handleProfile(cid, did, parsed, now) : undefined;
     }
     case COMMENT: {
-      const record = validateRecord(
-        evt.collection,
+      const parsed = validateRecord(
+        collection,
         uri,
         ClubUserstylesAlphaFeedComment.mainSchema,
-        evt.record,
+        record,
       );
-      return record ? handleComment(uri, cid, did, rkey, record, now) : undefined;
+      return parsed ? handleComment(uri, cid, did, rkey, parsed, now) : undefined;
     }
     case RATING: {
-      const record = validateRecord(
-        evt.collection,
+      const parsed = validateRecord(
+        collection,
         uri,
         ClubUserstylesAlphaFeedRating.mainSchema,
-        evt.record,
+        record,
       );
-      return record ? handleRating(uri, cid, did, rkey, record, now) : undefined;
+      return parsed ? handleRating(uri, cid, did, rkey, parsed, now) : undefined;
     }
     case FOLLOW: {
-      const record = validateRecord(
-        evt.collection,
+      const parsed = validateRecord(
+        collection,
         uri,
         ClubUserstylesAlphaGraphFollow.mainSchema,
-        evt.record,
+        record,
       );
-      return record ? handleFollow(uri, cid, did, rkey, record, now) : undefined;
+      return parsed ? handleFollow(uri, cid, did, rkey, parsed, now) : undefined;
     }
   }
 }
