@@ -43,8 +43,11 @@
     });
   }
 
-  type FeedScope = 'global' | 'following';
-  let feedScope = $state<FeedScope>('following');
+  type FeedType = 'global' | 'following';
+  let timelineFeedType = $state<FeedType>(preferences.get('lastTimelineFeedType'));
+  $effect(() => {
+    preferences.set('lastTimelineFeedType', timelineFeedType);
+  });
 
   const feed = new PaginatedList<FeedViewItem>(untrack(() => initial));
   let feedProfiles = $state(untrack(() => initial?.profiles ?? new Map<Did, ProfileView>()));
@@ -63,7 +66,7 @@
 
   async function fetchFeedPage(cursor?: string) {
     const page = await getTimeline({
-      actor: feedScope === 'following' ? user.did! : undefined,
+      actor: timelineFeedType === 'following' ? user.did! : undefined,
       cursor,
     });
     const dids = [
@@ -82,7 +85,7 @@
   let skipNextFeedLoad = untrack(() => !!initial);
 
   $effect(() => {
-    feedScope;
+    timelineFeedType;
     user.did;
     if (skipNextFeedLoad) {
       skipNextFeedLoad = false;
@@ -127,17 +130,25 @@
 
   <div class="dashboard-main">
     <div class="dashboard-main__header">
-      <h2 class="section-heading"><ActivityIcon size={16} /> Feed</h2>
-      <div class="feed-scope" role="group" aria-label="Feed scope">
+      <h2 class="section-heading"><ActivityIcon size={16} /> Timeline</h2>
+      <div class="feed-scope" role="group" aria-label="Timeline feed scope">
         <button
           type="button"
-          class={['btn', 'btn--sm', feedScope === 'following' ? 'btn--secondary' : 'btn--ghost']}
-          onclick={() => (feedScope = 'following')}>Following</button
+          class={[
+            'btn',
+            'btn--sm',
+            timelineFeedType === 'following' ? 'btn--secondary' : 'btn--ghost',
+          ]}
+          onclick={() => (timelineFeedType = 'following')}>Following</button
         >
         <button
           type="button"
-          class={['btn', 'btn--sm', feedScope === 'global' ? 'btn--secondary' : 'btn--ghost']}
-          onclick={() => (feedScope = 'global')}>Global</button
+          class={[
+            'btn',
+            'btn--sm',
+            timelineFeedType === 'global' ? 'btn--secondary' : 'btn--ghost',
+          ]}
+          onclick={() => (timelineFeedType = 'global')}>Global</button
         >
       </div>
     </div>
@@ -147,7 +158,9 @@
       <Alert variant="error">{feed.error}</Alert>
     {:else if feed.items.length === 0}
       <p class="text-muted no-content">
-        {feedScope === 'following' ? 'Nobody you follow has been active yet.' : 'Nothing here yet.'}
+        {timelineFeedType === 'following'
+          ? 'Nobody you follow has been active yet.'
+          : 'Nothing here yet.'}
       </p>
     {:else}
       <ul class="feed-list list-reset" role="list">

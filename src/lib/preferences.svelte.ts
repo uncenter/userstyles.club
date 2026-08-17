@@ -59,6 +59,7 @@ export const preferences = new UserPreferences({
   // empty string means "never viewed".
   lastViewedNotificationsAt: '',
   recentlyVisitedStyles: [] as RecentlyVisitedStyle[],
+  lastTimelineFeedType: 'following' as 'following' | 'global',
 });
 
 export function getPreferredActorIdentifier(
