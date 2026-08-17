@@ -282,6 +282,44 @@ export async function deleteComment(uri: string, deletedAt: number): Promise<voi
   if (row) await incrementCommentCount(row.subjectUri, -1);
 }
 
+/** Whether `did` has anything indexed at all, across every table it could own a row in. */
+async function hasAnyData(did: string): Promise<boolean> {
+  const [row] = Array.from(
+    await db.execute(sql`
+      SELECT (
+        EXISTS(SELECT 1 FROM userstyles WHERE did = ${did}) OR
+        EXISTS(SELECT 1 FROM profiles WHERE did = ${did}) OR
+        EXISTS(SELECT 1 FROM comments WHERE did = ${did}) OR
+        EXISTS(SELECT 1 FROM ratings WHERE did = ${did}) OR
+        EXISTS(SELECT 1 FROM follows WHERE did = ${did})
+      ) AS "exists"
+    `),
+  ) as unknown as { exists: boolean }[];
+  return row?.exists ?? false;
+}
+
+/** Removes all stored records for an account. */
+export async function deleteAccountData(did: string, now: number): Promise<boolean> {
+  if (!(await hasAnyData(did))) return false;
+
+  const [commentUris, ratingUris, followUris, userstyleUris] = await Promise.all([
+    db
+      .select({ uri: comments.uri })
+      .from(comments)
+      .where(and(eq(comments.did, did), isNull(comments.deletedAt))),
+    db.select({ uri: ratings.uri }).from(ratings).where(eq(ratings.did, did)),
+    db.select({ uri: follows.uri }).from(follows).where(eq(follows.did, did)),
+    db.select({ uri: userstyles.uri }).from(userstyles).where(eq(userstyles.did, did)),
+  ]);
+
+  for (const { uri } of commentUris) await deleteComment(uri, now);
+  for (const { uri } of ratingUris) await deleteRating(uri);
+  for (const { uri } of followUris) await deleteFollow(uri);
+  for (const { uri } of userstyleUris) await deleteUserstyle(uri);
+  await deleteProfile(did);
+  return true;
+}
+
 export async function getUserstyle(uri: string): Promise<UserstyleRow | null> {
   const [row] = await db.select(userstyleColumns).from(userstyles).where(eq(userstyles.uri, uri));
   return row ?? null;

@@ -4,7 +4,7 @@ import { createRequestListener } from '@remix-run/node-fetch-server';
 import { Jetstream, type CursorStore } from '@bsky/jetstream';
 
 import { getIngestCursor, saveIngestCursor } from './db/index.ts';
-import { COLLECTIONS, handleRecord } from './ingest.ts';
+import { COLLECTIONS, handleEvent } from './ingest.ts';
 import { router } from './server.ts';
 
 const JETSTREAM_SERVICE = process.env.JETSTREAM_SERVICE ?? 'https://jetstream.us-east.bsky.network';
@@ -24,12 +24,12 @@ const cursor: CursorStore = { load: getIngestCursor, save: saveIngestCursor };
 console.log(`connecting to jetstream at ${JETSTREAM_SERVICE}...`);
 for await (const event of jetstream.replay({
   collections: COLLECTIONS,
-  kinds: ['commit'],
+  kinds: ['commit', 'account'],
   cursor,
   onError: (err) => console.error('jetstream indexer error', err),
 })) {
   try {
-    await handleRecord(event, Date.now());
+    await handleEvent(event, Date.now());
     await cursor.save(event.seq);
   } catch (err) {
     console.error('jetstream indexer error', err);

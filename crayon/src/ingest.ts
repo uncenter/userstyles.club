@@ -13,6 +13,7 @@ import {
 import { getBlobCid } from './utils.ts';
 import {
   createNotification,
+  deleteAccountData,
   deleteComment,
   deleteFollow,
   deleteProfile,
@@ -59,7 +60,16 @@ function validateRecord<TSchema extends BaseSchema>(
   return parsed.value;
 }
 
-export async function handleRecord(evt: TypedEvent, now: number): Promise<void> {
+export async function handleEvent(evt: TypedEvent, now: number): Promise<void> {
+  if (evt.kind === 'account') {
+    const { did, active, status } = evt.account;
+    if (active || status !== 'deleted') return;
+    if (await deleteAccountData(did, now)) {
+      console.log(`removed all data for deleted account ${did}`);
+    }
+    return;
+  }
+
   if (evt.kind !== 'commit') return;
   const { did, commit } = evt;
   const { collection, rkey } = commit;
