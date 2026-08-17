@@ -48,7 +48,12 @@
 
   let { data, params }: PageProps = $props();
   let userstyle = $derived(data.userstyle.value);
-  let sourceCode = $derived(await getUserstyleSourceCode(data.userstyle));
+  let sourceCode = $derived(
+    await getUserstyleSourceCode(data.userstyle).catch((error: unknown) => {
+      console.error('failed to load userstyle source code', error);
+      return undefined;
+    }),
+  );
 
   let ogImage = $derived(
     userstyle.previewImage
@@ -116,8 +121,8 @@
     error: null as string | null,
   });
 
-  let lineCount = $derived(sourceCode.split('\n').length);
-  let byteCount = $derived(sourceCode.length);
+  let lineCount = $derived(sourceCode?.split('\n').length ?? 0);
+  let byteCount = $derived(sourceCode?.length ?? 0);
 
   function openRatingDialog() {
     ratingDialog.selected = myRating?.value.rating;
@@ -332,7 +337,13 @@
     </div>
 
     <div class="userstyle-section__code">
-      <CssPreview source={sourceCode} />
+      {#if sourceCode === undefined}
+        <Alert variant="error"
+          >Couldn't load the source code for this userstyle. It may be temporarily unavailable. Please reload or try again later.</Alert
+        >
+      {:else}
+        <CssPreview source={sourceCode} />
+      {/if}
       <div class="userstyle-section__code-footer">
         {#if userstyle.upstreamUrl}
           <span class="userstyle-section__upstream"
@@ -344,7 +355,9 @@
             >.</span
           >
         {/if}
-        <p class="userstyle-section__stats">{bytes(byteCount)} · {lineCount} lines</p>
+        {#if sourceCode !== undefined}
+          <p class="userstyle-section__stats">{bytes(byteCount)} · {lineCount} lines</p>
+        {/if}
       </div>
     </div>
   </section>
