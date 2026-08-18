@@ -1,12 +1,10 @@
 <script lang="ts">
   import type { GenericUri } from '@atcute/lexicons';
-  import type { UserstyleContent } from '$lib/at';
   import type { UserstyleFormState } from '../fields.svelte';
 
   import { Loading, Alert } from '$components/ui';
 
-  import { type ImportResult } from '.';
-  import { getUsercssMetadata } from './metadata';
+  import { applyImportResult, type ImportResult } from '.';
   import { importFromProviders } from './providers';
 
   interface Props {
@@ -33,21 +31,7 @@
     try {
       const result = await importFromProviders(importUrl);
 
-      if (result.sourceCode) {
-        const usercss = getUsercssMetadata(result.sourceCode);
-        for (const [key, value] of Object.entries(usercss)) {
-          if ((result as any)[key] === undefined && value !== undefined)
-            (result as any)[key] = value;
-        }
-      }
-
-      // Merge into form fields only where the field is currently empty.
-      for (const key of Object.keys(result) as Array<keyof UserstyleContent>) {
-        const value = result[key];
-        const current = fields[key];
-        if (value && !(typeof current === 'string' ? current.trim() : current))
-          (fields as any)[key] = value;
-      }
+      applyImportResult(fields, result);
 
       fields.upstreamUrl = importUrl as GenericUri;
       fields.trackUpstreamUrl = true;

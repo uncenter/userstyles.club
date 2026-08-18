@@ -12,13 +12,15 @@
   import { BlueskyIcon, Meta } from '$components';
 
   import ImportFromUrl from './import/ImportFromUrl.svelte';
+  import ImportFromFile from './import/ImportFromFile.svelte';
   import UserstyleForm from './UserstyleForm.svelte';
 
   import { fields } from './fields.svelte';
 
   let publishing = $state(false);
-  let importing = $state(false);
-  let pending = $derived(publishing || importing);
+  let importingUrl = $state(false);
+  let importingFile = $state(false);
+  let pending = $derived(publishing || importingUrl || importingFile);
   let error = $state<string | null>(null);
 
   let previewFile = $state<File | null>(null);
@@ -86,17 +88,19 @@
   }
 </script>
 
-<Meta
-  title="New Userstyle"
-  description="Publish a new userstyle on userstyles.club."
-/>
+<Meta title="New Userstyle" description="Publish a new userstyle on userstyles.club." />
 
 <div class="page-section">
   <h1>New Userstyle</h1>
 </div>
 
-<div class="page-section">
-  <ImportFromUrl {fields} bind:pending={importing} bind:imported />
+<div class="import-row">
+  <div class="page-section">
+    <ImportFromUrl {fields} bind:pending={importingUrl} bind:imported />
+  </div>
+  <div class="page-section">
+    <ImportFromFile {fields} bind:pending={importingFile} bind:imported />
+  </div>
 </div>
 
 <div class="page-section">
@@ -177,3 +181,23 @@
     <button class="btn btn--danger" type="button" onclick={clearAll}>Clear</button>
   {/snippet}
 </Dialog>
+
+<style>
+  .import-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-5);
+    margin-bottom: var(--space-5);
+
+    > .page-section {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      margin-bottom: 0;
+    }
+
+    @media (max-width: 639px) {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
