@@ -40,7 +40,10 @@
     {/if}
   {/if}
 
-  <meta name="twitter:card" content={image && imageSize === 'large' ? 'summary_large_image' : 'summary'} />
+  <meta
+    name="twitter:card"
+    content={image && imageSize === 'large' ? 'summary_large_image' : 'summary'}
+  />
   <meta name="twitter:title" content={fullTitle} />
   <meta name="twitter:description" content={description} />
   {#if image}

@@ -1,7 +1,12 @@
 import { type ActorIdentifier, type RecordKey, parseCanonicalResourceUri } from '@atcute/lexicons';
 import { is } from '@atcute/lexicons/validations';
 
-import { getBlobText, getRecord, listRecordsForCollection, listRecordsForRepo } from '../../records';
+import {
+  getBlobText,
+  getRecord,
+  listRecordsForCollection,
+  listRecordsForRepo,
+} from '../../records';
 import { CLUB_USERSTYLE_COLLECTION } from '../../settings';
 import { getBlobCid, getLatestDate } from '../../utils';
 import { ClubUserstylesAlphaUserstyle } from '@userstyles.club/atcute';

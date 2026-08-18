@@ -4,8 +4,7 @@ export default document({
   id: 'club.userstyles.alpha.getUserstyleSourceCode',
   defs: {
     main: query({
-      description:
-        "A userstyle's source code.",
+      description: "A userstyle's source code.",
       parameters: params({
         properties: {
           actor: required(string({ format: 'did' })),

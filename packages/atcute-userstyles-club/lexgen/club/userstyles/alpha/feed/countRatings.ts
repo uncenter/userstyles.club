@@ -1,4 +1,12 @@
-import { document, integer, object, params, query, required, string } from '@atcute/lexicon-doc/builder';
+import {
+  document,
+  integer,
+  object,
+  params,
+  query,
+  required,
+  string,
+} from '@atcute/lexicon-doc/builder';
 
 export default document({
   id: 'club.userstyles.alpha.feed.countRatings',

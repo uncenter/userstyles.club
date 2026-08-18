@@ -72,7 +72,11 @@
         createdAt: thread.comment.value.createdAt,
         parent: thread.comment.value.parent,
       });
-      onCommentEdited({ uri: thread.comment.uri, cid: updated.response.cid, value: updated.record });
+      onCommentEdited({
+        uri: thread.comment.uri,
+        cid: updated.response.cid,
+        value: updated.record,
+      });
     } catch (e) {
       error = e instanceof Error ? e.message : 'Failed to update comment.';
     } finally {
@@ -178,9 +182,7 @@
             rated <StarRating value={thread.rating} />{/if}
         </div>
         <div class="comment-card__meta">
-          <time class="comment-card__date"
-            >{formatDate(getLatestDate(comment.value))}</time
-          >
+          <time class="comment-card__date">{formatDate(getLatestDate(comment.value))}</time>
           {#if isMyComment}
             <div class="comment-card__actions">
               <button

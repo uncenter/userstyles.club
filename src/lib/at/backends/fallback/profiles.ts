@@ -8,7 +8,11 @@ const SELF_RKEY = 'self';
 
 export async function getClubProfileFromPds(did: Did): Promise<ClubProfile | undefined> {
   try {
-    const response = await getRecord({ repo: did, collection: CLUB_PROFILE_COLLECTION, rkey: SELF_RKEY });
+    const response = await getRecord({
+      repo: did,
+      collection: CLUB_PROFILE_COLLECTION,
+      rkey: SELF_RKEY,
+    });
     return response.value;
   } catch {
     return undefined;

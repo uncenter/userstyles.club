@@ -14,8 +14,7 @@ export default document({
   id: 'club.userstyles.alpha.feed.listComments',
   defs: {
     main: query({
-      description:
-        'List comments, optionally filtered by subject and/or author.',
+      description: 'List comments, optionally filtered by subject and/or author.',
       parameters: params({
         properties: {
           subject: string({ format: 'at-uri', description: 'uri of the subject userstyle' }),

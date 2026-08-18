@@ -2,7 +2,10 @@ import type { CanonicalResourceUri, Did, RecordKey } from '@atcute/lexicons';
 import { createRecord, deleteRecord, putRecord, type RepoRecord } from '../records';
 
 import { getRatingFromAppview, listRatingsFromAppview } from '../backends/appview/ratings';
-import { getRatingFromConstellation, listRatingsFromConstellation } from '../backends/fallback/ratings';
+import {
+  getRatingFromConstellation,
+  listRatingsFromConstellation,
+} from '../backends/fallback/ratings';
 
 import { makeRecordBuilder, type RecordCreateInput, type RecordUpdateInput } from '../builder';
 import { CLUB_RATING_COLLECTION, isAppviewEnabled } from '../settings';
@@ -52,9 +55,10 @@ export async function deleteRating(rkey: RecordKey): Promise<boolean> {
   return await deleteRecord(CLUB_RATING_COLLECTION, rkey);
 }
 
-export function computeRatingSummary(
-  ratings: RatingRecord[],
-): { average: number | undefined; count: number } {
+export function computeRatingSummary(ratings: RatingRecord[]): {
+  average: number | undefined;
+  count: number;
+} {
   if (ratings.length === 0) return { average: undefined, count: 0 };
   return {
     average: ratings.reduce((sum, r) => sum + r.value.rating, 0) / ratings.length,

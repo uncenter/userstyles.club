@@ -14,8 +14,7 @@ export default document({
   id: 'club.userstyles.alpha.feed.listRatings',
   defs: {
     main: query({
-      description:
-        'List ratings, optionally filtered by subject and/or author.',
+      description: 'List ratings, optionally filtered by subject and/or author.',
       parameters: params({
         properties: {
           subject: string({ format: 'at-uri', description: 'uri of the subject userstyle' }),

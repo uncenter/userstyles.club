@@ -18,7 +18,9 @@ export default document({
         "Get a subject userstyle's feedback: every comment, flattened across every top-level thread and ordered so that each node follows its parent (each top-level node carrying its author's current rating, if any), plus the overall rating count and average.",
       parameters: params({
         properties: {
-          subject: required(string({ format: 'at-uri', description: 'uri of the subject userstyle' })),
+          subject: required(
+            string({ format: 'at-uri', description: 'uri of the subject userstyle' }),
+          ),
         },
       }),
       output: {

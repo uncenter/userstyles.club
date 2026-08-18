@@ -22,7 +22,10 @@ import { type ActorIdentifier, type RecordKey, type CanonicalResourceUri } from 
 
 import { makeRecordBuilder } from '../builder';
 import { CLUB_USERSTYLE_COLLECTION, isAppviewEnabled } from '../settings';
-import { ClubUserstylesAlphaUserstyle, type ClubUserstylesAlphaDefs } from '@userstyles.club/atcute';
+import {
+  ClubUserstylesAlphaUserstyle,
+  type ClubUserstylesAlphaDefs,
+} from '@userstyles.club/atcute';
 
 export type Userstyle = ClubUserstylesAlphaUserstyle.Main;
 
@@ -52,7 +55,10 @@ const builder = makeRecordBuilder(
   CLUB_USERSTYLE_COLLECTION,
 );
 
-export async function getUserstyle(repo: ActorIdentifier, rkey: RecordKey): Promise<UserstyleRecord> {
+export async function getUserstyle(
+  repo: ActorIdentifier,
+  rkey: RecordKey,
+): Promise<UserstyleRecord> {
   if (isAppviewEnabled()) {
     try {
       return await getUserstyleFromAppview(repo, rkey);

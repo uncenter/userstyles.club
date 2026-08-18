@@ -10,7 +10,7 @@ export function getBlobCdnUrl(
   blob: Blob | LegacyBlob | Cid,
   type: 'avatar' | 'avatar_thumbnail' | 'feed_fullsize' | 'feed_thumbnail',
 ): string {
-  return `https://cdn.bsky.app/img/${type}/plain/${did}/${typeof blob === "string" ? blob : getBlobCid(blob)}`;
+  return `https://cdn.bsky.app/img/${type}/plain/${did}/${typeof blob === 'string' ? blob : getBlobCid(blob)}`;
 }
 
 export function chunk<T>(items: T[], size: number): T[][] {
@@ -19,6 +19,8 @@ export function chunk<T>(items: T[], size: number): T[][] {
   return chunks;
 }
 
-export function getLatestDate<T extends { updatedAt?: string; createdAt: string }>(value: T): string {
+export function getLatestDate<T extends { updatedAt?: string; createdAt: string }>(
+  value: T,
+): string {
   return value.updatedAt ?? value.createdAt;
 }

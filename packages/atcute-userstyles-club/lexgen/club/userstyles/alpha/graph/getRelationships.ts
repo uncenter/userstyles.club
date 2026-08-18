@@ -14,7 +14,7 @@ export default document({
   defs: {
     main: query({
       description:
-        "Batch variant of getRelationship: check the follow relationship between `actor` and each of `others`.",
+        'Batch variant of getRelationship: check the follow relationship between `actor` and each of `others`.',
       parameters: params({
         properties: {
           actor: required(string({ format: 'did' })),

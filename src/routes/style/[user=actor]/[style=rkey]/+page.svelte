@@ -20,7 +20,11 @@
     type CommentThreadPatch,
     type RatingRecord,
   } from '$lib/at';
-  import { getPreferredActorIdentifier, preferences, recordStyleVisit } from '$lib/preferences.svelte';
+  import {
+    getPreferredActorIdentifier,
+    preferences,
+    recordStyleVisit,
+  } from '$lib/preferences.svelte';
 
   import { Loading, Alert, Dialog } from '$components/ui';
   import {
@@ -62,7 +66,9 @@
   );
 
   let ratingSummary = $derived(proxify(data.feedback.ratingSummary));
-  let myRating = $derived<RatingRecord | undefined>(user.isLoggedIn ? await getUserRatingForStyle(data.userstyle.uri, user.did) : undefined);
+  let myRating = $derived<RatingRecord | undefined>(
+    user.isLoggedIn ? await getUserRatingForStyle(data.userstyle.uri, user.did) : undefined,
+  );
   let canRate = $derived(user.isLoggedIn && user.did !== data.profile.did);
 
   $effect(() => {
@@ -93,7 +99,9 @@
   let pendingCommentPatches = $state<Record<string, CommentThreadPatch>>({});
 
   let comments = $derived.by(() =>
-    buildCommentThreads(applyCommentPatches(data.feedback.commentThreadNodes, pendingCommentPatches)),
+    buildCommentThreads(
+      applyCommentPatches(data.feedback.commentThreadNodes, pendingCommentPatches),
+    ),
   );
 
   function onCommentAdded(comment: CommentRecord) {
@@ -225,7 +233,8 @@
 
 <Meta
   title={userstyle.title}
-  description={userstyle.description || `${userstyle.title}, a userstyle shared on userstyles.club.`}
+  description={userstyle.description ||
+    `${userstyle.title}, a userstyle shared on userstyles.club.`}
   image={ogImage}
   imageAlt={userstyle.title}
 />
@@ -339,7 +348,8 @@
     <div class="userstyle-section__code">
       {#if sourceCode === undefined}
         <Alert variant="error"
-          >Couldn't load the source code for this userstyle. It may be temporarily unavailable. Please reload or try again later.</Alert
+          >Couldn't load the source code for this userstyle. It may be temporarily unavailable.
+          Please reload or try again later.</Alert
         >
       {:else}
         <CssPreview source={sourceCode} />

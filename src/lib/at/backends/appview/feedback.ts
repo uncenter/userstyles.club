@@ -25,7 +25,9 @@ function commentThreadRowToRecord(
 }
 
 /** The appview tombstones deleted comments rather than dropping them, so replies to a deleted comment keep their place in the tree instead of becoming "orphaned". */
-export async function getFeedbackFromAppview(uri: CanonicalResourceUri): Promise<UserstyleFeedback> {
+export async function getFeedbackFromAppview(
+  uri: CanonicalResourceUri,
+): Promise<UserstyleFeedback> {
   const client = getCrayonClient();
   const response = await ok(
     client.get('club.userstyles.alpha.feed.getFeedback', { params: { subject: uri } }),

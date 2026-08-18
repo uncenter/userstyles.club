@@ -15,12 +15,13 @@ export default document({
   defs: {
     main: query({
       description:
-        'Get the global activity feed, optionally scoped to an actor\'s social graph activity.',
+        "Get the global activity feed, optionally scoped to an actor's social graph activity.",
       parameters: params({
         properties: {
           actor: string({
             format: 'did',
-            description: 'Filter the feed to accounts this actor follows, rather than the global feed.',
+            description:
+              'Filter the feed to accounts this actor follows, rather than the global feed.',
           }),
           limit: integer({ minimum: 1, maximum: 100, default: 50 }),
           cursor: string(),

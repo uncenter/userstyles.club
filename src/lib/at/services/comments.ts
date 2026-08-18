@@ -1,4 +1,9 @@
-import { type CanonicalResourceUri, type Did, type RecordKey, parseCanonicalResourceUri } from '@atcute/lexicons';
+import {
+  type CanonicalResourceUri,
+  type Did,
+  type RecordKey,
+  parseCanonicalResourceUri,
+} from '@atcute/lexicons';
 
 import { createRecord, deleteRecord, putRecord, type RepoRecord } from '../records';
 
@@ -90,7 +95,10 @@ export function applyCommentPatches(
 ): CommentThreadNode[] {
   const byUri = new Map(confirmed.map((node) => [node.uri, node]));
   for (const uri in patches) {
-    byUri.set(uri as CanonicalResourceUri, { ...byUri.get(uri as CanonicalResourceUri), ...patches[uri] } as CommentThreadNode);
+    byUri.set(
+      uri as CanonicalResourceUri,
+      { ...byUri.get(uri as CanonicalResourceUri), ...patches[uri] } as CommentThreadNode,
+    );
   }
   return [...byUri.values()];
 }

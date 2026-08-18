@@ -13,7 +13,13 @@
   let { userstyles, author, empty }: Props = $props();
 
   // When a single author isn't already known (e.g. mixed-author feeds like Explore), batch-fetch every author's profile once instead of letting each list item fetch its own.
-  let authors = $derived(author ? undefined : await getProfiles([...new Set(userstyles.map((u) => parseCanonicalResourceUri(u.uri).repo))]));
+  let authors = $derived(
+    author
+      ? undefined
+      : await getProfiles([
+          ...new Set(userstyles.map((u) => parseCanonicalResourceUri(u.uri).repo)),
+        ]),
+  );
 </script>
 
 <section class="userstyles-section">

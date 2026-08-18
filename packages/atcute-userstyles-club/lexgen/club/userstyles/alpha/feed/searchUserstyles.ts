@@ -17,7 +17,9 @@ export default document({
       description: 'Search over userstyles, with optional querying and filters.',
       parameters: params({
         properties: {
-          query: string({ description: 'Search terms, matched against title and description fields.' }),
+          query: string({
+            description: 'Search terms, matched against title and description fields.',
+          }),
           sort: string({
             enum: ['top', 'latest', 'popular'],
             default: 'latest',
@@ -26,8 +28,14 @@ export default document({
               "Rank by comment and rating activity via 'popular'.",
           }),
           author: string({ format: 'did' }),
-          since: string({ format: 'datetime', description: 'only userstyles created at or after this time' }),
-          before: string({ format: 'datetime', description: 'only userstyles created before this time' }),
+          since: string({
+            format: 'datetime',
+            description: 'only userstyles created at or after this time',
+          }),
+          before: string({
+            format: 'datetime',
+            description: 'only userstyles created before this time',
+          }),
           homepage: string({ description: 'substring match against homepageUrl' }),
           upstream: string({ description: 'substring match against upstreamUrl' }),
           limit: integer({ minimum: 1, maximum: 100, default: 25 }),

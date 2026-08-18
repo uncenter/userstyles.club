@@ -126,7 +126,8 @@
     <p class="form-hint" id="ignore-update-url-desc">
       If there is a configured update URL within the userstyle source code, Stylus will check for
       updates from that URL. Enabling this option ignores the
-      <code>@updateURL</code> field from the userstyle's metadata and updates directly from <strong>userstyles.club</strong>.
+      <code>@updateURL</code> field from the userstyle's metadata and updates directly from
+      <strong>userstyles.club</strong>.
     </p>
   </div>
 

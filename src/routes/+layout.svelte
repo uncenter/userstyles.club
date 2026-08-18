@@ -87,125 +87,20 @@
 </svelte:head>
 
 <nav class="navbar">
-    <div class="navbar__stripe accent-cycle" aria-hidden="true">
-      <span class="navbar__stripe-segment"></span><span class="navbar__stripe-segment"></span><span
-        class="navbar__stripe-segment"
-      ></span><span class="navbar__stripe-segment"></span>
-    </div>
-    <div class="navbar__inner">
-      <a href={resolve('/')} class="navbar__logo"><LogoCombo /></a>
+  <div class="navbar__stripe accent-cycle" aria-hidden="true">
+    <span class="navbar__stripe-segment"></span><span class="navbar__stripe-segment"></span><span
+      class="navbar__stripe-segment"
+    ></span><span class="navbar__stripe-segment"></span>
+  </div>
+  <div class="navbar__inner">
+    <a href={resolve('/')} class="navbar__logo"><LogoCombo /></a>
 
-      <div class="navbar__end">
-        <form
-          class="navbar__search form-input-group"
-          onsubmit={(e) => {
-            e.preventDefault();
-            submitNavSearch(navSearchQuery);
-          }}
-        >
-          <input
-            type="text"
-            class="form-input-group__input"
-            placeholder="Search userstyles…"
-            aria-label="Search userstyles"
-            bind:value={navSearchQuery}
-          />
-          <button type="submit" class="form-input-group__btn" aria-label="Search">
-            <SearchIcon size={16} />
-          </button>
-        </form>
-
-        <ul class="navbar__links" role="list">
-          <li><a href={resolve('/')} class="navbar__link">Home</a></li>
-          <li><a href={resolve('/explore')} class="navbar__link">Explore</a></li>
-          <li><a href={resolve('/new')} class="btn btn--primary">New</a></li>
-          {#if user.isLoggedIn && user.did}
-            <li class="notif-bell">
-              <a
-                href={resolve('/notifications')}
-                class="notif-bell__trigger"
-                aria-label="Notifications"
-              >
-                <InboxIcon size={18} />
-                {#if hasUnreadNotifications}<span class="notif-bell__dot" aria-hidden="true"
-                  ></span>{/if}
-              </a>
-            </li>
-            <li class="user-menu">
-              <button
-                class="user-menu__trigger"
-                popovertarget="user-menu-popover"
-                popovertargetaction="toggle"
-                aria-haspopup="menu"
-                aria-label="User menu"
-              >
-                <Avatar
-                  src={user.profile?.avatar}
-                  name={user.profile?.handle ?? user.profile?.did ?? ''}
-                  alt={user.profile?.handle ?? user.profile?.did ?? 'profile'}
-                  size="md"
-                />
-              </button>
-              <div
-                id="user-menu-popover"
-                bind:this={userMenuPopover}
-                popover
-                class="user-menu__dropdown"
-                role="menu"
-              >
-                <a
-                  class="user-menu__item"
-                  href={resolve('/profile/[user=actor]', {
-                    user: user.profile ? getPreferredActorIdentifier(user.profile) : user.did,
-                  })}
-                  role="menuitem">Profile</a
-                >
-                <a class="user-menu__item" href={resolve('/settings')} role="menuitem">Settings</a>
-                <button
-                  type="button"
-                  role="menuitem"
-                  class="user-menu__item user-menu__item--danger"
-                  popovertarget="user-menu-popover"
-                  popovertargetaction="hide"
-                  onclick={() => logout()}>Logout</button
-                >
-              </div>
-            </li>
-          {:else}
-            <li class="navbar__login">
-              <a href={resolve('/login')} class="btn btn--outline">Login</a>
-            </li>
-          {/if}
-        </ul>
-
-        <button
-          class="navbar__toggle"
-          popovertarget="mobile-nav-popover"
-          popovertargetaction="toggle"
-          aria-haspopup="menu"
-          aria-label="Navigation menu"
-        >
-          <MenuIcon size={20} />
-        </button>
-      </div>
-    </div>
-  </nav>
-
-  <main class="container">
-    <div
-      id="mobile-nav-popover"
-      bind:this={mobileNavPopover}
-      popover
-      class="mobile-nav"
-      role="dialog"
-      aria-modal="true"
-      aria-label="Navigation menu"
-    >
+    <div class="navbar__end">
       <form
-        class="mobile-nav__search form-input-group"
+        class="navbar__search form-input-group"
         onsubmit={(e) => {
           e.preventDefault();
-          submitNavSearch(mobileNavSearchQuery);
+          submitNavSearch(navSearchQuery);
         }}
       >
         <input
@@ -213,68 +108,173 @@
           class="form-input-group__input"
           placeholder="Search userstyles…"
           aria-label="Search userstyles"
-          bind:value={mobileNavSearchQuery}
+          bind:value={navSearchQuery}
         />
         <button type="submit" class="form-input-group__btn" aria-label="Search">
           <SearchIcon size={16} />
         </button>
       </form>
 
-      <a href={resolve('/')} class="mobile-nav__link">Home</a>
-      <a href={resolve('/explore')} class="mobile-nav__link">Explore</a>
-      <a href={resolve('/new')} class="mobile-nav__link">New</a>
+      <ul class="navbar__links" role="list">
+        <li><a href={resolve('/')} class="navbar__link">Home</a></li>
+        <li><a href={resolve('/explore')} class="navbar__link">Explore</a></li>
+        <li><a href={resolve('/new')} class="btn btn--primary">New</a></li>
+        {#if user.isLoggedIn && user.did}
+          <li class="notif-bell">
+            <a
+              href={resolve('/notifications')}
+              class="notif-bell__trigger"
+              aria-label="Notifications"
+            >
+              <InboxIcon size={18} />
+              {#if hasUnreadNotifications}<span class="notif-bell__dot" aria-hidden="true"
+                ></span>{/if}
+            </a>
+          </li>
+          <li class="user-menu">
+            <button
+              class="user-menu__trigger"
+              popovertarget="user-menu-popover"
+              popovertargetaction="toggle"
+              aria-haspopup="menu"
+              aria-label="User menu"
+            >
+              <Avatar
+                src={user.profile?.avatar}
+                name={user.profile?.handle ?? user.profile?.did ?? ''}
+                alt={user.profile?.handle ?? user.profile?.did ?? 'profile'}
+                size="md"
+              />
+            </button>
+            <div
+              id="user-menu-popover"
+              bind:this={userMenuPopover}
+              popover
+              class="user-menu__dropdown"
+              role="menu"
+            >
+              <a
+                class="user-menu__item"
+                href={resolve('/profile/[user=actor]', {
+                  user: user.profile ? getPreferredActorIdentifier(user.profile) : user.did,
+                })}
+                role="menuitem">Profile</a
+              >
+              <a class="user-menu__item" href={resolve('/settings')} role="menuitem">Settings</a>
+              <button
+                type="button"
+                role="menuitem"
+                class="user-menu__item user-menu__item--danger"
+                popovertarget="user-menu-popover"
+                popovertargetaction="hide"
+                onclick={() => logout()}>Logout</button
+              >
+            </div>
+          </li>
+        {:else}
+          <li class="navbar__login">
+            <a href={resolve('/login')} class="btn btn--outline">Login</a>
+          </li>
+        {/if}
+      </ul>
 
-      <hr class="mobile-nav__divider" />
+      <button
+        class="navbar__toggle"
+        popovertarget="mobile-nav-popover"
+        popovertargetaction="toggle"
+        aria-haspopup="menu"
+        aria-label="Navigation menu"
+      >
+        <MenuIcon size={20} />
+      </button>
+    </div>
+  </div>
+</nav>
 
-      {#if user.isLoggedIn && user.did}
-        <a href={resolve('/notifications')} class="mobile-nav__link" role="menuitem">
-          Notifications
-          {#if hasUnreadNotifications}<span class="notif-bell__dot" aria-hidden="true"></span>{/if}
-        </a>
-        <a
-          href={resolve('/profile/[user=actor]', {
-            user: user.profile ? getPreferredActorIdentifier(user.profile) : user.did,
-          })}
-          class="mobile-nav__link"
-          role="menuitem">Profile</a
-        >
-        <a href={resolve('/settings')} class="mobile-nav__link" role="menuitem">Settings</a>
-        <button
-          type="button"
-          role="menuitem"
-          class="mobile-nav__link mobile-nav__link--danger"
-          popovertarget="mobile-nav-popover"
-          popovertargetaction="hide"
-          onclick={() => logout()}>Logout</button
-        >
-      {:else}
-        <a href={resolve('/login')} class="mobile-nav__link" role="menuitem">Login</a>
-      {/if}
+<main class="container">
+  <div
+    id="mobile-nav-popover"
+    bind:this={mobileNavPopover}
+    popover
+    class="mobile-nav"
+    role="dialog"
+    aria-modal="true"
+    aria-label="Navigation menu"
+  >
+    <form
+      class="mobile-nav__search form-input-group"
+      onsubmit={(e) => {
+        e.preventDefault();
+        submitNavSearch(mobileNavSearchQuery);
+      }}
+    >
+      <input
+        type="text"
+        class="form-input-group__input"
+        placeholder="Search userstyles…"
+        aria-label="Search userstyles"
+        bind:value={mobileNavSearchQuery}
+      />
+      <button type="submit" class="form-input-group__btn" aria-label="Search">
+        <SearchIcon size={16} />
+      </button>
+    </form>
+
+    <a href={resolve('/')} class="mobile-nav__link">Home</a>
+    <a href={resolve('/explore')} class="mobile-nav__link">Explore</a>
+    <a href={resolve('/new')} class="mobile-nav__link">New</a>
+
+    <hr class="mobile-nav__divider" />
+
+    {#if user.isLoggedIn && user.did}
+      <a href={resolve('/notifications')} class="mobile-nav__link" role="menuitem">
+        Notifications
+        {#if hasUnreadNotifications}<span class="notif-bell__dot" aria-hidden="true"></span>{/if}
+      </a>
+      <a
+        href={resolve('/profile/[user=actor]', {
+          user: user.profile ? getPreferredActorIdentifier(user.profile) : user.did,
+        })}
+        class="mobile-nav__link"
+        role="menuitem">Profile</a
+      >
+      <a href={resolve('/settings')} class="mobile-nav__link" role="menuitem">Settings</a>
+      <button
+        type="button"
+        role="menuitem"
+        class="mobile-nav__link mobile-nav__link--danger"
+        popovertarget="mobile-nav-popover"
+        popovertargetaction="hide"
+        onclick={() => logout()}>Logout</button
+      >
+    {:else}
+      <a href={resolve('/login')} class="mobile-nav__link" role="menuitem">Login</a>
+    {/if}
+  </div>
+  {@render children()}
+</main>
+<footer class="site-footer">
+  <div class="container">
+    <div class="site-footer__brand">
+      <a href={resolve('/')} class="site-footer__logo"><LogoCombo /></a>
+      <p class="site-footer__tagline">{TAGLINE}</p>
     </div>
-    {@render children()}
-  </main>
-  <footer class="site-footer">
-    <div class="container">
-      <div class="site-footer__brand">
-        <a href={resolve('/')} class="site-footer__logo"><LogoCombo /></a>
-        <p class="site-footer__tagline">{TAGLINE}</p>
-      </div>
-      <div class="site-footer__links">
-        <a
-          href={REPO_URL}
-          target="_blank"
-          rel="noopener noreferrer"
-          class="btn btn--outline btn--primary btn--sm">Source <MoveUpRightIcon size={16} /></a
-        >
-        <a
-          href={FEEDBACK_URL}
-          target="_blank"
-          rel="noopener noreferrer"
-          class="btn btn--outline btn--primary btn--sm">Feedback <MoveUpRightIcon size={16} /></a
-        >
-      </div>
+    <div class="site-footer__links">
+      <a
+        href={REPO_URL}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="btn btn--outline btn--primary btn--sm">Source <MoveUpRightIcon size={16} /></a
+      >
+      <a
+        href={FEEDBACK_URL}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="btn btn--outline btn--primary btn--sm">Feedback <MoveUpRightIcon size={16} /></a
+      >
     </div>
-  </footer>
+  </div>
+</footer>
 
 <style>
   .navbar__toggle {

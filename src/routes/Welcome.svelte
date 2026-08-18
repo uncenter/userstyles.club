@@ -72,9 +72,9 @@
       What is a userstyle?
     </summary>
     <p class="faq-item__answer">
-      A userstyle is a user-authored stylesheet (written in CSS or a CSS preprocessor language)
-      that changes how a website looks, whether that's a full redesign, a dark theme, or just
-      tweaking a few colors. Install a userstyle manager extension like
+      A userstyle is a user-authored stylesheet (written in CSS or a CSS preprocessor language) that
+      changes how a website looks, whether that's a full redesign, a dark theme, or just tweaking a
+      few colors. Install a userstyle manager extension like
       <a href="https://add0n.com/stylus.html" target="_blank" rel="noopener noreferrer">Stylus</a>
       in your browser, then apply any userstyle published here to sites you visit.
     </p>
@@ -86,9 +86,9 @@
       What is the AT Protocol?
     </summary>
     <p class="faq-item__answer">
-      The AT Protocol is an open, federated social networking protocol. userstyles.club uses it
-      to store and retrieve userstyle records in a standardized, interoperable way so that other
-      AT Protocol apps can read and build on the same data.
+      The AT Protocol is an open, federated social networking protocol. userstyles.club uses it to
+      store and retrieve userstyle records in a standardized, interoperable way so that other AT
+      Protocol apps can read and build on the same data.
     </p>
   </details>
 </div>

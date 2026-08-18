@@ -51,7 +51,10 @@ export async function countFollowersFromAppview(actor: Did): Promise<number> {
   return response.count;
 }
 
-export async function getRelationshipFromAppview(actor: Did, other: Did): Promise<RelationshipView> {
+export async function getRelationshipFromAppview(
+  actor: Did,
+  other: Did,
+): Promise<RelationshipView> {
   const client = getCrayonClient();
   return await ok(
     client.get('club.userstyles.alpha.graph.getRelationship', {

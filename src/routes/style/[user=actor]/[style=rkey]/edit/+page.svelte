@@ -3,7 +3,6 @@
   import { resolve } from '$app/paths';
   import type { PageProps } from './$types';
 
-
   import { getBlobCdnUrl, getUserstyleSourceCode, updateUserstyle, user } from '$lib/at';
 
   import { BackLink, Loading } from '$components/ui';
@@ -69,7 +68,10 @@
   }
 </script>
 
-<Meta title={['Editing', userstyle.title]} description={`Edit ${userstyle.title} on userstyles.club.`} />
+<Meta
+  title={['Editing', userstyle.title]}
+  description={`Edit ${userstyle.title} on userstyles.club.`}
+/>
 
 <div class="card">
   <div class="page-header">

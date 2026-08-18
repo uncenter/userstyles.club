@@ -35,7 +35,9 @@
   let isOwner = $derived(user.isLoggedIn && user.did === owner);
 
   // Batch-fetch every commenter's profile once for the whole tree.
-  let authors = $derived(threads.length > 0 ? await getProfiles(collectThreadAuthorDids(threads)) : undefined);
+  let authors = $derived(
+    threads.length > 0 ? await getProfiles(collectThreadAuthorDids(threads)) : undefined,
+  );
 
   async function submitComment() {
     error = null;
@@ -56,9 +58,7 @@
 </script>
 
 <section class="card comments-section">
-  <h2 class="comments-section__heading">
-    Comments
-  </h2>
+  <h2 class="comments-section__heading">Comments</h2>
 
   {#if error}
     <Alert variant="error">{error}</Alert>

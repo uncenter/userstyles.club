@@ -1,5 +1,4 @@
 <script lang="ts">
-
   import { ChevronDownIcon } from '@lucide/svelte';
 
   import { preferences } from '$lib/preferences.svelte';
@@ -67,14 +66,17 @@
           Note: The appview is required for optimal performance.
         </p>
         <p class="settings-list__label-desc text-muted">
-          When enabled, network requests are directed to the internal Crayon appview instance. When disabled, the Constellation and Slingshot community instances are relied on entirely for all request functionality, skipping the appview entirely.
+          When enabled, network requests are directed to the internal Crayon appview instance. When
+          disabled, the Constellation and Slingshot community instances are relied on entirely for
+          all request functionality, skipping the appview entirely.
         </p>
       </div>
       <input
         type="checkbox"
         id="appview-enabled-toggle"
         bind:checked={
-          () => preferences.get('isAppviewEnabled'), (val) => preferences.set('isAppviewEnabled', val)
+          () => preferences.get('isAppviewEnabled'),
+          (val) => preferences.set('isAppviewEnabled', val)
         }
         class="appview-enabled-toggle"
       />
@@ -92,7 +94,8 @@
         disabled={!preferences.get('isAppviewEnabled')}
         class="settings-url-input"
         bind:value={
-          () => preferences.get('customAppviewUrl'), (val) => preferences.set('customAppviewUrl', val.trim())
+          () => preferences.get('customAppviewUrl'),
+          (val) => preferences.set('customAppviewUrl', val.trim())
         }
       />
     </div>
@@ -120,7 +123,9 @@
     <div class="settings-list__row">
       <div class="settings-list__label">
         <label for="slingshot-url-input" class="settings-list__label-text">Slingshot URL</label>
-        <p class="settings-list__label-desc text-muted">Used to resolve identities and PDSes, regardless of appview preferences.</p>
+        <p class="settings-list__label-desc text-muted">
+          Used to resolve identities and PDSes, regardless of appview preferences.
+        </p>
       </div>
       <input
         type="text"
@@ -129,7 +134,8 @@
         placeholder="https://slingshot.microcosm.blue"
         class="settings-url-input"
         bind:value={
-          () => preferences.get('customSlingshotUrl'), (val) => preferences.set('customSlingshotUrl', val.trim())
+          () => preferences.get('customSlingshotUrl'),
+          (val) => preferences.set('customSlingshotUrl', val.trim())
         }
       />
     </div>

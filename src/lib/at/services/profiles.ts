@@ -8,7 +8,10 @@ import { putRecord, type RepoRecord } from '../records';
 import { getCacheEntry, writeCacheEntry, invalidateCacheEntries } from '$lib/cache';
 import { chunk } from '../utils';
 
-import { getClubProfileFromAppview, getClubProfilesFromAppview } from '../backends/appview/profiles';
+import {
+  getClubProfileFromAppview,
+  getClubProfilesFromAppview,
+} from '../backends/appview/profiles';
 import { getClubProfileFromPds, getClubProfilesFromPds } from '../backends/fallback/profiles';
 
 import { makeRecordBuilder, type RecordCreateInput } from '../builder';
@@ -117,7 +120,9 @@ async function resolveHandle(did: Did): Promise<Handle | undefined> {
 }
 
 async function resolveHandles(dids: Did[]): Promise<Map<Did, Handle | undefined>> {
-  const entries = await Promise.all(dids.map(async (did) => [did, await resolveHandle(did)] as const));
+  const entries = await Promise.all(
+    dids.map(async (did) => [did, await resolveHandle(did)] as const),
+  );
   return new Map(entries);
 }
 
@@ -169,7 +174,10 @@ export async function getProfiles(actors: Did[]): Promise<Map<Did, ProfileView>>
   const misses: Did[] = [];
 
   for (const did of dids) {
-    const cachedBsky = getCacheEntry<AppBskyActorDefs.ProfileViewDetailed>(BSKY_CACHE_KEY(did), BSKY_TTL);
+    const cachedBsky = getCacheEntry<AppBskyActorDefs.ProfileViewDetailed>(
+      BSKY_CACHE_KEY(did),
+      BSKY_TTL,
+    );
     if (!cachedBsky) {
       misses.push(did);
       continue;

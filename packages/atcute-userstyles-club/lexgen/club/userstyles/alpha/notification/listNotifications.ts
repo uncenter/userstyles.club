@@ -14,8 +14,7 @@ export default document({
   id: 'club.userstyles.alpha.notification.listNotifications',
   defs: {
     main: query({
-      description:
-        "List an actor's notifications, most recent first.",
+      description: "List an actor's notifications, most recent first.",
       parameters: params({
         properties: {
           actor: required(string({ format: 'did' })),

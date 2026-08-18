@@ -1,11 +1,18 @@
-import { document, integer, object, params, query, required, string } from '@atcute/lexicon-doc/builder';
+import {
+  document,
+  integer,
+  object,
+  params,
+  query,
+  required,
+  string,
+} from '@atcute/lexicon-doc/builder';
 
 export default document({
   id: 'club.userstyles.alpha.feed.countComments',
   defs: {
     main: query({
-      description:
-        'Count comments, optionally filtered by subject and/or author.',
+      description: 'Count comments, optionally filtered by subject and/or author.',
       parameters: params({
         properties: {
           subject: string({ format: 'at-uri', description: 'uri of the subject userstyle' }),

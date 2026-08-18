@@ -6,10 +6,7 @@
   let { data }: PageProps = $props();
 </script>
 
-<Meta
-  title="Explore"
-  description="Discover userstyles shared on userstyles.club."
-/>
+<Meta title="Explore" description="Discover userstyles shared on userstyles.club." />
 
 <div class="card">
   <h1>Explore</h1>

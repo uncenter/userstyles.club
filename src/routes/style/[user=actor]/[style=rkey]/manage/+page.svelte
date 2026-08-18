@@ -126,7 +126,10 @@
   }
 </script>
 
-<Meta title={['Manage', userstyle.title]} description={`Manage ${userstyle.title} on userstyles.club.`} />
+<Meta
+  title={['Manage', userstyle.title]}
+  description={`Manage ${userstyle.title} on userstyles.club.`}
+/>
 
 <div class="card">
   <div class="page-header">
@@ -161,7 +164,7 @@
       </a>
     </li>
 
-    <li class={["action-list__item", !userstyle.upstreamUrl && "action-list__item--disabled"]}>
+    <li class={['action-list__item', !userstyle.upstreamUrl && 'action-list__item--disabled']}>
       <div class="action-list__info">
         <p class="action-list__title">Sync</p>
         <p class="action-list__desc text-muted">
@@ -175,7 +178,9 @@
         type="button"
         class="btn btn--secondary btn--lg"
         disabled={!userstyle.upstreamUrl || sync.fetching}
-        title={userstyle.upstreamUrl ? undefined : 'No upstream URL is configured for this userstyle.'}
+        title={userstyle.upstreamUrl
+          ? undefined
+          : 'No upstream URL is configured for this userstyle.'}
         onclick={fetchSync}
       >
         <Loading pending={sync.fetching} active="Syncing…"

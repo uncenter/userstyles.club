@@ -1,5 +1,11 @@
 import type { Did } from '@atcute/lexicons';
-import { listFollows, listFollowers, getProfiles, type FollowView, type ProfileView } from '$lib/at';
+import {
+  listFollows,
+  listFollowers,
+  getProfiles,
+  type FollowView,
+  type ProfileView,
+} from '$lib/at';
 
 export type FollowListKind = 'followers' | 'following';
 
