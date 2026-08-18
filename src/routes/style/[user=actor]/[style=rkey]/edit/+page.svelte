@@ -71,7 +71,7 @@
 
 <Meta title={['Editing', userstyle.title]} description={`Edit ${userstyle.title} on userstyles.club.`} />
 
-<div class="page-section">
+<div class="card">
   <div class="page-header">
     <BackLink
       href={resolve('/style/[user=actor]/[style=rkey]/manage', {
@@ -84,7 +84,7 @@
   </div>
 </div>
 
-<div class="page-section">
+<div class="card">
   {#snippet formActions()}
     <button
       type="submit"

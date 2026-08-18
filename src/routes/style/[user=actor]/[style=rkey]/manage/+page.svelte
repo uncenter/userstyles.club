@@ -128,7 +128,7 @@
 
 <Meta title={['Manage', userstyle.title]} description={`Manage ${userstyle.title} on userstyles.club.`} />
 
-<div class="page-section">
+<div class="card">
   <div class="page-header">
     <BackLink
       href={resolve('/style/[user=actor]/[style=rkey]', {
@@ -141,7 +141,7 @@
   </div>
 </div>
 
-<div class="page-section">
+<div class="card">
   <ul class="action-list">
     <li class="action-list__item">
       <div class="action-list__info">
@@ -186,7 +186,7 @@
   </ul>
 </div>
 
-<div class="page-section manage-page__danger-zone">
+<div class="card manage-page__danger-zone">
   <h2 class="manage-page__danger-heading">Danger Zone</h2>
   <ul class="action-list">
     <li class="action-list__item">

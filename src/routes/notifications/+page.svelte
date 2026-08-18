@@ -68,7 +68,7 @@
 
 <Meta title="Notifications" description="Your notifications on userstyles.club." />
 
-<div class="page-section">
+<div class="card">
   <h1>Notifications</h1>
 </div>
 

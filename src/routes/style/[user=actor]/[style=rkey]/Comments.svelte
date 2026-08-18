@@ -55,7 +55,7 @@
   }
 </script>
 
-<section class="page-section comments-section">
+<section class="card comments-section">
   <h2 class="comments-section__heading">
     Comments
   </h2>

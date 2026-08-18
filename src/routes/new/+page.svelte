@@ -90,20 +90,20 @@
 
 <Meta title="New Userstyle" description="Publish a new userstyle on userstyles.club." />
 
-<div class="page-section">
+<div class="card">
   <h1>New Userstyle</h1>
 </div>
 
 <div class="import-row">
-  <div class="page-section">
+  <div class="card">
     <ImportFromUrl {fields} bind:pending={importingUrl} bind:imported />
   </div>
-  <div class="page-section">
+  <div class="card">
     <ImportFromFile {fields} bind:pending={importingFile} bind:imported />
   </div>
 </div>
 
-<div class="page-section">
+<div class="card">
   {#snippet importOverrideButton(field: keyof UserstyleContent)}
     {#if imported}
       {@const importedValue = imported[field]}
@@ -189,7 +189,7 @@
     gap: var(--space-5);
     margin-bottom: var(--space-5);
 
-    > .page-section {
+    > .card {
       display: flex;
       flex-direction: column;
       justify-content: center;

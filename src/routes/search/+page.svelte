@@ -26,7 +26,7 @@
     : 'Search userstyles on userstyles.club.'}
 />
 
-<div class="page-section">
+<div class="card">
   <h1>Search</h1>
 </div>
 <UserstyleBrowser bind:query bind:sort initial={data.initial} />

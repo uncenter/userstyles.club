@@ -117,7 +117,7 @@
 <Meta title="Login" description="Sign in to userstyles.club." />
 
 <div class="centered-col">
-  <section class="page-section login-card">
+  <section class="card login-card">
     <div class="login-card__header">
       <h1 class="login-card__title">Sign In</h1>
       <p class="text-muted">Enter your Bluesky (Atmosphere) handle or DID to continue.</p>

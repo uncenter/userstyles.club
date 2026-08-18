@@ -14,11 +14,11 @@
 
 <Meta title="Settings" description="Manage your userstyles.club local preferences." />
 
-<div class="page-section">
+<div class="card">
   <h1>Settings</h1>
 </div>
 
-<div class="page-section settings-list">
+<div class="card settings-list">
   <div class="settings-list__row">
     <div class="settings-list__label">
       <label for="appearance-select" class="settings-list__label-text">Appearance</label>
@@ -54,7 +54,7 @@
   </div>
 </div>
 
-<details class="page-section settings-section--collapsed">
+<details class="card settings-section--collapsed">
   <summary class="settings-section-heading">
     <h2>Network</h2>
     <ChevronDownIcon size={20} class="settings-section-heading__chevron" aria-hidden="true" />

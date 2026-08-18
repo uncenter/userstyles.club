@@ -100,7 +100,7 @@
   <meta name="at:canonical" content={`at://${data.profile.did}/${CLUB_PROFILE_COLLECTION}/self`} />
 </svelte:head>
 
-<section class="page-section profile-header">
+<section class="card profile-header">
   <Avatar src={data.profile.avatar} alt={identityLabel} name={identityLabel} size="lg" />
   {#if editing}
     <form onsubmit={saveProfile} class="form-stack profile-edit-form">

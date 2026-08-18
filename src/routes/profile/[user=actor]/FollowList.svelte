@@ -58,7 +58,7 @@
   type="profile"
 />
 
-<div class="page-section">
+<div class="card">
   <div class="page-header">
     <BackLink
       href={resolve('/profile/[user=actor]', { user: getPreferredActorIdentifier(profile) })}
@@ -68,7 +68,7 @@
   </div>
 </div>
 
-<div class="page-section">
+<div class="card">
   {#if list.loading}
     <div class="section-fill"><Spinner size="lg" /></div>
   {:else if list.error}

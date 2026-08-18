@@ -9,7 +9,7 @@
 <Meta title={String(page.status)} description={page.error?.message ?? 'Something went wrong.'} />
 
 <div class="centered-col">
-  <section class="page-section error-page">
+  <section class="card error-page">
     <p class="error-page__status">{page.status}</p>
     <h3>{page.error?.message ?? 'Something went wrong'}</h3>
     <a href={resolve('/')} class="btn btn--outline"><ArrowLeftIcon size={14} /> Go Back</a>

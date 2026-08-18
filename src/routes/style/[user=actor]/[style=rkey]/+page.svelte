@@ -234,7 +234,7 @@
 </svelte:head>
 
 <div class="page-wrapper">
-  <section class="page-section userstyle-section">
+  <section class="card userstyle-section">
     {#if userstyle.previewImage}
       <div class="userstyle-section__preview grid-background">
         <PreviewImage

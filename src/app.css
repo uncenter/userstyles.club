@@ -214,13 +214,6 @@ main.container {
   margin-inline: auto;
 }
 
-.page-section {
-  padding: var(--space-6);
-  margin-bottom: var(--space-5);
-  background: var(--card-bg);
-  border-radius: var(--radius);
-}
-
 .page-header {
   display: flex;
   flex-direction: column;
@@ -328,6 +321,13 @@ main.container {
   clip: rect(0, 0, 0, 0);
   white-space: nowrap;
   border-width: 0;
+}
+
+.card {
+  padding: var(--space-6);
+  margin-bottom: var(--space-5);
+  background: var(--card-bg);
+  border-radius: var(--radius);
 }
 
 /* Buttons */
