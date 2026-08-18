@@ -56,6 +56,7 @@
     width: calc(100% - var(--space-8));
     max-width: var(--max-width, 28rem);
     margin: auto;
+    overflow: visible;
     opacity: 0;
     transform: translateY(4px) scale(0.98);
     transition:
