@@ -4,12 +4,12 @@
   interface Props {
     open?: boolean;
     title: string;
-    maxWidth?: string;
+    dismissible?: boolean;
     children?: Snippet;
     actions?: Snippet;
   }
 
-  let { open = $bindable(false), title, maxWidth = '28rem', children, actions }: Props = $props();
+  let { open = $bindable(false), title, dismissible = true, children, actions }: Props = $props();
 
   let dialogEl: HTMLDialogElement;
 
@@ -26,9 +26,12 @@
 <dialog
   class="dialog"
   bind:this={dialogEl}
-  style:max-width={maxWidth}
+  closedby={dismissible ? 'any' : 'none'}
   onclick={(e) => {
-    if (e.target === e.currentTarget) open = false;
+    if (dismissible && e.target === e.currentTarget) open = false;
+  }}
+  oncancel={(e) => {
+    if (!dismissible) e.preventDefault();
   }}
   onclose={() => {
     open = false;
@@ -49,13 +52,48 @@
     color: var(--foreground);
     border: none;
     border-radius: var(--radius-lg);
-    padding: var(--space-6);
+    padding: var(--padding, var(--space-6));
     width: calc(100% - var(--space-8));
+    max-width: var(--max-width, 28rem);
     margin: auto;
+    opacity: 0;
+    transform: translateY(4px) scale(0.98);
+    transition:
+      opacity var(--ease),
+      transform var(--ease),
+      overlay var(--ease) allow-discrete,
+      display var(--ease) allow-discrete;
+
+    &[open] {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+
+    @starting-style {
+      &[open] {
+        opacity: 0;
+        transform: translateY(4px) scale(0.98);
+      }
+    }
 
     &::backdrop {
       background: rgb(0 0 0 / 0.55);
       backdrop-filter: blur(2px);
+      opacity: 0;
+      transition:
+        opacity var(--ease),
+        overlay var(--ease) allow-discrete,
+        display var(--ease) allow-discrete;
+    }
+
+    &[open]::backdrop {
+      opacity: 1;
+    }
+
+    @starting-style {
+      &[open]::backdrop {
+        opacity: 0;
+      }
     }
 
     .dialog__title {

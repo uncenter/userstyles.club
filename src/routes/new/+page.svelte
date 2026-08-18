@@ -8,8 +8,8 @@
   import { getPreferredActorIdentifier } from '$lib/preferences.svelte';
   import type { ImportResult } from './import';
 
-  import { Loading, Dialog } from '$components/ui';
-  import { BlueskyIcon, Meta } from '$components';
+  import { BackLink, Loading, Dialog } from '$components/ui';
+  import { BlueskyIcon, LoginForm, Meta } from '$components';
 
   import ImportFromUrl from './import/ImportFromUrl.svelte';
   import ImportFromFile from './import/ImportFromFile.svelte';
@@ -31,11 +31,14 @@
   let publishedUrl = $state('');
   let shareText = $state('');
 
+  let loginModalOpen = $state(false);
+
   $effect(() => {
     if (!user.isInitializing && !user.isLoggedIn) {
-      goto(resolve('/login'));
-      return;
+      const timer = setTimeout(() => (loginModalOpen = true), 300);
+      return () => clearTimeout(timer);
     }
+    loginModalOpen = false;
   });
 
   async function submit(event: Event) {
@@ -89,6 +92,24 @@
 </script>
 
 <Meta title="New Userstyle" description="Publish a new userstyle on userstyles.club." />
+
+<Dialog
+  open={loginModalOpen}
+  title="Sign In"
+  dismissible={false}
+  --max-width="32rem"
+  --padding="var(--space-8)"
+>
+  {#snippet children()}
+    <div class="login-modal">
+      <p class="text-muted">
+        Sign in with your Bluesky (Atmosphere) handle or DID to publish a userstyle.
+      </p>
+      <LoginForm />
+      <BackLink href={resolve('/')} label="Back to Home" />
+    </div>
+  {/snippet}
+</Dialog>
 
 <div class="card">
   <h1>New Userstyle</h1>
@@ -154,7 +175,7 @@
   />
 </div>
 
-<Dialog bind:open={shareDialogOpen} title="Share to Bluesky?" maxWidth="32rem">
+<Dialog bind:open={shareDialogOpen} title="Share to Bluesky?" --max-width="32rem">
   {#snippet children()}
     <p class="text-muted">
       Congratulations on publishing! Let your friends know about your new userstyle.
@@ -183,6 +204,11 @@
 </Dialog>
 
 <style>
+  .login-modal {
+    display: grid;
+    gap: var(--space-4);
+  }
+
   .import-row {
     display: grid;
     grid-template-columns: 1fr 1fr;
