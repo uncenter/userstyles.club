@@ -11,7 +11,7 @@ export type { NotificationView, NotificationsPage };
 
 export async function listNotifications(
   actor: Did,
-  opts?: { cursor?: string; limit?: number },
+  opts?: { cursor?: string; limit?: number; hydrate?: boolean },
 ): Promise<NotificationsPage> {
   if (!isAppviewEnabled()) throw new Error('Notifications require the appview to be enabled.');
   return await listNotificationsFromAppview(actor, opts);

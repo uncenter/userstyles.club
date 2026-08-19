@@ -1,6 +1,7 @@
 import { getSessionContext } from '../auth';
 import {
   getUserstyleFromAppview,
+  getUserstylesFromAppview,
   getUserstyleSourceCodeFromAppview,
   listAllUserstylesFromAppview,
   listUserstylesFromAppview,
@@ -18,7 +19,12 @@ import { createRecord, deleteRecord, putRecord, uploadBlob, type RepoRecord } fr
 import type { CommentThreadNode } from './comments';
 
 import { ClientResponseError } from '@atcute/client';
-import { type ActorIdentifier, type RecordKey, type CanonicalResourceUri } from '@atcute/lexicons';
+import {
+  type ActorIdentifier,
+  type RecordKey,
+  type CanonicalResourceUri,
+  parseCanonicalResourceUri,
+} from '@atcute/lexicons';
 
 import { makeRecordBuilder } from '../builder';
 import { CLUB_USERSTYLE_COLLECTION, isAppviewEnabled } from '../settings';
@@ -68,6 +74,35 @@ export async function getUserstyle(
     }
   }
   return await getUserstyleFromPds(repo, rkey);
+}
+
+/** Batched userstyle-by-uri lookup. */
+export async function getUserstyles(
+  uris: CanonicalResourceUri[],
+): Promise<Map<CanonicalResourceUri, UserstyleRecord>> {
+  const unique = [...new Set(uris)];
+  if (unique.length === 0) return new Map();
+
+  if (isAppviewEnabled()) {
+    try {
+      return await getUserstylesFromAppview(unique);
+    } catch (err) {
+      console.warn('crayon appview unavailable, falling back to per-uri lookups', err);
+    }
+  }
+
+  const result = new Map<CanonicalResourceUri, UserstyleRecord>();
+  await Promise.all(
+    unique.map(async (uri) => {
+      const { repo, rkey } = parseCanonicalResourceUri(uri);
+      try {
+        result.set(uri, await getUserstyle(repo, rkey));
+      } catch {
+        // Skipped: deleted/unresolvable userstyle。
+      }
+    }),
+  );
+  return result;
 }
 
 export async function getUserstyleSourceCode(userstyle: UserstyleRecord): Promise<string> {

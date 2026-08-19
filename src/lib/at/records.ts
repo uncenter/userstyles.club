@@ -36,14 +36,15 @@ export async function listRecordsForRepo<NSID extends Nsid>(params: {
   collection: NSID;
   limit?: number;
   cursor?: string;
+  reverse?: boolean;
 }): Promise<ListRecordsResult<ValueFor<NSID>>> {
-  const { repo, collection, limit = 50, cursor } = params;
+  const { repo, collection, limit = 50, cursor, reverse } = params;
 
   const client = repo.startsWith('did:') ? await getPdsClient(repo) : getPublicClient();
 
   const response = await ok(
     client.get('com.atproto.repo.listRecords', {
-      params: { repo, collection, limit, cursor },
+      params: { repo, collection, limit, cursor, reverse },
     }),
   );
 

@@ -1,5 +1,5 @@
 import { ok } from '@atcute/client';
-import type { CanonicalResourceUri } from '@atcute/lexicons';
+import type { CanonicalResourceUri, Did } from '@atcute/lexicons';
 
 import { getCrayonClient } from '../../client';
 import { CLUB_COMMENT_COLLECTION } from '../../settings';
@@ -28,4 +28,25 @@ export async function listCommentsFromAppview(uri: CanonicalResourceUri): Promis
     }),
   );
   return response.comments.map(commentViewToRecord);
+}
+
+export async function listCommentsByAuthorFromAppview(
+  author: Did,
+  opts: { cursor?: string; limit?: number } = {},
+) {
+  const client = getCrayonClient();
+  const response = await ok(
+    client.get('club.userstyles.alpha.feed.listComments', {
+      params: { author, hydrate: ['userstyle'], limit: opts.limit ?? 50, cursor: opts.cursor },
+    }),
+  );
+  return { comments: response.comments.map(commentViewToRecord), cursor: response.cursor };
+}
+
+export async function countCommentsByAuthorFromAppview(author: Did): Promise<number> {
+  const client = getCrayonClient();
+  const response = await ok(
+    client.get('club.userstyles.alpha.feed.countComments', { params: { author } }),
+  );
+  return response.count;
 }

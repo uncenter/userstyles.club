@@ -18,7 +18,7 @@ export const load: PageLoad = async ({ parent }) => {
   if (!sessionHintDid) return { initial: undefined as InitialFeed | undefined };
 
   try {
-    const page = await getTimeline({ actor: sessionHintDid });
+    const page = await getTimeline({ actor: sessionHintDid, hydrate: true });
     const dids = [
       ...new Set(
         page.feed

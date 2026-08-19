@@ -1,7 +1,7 @@
 import { parseCanonicalResourceUri, type CanonicalResourceUri, type Did } from '@atcute/lexicons';
 import { is } from '@atcute/lexicons/validations';
 
-import { getBacklinkedRecords } from '../../records';
+import { getBacklinkedRecords, listRecordsForRepo } from '../../records';
 import { CLUB_RATING_COLLECTION } from '../../settings';
 import { ClubUserstylesAlphaFeedRating } from '@userstyles.club/atcute';
 import type { RatingRecord } from '../../services/ratings';
@@ -32,6 +32,23 @@ export async function listRatingsFromConstellation(
   }
 
   return [...newestByAuthor.values()];
+}
+
+export async function listRatingsByAuthorFromPds(
+  author: Did,
+  opts: { cursor?: string; limit?: number } = {},
+) {
+  const response = await listRecordsForRepo({
+    repo: author,
+    collection: CLUB_RATING_COLLECTION,
+    limit: opts.limit,
+    cursor: opts.cursor,
+    reverse: true,
+  });
+  const ratings = response.records.filter((r): r is RatingRecord =>
+    is(ClubUserstylesAlphaFeedRating.mainSchema, r.value),
+  );
+  return { ratings, cursor: response.cursor };
 }
 
 export async function getRatingFromConstellation(

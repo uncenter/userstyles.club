@@ -35,7 +35,7 @@
 
   async function fetchPage(cursor?: string) {
     if (!user.isLoggedIn || !user.did) return { items: [], cursor: undefined };
-    const page = await listNotifications(user.did, { cursor });
+    const page = await listNotifications(user.did, { cursor, hydrate: true });
     const dids = [...new Set(page.notifications.map((n) => n.author))];
     const resolved = await getProfiles(dids);
     profiles = new Map([...profiles, ...resolved]);

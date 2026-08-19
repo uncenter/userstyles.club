@@ -63,6 +63,8 @@ export const ratingView = object({
     createdAt: required(string({ format: 'datetime' })),
     updatedAt: string({ format: 'datetime' }),
     indexedAt: required(string({ format: 'datetime' })),
+    // Present only when the request specified `hydrate=userstyle`.
+    userstyle: ref({ ref: 'club.userstyles.alpha.defs#userstyleView' }),
   },
 });
 
@@ -77,6 +79,8 @@ export const commentView = object({
     createdAt: required(string({ format: 'datetime' })),
     updatedAt: string({ format: 'datetime' }),
     indexedAt: required(string({ format: 'datetime' })),
+    // Present only when the request specified `hydrate=userstyle`.
+    userstyle: ref({ ref: 'club.userstyles.alpha.defs#userstyleView' }),
   },
 });
 
@@ -129,6 +133,7 @@ export const feedFollowView = object({
 export const feedViewItem = object({
   properties: {
     type: required(string({ enum: ['userstyle', 'comment', 'rating', 'follow'] })),
+    // Present only when the request specified `hydrate=userstyle`.
     userstyle: ref({ ref: 'club.userstyles.alpha.defs#userstyleView' }),
     comment: ref({ ref: 'club.userstyles.alpha.defs#commentView' }),
     rating: ref({ ref: 'club.userstyles.alpha.defs#ratingView' }),
@@ -139,7 +144,8 @@ export const feedViewItem = object({
 export const notificationView = object({
   properties: {
     reason: required(string({ enum: ['comment', 'reply', 'thread', 'rating', 'follow'] })),
-    // The userstyle this notification is about. Absent for `follow` (no userstyle subject) and for a since-deleted userstyle.
+    // Present only when the request specified `hydrate=userstyle`.
+    // Always absent for `follow` (no userstyle subject) and for a since-deleted userstyle.
     userstyle: ref({ ref: 'club.userstyles.alpha.defs#userstyleView' }),
     recordUri: required(string({ format: 'at-uri' })),
     author: required(string({ format: 'did' })),

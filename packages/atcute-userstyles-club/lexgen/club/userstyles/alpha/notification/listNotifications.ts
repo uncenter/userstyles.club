@@ -18,6 +18,12 @@ export default document({
       parameters: params({
         properties: {
           actor: required(string({ format: 'did' })),
+          hydrate: array({
+            items: string({ knownValues: ['userstyle'] }),
+            maxLength: 5,
+            description:
+              'related records to embed inline on each notification',
+          }),
           limit: integer({ minimum: 1, maximum: 100, default: 50 }),
           cursor: string(),
         },

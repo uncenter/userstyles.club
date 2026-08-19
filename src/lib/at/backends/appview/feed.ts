@@ -37,12 +37,17 @@ export async function searchUserstylesFromAppview(
 export type FeedPage = { feed: FeedViewItem[]; cursor?: string };
 
 export async function getTimelineFromAppview(
-  opts: { actor?: Did; cursor?: string; limit?: number } = {},
+  opts: { actor?: Did; cursor?: string; limit?: number; hydrate?: boolean } = {},
 ): Promise<FeedPage> {
   const client = getCrayonClient();
   const response = await ok(
     client.get('club.userstyles.alpha.feed.getTimeline', {
-      params: { actor: opts.actor, cursor: opts.cursor, limit: opts.limit },
+      params: {
+        actor: opts.actor,
+        cursor: opts.cursor,
+        limit: opts.limit,
+        hydrate: opts.hydrate ? ['userstyle'] : undefined,
+      },
     }),
   );
   return {

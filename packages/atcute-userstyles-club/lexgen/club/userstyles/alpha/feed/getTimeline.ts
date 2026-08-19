@@ -23,6 +23,12 @@ export default document({
             description:
               'Filter the feed to accounts this actor follows, rather than the global feed.',
           }),
+          hydrate: array({
+            items: string({ knownValues: ['userstyle'] }),
+            maxLength: 5,
+            description:
+              'related records to embed inline on each feed item',
+          }),
           limit: integer({ minimum: 1, maximum: 100, default: 50 }),
           cursor: string(),
         },

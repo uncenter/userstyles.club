@@ -9,6 +9,7 @@ import {
 
 import { getCrayonClient, resolveToDid } from '../../client';
 import { CLUB_USERSTYLE_COLLECTION } from '../../settings';
+import { chunk } from '../../utils';
 import type { ClubUserstylesAlphaDefs } from '@userstyles.club/atcute';
 import type { Userstyle, UserstyleView, UserstyleRecord } from '../../services/userstyles';
 
@@ -28,7 +29,9 @@ export function toUserstyleView(view: ClubUserstylesAlphaDefs.UserstyleView): Us
   };
 }
 
-function userstyleViewToRecord(view: ClubUserstylesAlphaDefs.UserstyleView): UserstyleRecord {
+export function userstyleViewToRecord(
+  view: ClubUserstylesAlphaDefs.UserstyleView,
+): UserstyleRecord {
   const value: Userstyle = {
     $type: CLUB_USERSTYLE_COLLECTION,
     title: view.title,
@@ -71,6 +74,28 @@ export async function getUserstyleSourceCodeFromAppview(
     }),
   );
   return await response.text();
+}
+
+/** Batched userstyle-by-uri lookup, keyed by uri. Missing/deleted uris are skipped from the result. */
+export async function getUserstylesFromAppview(
+  uris: CanonicalResourceUri[],
+): Promise<Map<CanonicalResourceUri, UserstyleRecord>> {
+  const unique = [...new Set(uris)];
+  if (unique.length === 0) return new Map();
+
+  const client = getCrayonClient();
+  const result = new Map<CanonicalResourceUri, UserstyleRecord>();
+  await Promise.all(
+    chunk(unique, 100).map(async (batch) => {
+      const response = await ok(
+        client.get('club.userstyles.alpha.getUserstyles', { params: { uris: batch } }),
+      );
+      for (const view of response.userstyles) {
+        result.set(view.uri as CanonicalResourceUri, userstyleViewToRecord(view));
+      }
+    }),
+  );
+  return result;
 }
 
 export async function listAllUserstylesFromAppview(): Promise<UserstyleView[]> {

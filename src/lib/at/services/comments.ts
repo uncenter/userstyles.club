@@ -7,8 +7,15 @@ import {
 
 import { createRecord, deleteRecord, putRecord, type RepoRecord } from '../records';
 
-import { listCommentsFromAppview } from '../backends/appview/comments';
-import { listCommentsFromConstellation } from '../backends/fallback/comments';
+import {
+  listCommentsFromAppview,
+  listCommentsByAuthorFromAppview,
+  countCommentsByAuthorFromAppview,
+} from '../backends/appview/comments';
+import {
+  listCommentsFromConstellation,
+  listCommentsByAuthorFromPds,
+} from '../backends/fallback/comments';
 
 import { makeRecordBuilder, type RecordCreateInput, type RecordUpdateInput } from '../builder';
 import { CLUB_COMMENT_COLLECTION, isAppviewEnabled } from '../settings';
@@ -117,6 +124,27 @@ export async function listCommentsForStyle(uri: CanonicalResourceUri): Promise<C
     }
   }
   return await listCommentsFromConstellation(uri);
+}
+
+/** A given author's comments across every subject, newest first. */
+export async function listCommentsByAuthor(
+  author: Did,
+  opts: { cursor?: string; limit?: number } = {},
+){
+  if (isAppviewEnabled()) {
+    try {
+      return await listCommentsByAuthorFromAppview(author, opts);
+    } catch (err) {
+      console.warn('crayon appview unavailable, falling back to direct pds listing', err);
+    }
+  }
+  return await listCommentsByAuthorFromPds(author, opts);
+}
+
+/** Total comment count for a given author. */
+export async function countCommentsByAuthor(author: Did): Promise<number> {
+  if (!isAppviewEnabled()) throw new Error('Comment counts require the appview to be enabled.');
+  return await countCommentsByAuthorFromAppview(author);
 }
 
 export async function createComment(input: RecordCreateInput<Comment>) {

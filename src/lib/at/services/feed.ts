@@ -29,6 +29,7 @@ export async function getTimeline(opts?: {
   actor?: Did;
   cursor?: string;
   limit?: number;
+  hydrate?: boolean;
 }): Promise<FeedPage> {
   if (!isAppviewEnabled()) throw new Error('The activity feed requires the appview to be enabled.');
   return await getTimelineFromAppview(opts);

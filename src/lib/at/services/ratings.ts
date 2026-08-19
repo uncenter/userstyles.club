@@ -1,10 +1,17 @@
 import type { CanonicalResourceUri, Did, RecordKey } from '@atcute/lexicons';
 import { createRecord, deleteRecord, putRecord, type RepoRecord } from '../records';
+import type { UserstyleRecord } from './userstyles';
 
-import { getRatingFromAppview, listRatingsFromAppview } from '../backends/appview/ratings';
+import {
+  getRatingFromAppview,
+  listRatingsFromAppview,
+  listRatingsByAuthorFromAppview,
+  countRatingsByAuthorFromAppview,
+} from '../backends/appview/ratings';
 import {
   getRatingFromConstellation,
   listRatingsFromConstellation,
+  listRatingsByAuthorFromPds,
 } from '../backends/fallback/ratings';
 
 import { makeRecordBuilder, type RecordCreateInput, type RecordUpdateInput } from '../builder';
@@ -41,6 +48,27 @@ export async function getUserRatingForStyle(
     }
   }
   return await getRatingFromConstellation(uri, author);
+}
+
+/** A given author's ratings across every subject, newest first. */
+export async function listRatingsByAuthor(
+  author: Did,
+  opts: { cursor?: string; limit?: number } = {},
+) {
+  if (isAppviewEnabled()) {
+    try {
+      return await listRatingsByAuthorFromAppview(author, opts);
+    } catch (err) {
+      console.warn('crayon appview unavailable, falling back to direct pds listing', err);
+    }
+  }
+  return await listRatingsByAuthorFromPds(author, opts);
+}
+
+/** Total rating count for a given author. */
+export async function countRatingsByAuthor(author: Did): Promise<number> {
+  if (!isAppviewEnabled()) throw new Error('Rating counts require the appview to be enabled.');
+  return await countRatingsByAuthorFromAppview(author);
 }
 
 export async function createRating(input: RecordCreateInput<Rating>) {

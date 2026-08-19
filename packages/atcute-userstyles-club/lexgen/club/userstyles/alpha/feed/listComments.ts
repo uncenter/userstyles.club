@@ -19,6 +19,12 @@ export default document({
         properties: {
           subject: string({ format: 'at-uri', description: 'uri of the subject userstyle' }),
           author: string({ format: 'did', description: "comment author's did" }),
+          hydrate: array({
+            items: string({ knownValues: ['userstyle'] }),
+            maxLength: 5,
+            description:
+              'related records to embed inline on each comment view',
+          }),
           limit: integer({ minimum: 1, maximum: 100, default: 50 }),
           cursor: string(),
         },

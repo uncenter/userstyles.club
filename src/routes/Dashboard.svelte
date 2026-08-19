@@ -68,6 +68,7 @@
     const page = await getTimeline({
       actor: timelineFeedType === 'following' ? user.did! : undefined,
       cursor,
+      hydrate: true,
     });
     const dids = [
       ...new Set(

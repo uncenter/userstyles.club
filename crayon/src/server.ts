@@ -20,6 +20,7 @@ import {
   ClubUserstylesAlphaFeedListRatings,
   ClubUserstylesAlphaFeedSearchUserstyles,
   ClubUserstylesAlphaGetUserstyle,
+  ClubUserstylesAlphaGetUserstyles,
   ClubUserstylesAlphaGetUserstyleSourceCode,
   ClubUserstylesAlphaGraphCountFollowers,
   ClubUserstylesAlphaGraphCountFollows,
@@ -139,6 +140,18 @@ function buildSubjectAuthorFilter(params: {
   return { subjectUri: params.subject, author: params.author };
 }
 
+function shouldHydrateFor(hydrate: readonly string[] | undefined, relation: string): boolean {
+  return hydrate?.includes(relation) ?? false;
+}
+
+/** Batch-resolves the `userstyle` relation for `hydrate=userstyle` requests, keyed by uri. */
+async function hydrateUserstylesByUri(
+  uris: (string | null | undefined)[],
+): Promise<Map<string, UserstyleRow>> {
+  const rows = await getUserstyles([...new Set(uris.filter((uri): uri is string => uri != null))]);
+  return new Map(rows.map((row) => [row.uri, row]));
+}
+
 // Shared by getUserstyle and getUserstyleSourceCode, which both resolve an actor and rkey to a userstyle.
 async function getUserstyleOrThrow(actor: string, rkey: string): Promise<UserstyleRow> {
   const uri = `at://${actor}/${USERSTYLE_COLLECTION}/${rkey}`;
@@ -162,7 +175,7 @@ function toProfileView(row: ProfileRow) {
   };
 }
 
-function toRatingView(row: RatingRow) {
+function toRatingView(row: RatingRow, userstyle?: UserstyleRow) {
   return {
     uri: row.uri as ResourceUri,
     cid: row.cid,
@@ -172,10 +185,11 @@ function toRatingView(row: RatingRow) {
     createdAt: row.createdAt,
     updatedAt: row.updatedAt ?? undefined,
     indexedAt: new Date(row.indexedAt).toISOString(),
+    userstyle: userstyle ? toUserstyleView(userstyle) : undefined,
   };
 }
 
-function toCommentView(row: CommentRow) {
+function toCommentView(row: CommentRow, userstyle?: UserstyleRow) {
   return {
     uri: row.uri as ResourceUri,
     cid: row.cid,
@@ -186,6 +200,7 @@ function toCommentView(row: CommentRow) {
     createdAt: row.createdAt,
     updatedAt: row.updatedAt ?? undefined,
     indexedAt: new Date(row.indexedAt).toISOString(),
+    userstyle: userstyle ? toUserstyleView(userstyle) : undefined,
   };
 }
 
@@ -243,6 +258,7 @@ function toNotificationView(row: NotificationRow, userstyle: UserstyleRow | unde
 // Every registered query lexicon.
 const XRPC_QUERIES = [
   ClubUserstylesAlphaGetUserstyle,
+  ClubUserstylesAlphaGetUserstyles,
   ClubUserstylesAlphaGetUserstyleSourceCode,
   ClubUserstylesAlphaListUserstyles,
   ClubUserstylesAlphaCountUserstyles,
@@ -311,6 +327,13 @@ router.addQuery(ClubUserstylesAlphaGetUserstyle, {
   async handler({ params }) {
     const row = await getUserstyleOrThrow(params.actor, params.rkey);
     return json(toUserstyleView(row));
+  },
+});
+
+router.addQuery(ClubUserstylesAlphaGetUserstyles, {
+  async handler({ params }) {
+    const rows = await getUserstyles([...new Set(params.uris)]);
+    return json({ userstyles: rows.map(toUserstyleView) });
   },
 });
 
@@ -427,7 +450,14 @@ router.addQuery(ClubUserstylesAlphaFeedListComments, {
     const rows = await listComments(filter, cursor, params.limit);
     const nextCursor = buildCursor(rows, params.limit, (r) => `${r.indexedAt}_${r.uri}`);
 
-    return json({ cursor: nextCursor, comments: rows.map(toCommentView) });
+    const userstyleByUri = shouldHydrateFor(params.hydrate, 'userstyle')
+      ? await hydrateUserstylesByUri(rows.map((r) => r.subjectUri))
+      : undefined;
+
+    return json({
+      cursor: nextCursor,
+      comments: rows.map((r) => toCommentView(r, userstyleByUri?.get(r.subjectUri))),
+    });
   },
 });
 
@@ -446,7 +476,14 @@ router.addQuery(ClubUserstylesAlphaFeedListRatings, {
     const rows = await listCurrentRatings(filter, cursor, params.limit);
     const nextCursor = buildCursor(rows, params.limit, (r) => `${r.indexedAt}_${r.uri}`);
 
-    return json({ cursor: nextCursor, ratings: rows.map(toRatingView) });
+    const userstyleByUri = shouldHydrateFor(params.hydrate, 'userstyle')
+      ? await hydrateUserstylesByUri(rows.map((r) => r.subjectUri))
+      : undefined;
+
+    return json({
+      cursor: nextCursor,
+      ratings: rows.map((r) => toRatingView(r, userstyleByUri?.get(r.subjectUri))),
+    });
   },
 });
 
@@ -512,16 +549,15 @@ router.addQuery(ClubUserstylesAlphaFeedGetTimeline, {
         : item.type === 'follow'
           ? undefined
           : item.value.subjectUri;
-    const subjectRows = await getUserstyles([
-      ...new Set(items.map(subjectUriOf).filter((uri): uri is string => uri !== undefined)),
-    ]);
-    const subjectByUri = new Map(subjectRows.map((row) => [row.uri, row]));
+    const subjectByUri = shouldHydrateFor(params.hydrate, 'userstyle')
+      ? await hydrateUserstylesByUri(items.map(subjectUriOf))
+      : undefined;
 
     const feed = items.map((item) => {
       if (item.type === 'follow') {
         return { type: 'follow' as const, follow: toFeedFollowView(item.value) };
       }
-      const subject = subjectByUri.get(subjectUriOf(item)!);
+      const subject = subjectByUri?.get(subjectUriOf(item)!);
       const userstyle = subject ? toUserstyleView(subject) : undefined;
       if (item.type === 'userstyle') {
         return { type: 'userstyle' as const, userstyle };
@@ -542,18 +578,16 @@ router.addQuery(ClubUserstylesAlphaNotificationListNotifications, {
     const rows = await listNotifications(params.actor, cursor, params.limit);
     const nextCursor = buildCursor(rows, params.limit, (r) => `${r.indexedAt}_${r.id}`);
 
-    const userstyleUris = [
-      ...new Set(rows.map((r) => r.userstyleUri).filter((uri) => uri !== null)),
-    ];
-    const userstyleRows = await getUserstyles(userstyleUris);
-    const userstyleByUri = new Map(userstyleRows.map((row) => [row.uri, row]));
+    const userstyleByUri = shouldHydrateFor(params.hydrate, 'userstyle')
+      ? await hydrateUserstylesByUri(rows.map((r) => r.userstyleUri))
+      : undefined;
 
     return json({
       cursor: nextCursor,
       notifications: rows.map((row) =>
         toNotificationView(
           row,
-          row.userstyleUri ? userstyleByUri.get(row.userstyleUri) : undefined,
+          row.userstyleUri ? userstyleByUri?.get(row.userstyleUri) : undefined,
         ),
       ),
     });

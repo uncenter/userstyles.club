@@ -27,6 +27,7 @@ export {
   listMyUserstyles,
   listAllUserstyles,
   getUserstyle,
+  getUserstyles,
   createUserstyle,
   updateUserstyle,
   deleteUserstyle,
@@ -42,6 +43,8 @@ export {
 } from './services/userstyles';
 export {
   listCommentsForStyle,
+  listCommentsByAuthor,
+  countCommentsByAuthor,
   createComment,
   updateComment,
   deleteComment,
@@ -55,6 +58,8 @@ export {
 } from './services/comments';
 export {
   listRatingsForStyle,
+  listRatingsByAuthor,
+  countRatingsByAuthor,
   getUserRatingForStyle,
   createRating,
   updateRating,

@@ -29,6 +29,27 @@ export async function listRatingsFromAppview(uri: CanonicalResourceUri): Promise
   return response.ratings.map(ratingViewToRecord);
 }
 
+export async function listRatingsByAuthorFromAppview(
+  author: Did,
+  opts: { cursor?: string; limit?: number } = {},
+) {
+  const client = getCrayonClient();
+  const response = await ok(
+    client.get('club.userstyles.alpha.feed.listRatings', {
+      params: { author, hydrate: ['userstyle'], limit: opts.limit ?? 50, cursor: opts.cursor },
+    }),
+  );
+  return { ratings: response.ratings.map(ratingViewToRecord), cursor: response.cursor };
+}
+
+export async function countRatingsByAuthorFromAppview(author: Did): Promise<number> {
+  const client = getCrayonClient();
+  const response = await ok(
+    client.get('club.userstyles.alpha.feed.countRatings', { params: { author } }),
+  );
+  return response.count;
+}
+
 /** A single rater's current rating on a subject. */
 export async function getRatingFromAppview(
   uri: CanonicalResourceUri,

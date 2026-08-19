@@ -1,7 +1,7 @@
-import type { CanonicalResourceUri } from '@atcute/lexicons';
+import type { CanonicalResourceUri, Did } from '@atcute/lexicons';
 import { is } from '@atcute/lexicons/validations';
 
-import { getBacklinkedRecords } from '../../records';
+import { getBacklinkedRecords, listRecordsForRepo } from '../../records';
 import { CLUB_COMMENT_COLLECTION } from '../../settings';
 import { ClubUserstylesAlphaFeedComment } from '@userstyles.club/atcute';
 import type { CommentRecord, CommentThreadNode } from '../../services/comments';
@@ -17,6 +17,23 @@ export async function listCommentsFromConstellation(
   return records.filter((r): r is CommentRecord =>
     is(ClubUserstylesAlphaFeedComment.mainSchema, r.value),
   );
+}
+
+export async function listCommentsByAuthorFromPds(
+  author: Did,
+  opts: { cursor?: string; limit?: number } = {},
+) {
+  const response = await listRecordsForRepo({
+    repo: author,
+    collection: CLUB_COMMENT_COLLECTION,
+    limit: opts.limit,
+    cursor: opts.cursor,
+    reverse: true,
+  });
+  const comments = response.records.filter((r): r is CommentRecord =>
+    is(ClubUserstylesAlphaFeedComment.mainSchema, r.value),
+  );
+  return { comments, cursor: response.cursor };
 }
 
 /** Backlinks have no concept of a tombstone, so a reply whose parent was deleted is dropped.
