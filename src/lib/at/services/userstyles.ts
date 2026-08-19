@@ -48,7 +48,18 @@ export type UserstyleInput<
   Options extends { previewImage?: any; createdAt?: Userstyle['createdAt'] } = Record<never, never>,
 > = UserstyleContent & Options;
 
-export type UserstyleRecord = RepoRecord<Userstyle>;
+/**
+ * Appview-computed fields for a userstyle.
+ */
+export type UserstyleDetailExtras = {
+  mozDocumentFunctions: ClubUserstylesAlphaDefs.MozDocumentFunction[];
+  userCssVars?: number;
+  ratingCount?: number;
+  ratingAverage?: number;
+  commentCount?: number;
+};
+
+export type UserstyleRecord = RepoRecord<Userstyle> & { extras?: UserstyleDetailExtras };
 
 const builder = makeRecordBuilder(
   ClubUserstylesAlphaUserstyle.mainSchema,

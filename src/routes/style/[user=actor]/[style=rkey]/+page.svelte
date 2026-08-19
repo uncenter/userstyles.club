@@ -25,17 +25,11 @@
     preferences,
     recordStyleVisit,
   } from '$lib/preferences.svelte';
+  import { extractDomains } from '$lib/domains';
+  import { getUsercssMetadata } from '../../../new/import/metadata';
 
-  import { Loading, Alert, Dialog } from '$components/ui';
-  import {
-    ActorHandle,
-    CssPreview,
-    Meta,
-    PreviewImage,
-    StarRating,
-    StarRatingAverage,
-    StarRatingInput,
-  } from '$components';
+  import { Loading, Alert, Dialog, Badge } from '$components/ui';
+  import { ActorHandle, CssPreview, Meta, PreviewImage } from '$components';
   import Comments from './Comments.svelte';
 
   import {
@@ -44,11 +38,14 @@
     ArrowRightIcon,
     PencilIcon,
     ScaleIcon,
+    CopyIcon,
+    CheckIcon,
   } from '@lucide/svelte';
   import StylusIcon from '$lib/assets/stylus.png';
 
   import bytes from 'pretty-bytes';
-  import { formatDate } from '$lib/date';
+  import { formatDate, formatDateTimeRelative } from '$lib/date';
+  import { getLatestDate } from '$lib/at/utils';
 
   let { data, params }: PageProps = $props();
   let userstyle = $derived(data.userstyle.value);
@@ -69,7 +66,6 @@
   let myRating = $derived<RatingRecord | undefined>(
     user.isLoggedIn ? await getUserRatingForStyle(data.userstyle.uri, user.did) : undefined,
   );
-  let canRate = $derived(user.isLoggedIn && user.did !== data.profile.did);
 
   $effect(() => {
     recordStyleVisit({
@@ -121,22 +117,14 @@
     pendingCommentPatches[comment.uri] = { ...pendingCommentPatches[comment.uri], comment };
   }
 
-  let ratingDialog = $state({
-    open: false,
-    selected: undefined as number | undefined,
-    submitting: false,
-    deleting: false,
-    error: null as string | null,
-  });
-
   let lineCount = $derived(sourceCode?.split('\n').length ?? 0);
   let byteCount = $derived(sourceCode?.length ?? 0);
+  let version = $derived(
+    sourceCode !== undefined ? getUsercssMetadata(sourceCode).version : undefined,
+  );
 
-  function openRatingDialog() {
-    ratingDialog.selected = myRating?.value.rating;
-    ratingDialog.error = null;
-    ratingDialog.open = true;
-  }
+  let domains = $derived(extractDomains(data.userstyle.extras?.mozDocumentFunctions ?? []));
+  let commentCount = $derived(data.feedback.commentThreadNodes.length);
 
   // The appview attaches a commenter's current rating to their root-level comment(s).
   function applyRatingPatchToComments(rating: number | undefined) {
@@ -178,56 +166,43 @@
     window.open(installUrl, '_blank');
   }
 
-  async function submitRating() {
-    if (!ratingDialog.selected) return;
-    ratingDialog.error = null;
-    ratingDialog.submitting = true;
+  let atUriCopied = $state(false);
+
+  async function copyAtUri() {
     try {
-      if (myRating) {
-        const { rkey } = parseCanonicalResourceUri(myRating.uri);
-        await updateRating(rkey, {
-          subject: { uri: data.userstyle.uri, cid: data.userstyle.cid! },
-          rating: ratingDialog.selected,
-          createdAt: myRating.value.createdAt,
-        });
-        applyRatingToSummary(myRating.value.rating, ratingDialog.selected);
-        myRating = { ...myRating, value: { ...myRating.value, rating: ratingDialog.selected } };
-      } else {
-        const created = await createRating({
-          subject: { uri: data.userstyle.uri, cid: data.userstyle.cid! },
-          rating: ratingDialog.selected,
-        });
-        applyRatingToSummary(undefined, ratingDialog.selected);
-        myRating = {
-          uri: created.response.uri as CanonicalResourceUri,
-          value: created.record,
-        };
-      }
-      applyRatingPatchToComments(ratingDialog.selected);
-      ratingDialog.open = false;
+      await navigator.clipboard.writeText(data.userstyle.uri);
+      atUriCopied = true;
+      setTimeout(() => (atUriCopied = false), 1500);
     } catch (e) {
-      ratingDialog.error = e instanceof Error ? e.message : 'Failed to save rating.';
-    } finally {
-      ratingDialog.submitting = false;
+      console.error('failed to copy at uri', e);
     }
   }
 
-  async function removeRating() {
-    if (!myRating) return;
-    ratingDialog.error = null;
-    ratingDialog.deleting = true;
-    try {
+  async function submitRatingChange(value: number | undefined) {
+    if (value === undefined) {
+      if (!myRating) return;
       const { rkey } = parseCanonicalResourceUri(myRating.uri);
       await deleteRating(rkey);
       removeRatingFromSummary(myRating.value.rating);
       myRating = undefined;
-      applyRatingPatchToComments(undefined);
-      ratingDialog.open = false;
-    } catch (e) {
-      ratingDialog.error = e instanceof Error ? e.message : 'Failed to remove rating.';
-    } finally {
-      ratingDialog.deleting = false;
+    } else if (myRating) {
+      const { rkey } = parseCanonicalResourceUri(myRating.uri);
+      await updateRating(rkey, {
+        subject: { uri: data.userstyle.uri, cid: data.userstyle.cid! },
+        rating: value,
+        createdAt: myRating.value.createdAt,
+      });
+      applyRatingToSummary(myRating.value.rating, value);
+      myRating = { ...myRating, value: { ...myRating.value, rating: value } };
+    } else {
+      const created = await createRating({
+        subject: { uri: data.userstyle.uri, cid: data.userstyle.cid! },
+        rating: value,
+      });
+      applyRatingToSummary(undefined, value);
+      myRating = { uri: created.response.uri as CanonicalResourceUri, value: created.record };
     }
+    applyRatingPatchToComments(value);
   }
 </script>
 
@@ -243,82 +218,45 @@
 </svelte:head>
 
 <div class="page-wrapper">
-  <section class="card userstyle-section">
-    {#if userstyle.previewImage}
-      <div class="userstyle-section__preview grid-background">
-        <PreviewImage
-          src={getBlobCdnUrl(data.profile.did, userstyle.previewImage, 'feed_fullsize')}
-          alt={userstyle.title}
-        />
-      </div>
-    {/if}
+  <div class="style-layout">
+    <div class="style-main">
+      {#if userstyle.previewImage}
+        <div class="style-preview grid-background">
+          <PreviewImage
+            src={getBlobCdnUrl(data.profile.did, userstyle.previewImage, 'feed_fullsize')}
+            alt={userstyle.title}
+          />
+        </div>
+      {/if}
 
-    <div class="userstyle-section__header">
-      <div class="userstyle-section__header-info">
-        <h1 class="userstyle-section__title">{userstyle.title}</h1>
-        <p class="userstyle-section__subtitle">
-          {#if userstyle.updatedAt}
-            Updated <time class="userstyle-section__subtitle-time"
-              >{formatDate(userstyle.updatedAt)}</time
-            >
-          {:else}
-            Published <time class="userstyle-section__subtitle-time"
-              >{formatDate(userstyle.createdAt)}</time
-            >
-          {/if}
-          {#if userstyle.license}
-            · <a
-              class="userstyle-section__subtitle-link"
-              href="https://spdx.org/licenses/{userstyle.license}.html"
-              target="_blank"
-              rel="noopener noreferrer">{userstyle.license}<ScaleIcon size={10} /></a
-            >
-          {/if}
+      <div class="style-identity">
+        <h1 class="style-identity__title">{userstyle.title}</h1>
+        <p class="style-identity__byline">
+          by <ActorHandle profile={data.profile} style="minimal" /> · Updated
+          <time>{formatDate(getLatestDate(userstyle))}</time>
         </p>
-      </div>
-      <ActorHandle profile={data.profile} />
-    </div>
-
-    {#if userstyle.description}
-      <p class="userstyle-section__description">{userstyle.description}</p>
-    {/if}
-
-    <div class="userstyle-section__info">
-      <div class="userstyle-section__meta">
-        {#if canRate}
-          <button
-            type="button"
-            class="userstyle-section__item userstyle-section__item--ratable"
-            aria-label="Rate this userstyle"
-            onclick={openRatingDialog}
-          >
-            <span class="userstyle-section__item-value">
-              <StarRatingAverage {...ratingSummary} />
-            </span>
-            <span class="userstyle-section__item-label"
-              >Rating{#if myRating}{' · '}<StarRating
-                  value={myRating.value.rating}
-                  label="Your rating: {myRating.value.rating}/5"
-                />{/if}</span
-            >
-          </button>
-        {:else}
-          <div class="userstyle-section__item">
-            <span class="userstyle-section__item-value">
-              <StarRatingAverage {...ratingSummary} />
-            </span>
-            <span class="userstyle-section__item-label">Rating</span>
-          </div>
+        {#if userstyle.description}
+          <p class="style-identity__desc">{userstyle.description}</p>
         {/if}
       </div>
+    </div>
 
-      <div class="userstyle-section__actions">
+    <aside class="style-sidebar">
+      <div class="style-actions">
+        <a
+          href={installUrl}
+          target="_blank"
+          class="btn btn--primary btn--lg btn--full"
+          onclick={onInstallClick}
+        >
+          <DownloadIcon size={16} />Install
+        </a>
         {#if userstyle.homepageUrl}
           <a
             href={userstyle.homepageUrl}
             target="_blank"
             rel="noopener noreferrer"
-            class="btn btn--outline btn--lg"
+            class="btn btn--outline btn--lg btn--full"
           >
             <ExternalLinkIcon size={16} />Homepage
           </a>
@@ -329,99 +267,134 @@
               user: getPreferredActorIdentifier(data.profile),
               style: params.style,
             })}
-            class="btn btn--secondary btn--lg"
+            class="btn btn--secondary btn--lg btn--full"
           >
             <PencilIcon size={16} />Manage
           </a>
         {/if}
-        <a
-          href={installUrl}
-          target="_blank"
-          class="btn btn--primary btn--lg"
-          onclick={onInstallClick}
-        >
-          <DownloadIcon size={16} />Install
-        </a>
       </div>
-    </div>
 
-    <div class="userstyle-section__code">
-      {#if sourceCode === undefined}
-        <Alert variant="error"
-          >Couldn't load the source code for this userstyle. It may be temporarily unavailable.
-          Please reload or try again later.</Alert
-        >
-      {:else}
-        <CssPreview source={sourceCode} />
-      {/if}
-      <div class="userstyle-section__code-footer">
+      <div class="style-panel style-details">
+        <h2 class="style-section-label">Details</h2>
+        <div class="style-details__row">
+          <span class="style-details__label">Published</span>
+          <span class="style-details__value"
+            ><time datetime={userstyle.createdAt}>{formatDate(userstyle.createdAt)}</time></span
+          >
+        </div>
+        {#if userstyle.updatedAt}
+          <div class="style-details__row">
+            <span class="style-details__label">Updated</span>
+            <span class="style-details__value"
+              ><time datetime={userstyle.updatedAt}>{formatDate(userstyle.updatedAt)}</time></span
+            >
+          </div>
+        {/if}
+        {#if userstyle.license}
+          <div class="style-details__row">
+            <span class="style-details__label">License</span>
+            <a
+              class="style-details__value link link--sm"
+              href="https://spdx.org/licenses/{userstyle.license}.html"
+              target="_blank"
+              rel="noopener noreferrer">{userstyle.license}<ScaleIcon size={10} /></a
+            >
+          </div>
+        {/if}
+        {#if version}
+          <div class="style-details__row">
+            <span class="style-details__label">Version</span>
+            <span class="style-details__value">{version}</span>
+          </div>
+        {/if}
+        {#if sourceCode !== undefined}
+          <div class="style-details__row">
+            <span class="style-details__label">Size</span>
+            <span class="style-details__value">{bytes(byteCount)} · {lineCount} lines</span>
+          </div>
+        {/if}
+        {#if data.userstyle.extras?.userCssVars}
+          <div class="style-details__row">
+            <span class="style-details__label">Options</span>
+            <span class="style-details__value">{data.userstyle.extras.userCssVars}</span>
+          </div>
+        {/if}
         {#if userstyle.upstreamUrl}
-          <span class="userstyle-section__upstream"
-            >Upstreamed from <a
-              class="userstyle-section__upstream-link"
+          <div class="style-details__row">
+            <span class="style-details__label">Upstream</span>
+            <a
+              class="style-details__value link link--sm style-details__value--truncate"
               href={userstyle.upstreamUrl}
               target="_blank"
               rel="noopener noreferrer">{userstyle.upstreamUrl}</a
-            >.</span
-          >
+            >
+          </div>
         {/if}
-        {#if sourceCode !== undefined}
-          <p class="userstyle-section__stats">{bytes(byteCount)} · {lineCount} lines</p>
-        {/if}
+        <div class="style-details__row">
+          <span class="style-details__label">Record</span>
+          <span class="style-details__value style-details__record-actions">
+            <a
+              class="link link--sm link--icon"
+              href="https://pds.ls/{data.userstyle.uri}"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="View raw record on PDSls"
+            >
+              <ExternalLinkIcon size={12} /> pds.ls
+            </a>
+            <button
+              type="button"
+              class="style-details__copy-btn"
+              aria-label="Copy record URI"
+              onclick={copyAtUri}
+            >
+              {#if atUriCopied}
+                <CheckIcon size={13} />
+              {:else}
+                <CopyIcon size={13} />
+              {/if}
+            </button>
+          </span>
+        </div>
       </div>
-    </div>
-  </section>
+
+      {#if domains.length > 0}
+        <div class="style-domain-list">
+          {#each domains as domain (domain)}
+            <Badge>{domain}</Badge>
+          {/each}
+        </div>
+      {/if}
+    </aside>
+  </div>
+
+  <div class="style-source">
+    <h2 class="style-section-label">Source</h2>
+    {#if sourceCode === undefined}
+      <Alert variant="error"
+        >Couldn't load the source code for this userstyle. It may be temporarily unavailable. Please
+        reload or try again later.</Alert
+      >
+    {:else}
+      <CssPreview source={sourceCode} />
+    {/if}
+  </div>
 
   <div class="page-wrapper__comments">
     <Comments
       userstyle={{ uri: data.userstyle.uri, cid: data.userstyle.cid! }}
       owner={data.profile.did}
       threads={comments.threads}
+      {commentCount}
+      {ratingSummary}
+      {myRating}
+      onRatingSubmit={submitRatingChange}
       {onCommentAdded}
       {onCommentDeleted}
       {onCommentEdited}
     />
   </div>
 </div>
-
-<Dialog
-  bind:open={ratingDialog.open}
-  title={myRating ? 'Update your rating' : 'Rate this userstyle'}
->
-  {#snippet children()}
-    {#if ratingDialog.error}
-      <Alert variant="error">{ratingDialog.error}</Alert>
-    {/if}
-    <StarRatingInput bind:value={ratingDialog.selected} />
-  {/snippet}
-  {#snippet actions()}
-    <button class="btn btn--outline" type="button" onclick={() => (ratingDialog.open = false)}>
-      Cancel
-    </button>
-    {#if myRating}
-      <button
-        class="btn btn--secondary"
-        type="button"
-        onclick={removeRating}
-        disabled={ratingDialog.deleting || ratingDialog.submitting}
-      >
-        <Loading pending={ratingDialog.deleting} idle="Remove" active="Removing…" />
-      </button>
-    {/if}
-    <button
-      class="btn btn--primary"
-      type="button"
-      onclick={submitRating}
-      disabled={ratingDialog.submitting || ratingDialog.deleting || !ratingDialog.selected}
-    >
-      <Loading
-        pending={ratingDialog.submitting}
-        idle={myRating ? 'Update' : 'Submit'}
-        active="Saving…"
-      />
-    </button>
-  {/snippet}
-</Dialog>
 
 <Dialog
   bind:open={stylusDialog.open}
@@ -465,157 +438,146 @@
 </Dialog>
 
 <style>
-  .userstyle-section {
-    border-top: 5px solid var(--brand-purple);
-    overflow: hidden;
-    padding: 0;
-  }
-
-  .userstyle-section__header {
+  .style-layout {
     display: flex;
     align-items: flex-start;
-    justify-content: space-between;
-    gap: var(--space-4);
+    gap: var(--space-6);
     flex-wrap: wrap;
-    padding: var(--space-6) var(--space-6) var(--space-4);
-
-    .userstyle-section__header-info {
-      display: flex;
-      flex-direction: column;
-      gap: var(--space-1);
-      min-width: 0;
-    }
-
-    .userstyle-section__subtitle {
-      font-size: var(--text-sm);
-      color: var(--fg-muted);
-
-      .userstyle-section__subtitle-time {
-        font-weight: 600;
-      }
-
-      .userstyle-section__subtitle-link {
-        display: inline-flex;
-        align-items: center;
-        gap: var(--space-1);
-        vertical-align: middle;
-      }
-    }
   }
 
-  .userstyle-section__title {
-    font-size: var(--text-4xl);
-  }
-
-  .userstyle-section__description {
-    color: var(--fg-muted);
-    line-height: 1.6;
-    padding: 0 var(--space-6) var(--space-5);
-  }
-
-  .userstyle-section__info {
+  .style-main {
+    flex: 2 1 0;
+    min-width: 20rem;
     display: flex;
-    align-items: center;
-    justify-content: space-between;
+    flex-direction: column;
+    gap: var(--space-6);
+  }
+
+  .style-sidebar {
+    flex: 1 1 0;
+    min-width: 16rem;
+    display: flex;
+    flex-direction: column;
     gap: var(--space-4);
-    padding: var(--space-4) var(--space-6);
-    margin-bottom: var(--space-6);
-
-    @media (max-width: 639px) {
-      flex-direction: column;
-      align-items: stretch;
-
-      .userstyle-section__actions {
-        flex-direction: column;
-        align-items: stretch;
-      }
-
-      .btn {
-        justify-content: center;
-      }
-    }
   }
 
-  .userstyle-section__actions {
-    display: flex;
-    gap: var(--space-2);
-    align-items: center;
+  .style-source {
+    margin-top: var(--space-6);
   }
 
-  .userstyle-section__meta {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    gap: var(--space-5) var(--space-6);
-
-    .userstyle-section__item {
-      display: flex;
-      flex-direction: column;
-      gap: 0.2rem;
-
-      .userstyle-section__item-value {
-        font-size: var(--text-base);
-        font-weight: 700;
-        color: var(--foreground);
-      }
-
-      .userstyle-section__item-label {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.25rem;
-        font-size: var(--text-sm);
-        color: var(--fg-muted);
-      }
-
-      &.userstyle-section__item--ratable {
-        appearance: none;
-        border: none;
-        background: none;
-        font: inherit;
-        text-align: left;
-        cursor: pointer;
-        border-radius: var(--radius-sm);
-        padding: var(--space-2);
-        margin: calc(-1 * var(--space-2));
-        transition: background 0.1s;
-
-        &:hover {
-          background: var(--bg-muted);
-        }
-      }
-    }
+  .style-section-label {
+    font-size: var(--text-lg);
+    margin-bottom: var(--space-3);
   }
 
-  .userstyle-section__preview {
-    margin-bottom: var(--space-5);
+  .style-panel {
+    background: var(--card-bg);
+    border-radius: var(--radius);
+    padding: var(--space-4);
+  }
+
+  .style-preview {
+    border-radius: var(--radius);
+    overflow: hidden;
     --grid-background-accent: var(--brand-purple);
   }
 
-  .userstyle-section__code {
-    padding: 0 var(--space-6) var(--space-6);
-  }
+  .style-identity {
+    .style-identity__title {
+      font-size: var(--text-4xl);
+    }
 
-  .userstyle-section__code-footer {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    padding: var(--space-1) var(--space-2);
-    gap: var(--space-4);
-    font-size: var(--text-sm);
-    color: var(--fg-muted);
+    .style-identity__byline {
+      margin-top: var(--space-2);
+      font-size: var(--text-sm);
+      color: var(--fg-muted);
 
-    .userstyle-section__upstream {
-      min-width: 0;
-
-      .userstyle-section__upstream-link {
-        overflow-wrap: break-word;
-        word-break: break-all;
+      time {
+        font-weight: 600;
       }
     }
 
-    .userstyle-section__stats {
-      margin-left: auto;
-      white-space: nowrap;
+    .style-identity__desc {
+      margin-top: var(--space-3);
+      color: var(--fg-muted);
+      line-height: 1.6;
+    }
+  }
+
+  .style-domain-list {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2);
+    padding: 0 var(--space-2);
+  }
+
+  .style-actions {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+
+    .btn--full {
+      width: 100%;
+    }
+  }
+
+  .style-details {
+    .style-details__row {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: var(--space-3);
+      padding: var(--space-2) 0;
+      border-bottom: 1px solid var(--border);
+      font-size: var(--text-sm);
+
+      &:last-child {
+        border-bottom: none;
+        padding-bottom: 0;
+      }
+    }
+
+    .style-details__label {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      color: var(--fg-muted);
+      flex-shrink: 0;
+    }
+
+    .style-details__value {
+      font-weight: 700;
+      text-align: right;
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-1);
+
+      &.style-details__value--truncate {
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      &.style-details__record-actions {
+        gap: var(--space-2);
+      }
+    }
+
+    .style-details__copy-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: none;
+      background: none;
+      padding: 0;
+      color: var(--fg-muted);
+      cursor: pointer;
+
+      &:hover {
+        color: var(--brand-purple);
+      }
     }
   }
 

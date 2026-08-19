@@ -44,7 +44,18 @@ function userstyleViewToRecord(view: ClubUserstylesAlphaDefs.UserstyleView): Use
     createdAt: view.createdAt,
     updatedAt: view.updatedAt,
   };
-  return { uri: view.uri as CanonicalResourceUri, cid: view.cid, value };
+  return {
+    uri: view.uri as CanonicalResourceUri,
+    cid: view.cid,
+    value,
+    extras: {
+      mozDocumentFunctions: view.mozDocumentFunctions ?? [],
+      userCssVars: view.userCssVars,
+      ratingCount: view.ratingCount,
+      ratingAverage: view.ratingAverage !== undefined ? Number(view.ratingAverage) : undefined,
+      commentCount: view.commentCount,
+    },
+  };
 }
 
 export async function getUserstyleFromAppview(

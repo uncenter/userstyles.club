@@ -67,7 +67,7 @@
     font-size: var(--text-sm);
     line-height: 1.6;
 
-    max-height: 14rem;
+    max-height: 24rem;
     overflow-y: auto;
 
     .preview-wrap__code {

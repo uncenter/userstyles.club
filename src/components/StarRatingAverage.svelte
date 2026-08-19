@@ -24,7 +24,7 @@
           <span class="star-rating-average__count">({count})</span>
         {/if}
       {:else}
-        <span class="star-rating-average__value star-rating-average__value--na">n/a</span>
+        <span class="star-rating-average__value star-rating-average__value--na">(unrated)</span>
       {/if}
     {/if}
   {/snippet}

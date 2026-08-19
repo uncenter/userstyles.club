@@ -9,9 +9,11 @@
     collectThreadAuthorDids,
     type CommentRecord,
     type CommentThread,
+    type RatingRecord,
   } from '$lib/at';
 
-  import { Loading, Alert } from '$components/ui';
+  import { Loading, Alert, Spinner } from '$components/ui';
+  import { StarRatingAverage, StarRatingInput } from '$components';
 
   import CommentItem from './CommentItem.svelte';
 
@@ -19,15 +21,45 @@
     userstyle: ComAtprotoRepoStrongRef.Main;
     owner: Did;
     threads: CommentThread[];
+    commentCount: number;
+    ratingSummary: { average?: number; count: number };
+    myRating: RatingRecord | undefined;
+    onRatingSubmit: (rating: number | undefined) => Promise<void>;
     onCommentAdded: (comment: CommentRecord) => void;
     onCommentDeleted: (uri: string) => void;
     onCommentEdited: (comment: CommentRecord) => void;
   }
 
-  let { userstyle, owner, threads, onCommentAdded, onCommentDeleted, onCommentEdited }: Props =
-    $props();
+  let {
+    userstyle,
+    owner,
+    threads,
+    commentCount,
+    ratingSummary,
+    myRating,
+    onRatingSubmit,
+    onCommentAdded,
+    onCommentDeleted,
+    onCommentEdited,
+  }: Props = $props();
 
   let comment = $state('');
+  let selectedRating = $derived(myRating?.value.rating);
+
+  let ratingSubmitting = $state(false);
+  let ratingError = $state<string | null>(null);
+
+  async function submitRating(value: number | undefined) {
+    ratingError = null;
+    ratingSubmitting = true;
+    try {
+      await onRatingSubmit(value);
+    } catch (e) {
+      ratingError = e instanceof Error ? e.message : 'Failed to save rating.';
+    } finally {
+      ratingSubmitting = false;
+    }
+  }
 
   let submitting = $state(false);
   let error = $state<string | null>(null);
@@ -50,7 +82,7 @@
       });
       comment = '';
     } catch (e) {
-      error = e instanceof Error ? e.message : 'Failed to submit commit.';
+      error = e instanceof Error ? e.message : 'Failed to submit comment.';
     } finally {
       submitting = false;
     }
@@ -58,7 +90,16 @@
 </script>
 
 <section class="card comments-section">
-  <h2 class="comments-section__heading">Comments</h2>
+  <div class="comments-section__header">
+    <h2 class="comments-section__heading">
+      Comments{#if commentCount > 0}{" "}({commentCount}){/if}
+    </h2>
+    {#if ratingSummary.count > 0}
+      <div class="comments-section__rating-summary">
+        <StarRatingAverage average={ratingSummary.average} count={ratingSummary.count} />
+      </div>
+    {/if}
+  </div>
 
   {#if error}
     <Alert variant="error">{error}</Alert>
@@ -66,6 +107,14 @@
 
   {#if user.isLoggedIn && !isOwner}
     <div class="comments-section__form-wrapper">
+      <div class="form-group comments-section__rating-field">
+        <StarRatingInput bind:value={selectedRating} onchange={submitRating} />
+        {#if ratingSubmitting}
+          <Spinner size="sm" />
+        {:else if ratingError}
+          <span class="comments-section__rating-error">{ratingError}</span>
+        {/if}
+      </div>
       <form
         class="comments-section__form"
         onsubmit={(e) => {
@@ -82,7 +131,6 @@
               rows="3"
               maxlength="2560"
               placeholder="Share your thoughts on this userstyle…"
-              required
             ></textarea>
           </label>
         </div>
@@ -115,9 +163,22 @@
   .comments-section {
     margin-top: var(--space-5);
 
+    .comments-section__header {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: var(--space-3);
+      flex-wrap: wrap;
+      margin-bottom: var(--space-5);
+    }
+
     .comments-section__heading {
       font-size: var(--text-2xl);
-      margin-bottom: var(--space-5);
+    }
+
+    .comments-section__rating-summary {
+      font-size: var(--text-sm);
+      color: var(--fg-muted);
     }
 
     .comments-section__empty {
@@ -129,6 +190,20 @@
       margin-bottom: var(--space-6);
       padding-bottom: var(--space-6);
       border-bottom: 2px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-4);
+
+      .comments-section__rating-field {
+        display: flex;
+        align-items: center;
+        gap: var(--space-3);
+      }
+
+      .comments-section__rating-error {
+        font-size: var(--text-sm);
+        color: var(--danger);
+      }
 
       .comments-section__form {
         display: flex;

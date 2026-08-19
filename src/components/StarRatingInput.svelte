@@ -2,13 +2,14 @@
   interface Props {
     value?: number;
     name?: string;
+    onchange?: (value: number | undefined) => void;
   }
 
-  let { value = $bindable(), name = 'rating' }: Props = $props();
+  let { value = $bindable(), name = 'rating', onchange }: Props = $props();
 </script>
 
 <fieldset class="star-rating-input">
-  <legend class="form-field-label">Rating</legend>
+  <legend class="sr-only">Rating</legend>
   {#each [5, 4, 3, 2, 1] as n}
     <label class="star-rating-input__label">
       <input
@@ -16,9 +17,10 @@
         class="sr-only"
         {name}
         value={n}
-        bind:group={value}
+        checked={value === n}
         onclick={() => {
-          if (value === n) value = undefined;
+          value = value === n ? undefined : n;
+          onchange?.(value);
         }}
       />
       ★

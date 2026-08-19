@@ -116,10 +116,12 @@
             <li class="style-list__item">
               <a href={getLinkToStyle(entry)} class="style-shortcut">
                 <span class="style-shortcut__dot"></span>
-                <span class="style-shortcut__title truncate-1">{entry.title}</span>
-                <span class="style-shortcut__author"
-                  >{formatActorLabel({ did: entry.authorDid, handle: entry.authorHandle })}</span
-                >
+                <span class="style-shortcut__body">
+                  <span class="style-shortcut__title truncate-1">{entry.title}</span>
+                  <span class="style-shortcut__author truncate-1"
+                    >{formatActorLabel({ did: entry.authorDid, handle: entry.authorHandle })}</span
+                  >
+                </span>
               </a>
             </li>
           {/each}
@@ -153,7 +155,7 @@
       </div>
     </div>
     {#if feed.loading}
-      {@render loading()}
+      <div class="section-fill">{@render loading()}</div>
     {:else if feed.error}
       <Alert variant="error">{feed.error}</Alert>
     {:else if feed.items.length === 0}
@@ -163,7 +165,7 @@
           : 'Nothing here yet.'}
       </p>
     {:else}
-      <ul class="feed-list list-reset" role="list">
+      <ul class="feed-list list-reset accent-cycle" role="list">
         {#each feed.items as item, i (keyOfFeedItem(item, i))}
           {@const authorDid = authorOfFeedItem(item)}
           {@const authorProfile = authorDid ? feedProfiles.get(authorDid) : undefined}
@@ -230,10 +232,8 @@
 
   .style-shortcut {
     display: flex;
-    flex-wrap: wrap;
     align-items: center;
-    column-gap: var(--space-3);
-    row-gap: var(--space-1);
+    gap: var(--space-3);
     padding: var(--space-3) var(--space-4);
     border-radius: var(--radius);
     text-decoration: none;
@@ -252,16 +252,21 @@
       background: var(--accent-cycle-color, var(--brand-purple));
     }
 
+    .style-shortcut__body {
+      display: flex;
+      flex-direction: column;
+      gap: 0.15rem;
+      min-width: 0;
+      flex: 1;
+    }
+
     .style-shortcut__title {
       font-weight: 700;
-      flex: 1 1 auto;
-      min-width: 8rem;
     }
 
     .style-shortcut__author {
       font-size: var(--text-sm);
       color: var(--fg-muted);
-      flex-shrink: 0;
     }
   }
 

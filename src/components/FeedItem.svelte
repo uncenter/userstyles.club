@@ -60,9 +60,8 @@
       {:else if item.type === 'comment'}
         commented on {yourUserstyle ? 'your userstyle' : 'a userstyle'}
       {:else if item.type === 'rating' && item.rating}
-        rated <StarRating value={item.rating.rating} /> on {yourUserstyle
-          ? 'your userstyle'
-          : 'a userstyle'}
+        rated {yourUserstyle ? 'your userstyle' : 'a userstyle'}
+        <StarRating value={item.rating.rating} />
       {:else if item.type === 'rating'}
         rated {yourUserstyle ? 'your userstyle' : 'a userstyle'}
       {:else}
@@ -93,23 +92,29 @@
         {/if}
       </span>
     </a>
-  {:else if styleHref}
-    <a href={styleHref} class="feed-item__card">
+  {:else if styleHref && item.userstyle}
+    <a href={styleHref} class="feed-item__card feed-item__card--style">
       <div class="feed-item__card-main">
-        <span class="feed-item__card-title">{item.userstyle?.title ?? 'a userstyle'}</span>
-        {#if item.userstyle?.description}
+        <span class="feed-item__card-title">{item.userstyle.title}</span>
+        {#if item.userstyle.description}
           <p class="feed-item__card-content feed-item__card-content--description truncate-2">
             {item.userstyle.description}
           </p>
         {/if}
       </div>
-      <div class="feed-item__card-meta">
-        <StarRatingAverage
-          average={item.userstyle?.ratingAverage}
-          count={item.userstyle?.ratingCount}
-        />
-      </div>
+      {#if item.type !== 'rating'}
+        <div class="feed-item__card-meta">
+          <StarRatingAverage
+            average={item.userstyle.ratingAverage}
+            count={item.userstyle.ratingCount}
+          />
+        </div>
+      {/if}
     </a>
+  {:else if styleHref}
+    <div class="feed-item__card feed-item__card--unavailable">
+      This userstyle is no longer available.
+    </div>
   {/if}
 </li>
 
@@ -211,6 +216,19 @@
           font-size: var(--text-sm);
           color: var(--fg-muted);
         }
+      }
+
+      &.feed-item__card--style {
+        border-left: 3px solid var(--accent-cycle-color, var(--brand-purple));
+      }
+
+      &.feed-item__card--unavailable {
+        background: transparent;
+        border: 1.5px dashed var(--border);
+        color: var(--fg-muted);
+        font-style: italic;
+        font-size: var(--text-sm);
+        justify-content: flex-start;
       }
     }
   }
