@@ -1,0 +1,40 @@
+{
+  "defs": {
+    "main": {
+      "description": "Which of `actor`'s own lists currently contain `subject`.",
+      "output": {
+        "encoding": "application/json",
+        "schema": {
+          "properties": {
+            "memberships": {
+              "items": {
+                "ref": "club.userstyles.alpha.defs#listMembershipView",
+                "type": "ref"
+              },
+              "type": "array"
+            }
+          },
+          "required": ["memberships"],
+          "type": "object"
+        }
+      },
+      "parameters": {
+        "properties": {
+          "actor": {
+            "type": "string",
+            "format": "did"
+          },
+          "subject": {
+            "type": "string",
+            "format": "at-uri"
+          }
+        },
+        "required": ["actor", "subject"],
+        "type": "params"
+      },
+      "type": "query"
+    }
+  },
+  "id": "club.userstyles.alpha.graph.getListMemberships",
+  "lexicon": 1
+}

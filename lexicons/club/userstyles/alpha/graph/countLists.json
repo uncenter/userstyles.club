@@ -1,0 +1,32 @@
+{
+  "defs": {
+    "main": {
+      "description": "Count an actor's public lists.",
+      "output": {
+        "encoding": "application/json",
+        "schema": {
+          "properties": {
+            "count": {
+              "type": "integer"
+            }
+          },
+          "required": ["count"],
+          "type": "object"
+        }
+      },
+      "parameters": {
+        "properties": {
+          "actor": {
+            "type": "string",
+            "format": "did"
+          }
+        },
+        "required": ["actor"],
+        "type": "params"
+      },
+      "type": "query"
+    }
+  },
+  "id": "club.userstyles.alpha.graph.countLists",
+  "lexicon": 1
+}

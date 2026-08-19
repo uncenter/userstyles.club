@@ -2,6 +2,8 @@ export { default as Meta } from './Meta.svelte';
 export { default as ActorHandle } from './ActorHandle.svelte';
 export { default as NotificationLabel } from './NotificationLabel.svelte';
 export { default as UserstylesSection } from './UserstylesSection.svelte';
+export { default as ListsSection } from './ListsSection.svelte';
+export { default as ListCard } from './ListCard.svelte';
 export { default as UserstyleBrowser } from './UserstyleBrowser.svelte';
 export { default as FeedItem } from './FeedItem.svelte';
 export { default as CssPreview } from './CssPreview.svelte';

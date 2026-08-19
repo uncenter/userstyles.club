@@ -11,6 +11,8 @@ export const CLUB_PROFILE_COLLECTION = 'club.userstyles.alpha.actor.profile' as 
 export const CLUB_RATING_COLLECTION = 'club.userstyles.alpha.feed.rating' as const;
 export const CLUB_COMMENT_COLLECTION = 'club.userstyles.alpha.feed.comment' as const;
 export const CLUB_FOLLOW_COLLECTION = 'club.userstyles.alpha.graph.follow' as const;
+export const CLUB_LIST_COLLECTION = 'club.userstyles.alpha.graph.list' as const;
+export const CLUB_LISTITEM_COLLECTION = 'club.userstyles.alpha.graph.listitem' as const;
 
 export const CLUB_COLLECTIONS = [
   CLUB_USERSTYLE_COLLECTION,
@@ -18,6 +20,8 @@ export const CLUB_COLLECTIONS = [
   CLUB_RATING_COLLECTION,
   CLUB_COMMENT_COLLECTION,
   CLUB_FOLLOW_COLLECTION,
+  CLUB_LIST_COLLECTION,
+  CLUB_LISTITEM_COLLECTION,
 ];
 
 export function getSiteOrigin(): string {

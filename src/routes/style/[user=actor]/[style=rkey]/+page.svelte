@@ -31,6 +31,7 @@
   import { Loading, Alert, Dialog, Badge } from '$components/ui';
   import { ActorHandle, CssPreview, Meta, PreviewImage } from '$components';
   import Comments from './Comments.svelte';
+  import SaveToListPopover from './SaveToListPopover.svelte';
 
   import {
     DownloadIcon,
@@ -243,14 +244,19 @@
 
     <aside class="style-sidebar">
       <div class="style-actions">
-        <a
-          href={installUrl}
-          target="_blank"
-          class="btn btn--primary btn--lg btn--full"
-          onclick={onInstallClick}
-        >
-          <DownloadIcon size={16} />Install
-        </a>
+        <div class="style-actions__row">
+          <a
+            href={installUrl}
+            target="_blank"
+            class="btn btn--primary btn--lg style-actions__install"
+            onclick={onInstallClick}
+          >
+            <DownloadIcon size={16} />Install
+          </a>
+          {#if user.isLoggedIn}
+            <SaveToListPopover userstyle={{ uri: data.userstyle.uri, cid: data.userstyle.cid! }} />
+          {/if}
+        </div>
         {#if userstyle.homepageUrl}
           <a
             href={userstyle.homepageUrl}
@@ -519,6 +525,15 @@
 
     .btn--full {
       width: 100%;
+    }
+
+    .style-actions__row {
+      display: flex;
+      gap: var(--space-2);
+
+      .style-actions__install {
+        flex: 1;
+      }
     }
   }
 

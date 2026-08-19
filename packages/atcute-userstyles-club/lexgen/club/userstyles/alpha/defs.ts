@@ -150,6 +150,38 @@ export const notificationView = object({
   },
 });
 
+export const listView = object({
+  properties: {
+    uri: required(string({ format: 'at-uri' })),
+    cid: required(string({ format: 'cid' })),
+    owner: required(string({ format: 'did' })),
+    name: required(string({ maxGraphemes: 64, minGraphemes: 1 })),
+    description: string({ maxGraphemes: 300 }),
+    itemCount: required(integer()),
+    createdAt: required(string({ format: 'datetime' })),
+    updatedAt: string({ format: 'datetime' }),
+    indexedAt: required(string({ format: 'datetime' })),
+  },
+});
+
+export const listItemView = object({
+  properties: {
+    uri: required(string({ format: 'at-uri' })),
+    cid: required(string({ format: 'cid' })),
+    listUri: required(string({ format: 'at-uri' })),
+    userstyle: required(ref({ ref: 'club.userstyles.alpha.defs#userstyleView' })),
+    createdAt: required(string({ format: 'datetime' })),
+    indexedAt: required(string({ format: 'datetime' })),
+  },
+});
+
+export const listMembershipView = object({
+  properties: {
+    listUri: required(string({ format: 'at-uri' })),
+    itemUri: required(string({ format: 'at-uri' })),
+  },
+});
+
 export default document({
   id: 'club.userstyles.alpha.defs',
   defs: {
@@ -164,5 +196,8 @@ export default document({
     feedFollowView,
     feedViewItem,
     notificationView,
+    listView,
+    listItemView,
+    listMembershipView,
   },
 });

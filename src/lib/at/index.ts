@@ -95,9 +95,31 @@ export {
 } from './services/notifications';
 export { searchActorsTypeahead, type TypeaheadActor } from './services/typeahead';
 export {
+  getLists,
+  getList,
+  getListMemberships,
+  countLists,
+  createList,
+  updateList,
+  deleteListRecord,
+  addUserstyleToList,
+  removeUserstyleFromList,
+  type List,
+  type ListRecord,
+  type ListItem,
+  type ListItemRecord,
+  type ListView,
+  type ListItemView,
+  type ListMembershipView,
+  type ListsPage,
+  type ListPage,
+} from './services/lists';
+export {
   CLUB_USERSTYLE_COLLECTION,
   CLUB_PROFILE_COLLECTION,
   CLUB_COMMENT_COLLECTION,
   CLUB_RATING_COLLECTION,
   CLUB_FOLLOW_COLLECTION,
+  CLUB_LIST_COLLECTION,
+  CLUB_LISTITEM_COLLECTION,
 } from './settings';

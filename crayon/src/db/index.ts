@@ -8,6 +8,8 @@ import {
   comments,
   follows,
   ingestCursor,
+  listItems,
+  lists,
   notifications,
   profiles,
   ratings,
@@ -27,6 +29,15 @@ export type NewRating = typeof ratings.$inferInsert;
 export type NewComment = typeof comments.$inferInsert;
 export type NewFollow = typeof follows.$inferInsert;
 export type NewNotification = typeof notifications.$inferInsert;
+export type NewList = typeof lists.$inferInsert;
+export type NewListItem = typeof listItems.$inferInsert;
+export type ListRow = typeof lists.$inferSelect;
+export type ListItemRow = typeof listItems.$inferSelect;
+
+export interface ListMembershipRow {
+  listUri: string;
+  itemUri: string;
+}
 
 const { searchVector: _searchVector, ...userstyleColumns } = getTableColumns(userstyles);
 export type UserstyleRow = Pick<typeof userstyles.$inferSelect, keyof typeof userstyleColumns>;
@@ -290,6 +301,125 @@ export async function deleteFollow(uri: string): Promise<void> {
   await db.delete(follows).where(eq(follows.uri, uri));
 }
 
+export async function upsertList(r: NewList): Promise<void> {
+  await db
+    .insert(lists)
+    .values(r)
+    .onConflictDoUpdate({
+      target: lists.uri,
+      set: conflictUpdateColumns(lists, ['cid', 'name', 'description', 'updatedAt', 'indexedAt']),
+    });
+}
+
+/** No FK cascade exists, so deleting a list must explicitly delete its items too. */
+export async function deleteList(uri: string): Promise<void> {
+  await db.transaction(async (tx) => {
+    await tx.delete(listItems).where(eq(listItems.listUri, uri));
+    await tx.delete(lists).where(eq(lists.uri, uri));
+  });
+}
+
+/** Adds a userstyle to a list; a no-op if already a member or if this exact record uri was
+ * already processed (event replay). Keeps lists.item_count in sync, mirroring adjustRatingSummary. */
+export async function insertListItem(r: NewListItem): Promise<boolean> {
+  return db.transaction(async (tx) => {
+    const [row] = await tx
+      .insert(listItems)
+      .values(r)
+      // Deliberately no `target`: this table has two independent unique constraints (the `uri`
+      // PK, and list_items_list_subject_idx) and either kind of conflict should be a silent
+      // no-op. Postgres treats untargeted ON CONFLICT DO NOTHING as "any constraint violation".
+      .onConflictDoNothing()
+      .returning({ inserted: sql<boolean>`(xmax = 0)` });
+    const inserted = row?.inserted ?? false;
+    if (inserted) {
+      await tx
+        .update(lists)
+        .set({ itemCount: sql`${lists.itemCount} + 1` })
+        .where(eq(lists.uri, r.listUri));
+    }
+    return inserted;
+  });
+}
+
+export async function deleteListItem(uri: string): Promise<void> {
+  await db.transaction(async (tx) => {
+    const [deleted] = await tx
+      .delete(listItems)
+      .where(eq(listItems.uri, uri))
+      .returning({ listUri: listItems.listUri });
+    if (!deleted) return;
+    await tx
+      .update(lists)
+      .set({ itemCount: sql`${lists.itemCount} - 1` })
+      .where(eq(lists.uri, deleted.listUri));
+  });
+}
+
+export async function getListRow(uri: string): Promise<ListRow | null> {
+  const [row] = await db.select().from(lists).where(eq(lists.uri, uri));
+  return row ?? null;
+}
+
+/** Lists an actor owns, most recently created/updated first.
+ * `cursor: [indexedAt, uri]` of the last row from the previous page, exclusive. */
+export async function listLists(
+  actor: string,
+  cursor: [number, string] | null,
+  limit: number,
+): Promise<ListRow[]> {
+  const conditions = [eq(lists.did, actor)];
+  if (cursor) {
+    const [indexedAt, uri] = cursor;
+    conditions.push(sql`(${lists.indexedAt}, ${lists.uri}) < (${indexedAt}, ${uri})`);
+  }
+  return db
+    .select()
+    .from(lists)
+    .where(and(...conditions))
+    .orderBy(desc(lists.indexedAt), desc(lists.uri))
+    .limit(limit);
+}
+
+export async function countLists(actor: string): Promise<number> {
+  const [row] = await db
+    .select({ count: sql<number>`count(*)::int` })
+    .from(lists)
+    .where(eq(lists.did, actor));
+  return row?.count ?? 0;
+}
+
+/** Items in a list, most recently added first.
+ * `cursor: [indexedAt, uri]` of the last row from the previous page, exclusive. */
+export async function listListItems(
+  listUri: string,
+  cursor: [number, string] | null,
+  limit: number,
+): Promise<ListItemRow[]> {
+  const conditions = [eq(listItems.listUri, listUri)];
+  if (cursor) {
+    const [indexedAt, uri] = cursor;
+    conditions.push(sql`(${listItems.indexedAt}, ${listItems.uri}) < (${indexedAt}, ${uri})`);
+  }
+  return db
+    .select()
+    .from(listItems)
+    .where(and(...conditions))
+    .orderBy(desc(listItems.indexedAt), desc(listItems.uri))
+    .limit(limit);
+}
+
+/** Which of `actor`'s own lists currently contain `subjectUri`. */
+export async function getListMemberships(
+  actor: string,
+  subjectUri: string,
+): Promise<ListMembershipRow[]> {
+  return db
+    .select({ listUri: listItems.listUri, itemUri: listItems.uri })
+    .from(listItems)
+    .where(and(eq(listItems.did, actor), eq(listItems.subjectUri, subjectUri)));
+}
+
 export async function createNotification(n: NewNotification): Promise<void> {
   await db
     .insert(notifications)
@@ -334,7 +464,9 @@ async function hasAnyData(did: string): Promise<boolean> {
         EXISTS(SELECT 1 FROM profiles WHERE did = ${did}) OR
         EXISTS(SELECT 1 FROM comments WHERE did = ${did}) OR
         EXISTS(SELECT 1 FROM ratings WHERE did = ${did}) OR
-        EXISTS(SELECT 1 FROM follows WHERE did = ${did})
+        EXISTS(SELECT 1 FROM follows WHERE did = ${did}) OR
+        EXISTS(SELECT 1 FROM lists WHERE did = ${did}) OR
+        EXISTS(SELECT 1 FROM list_items WHERE did = ${did})
       ) AS "exists"
     `),
   ) as unknown as { exists: boolean }[];
@@ -345,7 +477,7 @@ async function hasAnyData(did: string): Promise<boolean> {
 export async function deleteAccountData(did: string, now: number): Promise<boolean> {
   if (!(await hasAnyData(did))) return false;
 
-  const [commentUris, ratingUris, followUris, userstyleUris] = await Promise.all([
+  const [commentUris, ratingUris, followUris, userstyleUris, listUris] = await Promise.all([
     db
       .select({ uri: comments.uri })
       .from(comments)
@@ -353,12 +485,16 @@ export async function deleteAccountData(did: string, now: number): Promise<boole
     db.select({ uri: ratings.uri }).from(ratings).where(eq(ratings.did, did)),
     db.select({ uri: follows.uri }).from(follows).where(eq(follows.did, did)),
     db.select({ uri: userstyles.uri }).from(userstyles).where(eq(userstyles.did, did)),
+    db.select({ uri: lists.uri }).from(lists).where(eq(lists.did, did)),
   ]);
 
   for (const { uri } of commentUris) await deleteComment(uri, now);
   for (const { uri } of ratingUris) await deleteRating(uri);
   for (const { uri } of followUris) await deleteFollow(uri);
   for (const { uri } of userstyleUris) await deleteUserstyle(uri);
+  // A listitem's did always matches its list's owner (enforced at ingest), so deleting each of
+  // this account's lists (which cascades into list_items itself) also removes all its list items.
+  for (const { uri } of listUris) await deleteList(uri);
   await deleteProfile(did);
   return true;
 }

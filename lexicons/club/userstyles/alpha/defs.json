@@ -372,6 +372,92 @@
       },
       "required": ["reason", "recordUri", "author", "createdAt", "indexedAt"],
       "type": "object"
+    },
+    "listView": {
+      "properties": {
+        "uri": {
+          "type": "string",
+          "format": "at-uri"
+        },
+        "cid": {
+          "type": "string",
+          "format": "cid"
+        },
+        "owner": {
+          "type": "string",
+          "format": "did"
+        },
+        "name": {
+          "type": "string",
+          "maxGraphemes": 64,
+          "minGraphemes": 1
+        },
+        "description": {
+          "type": "string",
+          "maxGraphemes": 300
+        },
+        "itemCount": {
+          "type": "integer"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "datetime"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "datetime"
+        },
+        "indexedAt": {
+          "type": "string",
+          "format": "datetime"
+        }
+      },
+      "required": ["uri", "cid", "owner", "name", "itemCount", "createdAt", "indexedAt"],
+      "type": "object"
+    },
+    "listItemView": {
+      "properties": {
+        "uri": {
+          "type": "string",
+          "format": "at-uri"
+        },
+        "cid": {
+          "type": "string",
+          "format": "cid"
+        },
+        "listUri": {
+          "type": "string",
+          "format": "at-uri"
+        },
+        "userstyle": {
+          "ref": "club.userstyles.alpha.defs#userstyleView",
+          "type": "ref"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "datetime"
+        },
+        "indexedAt": {
+          "type": "string",
+          "format": "datetime"
+        }
+      },
+      "required": ["uri", "cid", "listUri", "userstyle", "createdAt", "indexedAt"],
+      "type": "object"
+    },
+    "listMembershipView": {
+      "properties": {
+        "listUri": {
+          "type": "string",
+          "format": "at-uri"
+        },
+        "itemUri": {
+          "type": "string",
+          "format": "at-uri"
+        }
+      },
+      "required": ["listUri", "itemUri"],
+      "type": "object"
     }
   },
   "id": "club.userstyles.alpha.defs",

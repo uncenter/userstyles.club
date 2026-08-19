@@ -8,6 +8,8 @@ import {
   ClubUserstylesAlphaFeedComment,
   ClubUserstylesAlphaFeedRating,
   ClubUserstylesAlphaGraphFollow,
+  ClubUserstylesAlphaGraphList,
+  ClubUserstylesAlphaGraphListitem,
   ClubUserstylesAlphaUserstyle,
 } from '@userstyles.club/atcute';
 import { getBlobCid } from './utils.ts';
@@ -16,12 +18,16 @@ import {
   deleteAccountData,
   deleteComment,
   deleteFollow,
+  deleteList,
+  deleteListItem,
   deleteProfile,
   deleteRating,
   deleteUserstyle,
   getThreadAncestorAuthors,
+  insertListItem,
   upsertComment,
   upsertFollow,
+  upsertList,
   upsertProfile,
   upsertRating,
   upsertUserstyle,
@@ -33,14 +39,18 @@ const PROFILE = 'club.userstyles.alpha.actor.profile';
 const COMMENT = 'club.userstyles.alpha.feed.comment';
 const RATING = 'club.userstyles.alpha.feed.rating';
 const FOLLOW = 'club.userstyles.alpha.graph.follow';
+const LIST = 'club.userstyles.alpha.graph.list';
+const LISTITEM = 'club.userstyles.alpha.graph.listitem';
 
-export const COLLECTIONS = [USERSTYLE, PROFILE, COMMENT, RATING, FOLLOW] as const;
+export const COLLECTIONS = [USERSTYLE, PROFILE, COMMENT, RATING, FOLLOW, LIST, LISTITEM] as const;
 
 type UserstyleRecord = InferOutput<typeof ClubUserstylesAlphaUserstyle.mainSchema>;
 type ProfileRecord = InferOutput<typeof ClubUserstylesAlphaActorProfile.mainSchema>;
 type CommentRecord = InferOutput<typeof ClubUserstylesAlphaFeedComment.mainSchema>;
 type RatingRecord = InferOutput<typeof ClubUserstylesAlphaFeedRating.mainSchema>;
 type FollowRecord = InferOutput<typeof ClubUserstylesAlphaGraphFollow.mainSchema>;
+type ListRecord = InferOutput<typeof ClubUserstylesAlphaGraphList.mainSchema>;
+type ListItemRecord = InferOutput<typeof ClubUserstylesAlphaGraphListitem.mainSchema>;
 
 function getDidFromUri(uri: string): string {
   return parseResourceUri(uri).repo;
@@ -87,6 +97,10 @@ export async function handleEvent(evt: TypedEvent, now: number): Promise<void> {
         return deleteRating(uri);
       case FOLLOW:
         return deleteFollow(uri);
+      case LIST:
+        return deleteList(uri);
+      case LISTITEM:
+        return deleteListItem(uri);
     }
     return;
   }
@@ -139,6 +153,24 @@ export async function handleEvent(evt: TypedEvent, now: number): Promise<void> {
         record,
       );
       return parsed ? handleFollow(uri, cid, did, rkey, parsed, now) : undefined;
+    }
+    case LIST: {
+      const parsed = validateRecord(
+        collection,
+        uri,
+        ClubUserstylesAlphaGraphList.mainSchema,
+        record,
+      );
+      return parsed ? handleList(uri, cid, did, rkey, parsed, now) : undefined;
+    }
+    case LISTITEM: {
+      const parsed = validateRecord(
+        collection,
+        uri,
+        ClubUserstylesAlphaGraphListitem.mainSchema,
+        record,
+      );
+      return parsed ? handleListItem(uri, cid, did, rkey, parsed, now) : undefined;
     }
   }
 }
@@ -319,4 +351,53 @@ async function handleFollow(
     createdAt: record.createdAt,
     indexedAt: now,
   });
+}
+
+async function handleList(
+  uri: string,
+  cid: string,
+  did: string,
+  rkey: string,
+  record: ListRecord,
+  now: number,
+): Promise<void> {
+  await upsertList({
+    uri,
+    cid,
+    did,
+    rkey,
+    name: record.name,
+    description: record.description ?? null,
+    createdAt: record.createdAt,
+    updatedAt: record.updatedAt ?? null,
+    indexedAt: now,
+  });
+  console.log(`indexed list at ${uri}`);
+}
+
+async function handleListItem(
+  uri: string,
+  cid: string,
+  did: string,
+  rkey: string,
+  record: ListItemRecord,
+  now: number,
+): Promise<void> {
+  if (getDidFromUri(record.list) !== did) {
+    console.warn(`skipping listitem at ${uri}: list ${record.list} is not owned by ${did}`);
+    return;
+  }
+
+  const inserted = await insertListItem({
+    uri,
+    cid,
+    did,
+    rkey,
+    listUri: record.list,
+    subjectUri: record.subject.uri,
+    subjectCid: record.subject.cid,
+    createdAt: record.createdAt,
+    indexedAt: now,
+  });
+  if (inserted) console.log(`indexed listitem at ${uri} for list ${record.list}`);
 }

@@ -15,7 +15,7 @@
   } from '$lib/at';
 
   import { Alert, Avatar, Loading } from '$components/ui';
-  import { UserstylesSection, BlueskyIcon, Meta } from '$components';
+  import { UserstylesSection, ListsSection, BlueskyIcon, Meta } from '$components';
 
   import { PencilIcon, UserPlusIcon, UserMinusIcon } from '@lucide/svelte';
 
@@ -198,7 +198,34 @@
 
 <UserstylesSection userstyles={data.userstyles} author={data.profile} />
 
+{#if data.lists}
+  <div class="lists-section-header">
+    <h2>Lists</h2>
+    {#if data.lists.cursor}
+      <a
+        class="link link--quiet link--muted link--sm"
+        href={resolve('/profile/[user=actor]/lists', {
+          user: getPreferredActorIdentifier(data.profile),
+        })}
+      >
+        View all →
+      </a>
+    {/if}
+  </div>
+  <ListsSection lists={data.lists.lists} owner={data.profile}>
+    {#snippet empty()}No lists yet.{/snippet}
+  </ListsSection>
+{/if}
+
 <style>
+  .lists-section-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-3);
+    margin-top: var(--space-8);
+  }
+
   .profile-header {
     --card-border: var(--border);
     position: relative;

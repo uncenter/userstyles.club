@@ -147,6 +147,45 @@ export const sourceCode = pgTable('source_code', {
   cachedAt: bigint('cached_at', { mode: 'number' }).notNull(),
 });
 
+export const lists = pgTable(
+  'lists',
+  {
+    uri: text('uri').primaryKey(),
+    cid: text('cid').notNull(),
+    did: text('did').notNull(),
+    rkey: text('rkey').notNull(),
+    name: text('name').notNull(),
+    description: text('description'),
+    itemCount: integer('item_count').notNull().default(0),
+    createdAt: text('created_at').notNull(),
+    updatedAt: text('updated_at'),
+    indexedAt: bigint('indexed_at', { mode: 'number' }).notNull(),
+  },
+  (t) => [index('lists_did_idx').on(t.did, t.indexedAt.desc())],
+);
+
+export const listItems = pgTable(
+  'list_items',
+  {
+    uri: text('uri').primaryKey(),
+    cid: text('cid').notNull(),
+    did: text('did').notNull(),
+    rkey: text('rkey').notNull(),
+    listUri: text('list_uri').notNull(),
+    subjectUri: text('subject_uri').notNull(),
+    subjectCid: text('subject_cid').notNull(),
+    createdAt: text('created_at').notNull(),
+    indexedAt: bigint('indexed_at', { mode: 'number' }).notNull(),
+  },
+  (t) => [
+    // Guards both a replayed event (same uri) and a genuine duplicate add (same list+subject
+    // under a different random tid rkey) -- see insertListItem in db/index.ts.
+    uniqueIndex('list_items_list_subject_idx').on(t.listUri, t.subjectUri),
+    index('list_items_list_indexed_idx').on(t.listUri, t.indexedAt.desc()),
+    index('list_items_subject_did_idx').on(t.subjectUri, t.did),
+  ],
+);
+
 export const notifications = pgTable(
   'notifications',
   {

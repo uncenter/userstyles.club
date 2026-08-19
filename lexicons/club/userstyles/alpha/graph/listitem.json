@@ -1,0 +1,29 @@
+{
+  "defs": {
+    "main": {
+      "description": "A userstyle saved into a list. `list` must be owned by the same repo as this record.",
+      "key": "tid",
+      "record": {
+        "properties": {
+          "list": {
+            "type": "string",
+            "format": "at-uri"
+          },
+          "subject": {
+            "ref": "com.atproto.repo.strongRef",
+            "type": "ref"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "datetime"
+          }
+        },
+        "required": ["list", "subject", "createdAt"],
+        "type": "object"
+      },
+      "type": "record"
+    }
+  },
+  "id": "club.userstyles.alpha.graph.listitem",
+  "lexicon": 1
+}

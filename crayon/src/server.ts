@@ -23,6 +23,10 @@ import {
   ClubUserstylesAlphaGetUserstyleSourceCode,
   ClubUserstylesAlphaGraphCountFollowers,
   ClubUserstylesAlphaGraphCountFollows,
+  ClubUserstylesAlphaGraphCountLists,
+  ClubUserstylesAlphaGraphGetList,
+  ClubUserstylesAlphaGraphGetListMemberships,
+  ClubUserstylesAlphaGraphGetLists,
   ClubUserstylesAlphaGraphGetRelationship,
   ClubUserstylesAlphaGraphGetRelationships,
   ClubUserstylesAlphaGraphListFollowers,
@@ -36,11 +40,18 @@ import {
   countComments,
   countFollowers,
   countFollows,
+  countLists,
   countUserstyles,
   type FollowActivityRow,
   type FollowRow,
   getCommentThreads,
   getCurrentRatingsByAuthor,
+  getListMemberships,
+  getListRow,
+  listListItems,
+  listLists,
+  type ListMembershipRow,
+  type ListRow,
   getProfile,
   getProfiles,
   getRelationship,
@@ -67,6 +78,7 @@ import {
 import { getCachedSourceCode } from './usercss.ts';
 
 const USERSTYLE_COLLECTION = 'club.userstyles.alpha.userstyle';
+const LIST_COLLECTION = 'club.userstyles.alpha.graph.list';
 
 function toUserstyleView(row: UserstyleRow) {
   return {
@@ -240,6 +252,33 @@ function toNotificationView(row: NotificationRow, userstyle: UserstyleRow | unde
   };
 }
 
+function toListView(row: ListRow) {
+  return {
+    uri: row.uri as ResourceUri,
+    cid: row.cid,
+    owner: row.did as Did,
+    name: row.name,
+    description: row.description ?? undefined,
+    itemCount: row.itemCount,
+    createdAt: row.createdAt,
+    updatedAt: row.updatedAt ?? undefined,
+    indexedAt: new Date(row.indexedAt).toISOString(),
+  };
+}
+
+function toListMembershipView(row: ListMembershipRow) {
+  return { listUri: row.listUri as ResourceUri, itemUri: row.itemUri as ResourceUri };
+}
+
+async function getListOrThrow(actor: string, rkey: string): Promise<ListRow> {
+  const uri = `at://${actor}/${LIST_COLLECTION}/${rkey}`;
+  const row = await getListRow(uri);
+  if (!row) {
+    throw new XRPCError({ status: 404, error: 'ListNotFound', message: `no list found at ${uri}` });
+  }
+  return row;
+}
+
 // Every registered query lexicon.
 const XRPC_QUERIES = [
   ClubUserstylesAlphaGetUserstyle,
@@ -254,6 +293,10 @@ const XRPC_QUERIES = [
   ClubUserstylesAlphaGraphCountFollowers,
   ClubUserstylesAlphaGraphGetRelationship,
   ClubUserstylesAlphaGraphGetRelationships,
+  ClubUserstylesAlphaGraphGetLists,
+  ClubUserstylesAlphaGraphGetList,
+  ClubUserstylesAlphaGraphGetListMemberships,
+  ClubUserstylesAlphaGraphCountLists,
   ClubUserstylesAlphaFeedListComments,
   ClubUserstylesAlphaFeedCountComments,
   ClubUserstylesAlphaFeedListRatings,
@@ -557,5 +600,62 @@ router.addQuery(ClubUserstylesAlphaNotificationListNotifications, {
         ),
       ),
     });
+  },
+});
+
+router.addQuery(ClubUserstylesAlphaGraphGetLists, {
+  async handler({ params }) {
+    const cursor = params.cursor ? parseCursorUri(params.cursor) : null;
+    const rows = await listLists(params.actor, cursor, params.limit);
+    const nextCursor = buildCursor(rows, params.limit, (r) => `${r.indexedAt}_${r.uri}`);
+
+    return json({ cursor: nextCursor, lists: rows.map(toListView) });
+  },
+});
+
+router.addQuery(ClubUserstylesAlphaGraphCountLists, {
+  async handler({ params }) {
+    return json({ count: await countLists(params.actor) });
+  },
+});
+
+router.addQuery(ClubUserstylesAlphaGraphGetList, {
+  async handler({ params }) {
+    const list = await getListOrThrow(params.actor, params.rkey);
+    const cursor = params.cursor ? parseCursorUri(params.cursor) : null;
+    const itemRows = await listListItems(list.uri, cursor, params.limit);
+    const nextCursor = buildCursor(itemRows, params.limit, (r) => `${r.indexedAt}_${r.uri}`);
+
+    // Batch-fetch subjects, mirroring getTimeline/listNotifications's index+hydrate pattern.
+    const userstyleByUri = new Map(
+      (await getUserstyles(itemRows.map((r) => r.subjectUri))).map((row) => [row.uri, row]),
+    );
+
+    // A listitem has no content of its own besides the userstyle -- unlike getTimeline (which
+    // keeps a hollow item because a comment/rating still has its own content), a deleted subject
+    // makes the item useless, so it's dropped rather than emitted with an undefined userstyle.
+    const items = itemRows.flatMap((row) => {
+      const userstyle = userstyleByUri.get(row.subjectUri);
+      if (!userstyle) return [];
+      return [
+        {
+          uri: row.uri as ResourceUri,
+          cid: row.cid,
+          listUri: row.listUri as ResourceUri,
+          userstyle: toUserstyleView(userstyle),
+          createdAt: row.createdAt,
+          indexedAt: new Date(row.indexedAt).toISOString(),
+        },
+      ];
+    });
+
+    return json({ list: toListView(list), cursor: nextCursor, items });
+  },
+});
+
+router.addQuery(ClubUserstylesAlphaGraphGetListMemberships, {
+  async handler({ params }) {
+    const rows = await getListMemberships(params.actor, params.subject);
+    return json({ memberships: rows.map(toListMembershipView) });
   },
 });
