@@ -31,7 +31,7 @@
     initial?: { items: FeedViewItem[]; cursor?: string; profiles: Map<Did, ProfileView> };
   }
 
-  let { initial }: Props = $props();
+  let props: Props = $props();
 
   let recentStyles = $derived(preferences.get('recentlyVisitedStyles'));
 
@@ -49,8 +49,9 @@
     preferences.set('lastTimelineFeedType', timelineFeedType);
   });
 
-  const feed = new PaginatedList<FeedViewItem>(untrack(() => initial));
-  let feedProfiles = $state(untrack(() => initial?.profiles ?? new Map<Did, ProfileView>()));
+  const initial = untrack(() => (timelineFeedType === 'following' ? props.initial : undefined))
+  const feed = new PaginatedList<FeedViewItem>(initial);
+  let feedProfiles = $state(initial?.profiles ?? new Map<Did, ProfileView>());
 
   function keyOfFeedItem(item: FeedViewItem, index: number): string {
     const uri =
@@ -82,7 +83,7 @@
   }
 
   // Skips the first effect run when seeded.
-  let skipNextFeedLoad = untrack(() => !!initial);
+  let skipNextFeedLoad = !!initial;
 
   $effect(() => {
     timelineFeedType;
