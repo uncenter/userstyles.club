@@ -87,7 +87,7 @@ export async function getBskyProfile(actor: ActorIdentifier) {
 
 export type ProfileView = {
   did: Did;
-  // Undefined when Slingshot could not produce a handle that bidirectionally verified against the DID document -> 'handle.invalid'.
+  // Undefined when the handle either fails to resolve or fails verification against the DID document.
   handle: Handle | undefined;
   description: string | undefined;
   avatar: string | undefined;
