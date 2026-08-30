@@ -247,6 +247,7 @@
       color: var(--fg-muted);
       line-height: 1.6;
       margin-top: var(--space-1);
+      white-space: pre; /* treat whitespace/newlines in description text literally and render them (as e.g. actual line breaks) */
     }
 
     .profile-header__side {
