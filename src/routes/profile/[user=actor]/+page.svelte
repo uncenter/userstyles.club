@@ -36,6 +36,7 @@
   );
   let followLoading = $state(false);
   let followError = $state<string | null>(null);
+  let followerCount = $derived(data.followerCount)
 
   async function toggleFollow() {
     if (!user.isLoggedIn || followLoading) return;
@@ -46,9 +47,11 @@
         const { rkey } = parseCanonicalResourceUri(following);
         await unfollowActor(rkey);
         following = undefined;
+        if (followerCount !== undefined) followerCount--;
       } else {
         const created = await followActor(data.profile.did);
         following = created.response.uri;
+        if (followerCount !== undefined) followerCount++;
       }
     } catch (e) {
       followError = e instanceof Error ? e.message : 'Failed to update follow.';
@@ -154,7 +157,7 @@
             user: getPreferredActorIdentifier(data.profile),
           })}
         >
-          <strong>{data.followerCount ?? '-'}</strong> Followers
+          <strong>{followerCount ?? '-'}</strong> Followers
         </a>
         <a
           class="link link--quiet link--muted link--sm"
