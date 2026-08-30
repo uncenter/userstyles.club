@@ -2,18 +2,10 @@
 
 A colorful userstyles appview, indexing historical and live events from Jetstream. Uses Postgres via Drizzle for storage.
 
-## Routes
+## Roadmap
 
-- `{root}` — `getUserstyle`, `getUserstyleSourceCode` (usercss source, proxied and cached), `listUserstyles`, `countUserstyles` (list/count take an optional `actor` filter)
-- `actor` — `getProfile`, `getProfiles`
-- `graph` — `listFollows`, `listFollowers`
-- `feed` — `listComments`/`countComments`, `listRatings`/`countRatings` (optional `subject` and/or `author`), `searchUserstyles` (`top`/`latest`/`popular` sort, cursor-paginated), `getFeedback` (comment threads + rating count/average for a subject, each top-level thread carrying its author's rating), `getTimeline` (optional `actor`, scopes to the follow graph)
-- `notification` — `listNotifications
-
-## Shortcomings
-
-- No server auth infrastructure yet, and therefore no authenticated/private requests.
-- Every actor/author param takes a plain did; handle resolution is left entirely to the client (e.g. via Microcosm's Slingshot).
+- Add server auth infrastructure for future authenticated/private requests.
+- Implement handle and did (doc) resolution and caching layer so that requests aren't forced to use dids for actor params.
 
 ## Usage
 
@@ -26,7 +18,5 @@ pnpm dev
 
 ### Jetstream
 
-Bluesky's Jetstream instances require an API key for replay functionality. Create one at
-https://bsky.network/account#api-keys-section-heading and set `JETSTREAM_API_KEY`. `JETSTREAM_SERVICE` defaults to `https://jetstream.us-east.bsky.network`.
+Bluesky's Jetstream instances require an API key for replay (historical) functionality. Create one at https://bsky.network/account#api-keys-section-heading and set `JETSTREAM_API_KEY` in `.env`. `JETSTREAM_SERVICE` (requires Jetstream v2 for replay) defaults to `https://jetstream.us-east.bsky.network`.
 
-`pnpm build && pnpm start` runs the compiled output.
