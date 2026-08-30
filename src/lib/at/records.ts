@@ -13,13 +13,28 @@ import type * as v from '@atcute/lexicons/validations';
 import { getPdsClient, getConstellationClient, getPublicClient, getRelayClient } from './client';
 import { getSessionContext } from './auth';
 import { getBlobCid } from './utils';
-import { ok } from '@atcute/client';
+import { ClientResponseError, ok } from '@atcute/client';
 
 export type RepoRecord<T extends Record<string, unknown> = Record<string, unknown>> = {
   uri: CanonicalResourceUri;
   cid?: string;
   value: T;
 };
+
+/** Interceptor for ok-ed promises of requests that require authentication to rewrite error messages. */
+async function handleAuthenticationErrors<T>(promise: Promise<T>): Promise<T> {
+  try {
+    return await promise;
+  } catch (err) {
+    if (err instanceof ClientResponseError && err.error === 'invalid_token') {
+      throw new Error(
+        'Unable to perform authenticated action due to an expired session. Please log out and log back in again before trying again.',
+        { cause: err }
+      );
+    }
+    throw err;
+  }
+}
 
 /** Maps a lexicon NSID to its record value type via the ambient registry. Falls back to `Record<string, unknown>` for unregistered collections. */
 type ValueFor<NSID extends Nsid> = [NSID] extends [keyof Records]
@@ -152,16 +167,17 @@ export async function getRecord<NSID extends Nsid>(params: {
 export async function createRecord<NSID extends Nsid>(collection: NSID, record: ValueFor<NSID>) {
   const { client, did } = getSessionContext('You must be logged in to write records.');
 
-  const response = await ok(
-    client.post('com.atproto.repo.createRecord', {
-      input: {
-        repo: did,
-        collection,
-        record: record as Record<string, unknown>,
-      },
-    }),
+  const response = await handleAuthenticationErrors(
+    ok(
+      client.post('com.atproto.repo.createRecord', {
+        input: {
+          repo: did,
+          collection,
+          record: record as Record<string, unknown>,
+        },
+      }),
+    ),
   );
-
   return { response, record };
 }
 
@@ -172,15 +188,17 @@ export async function putRecord<NSID extends Nsid>(
 ) {
   const { client, did } = getSessionContext('You must be logged in to write records.');
 
-  const response = await ok(
-    client.post('com.atproto.repo.putRecord', {
-      input: {
-        repo: did,
-        collection,
-        rkey,
-        record: record as Record<string, unknown>,
-      },
-    }),
+  const response = await handleAuthenticationErrors(
+    ok(
+      client.post('com.atproto.repo.putRecord', {
+        input: {
+          repo: did,
+          collection,
+          rkey,
+          record: record as Record<string, unknown>,
+        },
+      }),
+    ),
   );
 
   return { response, record };
@@ -189,11 +207,13 @@ export async function putRecord<NSID extends Nsid>(
 export async function uploadBlob(blob: Blob): Promise<BlobRef> {
   const { client } = getSessionContext('You must be logged in to upload files.');
 
-  const response = await ok(
-    client.post('com.atproto.repo.uploadBlob', {
-      encoding: blob.type as `${string}/${string}`,
-      input: blob,
-    }),
+  const response = await handleAuthenticationErrors(
+    ok(
+      client.post('com.atproto.repo.uploadBlob', {
+        encoding: blob.type as `${string}/${string}`,
+        input: blob,
+      }),
+    ),
   );
 
   return response.blob;
@@ -216,14 +236,16 @@ export async function getBlobText(did: Did, blob: BlobRef | LegacyBlob): Promise
 export async function deleteRecord(collection: Nsid, rkey: RecordKey) {
   const { client, did } = getSessionContext('You must be logged in to write records.');
 
-  await ok(
-    client.post('com.atproto.repo.deleteRecord', {
-      input: {
-        repo: did,
-        collection,
-        rkey,
-      },
-    }),
+  await handleAuthenticationErrors(
+    ok(
+      client.post('com.atproto.repo.deleteRecord', {
+        input: {
+          repo: did,
+          collection,
+          rkey,
+        },
+      }),
+    ),
   );
 
   return true;
