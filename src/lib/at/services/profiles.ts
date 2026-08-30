@@ -107,16 +107,14 @@ function normalizeMaybeHandle(handle: Handle | undefined): Handle | undefined {
   return handle === INVALID_HANDLE ? undefined : handle;
 }
 
-/** Resolves a handle straight from the DID document via Slingshot, independent of Bluesky's
- * appview — the fallback for actors with no (usable) Bluesky handle to pull one from. Throws if
- * the resolution request itself fails, rather than papering over it with a missing handle. */
+/** Resolves a handle given a DID document (using Slingshot).
+ * Returns undefined for failing requests or if the handle is resolved but invalid.
+ */
 async function resolveHandle(did: Did): Promise<Handle | undefined> {
-  const doc = await ok(
-    getSlingshotClient().get('blue.microcosm.identity.resolveMiniDoc', {
-      params: { identifier: did },
-    }),
-  );
-  return normalizeMaybeHandle(doc.handle);
+  const doc = await getSlingshotClient().get('blue.microcosm.identity.resolveMiniDoc', {
+    params: { identifier: did },
+  });
+  return normalizeMaybeHandle(doc.ok ? doc.data.handle : undefined);
 }
 
 async function resolveHandles(dids: Did[]): Promise<Map<Did, Handle | undefined>> {
