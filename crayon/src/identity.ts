@@ -1,6 +1,7 @@
 import type { ActorIdentifier, Did, Handle } from '@atcute/lexicons';
 import { Client, simpleFetchHandler } from '@atcute/client';
 import type {} from '@atcute/microcosm';
+import { LRUCache } from 'lru-cache';
 
 const SLINGSHOT_URL = process.env.SLINGSHOT_URL ?? 'https://slingshot.microcosm.blue';
 const slingshot = new Client({ handler: simpleFetchHandler({ service: SLINGSHOT_URL }) });
@@ -15,37 +16,12 @@ export interface ResolvedIdentity {
   pds: string;
 }
 
-interface CacheEntry {
-  value: ResolvedIdentity | undefined;
-  expiresAt: number;
-}
+const UNRESOLVABLE = Symbol('unresolvable');
 
-const cache = new Map<string, CacheEntry>();
+const actors = new LRUCache<string, ResolvedIdentity | typeof UNRESOLVABLE>({
+  max: MAX_CACHE_ENTRIES,
+});
 const pending = new Map<string, Promise<ResolvedIdentity | undefined>>();
-
-function getCached(
-  key: string,
-): { hit: true; value: ResolvedIdentity | undefined } | { hit: false } {
-  const entry = cache.get(key);
-  if (!entry) return { hit: false };
-  if (Date.now() >= entry.expiresAt) {
-    cache.delete(key);
-    return { hit: false };
-  }
-  // Mark as recently used by re-inserting this entry to the back.
-  cache.delete(key);
-  cache.set(key, entry);
-  return { hit: true, value: entry.value };
-}
-
-function setCached(key: string, value: ResolvedIdentity | undefined, ttl: number): void {
-  cache.delete(key);
-  cache.set(key, { value, expiresAt: Date.now() + ttl });
-  if (cache.size > MAX_CACHE_ENTRIES) {
-    const oldestKey = cache.keys().next().value;
-    if (oldestKey !== undefined) cache.delete(oldestKey);
-  }
-}
 
 async function resolveMiniDoc(identifier: string): Promise<ResolvedIdentity | undefined> {
   try {
@@ -64,8 +40,8 @@ async function resolveMiniDoc(identifier: string): Promise<ResolvedIdentity | un
  * An unresolvable identifier returns undefined without throwing.
  * */
 export async function resolveActor(identifier: string): Promise<ResolvedIdentity | undefined> {
-  const cached = getCached(identifier);
-  if (cached.hit) return cached.value;
+  const cached = actors.get(identifier);
+  if (cached !== undefined) return cached === UNRESOLVABLE ? undefined : cached;
 
   const inFlight = pending.get(identifier);
   if (inFlight) return inFlight;
@@ -73,8 +49,10 @@ export async function resolveActor(identifier: string): Promise<ResolvedIdentity
   const promise = (async () => {
     try {
       const result = await resolveMiniDoc(identifier);
-      setCached(identifier, result, result ? POSITIVE_TTL : NEGATIVE_TTL);
-      if (result && result.did !== identifier) setCached(result.did, result, POSITIVE_TTL);
+      actors.set(identifier, result ?? UNRESOLVABLE, { ttl: result ? POSITIVE_TTL : NEGATIVE_TTL });
+      if (result && result.did !== identifier) {
+        actors.set(result.did, result, { ttl: POSITIVE_TTL });
+      }
       return result;
     } finally {
       pending.delete(identifier);
@@ -94,8 +72,9 @@ export async function resolveActors(
 }
 
 export function invalidateActor(did: string, handle?: string): void {
-  const previousHandle = cache.get(did)?.value?.handle;
-  cache.delete(did);
-  if (handle) cache.delete(handle);
-  if (previousHandle && previousHandle !== handle) cache.delete(previousHandle);
+  const previous = actors.get(did);
+  const previousHandle = previous !== UNRESOLVABLE ? previous?.handle : undefined;
+  actors.delete(did);
+  if (handle) actors.delete(handle);
+  if (previousHandle && previousHandle !== handle) actors.delete(previousHandle);
 }

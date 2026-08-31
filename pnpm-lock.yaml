@@ -65,6 +65,9 @@ importers:
       hast-util-to-html:
         specifier: ^9.0.5
         version: 9.0.5
+      lru-cache:
+        specifier: ^10.4.3
+        version: 10.4.3
       pretty-bytes:
         specifier: ^7.1.0
         version: 7.1.0
@@ -153,6 +156,9 @@ importers:
       drizzle-orm:
         specifier: ^0.45.2
         version: 0.45.2(@cloudflare/workers-types@4.20260610.1)(postgres@3.4.9)
+      lru-cache:
+        specifier: ^10.4.3
+        version: 10.4.3
       postgres:
         specifier: ^3.4.9
         version: 3.4.9

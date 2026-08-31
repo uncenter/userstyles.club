@@ -9,20 +9,10 @@ import { getBlobCid } from './utils.ts';
 import { getCachedSourceCode, setCachedSourceCode } from './db/index.ts';
 import { resolveActor } from './identity.ts';
 
-const pdsClientCache = new Map<string, Client>();
-
-function getPdsClient(pds: string): Client {
-  const cached = pdsClientCache.get(pds);
-  if (cached) return cached;
-  const client = new Client({ handler: simpleFetchHandler({ service: pds }) });
-  pdsClientCache.set(pds, client);
-  return client;
-}
-
 async function fetchBlobText(did: string, cid: string): Promise<string> {
   const identity = await resolveActor(did);
   if (!identity) throw new Error(`could not resolve pds for ${did}`);
-  const pds = getPdsClient(identity.pds);
+  const pds = new Client({ handler: simpleFetchHandler({ service: identity.pds }) });
   const response = await ok(
     pds.get('com.atproto.sync.getBlob', { params: { did: did as Did, cid }, as: 'blob' }),
   );

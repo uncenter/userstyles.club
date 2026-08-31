@@ -33,6 +33,7 @@
     "@userstyles.club/atcute": "workspace:*",
     "hast-util-from-lezer": "^0.5.4",
     "hast-util-to-html": "^9.0.5",
+    "lru-cache": "^10.4.3",
     "pretty-bytes": "^7.1.0",
     "spdx-license-list": "^6.11.0",
     "svelte-codemirror-editor": "^2.1.0",
