@@ -6,8 +6,7 @@ import { parse } from 'usercss-parser';
 import type { MozDocumentFunction, ParseResult } from 'usercss-parser';
 
 import { getBlobCid } from './utils.ts';
-import { getMemCachedSourceCode, setMemCachedSourceCode } from './cache.ts';
-import { getDbCachedSourceCode, setDbCachedSourceCode } from './db/index.ts';
+import { getCachedSourceCode, setCachedSourceCode } from './db/index.ts';
 import { resolveActor } from './identity.ts';
 
 const pdsClientCache = new Map<string, Client>();
@@ -30,26 +29,19 @@ async function fetchBlobText(did: string, cid: string): Promise<string> {
   return response.text();
 }
 
-/** Retrieves the given addressed source code blob. First attempts retrieving from the in-memory hot cache, then the (persistent) Postgres table, and finally falling back to the source blob's resident PDS. */
-export async function getCachedSourceCode(did: string, cid: string): Promise<string> {
-  const memCached = getMemCachedSourceCode(cid);
-  if (memCached !== undefined) return memCached;
-
+/** Retrieves the given addressed source code blob. First attempts retrieving from the (persistent) Postgres table before falling back to the source blob directly from the PDS. */
+export async function getSourceCode(did: string, cid: string): Promise<string> {
   try {
-    const dbCached = await getDbCachedSourceCode(cid);
-    if (dbCached !== null) {
-      setMemCachedSourceCode(cid, dbCached);
-      return dbCached;
-    }
+    const cached = await getCachedSourceCode(cid);
+    if (cached !== null) return cached;
   } catch (err) {
     console.warn(`failed to read source code cache for cid ${cid}`, err);
   }
 
   const text = await fetchBlobText(did, cid);
-  setMemCachedSourceCode(cid, text);
 
   try {
-    await setDbCachedSourceCode(cid, text, Date.now());
+    await setCachedSourceCode(cid, text, Date.now());
   } catch (err) {
     console.warn(`failed to persist source code cache for cid ${cid}`, err);
   }
@@ -71,7 +63,7 @@ export async function deriveUsercssMetadata(
   sourceCode: Blob | LegacyBlob,
 ): Promise<UsercssMetadata | null> {
   try {
-    const source = await getCachedSourceCode(did, getBlobCid(sourceCode));
+    const source = await getSourceCode(did, getBlobCid(sourceCode));
     const { metadata, sections } = parse(source);
     return {
       mozDocumentFunctions: aggregateMozDocumentRules(sections),

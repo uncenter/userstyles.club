@@ -67,7 +67,7 @@ import {
   type TimelineItem,
   type UserstyleRow,
 } from './db/index.ts';
-import { getCachedSourceCode } from './usercss.ts';
+import { getSourceCode } from './usercss.ts';
 
 const USERSTYLE_COLLECTION = 'club.userstyles.alpha.userstyle';
 
@@ -344,7 +344,7 @@ router.addQuery(ClubUserstylesAlphaGetUserstyleSourceCode, {
   async handler({ params }) {
     const row = await getUserstyleOrThrow(params.actor, params.rkey);
     try {
-      const sourceCode = await getCachedSourceCode(row.did, row.sourceCodeCid);
+      const sourceCode = await getSourceCode(row.did, row.sourceCodeCid);
       return new Response(sourceCode, { headers: { 'content-type': 'text/css; charset=utf-8' } });
     } catch (err) {
       throw new XRPCError({

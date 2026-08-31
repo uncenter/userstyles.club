@@ -18,7 +18,7 @@ import {
 const connectionString =
   process.env.DATABASE_URL ?? 'postgres://postgres:postgres@localhost:5432/crayon';
 
-const client = postgres(connectionString);
+const client = postgres(connectionString, { max: 5, idle_timeout: 30 });
 export const db = drizzle(client, { schema });
 
 export type NewUserstyle = typeof userstyles.$inferInsert;
@@ -157,7 +157,7 @@ async function evictOrphanedSourceCode(cid: string): Promise<void> {
   }
 }
 
-export async function getDbCachedSourceCode(cid: string): Promise<string | null> {
+export async function getCachedSourceCode(cid: string): Promise<string | null> {
   const [row] = await db
     .select({ content: sourceCode.content })
     .from(sourceCode)
@@ -165,7 +165,7 @@ export async function getDbCachedSourceCode(cid: string): Promise<string | null>
   return row?.content ?? null;
 }
 
-export async function setDbCachedSourceCode(
+export async function setCachedSourceCode(
   cid: string,
   content: string,
   cachedAt: number,
