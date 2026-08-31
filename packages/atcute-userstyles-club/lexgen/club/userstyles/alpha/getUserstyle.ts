@@ -7,7 +7,7 @@ export default document({
       description: 'Get a single userstyle by its author and record key.',
       parameters: params({
         properties: {
-          actor: required(string({ format: 'did' })),
+          actor: required(string({ format: 'at-identifier' })),
           rkey: required(string({ format: 'record-key' })),
         },
       }),
@@ -15,7 +15,7 @@ export default document({
         encoding: 'application/json',
         schema: ref({ ref: 'club.userstyles.alpha.defs#userstyleView' }),
       },
-      errors: [{ name: 'UserstyleNotFound' }],
+      errors: [{ name: 'ActorNotFound' }, { name: 'UserstyleNotFound' }],
     }),
   },
 });

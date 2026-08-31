@@ -74,7 +74,12 @@ export async function getUserstyle(
     try {
       return await getUserstyleFromAppview(repo, rkey);
     } catch (err) {
-      if (err instanceof ClientResponseError && err.error === 'UserstyleNotFound') throw err;
+      if (
+        err instanceof ClientResponseError &&
+        (err.error === 'UserstyleNotFound' || err.error === 'ActorNotFound')
+      ) {
+        throw err;
+      }
       console.warn('crayon appview unavailable, falling back to direct pds fetch', err);
     }
   }

@@ -18,7 +18,7 @@ export default document({
       parameters: params({
         properties: {
           subject: string({ format: 'at-uri', description: 'uri of the subject userstyle' }),
-          author: string({ format: 'did', description: "comment author's did" }),
+          author: string({ format: 'at-identifier', description: "comment author's did" }),
           limit: integer({ minimum: 1, maximum: 100, default: 50 }),
           cursor: string(),
         },
@@ -34,6 +34,7 @@ export default document({
           },
         }),
       },
+      errors: [{ name: 'ActorNotFound' }],
     }),
   },
 });

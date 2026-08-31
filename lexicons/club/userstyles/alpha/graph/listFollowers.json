@@ -2,6 +2,11 @@
   "defs": {
     "main": {
       "description": "List the users that follow an actor, most recent first.",
+      "errors": [
+        {
+          "name": "ActorNotFound"
+        }
+      ],
       "output": {
         "encoding": "application/json",
         "schema": {
@@ -25,7 +30,7 @@
         "properties": {
           "actor": {
             "type": "string",
-            "format": "did"
+            "format": "at-identifier"
           },
           "limit": {
             "default": 50,

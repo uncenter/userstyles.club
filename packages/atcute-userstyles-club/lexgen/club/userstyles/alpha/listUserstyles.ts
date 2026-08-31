@@ -18,7 +18,7 @@ export default document({
         'List userstyles, most recently indexed first. Optionally filter to userstyles from a given author.',
       parameters: params({
         properties: {
-          actor: string({ format: 'did' }),
+          actor: string({ format: 'at-identifier' }),
           limit: integer({ minimum: 1, maximum: 100, default: 50 }),
           cursor: string(),
         },
@@ -34,6 +34,7 @@ export default document({
           },
         }),
       },
+      errors: [{ name: 'ActorNotFound' }],
     }),
   },
 });

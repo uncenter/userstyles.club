@@ -1,4 +1,4 @@
-import type { Did, RecordKey } from '@atcute/lexicons';
+import type { ActorIdentifier, Did, RecordKey } from '@atcute/lexicons';
 
 import {
   listFollowsFromAppview,
@@ -25,22 +25,28 @@ const builder = makeRecordBuilder(
   CLUB_FOLLOW_COLLECTION,
 );
 
-export async function listFollows(actor: Did, opts?: { cursor?: string; limit?: number }) {
+export async function listFollows(
+  actor: ActorIdentifier,
+  opts?: { cursor?: string; limit?: number },
+) {
   if (!isAppviewEnabled()) throw new Error('Follow lists require the appview to be enabled.');
   return await listFollowsFromAppview(actor, opts);
 }
 
-export async function listFollowers(actor: Did, opts?: { cursor?: string; limit?: number }) {
+export async function listFollowers(
+  actor: ActorIdentifier,
+  opts?: { cursor?: string; limit?: number },
+) {
   if (!isAppviewEnabled()) throw new Error('Follower lists require the appview to be enabled.');
   return await listFollowersFromAppview(actor, opts);
 }
 
-export async function countFollows(actor: Did): Promise<number> {
+export async function countFollows(actor: ActorIdentifier): Promise<number> {
   if (!isAppviewEnabled()) throw new Error('Follow counts require the appview to be enabled.');
   return await countFollowsFromAppview(actor);
 }
 
-export async function countFollowers(actor: Did): Promise<number> {
+export async function countFollowers(actor: ActorIdentifier): Promise<number> {
   if (!isAppviewEnabled()) throw new Error('Follower counts require the appview to be enabled.');
   return await countFollowersFromAppview(actor);
 }

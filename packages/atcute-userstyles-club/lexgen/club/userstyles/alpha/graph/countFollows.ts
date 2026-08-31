@@ -15,7 +15,7 @@ export default document({
       description: 'Count the users an actor follows.',
       parameters: params({
         properties: {
-          actor: required(string({ format: 'did' })),
+          actor: required(string({ format: 'at-identifier' })),
         },
       }),
       output: {
@@ -26,6 +26,7 @@ export default document({
           },
         }),
       },
+      errors: [{ name: 'ActorNotFound' }],
     }),
   },
 });

@@ -2,6 +2,11 @@
   "defs": {
     "main": {
       "description": "Count comments, optionally filtered by subject and/or author.",
+      "errors": [
+        {
+          "name": "ActorNotFound"
+        }
+      ],
       "output": {
         "encoding": "application/json",
         "schema": {
@@ -24,7 +29,7 @@
           "author": {
             "type": "string",
             "description": "comment author's did",
-            "format": "did"
+            "format": "at-identifier"
           }
         },
         "type": "params"

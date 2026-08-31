@@ -17,7 +17,7 @@ export default document({
       parameters: params({
         properties: {
           subject: string({ format: 'at-uri', description: 'uri of the subject userstyle' }),
-          author: string({ format: 'did', description: "rater's did" }),
+          author: string({ format: 'at-identifier', description: "rater's did" }),
         },
       }),
       output: {
@@ -30,6 +30,7 @@ export default document({
           },
         }),
       },
+      errors: [{ name: 'ActorNotFound' }],
     }),
   },
 });

@@ -15,7 +15,7 @@ export default document({
       description: 'Count userstyles. Optionally filter to userstyles from a given author.',
       parameters: params({
         properties: {
-          actor: string({ format: 'did' }),
+          actor: string({ format: 'at-identifier' }),
         },
       }),
       output: {
@@ -26,6 +26,7 @@ export default document({
           },
         }),
       },
+      errors: [{ name: 'ActorNotFound' }],
     }),
   },
 });

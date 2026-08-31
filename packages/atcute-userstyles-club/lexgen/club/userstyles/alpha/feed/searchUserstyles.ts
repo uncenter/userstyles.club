@@ -27,7 +27,7 @@ export default document({
               "Rank by text relevance with 'top'; without a `query`, defaults to 'latest'." +
               "Rank by comment and rating activity via 'popular'.",
           }),
-          author: string({ format: 'did' }),
+          author: string({ format: 'at-identifier' }),
           since: string({
             format: 'datetime',
             description: 'only userstyles created at or after this time',
@@ -53,6 +53,7 @@ export default document({
           },
         }),
       },
+      errors: [{ name: 'ActorNotFound' }],
     }),
   },
 });

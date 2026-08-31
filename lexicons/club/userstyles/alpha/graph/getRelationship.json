@@ -2,6 +2,11 @@
   "defs": {
     "main": {
       "description": "Check the follow relationship between two actors: whether `actor` follows `other`, and whether `other` follows `actor` back.",
+      "errors": [
+        {
+          "name": "ActorNotFound"
+        }
+      ],
       "output": {
         "encoding": "application/json",
         "schema": {
@@ -13,11 +18,11 @@
         "properties": {
           "actor": {
             "type": "string",
-            "format": "did"
+            "format": "at-identifier"
           },
           "other": {
             "type": "string",
-            "format": "did"
+            "format": "at-identifier"
           }
         },
         "required": ["actor", "other"],

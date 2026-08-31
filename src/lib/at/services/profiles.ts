@@ -1,90 +1,36 @@
 import type { AppBskyActorDefs } from '@atcute/bluesky';
 import type { ActorIdentifier, Did, Handle } from '@atcute/lexicons';
 
-import { getPublicClient, getSlingshotClient, resolveToDid } from '../client';
+import { getPublicClient, resolveActor } from '../client';
 import { getSessionContext } from '../auth';
-import { ok, ClientResponseError } from '@atcute/client';
+import { ClientResponseError, ok } from '@atcute/client';
 import { putRecord, type RepoRecord } from '../records';
-import { getCacheEntry, writeCacheEntry, invalidateCacheEntries } from '$lib/cache';
+import { getCacheEntryWithTimestamp, writeCacheEntry, invalidateCacheEntries } from '$lib/cache';
 import { chunk } from '../utils';
 
 import {
   getClubProfileFromAppview,
   getClubProfilesFromAppview,
+  type AppviewIdentity,
 } from '../backends/appview/profiles';
 import { getClubProfileFromPds, getClubProfilesFromPds } from '../backends/fallback/profiles';
 
-import { makeRecordBuilder, type RecordCreateInput } from '../builder';
+import { makeRecordBuilder } from '../builder';
 import { CLUB_PROFILE_COLLECTION, isAppviewEnabled } from '../settings';
 import { ClubUserstylesAlphaActorProfile } from '@userstyles.club/atcute';
 
-const BSKY_TTL = 5 * 60_000;
-const CLUB_TTL = 5 * 60_000;
+const PROFILE_CACHE_TTL_MS = 5 * 60 * 1000; // (five minutes)
 
-const BSKY_CACHE_KEY = (actor: string) => `bsky:${actor}`;
-const CLUB_CACHE_KEY = (did: Did) => `club:${did}`;
+const BSKY_CACHE_KEY = (actor: string) => `profile:bsky:${actor}`;
+const CLUB_CACHE_KEY = (actor: string) => `profile:club:${actor}`;
 
 export type ClubProfile = ClubUserstylesAlphaActorProfile.Main;
 
 export type ClubProfileRecord = RepoRecord<ClubProfile>;
 
-const builder = makeRecordBuilder(
-  ClubUserstylesAlphaActorProfile.mainSchema,
-  CLUB_PROFILE_COLLECTION,
-);
-
-const SELF_RKEY = 'self';
-
-export async function getClubProfile(did: Did): Promise<ClubProfile | undefined> {
-  const cached = getCacheEntry<ClubProfile>(CLUB_CACHE_KEY(did), CLUB_TTL);
-  if (cached) return cached;
-
-  let profile: ClubProfile | undefined;
-  if (isAppviewEnabled()) {
-    try {
-      profile = await getClubProfileFromAppview(did);
-    } catch (err) {
-      if (err instanceof ClientResponseError && err.error === 'ProfileNotFound') return undefined;
-      console.warn('crayon appview unavailable, falling back to direct pds fetch', err);
-    }
-  }
-  profile ??= await getClubProfileFromPds(did);
-
-  if (profile) writeCacheEntry(CLUB_CACHE_KEY(did), profile);
-  return profile;
-}
-
-export async function setClubProfile(
-  input: RecordCreateInput<ClubProfile>,
-  existingCreatedAt?: string,
-) {
-  const { did } = getSessionContext('You must be logged in to update your profile.');
-
-  // No updatedAt, so we use build() instead of update() and generate the createdAt when necessary.
-  const newProfile = builder.build({
-    ...input,
-    createdAt: existingCreatedAt ?? new Date().toISOString(),
-  });
-
-  const result = await putRecord(CLUB_PROFILE_COLLECTION, SELF_RKEY, newProfile);
-  writeCacheEntry(CLUB_CACHE_KEY(did), newProfile);
-  return result;
-}
-
-export async function getBskyProfile(actor: ActorIdentifier) {
-  const cached = getCacheEntry<AppBskyActorDefs.ProfileViewDetailed>(
-    BSKY_CACHE_KEY(actor),
-    BSKY_TTL,
-  );
-  if (cached) return cached;
-
-  const profile = await ok(
-    getPublicClient().get('app.bsky.actor.getProfile', { params: { actor } }),
-  );
-  writeCacheEntry(BSKY_CACHE_KEY(actor), profile);
-  return profile;
-}
-
+/**
+ * A merged view of an actor's profile across both Bluesky and userstyles.club.
+ */
 export type ProfileView = {
   did: Did;
   // Undefined when the handle either fails to resolve or fails verification against the DID document.
@@ -99,122 +45,278 @@ export function invalidateProfileCaches(did: Did) {
   invalidateCacheEntries(BSKY_CACHE_KEY(did), CLUB_CACHE_KEY(did));
 }
 
+const SELF_RKEY = 'self';
 const INVALID_HANDLE = 'handle.invalid';
 
-/** Bluesky and Slingshot both report a handle that failed bidirectional verification as the
- * literal string 'handle.invalid' rather than omitting it or erroring. */
-function normalizeMaybeHandle(handle: Handle | undefined): Handle | undefined {
+const BATCH_CHUNK_SIZE = 25;
+
+const builder = makeRecordBuilder(
+  ClubUserstylesAlphaActorProfile.mainSchema,
+  CLUB_PROFILE_COLLECTION,
+);
+
+function normalizeHandle(handle: Handle | undefined): Handle | undefined {
   return handle === INVALID_HANDLE ? undefined : handle;
 }
 
-/** Resolves a handle given a DID document (using Slingshot).
- * Returns undefined for failing requests or if the handle is resolved but invalid.
- */
-async function resolveHandle(did: Did): Promise<Handle | undefined> {
-  const doc = await getSlingshotClient().get('blue.microcosm.identity.resolveMiniDoc', {
-    params: { identifier: did },
-  });
-  return normalizeMaybeHandle(doc.ok ? doc.data.handle : undefined);
+/** A value paired with the time it was produced (so later on callers can prefer fresher cached/fetched sources). */
+type Fetched<T> = { data: T; fetchedAt: number };
+
+function writeClubCacheEntry(actor: ActorIdentifier, identity: AppviewIdentity): void {
+  writeCacheEntry(CLUB_CACHE_KEY(identity.did), identity);
+  if (actor !== identity.did) writeCacheEntry(CLUB_CACHE_KEY(actor), identity);
 }
 
-async function resolveHandles(dids: Did[]): Promise<Map<Did, Handle | undefined>> {
-  const entries = await Promise.all(
-    dids.map(async (did) => [did, await resolveHandle(did)] as const),
+async function getBskyProfileTimestamped(
+  actor: ActorIdentifier,
+): Promise<Fetched<AppBskyActorDefs.ProfileViewDetailed | undefined>> {
+  const cached = getCacheEntryWithTimestamp<AppBskyActorDefs.ProfileViewDetailed>(
+    BSKY_CACHE_KEY(actor),
+    PROFILE_CACHE_TTL_MS,
   );
-  return new Map(entries);
-}
+  if (cached) return { data: cached.data, fetchedAt: cached.cachedAt };
 
-function mergeProfileView(
-  did: Did,
-  handle: Handle | undefined,
-  bsky: AppBskyActorDefs.ProfileViewDetailed | undefined,
-  club: ClubProfile | undefined,
-): ProfileView {
-  return {
-    did,
-    handle,
-    description: club?.description || bsky?.description,
-    avatar: bsky?.avatar,
-    club,
-    bsky,
-  };
-}
-
-export async function getProfile(actor: ActorIdentifier): Promise<ProfileView> {
-  const did = await resolveToDid(actor);
-  const [bsky, club] = await Promise.all([
-    getBskyProfile(actor).catch(() => undefined),
-    getClubProfile(did),
-  ]);
-  // Falls through to Slingshot if Bluesky's response didn't include a handle.
-  const handle = normalizeMaybeHandle(bsky?.handle) ?? (await resolveHandle(did));
-  return mergeProfileView(did, handle, bsky, club);
-}
-
-async function getClubProfilesForDids(dids: Did[]): Promise<Map<Did, ClubProfile>> {
-  if (isAppviewEnabled()) {
-    try {
-      return await getClubProfilesFromAppview(dids);
-    } catch (err) {
-      console.warn('crayon appview unavailable, falling back to per-actor pds fetch', err);
-    }
+  try {
+    const response = await ok(
+      getPublicClient().get('app.bsky.actor.getProfile', { params: { actor } }),
+    );
+    writeCacheEntry(BSKY_CACHE_KEY(actor), response);
+    if (response.did !== actor) writeCacheEntry(BSKY_CACHE_KEY(response.did), response);
+    return { data: response, fetchedAt: Date.now() };
+  } catch (err) {
+    console.warn('bluesky profile fetch failed', err);
+    return { data: undefined, fetchedAt: 0 };
   }
-  return await getClubProfilesFromPds(dids);
 }
 
-/** Batched, cache-aware profile lookup for rendering lists with mixed authors (avoids one bsky+club round trip per item). */
-export async function getProfiles(actors: Did[]): Promise<Map<Did, ProfileView>> {
-  const dids = [...new Set(actors)];
-  if (dids.length === 0) return new Map();
+export async function getBskyProfile(
+  actor: ActorIdentifier,
+): Promise<AppBskyActorDefs.ProfileViewDetailed | undefined> {
+  return (await getBskyProfileTimestamped(actor)).data;
+}
 
-  const bskyByDid = new Map<Did, AppBskyActorDefs.ProfileViewDetailed | undefined>();
-  const clubByDid = new Map<Did, ClubProfile | undefined>();
-  const misses: Did[] = [];
+async function getBskyProfilesBatch(
+  dids: Did[],
+): Promise<Map<Did, Fetched<AppBskyActorDefs.ProfileViewDetailed>>> {
+  const result = new Map<Did, Fetched<AppBskyActorDefs.ProfileViewDetailed>>();
+  const uncached: Did[] = [];
 
   for (const did of dids) {
-    const cachedBsky = getCacheEntry<AppBskyActorDefs.ProfileViewDetailed>(
+    const cached = getCacheEntryWithTimestamp<AppBskyActorDefs.ProfileViewDetailed>(
       BSKY_CACHE_KEY(did),
-      BSKY_TTL,
+      PROFILE_CACHE_TTL_MS,
     );
-    if (!cachedBsky) {
-      misses.push(did);
-      continue;
-    }
-    bskyByDid.set(did, cachedBsky);
-    clubByDid.set(did, getCacheEntry<ClubProfile>(CLUB_CACHE_KEY(did), CLUB_TTL) ?? undefined);
+    if (cached) result.set(did, { data: cached.data, fetchedAt: cached.cachedAt });
+    else uncached.push(did);
   }
 
+  const client = getPublicClient();
   await Promise.all(
-    chunk(misses, 25).map(async (batch) => {
-      const [bskyProfiles, clubProfiles] = await Promise.all([
-        ok(getPublicClient().get('app.bsky.actor.getProfiles', { params: { actors: batch } }))
-          .then((r) => r.profiles)
-          .catch(() => [] as AppBskyActorDefs.ProfileViewDetailed[]),
-        getClubProfilesForDids(batch),
-      ]);
-      const fetchedByDid = new Map(bskyProfiles.map((bsky) => [bsky.did, bsky]));
-
-      for (const did of batch) {
-        const bsky = fetchedByDid.get(did);
-        if (bsky) writeCacheEntry(BSKY_CACHE_KEY(did), bsky);
-        bskyByDid.set(did, bsky);
-
-        const club = clubProfiles.get(did);
-        if (club) writeCacheEntry(CLUB_CACHE_KEY(did), club);
-        clubByDid.set(did, club);
+    chunk(uncached, BATCH_CHUNK_SIZE).map(async (batch) => {
+      try {
+        const response = await ok(
+          client.get('app.bsky.actor.getProfiles', { params: { actors: batch } }),
+        );
+        const fetchedAt = Date.now();
+        for (const profile of response.profiles) {
+          result.set(profile.did, { data: profile, fetchedAt });
+          writeCacheEntry(BSKY_CACHE_KEY(profile.did), profile);
+        }
+      } catch (err) {
+        console.warn('bluesky batch profile fetch failed', err);
       }
     }),
   );
 
-  // Users/dids that still don't have resolved/verified handles are re-resolved with Slingshot.
-  const needsFallback = dids.filter((did) => !normalizeMaybeHandle(bskyByDid.get(did)?.handle));
-  const fallbackHandles = needsFallback.length ? await resolveHandles(needsFallback) : undefined;
+  return result;
+}
+async function getClubIdentity(actor: ActorIdentifier): Promise<AppviewIdentity | undefined> {
+  if (isAppviewEnabled()) {
+    try {
+      const identity = await getClubProfileFromAppview(actor);
+      return { ...identity, handle: normalizeHandle(identity.handle) };
+    } catch (err) {
+      if (!(err instanceof ClientResponseError && err.error === 'ActorNotFound')) {
+        console.warn('crayon appview unavailable, falling back to direct pds fetch', err);
+      }
+    }
+  }
+  return await getClubIdentityFromPds(actor);
+}
+
+async function getClubIdentityFromPds(
+  actor: ActorIdentifier,
+): Promise<AppviewIdentity | undefined> {
+  const [resolved, record] = await Promise.all([
+    resolveActor(actor).catch(() => undefined),
+    getClubProfileFromPds(actor),
+  ]);
+  const did = resolved?.did ?? record?.did;
+  if (!did) return undefined;
+  return { did, handle: resolved?.handle, club: record?.club };
+}
+
+async function getClubIdentityCachedTimestamped(
+  actor: ActorIdentifier,
+): Promise<Fetched<AppviewIdentity | undefined>> {
+  const cached = getCacheEntryWithTimestamp<AppviewIdentity>(
+    CLUB_CACHE_KEY(actor),
+    PROFILE_CACHE_TTL_MS,
+  );
+  if (cached) return { data: cached.data, fetchedAt: cached.cachedAt };
+
+  const identity = await getClubIdentity(actor);
+  if (identity) writeClubCacheEntry(actor, identity);
+  return { data: identity, fetchedAt: Date.now() };
+}
+
+async function getClubIdentityCached(actor: ActorIdentifier): Promise<AppviewIdentity | undefined> {
+  return (await getClubIdentityCachedTimestamped(actor)).data;
+}
+
+async function getClubIdentitiesBatch(dids: Did[]): Promise<Map<Did, Fetched<AppviewIdentity>>> {
+  const result = new Map<Did, Fetched<AppviewIdentity>>();
+  const uncached: Did[] = [];
+
+  for (const did of dids) {
+    const cached = getCacheEntryWithTimestamp<AppviewIdentity>(
+      CLUB_CACHE_KEY(did),
+      PROFILE_CACHE_TTL_MS,
+    );
+    if (cached) result.set(did, { data: cached.data, fetchedAt: cached.cachedAt });
+    else uncached.push(did);
+  }
+  if (uncached.length === 0) return result;
+
+  if (!isAppviewEnabled()) {
+    const fetched = await getClubIdentitiesFromPdsBatch(uncached);
+    const fetchedAt = Date.now();
+    for (const [did, identity] of fetched) {
+      result.set(did, { data: identity, fetchedAt });
+      writeClubCacheEntry(did, identity);
+    }
+    return result;
+  }
+
+  await Promise.all(
+    chunk(uncached, BATCH_CHUNK_SIZE).map(async (batch) => {
+      try {
+        const fetched = await getClubProfilesFromAppview(batch);
+        const fetchedAt = Date.now();
+        for (const did of batch) {
+          const raw = fetched.get(did);
+          const identity: AppviewIdentity = raw
+            ? { ...raw, handle: normalizeHandle(raw.handle) }
+            : { did, handle: undefined, club: undefined };
+          result.set(did, { data: identity, fetchedAt });
+          writeClubCacheEntry(did, identity);
+        }
+      } catch (err) {
+        console.warn(
+          'crayon appview batch profile fetch failed, falling back to direct pds fetch for this batch',
+          err,
+        );
+        const fetched = await getClubIdentitiesFromPdsBatch(batch);
+        const fetchedAt = Date.now();
+        for (const [did, identity] of fetched) {
+          result.set(did, { data: identity, fetchedAt });
+          writeClubCacheEntry(did, identity);
+        }
+      }
+    }),
+  );
+
+  return result;
+}
+
+async function getClubIdentitiesFromPdsBatch(dids: Did[]): Promise<Map<Did, AppviewIdentity>> {
+  const [resolvedList, clubByDid] = await Promise.all([
+    Promise.all(dids.map((did) => resolveActor(did).catch(() => undefined))),
+    getClubProfilesFromPds(dids),
+  ]);
+
+  const result = new Map<Did, AppviewIdentity>();
+  dids.forEach((did, i) => {
+    result.set(did, { did, handle: resolvedList[i]?.handle, club: clubByDid.get(did) });
+  });
+  return result;
+}
+
+const UNFETCHED = 0;
+
+function mergeProfile(
+  did: Did,
+  bsky: Fetched<AppBskyActorDefs.ProfileViewDetailed | undefined>,
+  club: Fetched<AppviewIdentity | undefined>,
+): ProfileView {
+  // When both appviews have a handle, prefer whichever was fetched most recently rather than favoring one source.
+  const bskyHandle = normalizeHandle(bsky.data?.handle);
+  const clubHandle = club.data?.handle;
+  const handle =
+    bskyHandle && clubHandle
+      ? bsky.fetchedAt >= club.fetchedAt
+        ? bskyHandle
+        : clubHandle
+      : (bskyHandle ?? clubHandle);
+
+  return {
+    did,
+    handle,
+    description: club.data?.club?.description || bsky.data?.description,
+    avatar: bsky.data?.avatar,
+    club: club.data?.club,
+    bsky: bsky.data,
+  };
+}
+
+export async function getProfile(actor: ActorIdentifier): Promise<ProfileView> {
+  const [bsky, club] = await Promise.all([
+    getBskyProfileTimestamped(actor),
+    getClubIdentityCachedTimestamped(actor),
+  ]);
+
+  const did = club.data?.did ?? bsky.data?.did;
+  if (!did) throw new Error(`could not resolve a profile for ${actor}`);
+
+  return mergeProfile(did, bsky, club);
+}
+
+export async function getProfiles(dids: Did[]): Promise<Map<Did, ProfileView>> {
+  const unique = [...new Set(dids)];
+  if (unique.length === 0) return new Map();
+
+  const [bskyByDid, clubByDid] = await Promise.all([
+    getBskyProfilesBatch(unique),
+    getClubIdentitiesBatch(unique),
+  ]);
 
   const result = new Map<Did, ProfileView>();
-  for (const did of dids) {
-    const bsky = bskyByDid.get(did);
-    const handle = normalizeMaybeHandle(bsky?.handle) ?? fallbackHandles?.get(did);
-    result.set(did, mergeProfileView(did, handle, bsky, clubByDid.get(did)));
+  for (const did of unique) {
+    const bsky = bskyByDid.get(did) ?? { data: undefined, fetchedAt: UNFETCHED };
+    const club = clubByDid.get(did) ?? { data: undefined, fetchedAt: UNFETCHED };
+    result.set(did, mergeProfile(did, bsky, club));
   }
+  return result;
+}
+
+export async function getClubProfile(did: Did): Promise<ClubProfile | undefined> {
+  const identity = await getClubIdentityCached(did);
+  return identity?.club;
+}
+
+export async function setClubProfile(input: { description?: string }, existingCreatedAt?: string) {
+  const { did } = getSessionContext('You must be logged in to edit your profile.');
+
+  // No updatedAt, so we use build() instead of update() and generate the createdAt when necessary.
+  const record = builder.build({
+    ...input,
+    createdAt: existingCreatedAt ?? new Date().toISOString(),
+  });
+
+  const result = await putRecord(CLUB_PROFILE_COLLECTION, SELF_RKEY, record);
+
+  // Invalidate to refetch handle and Bluesky profile along with the newly written profile next load.
+  invalidateCacheEntries(CLUB_CACHE_KEY(did));
+
   return result;
 }

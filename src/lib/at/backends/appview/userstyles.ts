@@ -7,7 +7,7 @@ import {
   parseCanonicalResourceUri,
 } from '@atcute/lexicons';
 
-import { getCrayonClient, resolveToDid } from '../../client';
+import { getCrayonClient } from '../../client';
 import { CLUB_USERSTYLE_COLLECTION } from '../../settings';
 import type { ClubUserstylesAlphaDefs } from '@userstyles.club/atcute';
 import type { Userstyle, UserstyleView, UserstyleRecord } from '../../services/userstyles';
@@ -62,10 +62,9 @@ export async function getUserstyleFromAppview(
   repo: ActorIdentifier,
   rkey: RecordKey,
 ): Promise<UserstyleRecord> {
-  const actor = await resolveToDid(repo);
   const client = getCrayonClient();
   const response = await ok(
-    client.get('club.userstyles.alpha.getUserstyle', { params: { actor, rkey } }),
+    client.get('club.userstyles.alpha.getUserstyle', { params: { actor: repo, rkey } }),
   );
   return userstyleViewToRecord(response);
 }
@@ -91,14 +90,15 @@ export async function listAllUserstylesFromAppview(): Promise<UserstyleView[]> {
 }
 
 export async function listUserstylesFromAppview(repo: ActorIdentifier): Promise<UserstyleView[]> {
-  const actor = await resolveToDid(repo);
   const client = getCrayonClient();
 
   const userstyles: UserstyleView[] = [];
   let cursor: string | undefined;
   do {
     const response = await ok(
-      client.get('club.userstyles.alpha.listUserstyles', { params: { actor, limit: 100, cursor } }),
+      client.get('club.userstyles.alpha.listUserstyles', {
+        params: { actor: repo, limit: 100, cursor },
+      }),
     );
     userstyles.push(...response.userstyles.map(toUserstyleView));
     cursor = response.cursor;

@@ -23,7 +23,7 @@
           "actors": {
             "items": {
               "type": "string",
-              "format": "did"
+              "format": "at-identifier"
             },
             "maxLength": 25,
             "type": "array"

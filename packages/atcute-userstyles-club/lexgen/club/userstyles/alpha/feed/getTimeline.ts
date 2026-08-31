@@ -19,7 +19,7 @@ export default document({
       parameters: params({
         properties: {
           actor: string({
-            format: 'did',
+            format: 'at-identifier',
             description:
               'Filter the feed to accounts this actor follows, rather than the global feed.',
           }),
@@ -38,6 +38,7 @@ export default document({
           },
         }),
       },
+      errors: [{ name: 'ActorNotFound' }],
     }),
   },
 });

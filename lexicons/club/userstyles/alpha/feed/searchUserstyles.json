@@ -2,6 +2,11 @@
   "defs": {
     "main": {
       "description": "Search over userstyles, with optional querying and filters.",
+      "errors": [
+        {
+          "name": "ActorNotFound"
+        }
+      ],
       "output": {
         "encoding": "application/json",
         "schema": {
@@ -35,7 +40,7 @@
           },
           "author": {
             "type": "string",
-            "format": "did"
+            "format": "at-identifier"
           },
           "since": {
             "type": "string",

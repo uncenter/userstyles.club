@@ -10,7 +10,13 @@ import type {
 import type { Records } from '@atcute/lexicons/ambient';
 import type * as v from '@atcute/lexicons/validations';
 
-import { getPdsClient, getConstellationClient, getPublicClient, getRelayClient } from './client';
+import {
+  getPdsClient,
+  getConstellationClient,
+  getPublicClient,
+  getRelayClient,
+  getSlingshotClient,
+} from './client';
 import { getSessionContext } from './auth';
 import { getBlobCid } from './utils';
 import { ClientResponseError, ok } from '@atcute/client';
@@ -29,7 +35,7 @@ async function handleAuthenticationErrors<T>(promise: Promise<T>): Promise<T> {
     if (err instanceof ClientResponseError && err.error === 'invalid_token') {
       throw new Error(
         'Unable to perform authenticated action due to an expired session. Please log out and log back in again before trying again.',
-        { cause: err }
+        { cause: err },
       );
     }
     throw err;
@@ -153,10 +159,8 @@ export async function getRecord<NSID extends Nsid>(params: {
 }): Promise<RepoRecord<ValueFor<NSID>>> {
   const { repo, collection, rkey } = params;
 
-  const client = await getPdsClient(repo);
-
   const response = await ok(
-    client.get('com.atproto.repo.getRecord', {
+    getSlingshotClient().get('com.atproto.repo.getRecord', {
       params: { repo, collection, rkey },
     }),
   );

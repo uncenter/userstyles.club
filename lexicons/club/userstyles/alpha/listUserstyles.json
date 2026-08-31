@@ -2,6 +2,11 @@
   "defs": {
     "main": {
       "description": "List userstyles, most recently indexed first. Optionally filter to userstyles from a given author.",
+      "errors": [
+        {
+          "name": "ActorNotFound"
+        }
+      ],
       "output": {
         "encoding": "application/json",
         "schema": {
@@ -25,7 +30,7 @@
         "properties": {
           "actor": {
             "type": "string",
-            "format": "did"
+            "format": "at-identifier"
           },
           "limit": {
             "default": 50,

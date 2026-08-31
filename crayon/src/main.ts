@@ -24,7 +24,7 @@ const cursor: CursorStore = { load: getIngestCursor, save: saveIngestCursor };
 console.log(`connecting to jetstream at ${JETSTREAM_SERVICE}...`);
 for await (const event of jetstream.replay({
   collections: COLLECTIONS,
-  kinds: ['commit', 'account'],
+  kinds: ['commit', 'account', 'identity'],
   cursor,
   onError: (err) => console.error('jetstream indexer error', err),
 })) {

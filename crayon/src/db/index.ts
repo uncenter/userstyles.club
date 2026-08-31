@@ -70,7 +70,7 @@ export type FollowActivityRow = Pick<
   keyof typeof followActivityColumns
 >;
 
-/** Filter to a subject userstyle and/or to an  `author` did. */
+/** Filter to a subject userstyle and/or to an `author` did. */
 export interface SubjectAuthorFilter {
   subjectUri?: string;
   author?: string;

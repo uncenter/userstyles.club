@@ -2,6 +2,11 @@
   "defs": {
     "main": {
       "description": "Batch variant of getRelationship: check the follow relationship between `actor` and each of `others`.",
+      "errors": [
+        {
+          "name": "ActorNotFound"
+        }
+      ],
       "output": {
         "encoding": "application/json",
         "schema": {
@@ -22,12 +27,12 @@
         "properties": {
           "actor": {
             "type": "string",
-            "format": "did"
+            "format": "at-identifier"
           },
           "others": {
             "items": {
               "type": "string",
-              "format": "did"
+              "format": "at-identifier"
             },
             "maxLength": 25,
             "type": "array"

@@ -8,28 +8,22 @@ import type { MozDocumentFunction, ParseResult } from 'usercss-parser';
 import { getBlobCid } from './utils.ts';
 import { getMemCachedSourceCode, setMemCachedSourceCode } from './cache.ts';
 import { getDbCachedSourceCode, setDbCachedSourceCode } from './db/index.ts';
-
-const SLINGSHOT_URL = 'https://slingshot.microcosm.blue';
-const slingshot = new Client({ handler: simpleFetchHandler({ service: SLINGSHOT_URL }) });
+import { resolveActor } from './identity.ts';
 
 const pdsClientCache = new Map<string, Client>();
 
-async function getPdsClient(did: string): Promise<Client> {
-  const cached = pdsClientCache.get(did);
+function getPdsClient(pds: string): Client {
+  const cached = pdsClientCache.get(pds);
   if (cached) return cached;
-
-  const doc = await ok(
-    slingshot.get('blue.microcosm.identity.resolveMiniDoc', {
-      params: { identifier: did as Did },
-    }),
-  );
-  const client = new Client({ handler: simpleFetchHandler({ service: doc.pds }) });
-  pdsClientCache.set(did, client);
+  const client = new Client({ handler: simpleFetchHandler({ service: pds }) });
+  pdsClientCache.set(pds, client);
   return client;
 }
 
 async function fetchBlobText(did: string, cid: string): Promise<string> {
-  const pds = await getPdsClient(did);
+  const identity = await resolveActor(did);
+  if (!identity) throw new Error(`could not resolve pds for ${did}`);
+  const pds = getPdsClient(identity.pds);
   const response = await ok(
     pds.get('com.atproto.sync.getBlob', { params: { did: did as Did, cid }, as: 'blob' }),
   );

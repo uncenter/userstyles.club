@@ -47,9 +47,10 @@ export const userstyleView = object({
 export const profileView = object({
   properties: {
     did: required(string({ format: 'did' })),
+    handle: string({ format: 'handle' }),
     description: string({ maxGraphemes: 256, maxLength: 2560 }),
-    createdAt: required(string({ format: 'datetime' })),
-    indexedAt: required(string({ format: 'datetime' })),
+    createdAt: string({ format: 'datetime' }),
+    indexedAt: string({ format: 'datetime' }),
   },
 });
 

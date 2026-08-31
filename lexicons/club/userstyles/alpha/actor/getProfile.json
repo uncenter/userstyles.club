@@ -4,7 +4,7 @@
       "description": "Get an actor's userstyles.club profile.",
       "errors": [
         {
-          "name": "ProfileNotFound"
+          "name": "ActorNotFound"
         }
       ],
       "output": {
@@ -18,7 +18,7 @@
         "properties": {
           "actor": {
             "type": "string",
-            "format": "did"
+            "format": "at-identifier"
           }
         },
         "required": ["actor"],

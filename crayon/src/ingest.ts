@@ -27,6 +27,7 @@ import {
   upsertUserstyle,
 } from './db/index.ts';
 import { deriveUsercssMetadata } from './usercss.ts';
+import { invalidateActor } from './identity.ts';
 
 const USERSTYLE = 'club.userstyles.alpha.userstyle';
 const PROFILE = 'club.userstyles.alpha.actor.profile';
@@ -61,9 +62,15 @@ function validateRecord<TSchema extends BaseSchema>(
 }
 
 export async function handleEvent(evt: TypedEvent, now: number): Promise<void> {
+  if (evt.kind === 'identity') {
+    invalidateActor(evt.identity.did, evt.identity.handle);
+    return;
+  }
+
   if (evt.kind === 'account') {
     const { did, active, status } = evt.account;
     if (active || status !== 'deleted') return;
+    invalidateActor(did);
     if (await deleteAccountData(did, now)) {
       console.log(`removed all data for deleted account ${did}`);
     }

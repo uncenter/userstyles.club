@@ -1,5 +1,5 @@
 import { ok } from '@atcute/client';
-import type { Did } from '@atcute/lexicons';
+import type { ActorIdentifier, Did } from '@atcute/lexicons';
 
 import { getCrayonClient } from '../../client';
 import type { ClubUserstylesAlphaDefs } from '@userstyles.club/atcute';
@@ -10,7 +10,7 @@ export type RelationshipView = ClubUserstylesAlphaDefs.RelationshipView;
 export type FollowsPage = { follows: FollowView[]; cursor?: string };
 
 export async function listFollowsFromAppview(
-  actor: Did,
+  actor: ActorIdentifier,
   opts: { cursor?: string; limit?: number } = {},
 ): Promise<FollowsPage> {
   const client = getCrayonClient();
@@ -23,7 +23,7 @@ export async function listFollowsFromAppview(
 }
 
 export async function listFollowersFromAppview(
-  actor: Did,
+  actor: ActorIdentifier,
   opts: { cursor?: string; limit?: number } = {},
 ): Promise<FollowsPage> {
   const client = getCrayonClient();
@@ -35,7 +35,7 @@ export async function listFollowersFromAppview(
   return { follows: response.followers, cursor: response.cursor };
 }
 
-export async function countFollowsFromAppview(actor: Did): Promise<number> {
+export async function countFollowsFromAppview(actor: ActorIdentifier): Promise<number> {
   const client = getCrayonClient();
   const response = await ok(
     client.get('club.userstyles.alpha.graph.countFollows', { params: { actor } }),
@@ -43,7 +43,7 @@ export async function countFollowsFromAppview(actor: Did): Promise<number> {
   return response.count;
 }
 
-export async function countFollowersFromAppview(actor: Did): Promise<number> {
+export async function countFollowersFromAppview(actor: ActorIdentifier): Promise<number> {
   const client = getCrayonClient();
   const response = await ok(
     client.get('club.userstyles.alpha.graph.countFollowers', { params: { actor } }),

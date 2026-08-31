@@ -1,4 +1,4 @@
-import type { Did } from '@atcute/lexicons';
+import type { ActorIdentifier, Did } from '@atcute/lexicons';
 import {
   listFollows,
   listFollowers,
@@ -16,7 +16,7 @@ export interface FollowPage {
 }
 
 export async function fetchFollowPage(
-  actor: Did,
+  actor: ActorIdentifier,
   kind: FollowListKind,
   cursor?: string,
 ): Promise<FollowPage> {

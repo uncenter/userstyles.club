@@ -16,7 +16,7 @@ export default document({
       description: 'Get userstyles.club profiles for a batch of actors.',
       parameters: params({
         properties: {
-          actors: required(array({ items: string({ format: 'did' }), maxLength: 25 })),
+          actors: required(array({ items: string({ format: 'at-identifier' }), maxLength: 25 })),
         },
       }),
       output: {

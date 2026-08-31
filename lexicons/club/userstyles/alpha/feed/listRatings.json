@@ -2,6 +2,11 @@
   "defs": {
     "main": {
       "description": "List ratings, optionally filtered by subject and/or author.",
+      "errors": [
+        {
+          "name": "ActorNotFound"
+        }
+      ],
       "output": {
         "encoding": "application/json",
         "schema": {
@@ -31,7 +36,7 @@
           "author": {
             "type": "string",
             "description": "rater's did",
-            "format": "did"
+            "format": "at-identifier"
           },
           "limit": {
             "default": 50,

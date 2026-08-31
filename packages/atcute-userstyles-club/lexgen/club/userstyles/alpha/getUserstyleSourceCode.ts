@@ -7,14 +7,18 @@ export default document({
       description: "A userstyle's source code.",
       parameters: params({
         properties: {
-          actor: required(string({ format: 'did' })),
+          actor: required(string({ format: 'at-identifier' })),
           rkey: required(string({ format: 'record-key' })),
         },
       }),
       output: {
         encoding: 'text/css',
       },
-      errors: [{ name: 'UserstyleNotFound' }, { name: 'SourceUnavailable' }],
+      errors: [
+        { name: 'ActorNotFound' },
+        { name: 'UserstyleNotFound' },
+        { name: 'SourceUnavailable' },
+      ],
     }),
   },
 });

@@ -1,4 +1,5 @@
-import type { Did, GenericUri, ResourceUri } from '@atcute/lexicons';
+import type { Did, GenericUri, Handle, ResourceUri } from '@atcute/lexicons';
+import { isDid } from '@atcute/lexicons/syntax';
 import {
   type FetchMiddleware,
   InvalidRequestError,
@@ -7,6 +8,8 @@ import {
   XRPCRouter,
 } from '@atcute/xrpc-server';
 import { cors } from '@atcute/xrpc-server/middlewares/cors';
+
+import { resolveActor, resolveActors, type ResolvedIdentity } from './identity.ts';
 
 import {
   ClubUserstylesAlphaActorGetProfile,
@@ -132,16 +135,38 @@ function buildCursor<T>(rows: T[], limit: number, keyFn: (row: T) => string): st
   return rows.length === limit && last ? keyFn(last) : undefined;
 }
 
-function buildSubjectAuthorFilter(params: {
+async function resolveIdentityOrThrow(actor: string): Promise<ResolvedIdentity> {
+  const identity = await resolveActor(actor);
+  if (!identity) {
+    throw new XRPCError({
+      status: 404,
+      error: 'ActorNotFound',
+      message: `could not resolve actor ${actor}`,
+    });
+  }
+  return identity;
+}
+
+async function resolveDidOrThrow(actor: string): Promise<Did> {
+  if (isDid(actor)) return actor;
+  const { did } = await resolveIdentityOrThrow(actor);
+  return did;
+}
+
+async function buildSubjectAuthorFilter(params: {
   subject?: string;
   author?: string;
-}): SubjectAuthorFilter {
-  return { subjectUri: params.subject, author: params.author };
+}): Promise<SubjectAuthorFilter> {
+  return {
+    subjectUri: params.subject,
+    author: params.author ? await resolveDidOrThrow(params.author) : undefined,
+  };
 }
 
 // Shared by getUserstyle and getUserstyleSourceCode, which both resolve an actor and rkey to a userstyle.
 async function getUserstyleOrThrow(actor: string, rkey: string): Promise<UserstyleRow> {
-  const uri = `at://${actor}/${USERSTYLE_COLLECTION}/${rkey}`;
+  const did = await resolveDidOrThrow(actor);
+  const uri = `at://${did}/${USERSTYLE_COLLECTION}/${rkey}`;
   const row = await getUserstyle(uri);
   if (!row) {
     throw new XRPCError({
@@ -153,12 +178,13 @@ async function getUserstyleOrThrow(actor: string, rkey: string): Promise<Usersty
   return row;
 }
 
-function toProfileView(row: ProfileRow) {
+function toProfileView(did: Did, handle: Handle | undefined, row: ProfileRow | null) {
   return {
-    did: row.did as Did,
-    description: row.description ?? undefined,
-    createdAt: row.createdAt,
-    indexedAt: new Date(row.indexedAt).toISOString(),
+    did,
+    handle,
+    description: row?.description ?? undefined,
+    createdAt: row?.createdAt,
+    indexedAt: row ? new Date(row.indexedAt).toISOString() : undefined,
   };
 }
 
@@ -332,8 +358,9 @@ router.addQuery(ClubUserstylesAlphaGetUserstyleSourceCode, {
 
 router.addQuery(ClubUserstylesAlphaListUserstyles, {
   async handler({ params }) {
+    const did = params.actor ? await resolveDidOrThrow(params.actor) : null;
     const cursor = params.cursor ? parseCursor(params.cursor) : null;
-    const rows = await listUserstyles(params.actor ?? null, cursor, params.limit);
+    const rows = await listUserstyles(did, cursor, params.limit);
     const nextCursor = buildCursor(rows, params.limit, (r) => `${r.indexedAt}_${r.rowid}`);
 
     return json({ cursor: nextCursor, userstyles: rows.map(toUserstyleView) });
@@ -342,36 +369,41 @@ router.addQuery(ClubUserstylesAlphaListUserstyles, {
 
 router.addQuery(ClubUserstylesAlphaCountUserstyles, {
   async handler({ params }) {
-    const count = await countUserstyles(params.actor ?? null);
+    const did = params.actor ? await resolveDidOrThrow(params.actor) : null;
+    const count = await countUserstyles(did);
     return json({ count });
   },
 });
 
 router.addQuery(ClubUserstylesAlphaActorGetProfile, {
   async handler({ params }) {
-    const row = await getProfile(params.actor);
-    if (!row) {
-      throw new XRPCError({
-        status: 404,
-        error: 'ProfileNotFound',
-        message: `no profile found for ${params.actor}`,
-      });
-    }
-    return json(toProfileView(row));
+    const identity = await resolveIdentityOrThrow(params.actor);
+    const row = await getProfile(identity.did);
+    return json(toProfileView(identity.did, identity.handle, row));
   },
 });
 
 router.addQuery(ClubUserstylesAlphaActorGetProfiles, {
   async handler({ params }) {
-    const rows = await getProfiles([...params.actors]);
-    return json({ profiles: rows.map(toProfileView) });
+    const identities = await resolveActors([...params.actors]);
+    const resolved = [...identities.values()].filter(
+      (identity): identity is ResolvedIdentity => identity !== undefined,
+    );
+    const rows = await getProfiles(resolved.map((identity) => identity.did));
+    const rowByDid = new Map(rows.map((row) => [row.did, row]));
+    return json({
+      profiles: resolved.map((identity) =>
+        toProfileView(identity.did, identity.handle, rowByDid.get(identity.did) ?? null),
+      ),
+    });
   },
 });
 
 router.addQuery(ClubUserstylesAlphaGraphListFollows, {
   async handler({ params }) {
+    const did = await resolveDidOrThrow(params.actor);
     const cursor = params.cursor ? parseCursorUri(params.cursor) : null;
-    const rows = await listFollows(params.actor, cursor, params.limit);
+    const rows = await listFollows(did, cursor, params.limit);
     const nextCursor = buildCursor(rows, params.limit, (r) => `${r.indexedAt}_${r.uri}`);
 
     return json({ cursor: nextCursor, follows: rows.map(toFollowView) });
@@ -380,8 +412,9 @@ router.addQuery(ClubUserstylesAlphaGraphListFollows, {
 
 router.addQuery(ClubUserstylesAlphaGraphListFollowers, {
   async handler({ params }) {
+    const did = await resolveDidOrThrow(params.actor);
     const cursor = params.cursor ? parseCursorUri(params.cursor) : null;
-    const rows = await listFollowers(params.actor, cursor, params.limit);
+    const rows = await listFollowers(did, cursor, params.limit);
     const nextCursor = buildCursor(rows, params.limit, (r) => `${r.indexedAt}_${r.uri}`);
 
     return json({ cursor: nextCursor, followers: rows.map(toFollowView) });
@@ -390,31 +423,48 @@ router.addQuery(ClubUserstylesAlphaGraphListFollowers, {
 
 router.addQuery(ClubUserstylesAlphaGraphCountFollows, {
   async handler({ params }) {
-    const count = await countFollows(params.actor);
+    const did = await resolveDidOrThrow(params.actor);
+    const count = await countFollows(did);
     return json({ count });
   },
 });
 
 router.addQuery(ClubUserstylesAlphaGraphCountFollowers, {
   async handler({ params }) {
-    const count = await countFollowers(params.actor);
+    const did = await resolveDidOrThrow(params.actor);
+    const count = await countFollowers(did);
     return json({ count });
   },
 });
 
 router.addQuery(ClubUserstylesAlphaGraphGetRelationship, {
   async handler({ params }) {
-    const relationship = await getRelationship(params.actor, params.other);
-    return json(toRelationshipView(params.other as Did, relationship));
+    const [actorDid, otherDid] = await Promise.all([
+      resolveDidOrThrow(params.actor),
+      resolveDidOrThrow(params.other),
+    ]);
+    const relationship = await getRelationship(actorDid, otherDid);
+    return json(toRelationshipView(otherDid, relationship));
   },
 });
 
 router.addQuery(ClubUserstylesAlphaGraphGetRelationships, {
   async handler({ params }) {
-    const relationships = await getRelationships(params.actor, [...params.others]);
+    const [actorDid, otherIdentities] = await Promise.all([
+      resolveDidOrThrow(params.actor),
+      resolveActors([...params.others]),
+    ]);
+    const otherDids = [...otherIdentities.values()]
+      .filter((identity): identity is ResolvedIdentity => identity !== undefined)
+      .map((identity) => identity.did);
+
+    const relationships =
+      otherDids.length > 0
+        ? await getRelationships(actorDid, otherDids)
+        : new Map<string, RelationshipRow>();
     return json({
-      relationships: [...relationships].map(([other, row]) =>
-        toRelationshipView(other as Did, row),
+      relationships: otherDids.map((other) =>
+        toRelationshipView(other, relationships.get(other) ?? {}),
       ),
     });
   },
@@ -422,7 +472,7 @@ router.addQuery(ClubUserstylesAlphaGraphGetRelationships, {
 
 router.addQuery(ClubUserstylesAlphaFeedListComments, {
   async handler({ params }) {
-    const filter = buildSubjectAuthorFilter(params);
+    const filter = await buildSubjectAuthorFilter(params);
     const cursor = params.cursor ? parseCursorUri(params.cursor) : null;
     const rows = await listComments(filter, cursor, params.limit);
     const nextCursor = buildCursor(rows, params.limit, (r) => `${r.indexedAt}_${r.uri}`);
@@ -433,7 +483,7 @@ router.addQuery(ClubUserstylesAlphaFeedListComments, {
 
 router.addQuery(ClubUserstylesAlphaFeedCountComments, {
   async handler({ params }) {
-    const filter = buildSubjectAuthorFilter(params);
+    const filter = await buildSubjectAuthorFilter(params);
     const count = await countComments(filter);
     return json({ count });
   },
@@ -441,7 +491,7 @@ router.addQuery(ClubUserstylesAlphaFeedCountComments, {
 
 router.addQuery(ClubUserstylesAlphaFeedListRatings, {
   async handler({ params }) {
-    const filter = buildSubjectAuthorFilter(params);
+    const filter = await buildSubjectAuthorFilter(params);
     const cursor = params.cursor ? parseCursorUri(params.cursor) : null;
     const rows = await listCurrentRatings(filter, cursor, params.limit);
     const nextCursor = buildCursor(rows, params.limit, (r) => `${r.indexedAt}_${r.uri}`);
@@ -452,7 +502,7 @@ router.addQuery(ClubUserstylesAlphaFeedListRatings, {
 
 router.addQuery(ClubUserstylesAlphaFeedCountRatings, {
   async handler({ params }) {
-    const filter = buildSubjectAuthorFilter(params);
+    const filter = await buildSubjectAuthorFilter(params);
     const { count, average } = await getRatingSummary(filter);
     return json({ count, average: average === null ? undefined : average.toFixed(2) });
   },
@@ -460,11 +510,13 @@ router.addQuery(ClubUserstylesAlphaFeedCountRatings, {
 
 router.addQuery(ClubUserstylesAlphaFeedSearchUserstyles, {
   async handler({ params }) {
+    const author = params.author ? await resolveDidOrThrow(params.author) : undefined;
+
     const cursor = params.cursor ? parseSearchCursor(params.cursor) : null;
     const rows = await searchUserstyles({
       query: params.query,
       sort: params.sort ?? 'latest',
-      author: params.author,
+      author,
       since: params.since,
       before: params.before,
       homepage: params.homepage,
@@ -498,8 +550,10 @@ router.addQuery(ClubUserstylesAlphaFeedGetFeedback, {
 
 router.addQuery(ClubUserstylesAlphaFeedGetTimeline, {
   async handler({ params }) {
+    const actor = params.actor ? await resolveDidOrThrow(params.actor) : undefined;
+
     const cursor = params.cursor ? parseCursorUri(params.cursor) : null;
-    const items = await getTimeline(cursor, params.limit, params.actor);
+    const items = await getTimeline(cursor, params.limit, actor);
     const nextCursor = buildCursor(
       items,
       params.limit,
@@ -538,8 +592,9 @@ router.addQuery(ClubUserstylesAlphaFeedGetTimeline, {
 
 router.addQuery(ClubUserstylesAlphaNotificationListNotifications, {
   async handler({ params }) {
+    const did = await resolveDidOrThrow(params.actor);
     const cursor = params.cursor ? parseCursor(params.cursor) : null;
-    const rows = await listNotifications(params.actor, cursor, params.limit);
+    const rows = await listNotifications(did, cursor, params.limit);
     const nextCursor = buildCursor(rows, params.limit, (r) => `${r.indexedAt}_${r.id}`);
 
     const userstyleUris = [

@@ -2,6 +2,11 @@
   "defs": {
     "main": {
       "description": "Get the global activity feed, optionally scoped to an actor's social graph activity.",
+      "errors": [
+        {
+          "name": "ActorNotFound"
+        }
+      ],
       "output": {
         "encoding": "application/json",
         "schema": {
@@ -26,7 +31,7 @@
           "actor": {
             "type": "string",
             "description": "Filter the feed to accounts this actor follows, rather than the global feed.",
-            "format": "did"
+            "format": "at-identifier"
           },
           "limit": {
             "default": 50,

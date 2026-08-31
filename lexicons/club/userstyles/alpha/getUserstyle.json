@@ -4,6 +4,9 @@
       "description": "Get a single userstyle by its author and record key.",
       "errors": [
         {
+          "name": "ActorNotFound"
+        },
+        {
           "name": "UserstyleNotFound"
         }
       ],
@@ -18,7 +21,7 @@
         "properties": {
           "actor": {
             "type": "string",
-            "format": "did"
+            "format": "at-identifier"
           },
           "rkey": {
             "type": "string",

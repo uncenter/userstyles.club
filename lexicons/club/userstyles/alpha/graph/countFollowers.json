@@ -2,6 +2,11 @@
   "defs": {
     "main": {
       "description": "Count the users that follow an actor.",
+      "errors": [
+        {
+          "name": "ActorNotFound"
+        }
+      ],
       "output": {
         "encoding": "application/json",
         "schema": {
@@ -18,7 +23,7 @@
         "properties": {
           "actor": {
             "type": "string",
-            "format": "did"
+            "format": "at-identifier"
           }
         },
         "required": ["actor"],

@@ -17,7 +17,7 @@ export default document({
       description: 'List the users that follow an actor, most recent first.',
       parameters: params({
         properties: {
-          actor: required(string({ format: 'did' })),
+          actor: required(string({ format: 'at-identifier' })),
           limit: integer({ minimum: 1, maximum: 100, default: 50 }),
           cursor: string(),
         },
@@ -33,6 +33,7 @@ export default document({
           },
         }),
       },
+      errors: [{ name: 'ActorNotFound' }],
     }),
   },
 });

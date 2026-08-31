@@ -5,7 +5,6 @@ A colorful userstyles appview, indexing historical and live events from Jetstrea
 ## Roadmap
 
 - Add server auth infrastructure for future authenticated/private requests.
-- Implement handle and did (doc) resolution and caching layer so that requests aren't forced to use dids for actor params.
 
 ## Usage
 

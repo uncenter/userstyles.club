@@ -2,6 +2,11 @@
   "defs": {
     "main": {
       "description": "Count current ratings and their average, optionally filtered by subject and/or author.",
+      "errors": [
+        {
+          "name": "ActorNotFound"
+        }
+      ],
       "output": {
         "encoding": "application/json",
         "schema": {
@@ -27,7 +32,7 @@
           "author": {
             "type": "string",
             "description": "rater's did",
-            "format": "did"
+            "format": "at-identifier"
           }
         },
         "type": "params"

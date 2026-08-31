@@ -17,8 +17,8 @@ export default document({
         'Batch variant of getRelationship: check the follow relationship between `actor` and each of `others`.',
       parameters: params({
         properties: {
-          actor: required(string({ format: 'did' })),
-          others: required(array({ items: string({ format: 'did' }), maxLength: 25 })),
+          actor: required(string({ format: 'at-identifier' })),
+          others: required(array({ items: string({ format: 'at-identifier' }), maxLength: 25 })),
         },
       }),
       output: {
@@ -31,6 +31,7 @@ export default document({
           },
         }),
       },
+      errors: [{ name: 'ActorNotFound' }],
     }),
   },
 });

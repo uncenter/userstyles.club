@@ -8,14 +8,15 @@ export default document({
         'Check the follow relationship between two actors: whether `actor` follows `other`, and whether `other` follows `actor` back.',
       parameters: params({
         properties: {
-          actor: required(string({ format: 'did' })),
-          other: required(string({ format: 'did' })),
+          actor: required(string({ format: 'at-identifier' })),
+          other: required(string({ format: 'at-identifier' })),
         },
       }),
       output: {
         encoding: 'application/json',
         schema: ref({ ref: 'club.userstyles.alpha.defs#relationshipView' }),
       },
+      errors: [{ name: 'ActorNotFound' }],
     }),
   },
 });

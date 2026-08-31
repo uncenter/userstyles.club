@@ -11,10 +11,12 @@ export const load: LayoutLoad = async ({ params }) => {
     const [userstyle, profile] = await Promise.all([getUserstyle(user, style), getProfile(user)]);
     return { userstyle, profile, user, style };
   } catch (e) {
-    // 'RecordNotFound' comes from a direct pds fetch, 'UserstyleNotFound' from the crayon appview.
+    // 'RecordNotFound' comes from a direct pds fetch, 'UserstyleNotFound' and 'ActorNotFound' from the crayon appview.
     if (
       e instanceof ClientResponseError &&
-      (e.error === 'RecordNotFound' || e.error === 'UserstyleNotFound')
+      (e.error === 'RecordNotFound' ||
+        e.error === 'UserstyleNotFound' ||
+        e.error === 'ActorNotFound')
     ) {
       error(404, e.message);
     } else {

@@ -109,6 +109,10 @@
           "type": "string",
           "format": "did"
         },
+        "handle": {
+          "type": "string",
+          "format": "handle"
+        },
         "description": {
           "type": "string",
           "maxGraphemes": 256,
@@ -123,7 +127,7 @@
           "format": "datetime"
         }
       },
-      "required": ["did", "createdAt", "indexedAt"],
+      "required": ["did"],
       "type": "object"
     },
     "ratingView": {
