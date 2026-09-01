@@ -19,30 +19,20 @@
 
 <div class="card settings-list">
   <div class="settings-list__row">
-    <div class="settings-list__label">
-      <label for="appearance-select" class="settings-list__label-text">Appearance</label>
-      <p class="settings-list__label-desc text-muted">Choose your preferred color scheme.</p>
-    </div>
+    <label for="appearance-select" class="settings-list__label">Appearance</label>
     <select
       id="appearance-select"
       bind:value={() => preferences.get('appearance'), (val) => preferences.set('appearance', val)}
-      class="settings-select-input"
+      class="settings-list__input settings-list__input--select"
     >
       {#each appearances as opt}
         <option value={opt.value}>{opt.label}</option>
       {/each}
     </select>
+    <p class="settings-list__desc text-muted">Choose your preferred color scheme.</p>
   </div>
   <div class="settings-list__row">
-    <div class="settings-list__label">
-      <label for="use-permanent-urls-toggle" class="settings-list__label-text"
-        >Use Permanent URLs</label
-      >
-      <p class="settings-list__label-desc text-muted">
-        Prefer permanent DID-based URLs instead of shorter, handle-based URLs.<br>
-        (Permanent URLs are always used for style install URLs, regardless of preference.)
-      </p>
-    </div>
+    <label for="use-permanent-urls-toggle" class="settings-list__label">Use Permanent URLs</label>
     <input
       type="checkbox"
       id="use-permanent-urls-toggle"
@@ -51,6 +41,10 @@
       }
       class="use-permanent-urls-toggle"
     />
+    <p class="settings-list__desc text-muted">
+      Prefer permanent DID-based URLs instead of shorter, handle-based URLs.<br>
+      (Permanent URLs are always used for style install URLs, regardless of preference.)
+    </p>
   </div>
 </div>
 
@@ -61,16 +55,7 @@
   </summary>
   <div class="settings-list">
     <div class="settings-list__row">
-      <div class="settings-list__label">
-        <label for="appview-enabled-toggle" class="settings-list__label-text">Use Appview</label>
-        <p class="settings-list__label-warning">
-          Note: The appview is required for some features and recommended for usable performance.
-        </p>
-        <p class="settings-list__label-desc text-muted">
-          When enabled, network requests for fetching userstyles-related data are directed to the configured Crayon appview instance.
-          When disabled, requests are directed to the configured Constellation and Slingshot instances (this may be helpful if the appview is slow or offline).
-        </p>
-      </div>
+      <label for="appview-enabled-toggle" class="settings-list__label">Use Appview</label>
       <input
         type="checkbox"
         id="appview-enabled-toggle"
@@ -80,64 +65,63 @@
         }
         class="appview-enabled-toggle"
       />
+      <p class="settings-list__desc text-muted">
+        <span class="settings-list__desc-warning">
+          Note: The appview is required for some features and recommended for usable performance.
+        </span>
+        When enabled, network requests for fetching userstyles-related data are directed to the configured Crayon appview instance.
+        When disabled, requests are directed to the configured Constellation and Slingshot instances (this may be helpful if the appview is slow or offline).
+      </p>
     </div>
     <div class="settings-list__row">
-      <div class="settings-list__label">
-        <label for="appview-url-input" class="settings-list__label-text">Appview URL</label>
-        <p class="settings-list__label-desc text-muted">The Crayon-compatible appview instance to interact with.</p>
-      </div>
+      <label for="appview-url-input" class="settings-list__label">Appview URL</label>
       <input
         type="text"
         id="appview-url-input"
         inputmode="url"
         placeholder="https://crayon.userstyles.club"
         disabled={!preferences.get('isAppviewEnabled')}
-        class="settings-url-input"
+        class="settings-list__input settings-list__input--url"
         bind:value={
           () => preferences.get('customAppviewUrl'),
           (val) => preferences.set('customAppviewUrl', val.trim())
         }
       />
+      <p class="settings-list__desc text-muted">The Crayon-compatible appview instance to interact with.</p>
     </div>
     <div class="settings-list__row">
-      <div class="settings-list__label">
-        <label for="constellation-url-input" class="settings-list__label-text"
-          >Constellation URL</label
-        >
-        <p class="settings-list__label-desc text-muted">
-          The <a href="https://constellation.microcosm.blue/">Constellation</a> backlink index instance. Used to look up comments and ratings (backlinks) when the appview is off or unreachable.
-        </p>
-      </div>
+      <label for="constellation-url-input" class="settings-list__label">Constellation URL</label>
       <input
         type="text"
         id="constellation-url-input"
         inputmode="url"
         placeholder="https://constellation.microcosm.blue"
-        class="settings-url-input"
+        class="settings-list__input settings-list__input--url"
         bind:value={
           () => preferences.get('customConstellationUrl'),
           (val) => preferences.set('customConstellationUrl', val.trim())
         }
       />
+      <p class="settings-list__desc text-muted">
+        The <a href="https://constellation.microcosm.blue/">Constellation</a> backlink index instance. Used to look up comments and ratings (backlinks) when the appview is off or unreachable.
+      </p>
     </div>
     <div class="settings-list__row">
-      <div class="settings-list__label">
-        <label for="slingshot-url-input" class="settings-list__label-text">Slingshot URL</label>
-        <p class="settings-list__label-desc text-muted">
-          The <a href="https://slingshot.microcosm.blue/">Slingshot</a> edge record and identity cache instance. Used to resolve identities and PDSes, regardless of appview preferences.
-        </p>
-      </div>
+      <label for="slingshot-url-input" class="settings-list__label">Slingshot URL</label>
       <input
         type="text"
         id="slingshot-url-input"
         inputmode="url"
         placeholder="https://slingshot.microcosm.blue"
-        class="settings-url-input"
+        class="settings-list__input settings-list__input--url"
         bind:value={
           () => preferences.get('customSlingshotUrl'),
           (val) => preferences.set('customSlingshotUrl', val.trim())
         }
       />
+      <p class="settings-list__desc text-muted">
+        The <a href="https://slingshot.microcosm.blue/">Slingshot</a> edge record and identity cache instance. Used to resolve identities and PDSes, regardless of appview preferences.
+      </p>
     </div>
   </div>
 </details>
@@ -185,44 +169,43 @@
 
   .settings-list__row {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
     gap: var(--space-3);
 
     .settings-list__label {
-      display: grid;
-      gap: var(--space-1);
+      margin: 0;
+      font-size: var(--text-base);
+      font-weight: 600;
+    }
 
-      .settings-list__label-text {
-        margin: 0;
-        font-size: var(--text-base);
-        font-weight: 600;
-      }
-      .settings-list__label-desc {
-        font-size: var(--text-base);
-      }
-      .settings-list__label-warning {
+    .settings-list__desc {
+      flex-basis: 100%;
+      font-size: var(--text-base);
+
+      .settings-list__desc-warning {
         font-size: var(--text-sm);
         color: var(--warning);
       }
     }
 
-    .settings-url-input {
-      width: 100%;
-      max-width: 22rem;
+    .settings-list__input {
       margin-inline-start: auto;
 
-      &:disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
-      }
-    }
-    &:has(.settings-url-input) {
-      flex-wrap: wrap;
-    }
+      &.settings-list__input--url {
+        width: 100%;
+        max-width: 22rem;
 
-    .settings-select-input {
-      width: auto;
+        &:disabled {
+          opacity: 0.5;
+          cursor: not-allowed;
+        }
+      }
+
+      &.settings-list__input--select {
+        width: auto;
+      }
     }
   }
 </style>
