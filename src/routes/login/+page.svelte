@@ -31,6 +31,10 @@
 
 <style>
   .login-card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-5);
+
     .login-card__title {
       font-size: var(--text-2xl);
     }
@@ -38,7 +42,6 @@
     .login-card__header {
       display: grid;
       gap: var(--space-1);
-      margin-bottom: var(--space-5);
     }
   }
 </style>
