@@ -28,6 +28,7 @@
     display: flex;
     align-items: flex-start;
     gap: var(--space-3);
+    margin-top: var(--space-3);
     padding: var(--space-3) var(--space-4);
     font-size: var(--text-sm);
     border-radius: var(--radius);
