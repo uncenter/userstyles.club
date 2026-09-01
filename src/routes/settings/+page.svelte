@@ -39,7 +39,8 @@
         >Use Permanent URLs</label
       >
       <p class="settings-list__label-desc text-muted">
-        Prefer permanent URLs over shorter URLs by using DIDs instead of handles.
+        Prefer permanent DID-based URLs instead of shorter, handle-based URLs.<br>
+        (Permanent URLs are always used for style install URLs, regardless of preference.)
       </p>
     </div>
     <input
