@@ -508,7 +508,7 @@ select {
     box-shadow var(--ease-fast);
 }
 
-input,
+input:not([type='checkbox'][switch]),
 textarea,
 select {
   &:focus {
@@ -516,6 +516,11 @@ select {
     border-color: var(--ring);
     box-shadow: 3px 3px 0 var(--brand-purple);
   }
+}
+
+input,
+textarea,
+select {
   &:disabled {
     opacity: 0.5;
     cursor: not-allowed;
@@ -534,7 +539,7 @@ textarea {
   }
 }
 
-input[type='checkbox'] {
+input[type='checkbox']:not([switch]) {
   appearance: none;
   flex-shrink: 0;
   width: 1.125rem;
@@ -561,6 +566,55 @@ input[type='checkbox'] {
       mask-repeat: no-repeat;
       mask-position: center;
       mask-size: 75%;
+    }
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+}
+
+/* Toggle switches: https://github.com/whatwg/html/issues/4180 */
+input[type='checkbox'][switch] {
+  --switch-w: 2.25rem;
+  --switch-h: 1.25rem;
+  --switch-pad: 2px;
+
+  appearance: none;
+  flex-shrink: 0;
+  width: var(--switch-w);
+  height: var(--switch-h);
+  border: 2px solid var(--border-strong);
+  border-radius: var(--radius-pill);
+  background: var(--bg-muted);
+  cursor: pointer;
+  position: relative;
+  transition:
+    background var(--ease-fast),
+    border-color var(--ease-fast);
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: var(--switch-pad);
+    left: var(--switch-pad);
+    aspect-ratio: 1;
+    height: calc(100% - 2 * var(--switch-pad));
+    border-radius: 50%;
+    background: var(--border-strong);
+    transition:
+      transform var(--ease-fast),
+      background var(--ease-fast);
+  }
+
+  &:checked {
+    background: var(--brand-purple);
+    border-color: var(--brand-purple-hover);
+
+    &::after {
+      background: var(--brand-purple-fg);
+      transform: translateX(calc(var(--switch-w) - var(--switch-h)));
     }
   }
 

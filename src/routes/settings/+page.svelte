@@ -35,6 +35,7 @@
     <label for="use-permanent-urls-toggle" class="settings-list__label">Use Permanent URLs</label>
     <input
       type="checkbox"
+      {...{ switch: true }}
       id="use-permanent-urls-toggle"
       bind:checked={
         () => preferences.get('usePermanentUrls'), (val) => preferences.set('usePermanentUrls', val)
@@ -58,6 +59,7 @@
       <label for="appview-enabled-toggle" class="settings-list__label">Use Appview</label>
       <input
         type="checkbox"
+        {...{ switch: true }}
         id="appview-enabled-toggle"
         bind:checked={
           () => preferences.get('isAppviewEnabled'),
@@ -185,6 +187,8 @@
       font-size: var(--text-base);
 
       .settings-list__desc-warning {
+        display: block;
+        margin-bottom: var(--space-1);
         font-size: var(--text-sm);
         color: var(--warning);
       }
