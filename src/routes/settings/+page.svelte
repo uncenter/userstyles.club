@@ -26,7 +26,7 @@
     <select
       id="appearance-select"
       bind:value={() => preferences.get('appearance'), (val) => preferences.set('appearance', val)}
-      class="appearance-select"
+      class="settings-select-input"
     >
       {#each appearances as opt}
         <option value={opt.value}>{opt.label}</option>
@@ -186,7 +186,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: var(--space-6);
+    gap: var(--space-3);
 
     .settings-list__label {
       display: grid;
@@ -198,7 +198,7 @@
         font-weight: 600;
       }
       .settings-list__label-desc {
-        font-size: var(--text-sm);
+        font-size: var(--text-base);
       }
       .settings-list__label-warning {
         font-size: var(--text-sm);
@@ -209,16 +209,19 @@
     .settings-url-input {
       width: 100%;
       max-width: 22rem;
+      margin-inline-start: auto;
 
       &:disabled {
         opacity: 0.5;
         cursor: not-allowed;
       }
     }
-  }
+    &:has(.settings-url-input) {
+      flex-wrap: wrap;
+    }
 
-  .appearance-select {
-    width: auto;
-    min-width: 9rem;
+    .settings-select-input {
+      width: auto;
+    }
   }
 </style>
