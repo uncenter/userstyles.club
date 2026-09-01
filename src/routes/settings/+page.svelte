@@ -63,12 +63,11 @@
       <div class="settings-list__label">
         <label for="appview-enabled-toggle" class="settings-list__label-text">Use Appview</label>
         <p class="settings-list__label-warning">
-          Note: The appview is required for optimal performance.
+          Note: The appview is required for some features and recommended for usable performance.
         </p>
         <p class="settings-list__label-desc text-muted">
-          When enabled, network requests are directed to the internal Crayon appview instance. When
-          disabled, the Constellation and Slingshot community instances are relied on entirely for
-          all request functionality, skipping the appview entirely.
+          When enabled, network requests for fetching userstyles-related data are directed to the configured Crayon appview instance.
+          When disabled, requests are directed to the configured Constellation and Slingshot instances (this may be helpful if the appview is slow or offline).
         </p>
       </div>
       <input
@@ -84,7 +83,7 @@
     <div class="settings-list__row">
       <div class="settings-list__label">
         <label for="appview-url-input" class="settings-list__label-text">Appview URL</label>
-        <p class="settings-list__label-desc text-muted">The Crayon instance to interact with.</p>
+        <p class="settings-list__label-desc text-muted">The Crayon-compatible appview instance to interact with.</p>
       </div>
       <input
         type="text"
@@ -105,7 +104,7 @@
           >Constellation URL</label
         >
         <p class="settings-list__label-desc text-muted">
-          Used to look up comments and ratings (backlinks) when the appview is off or unreachable.
+          The <a href="https://constellation.microcosm.blue/">Constellation</a> backlink index instance. Used to look up comments and ratings (backlinks) when the appview is off or unreachable.
         </p>
       </div>
       <input
@@ -124,7 +123,7 @@
       <div class="settings-list__label">
         <label for="slingshot-url-input" class="settings-list__label-text">Slingshot URL</label>
         <p class="settings-list__label-desc text-muted">
-          Used to resolve identities and PDSes, regardless of appview preferences.
+          The <a href="https://slingshot.microcosm.blue/">Slingshot</a> edge record and identity cache instance. Used to resolve identities and PDSes, regardless of appview preferences.
         </p>
       </div>
       <input
