@@ -11,6 +11,12 @@ import {
   type FollowsPage,
   type RelationshipView,
 } from '../backends/appview/graph';
+import {
+  listFollowsFromPds,
+  listFollowersFromConstellation,
+  getRelationshipFromConstellation,
+  getRelationshipsFromConstellation,
+} from '../backends/fallback/graph';
 import { createRecord, deleteRecord, type RepoRecord } from '../records';
 import { makeRecordBuilder } from '../builder';
 import { CLUB_FOLLOW_COLLECTION, isAppviewEnabled } from '../settings';
@@ -28,17 +34,29 @@ const builder = makeRecordBuilder(
 export async function listFollows(
   actor: ActorIdentifier,
   opts?: { cursor?: string; limit?: number },
-) {
-  if (!isAppviewEnabled()) throw new Error('Follow lists require the appview to be enabled.');
-  return await listFollowsFromAppview(actor, opts);
+): Promise<FollowsPage> {
+  if (isAppviewEnabled()) {
+    try {
+      return await listFollowsFromAppview(actor, opts);
+    } catch (err) {
+      console.warn('crayon appview unavailable, falling back to direct pds listing', err);
+    }
+  }
+  return await listFollowsFromPds(actor);
 }
 
 export async function listFollowers(
   actor: ActorIdentifier,
   opts?: { cursor?: string; limit?: number },
-) {
-  if (!isAppviewEnabled()) throw new Error('Follower lists require the appview to be enabled.');
-  return await listFollowersFromAppview(actor, opts);
+): Promise<FollowsPage> {
+  if (isAppviewEnabled()) {
+    try {
+      return await listFollowersFromAppview(actor, opts);
+    } catch (err) {
+      console.warn('crayon appview unavailable, falling back to constellation backlinks', err);
+    }
+  }
+  return await listFollowersFromConstellation(actor);
 }
 
 export async function countFollows(actor: ActorIdentifier): Promise<number> {
@@ -60,13 +78,23 @@ export async function unfollowActor(rkey: RecordKey): Promise<boolean> {
 }
 
 export async function getRelationship(actor: Did, other: Did): Promise<RelationshipView> {
-  if (!isAppviewEnabled())
-    throw new Error('Relationship lookups require the appview to be enabled.');
-  return await getRelationshipFromAppview(actor, other);
+  if (isAppviewEnabled()) {
+    try {
+      return await getRelationshipFromAppview(actor, other);
+    } catch (err) {
+      console.warn('crayon appview unavailable, falling back to constellation backlinks', err);
+    }
+  }
+  return await getRelationshipFromConstellation(actor, other);
 }
 
 export async function getRelationships(actor: Did, others: Did[]): Promise<RelationshipView[]> {
-  if (!isAppviewEnabled())
-    throw new Error('Relationship lookups require the appview to be enabled.');
-  return await getRelationshipsFromAppview(actor, others);
+  if (isAppviewEnabled()) {
+    try {
+      return await getRelationshipsFromAppview(actor, others);
+    } catch (err) {
+      console.warn('crayon appview unavailable, falling back to constellation backlinks', err);
+    }
+  }
+  return await getRelationshipsFromConstellation(actor, others);
 }

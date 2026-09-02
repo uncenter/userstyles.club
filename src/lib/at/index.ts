@@ -100,4 +100,5 @@ export {
   CLUB_COMMENT_COLLECTION,
   CLUB_RATING_COLLECTION,
   CLUB_FOLLOW_COLLECTION,
+  isAppviewEnabled,
 } from './settings';

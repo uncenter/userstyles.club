@@ -1,6 +1,12 @@
 <script lang="ts">
   import { untrack } from 'svelte';
-  import { searchUserstyles, type UserstyleView } from '$lib/at';
+  import { resolve } from '$app/paths';
+  import {
+    searchUserstyles,
+    listAllUserstyles,
+    isAppviewEnabled,
+    type UserstyleView,
+  } from '$lib/at';
   import { PaginatedList } from '$lib/pagination.svelte';
 
   import UserstylesSection from './UserstylesSection.svelte';
@@ -19,11 +25,18 @@
 
   let { query = $bindable(''), sort = $bindable('latest'), initial }: Props = $props();
 
+  let appviewEnabled = $state(isAppviewEnabled());
   let searchInput = $state(query);
 
   const list = new PaginatedList<UserstyleView>(untrack(() => initial));
 
   async function fetchPage(cursor?: string) {
+    // Just show explore page without search functionality if the appview is disabled.
+    // TODO: Client side search for this fallback route?
+    if (!appviewEnabled) {
+      const userstyles = await listAllUserstyles();
+      return { items: userstyles, cursor: undefined };
+    }
     const page = await searchUserstyles({ query: query.trim() || undefined, sort, cursor });
     return { items: page.userstyles, cursor: page.cursor };
   }
@@ -43,6 +56,7 @@
 
   function submitSearch(event: Event) {
     event.preventDefault();
+    if (!appviewEnabled) return;
     query = searchInput;
   }
 
@@ -57,10 +71,17 @@
       <input
         type="text"
         class="form-input-group__input"
-        placeholder="Search userstyles…"
+        placeholder={appviewEnabled ? 'Search userstyles…' : ''}
+        title={appviewEnabled ? undefined : 'Search requires the appview to be enabled.'}
+        disabled={!appviewEnabled}
         bind:value={searchInput}
       />
-      <button type="submit" class="form-input-group__btn" aria-label="Search">
+      <button
+        type="submit"
+        class="form-input-group__btn"
+        aria-label="Search"
+        disabled={!appviewEnabled}
+      >
         <SearchIcon size={16} />
       </button>
     </form>
@@ -68,18 +89,24 @@
       <button
         type="button"
         class={['btn', 'btn--sm', sort === 'latest' ? 'btn--secondary' : 'btn--ghost']}
+        disabled={!appviewEnabled}
         onclick={() => (sort = 'latest')}>Latest</button
       >
       <button
         type="button"
         class={['btn', 'btn--sm', sort === 'popular' ? 'btn--secondary' : 'btn--ghost']}
+        disabled={!appviewEnabled}
         onclick={() => (sort = 'popular')}>Popular</button
       >
       <button
         type="button"
         class={['btn', 'btn--sm', sort === 'top' ? 'btn--secondary' : 'btn--ghost']}
-        disabled={!query.trim()}
-        title={query.trim() ? undefined : 'Search for something to rank by relevance'}
+        disabled={!appviewEnabled || !query.trim()}
+        title={!appviewEnabled
+          ? 'Requires the appview to be enabled'
+          : query.trim()
+            ? undefined
+            : 'Search for something to rank by relevance'}
         onclick={() => (sort = 'top')}>Top</button
       >
     </div>

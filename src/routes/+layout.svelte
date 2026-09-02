@@ -117,7 +117,7 @@
 
       <ul class="navbar__links" role="list">
         <li><a href={resolve('/')} class="navbar__link">Home</a></li>
-        <li><a href={resolve('/explore')} class="navbar__link">Explore</a></li>
+        <li><a href={resolve('/search')} class="navbar__link">Explore</a></li>
         <li><a href={resolve('/new')} class="btn btn--primary">New</a></li>
         {#if user.isLoggedIn && user.did}
           <li class="notif-bell">
@@ -221,7 +221,7 @@
     </form>
 
     <a href={resolve('/')} class="mobile-nav__link">Home</a>
-    <a href={resolve('/explore')} class="mobile-nav__link">Explore</a>
+    <a href={resolve('/search')} class="mobile-nav__link">Explore</a>
     <a href={resolve('/new')} class="mobile-nav__link">New</a>
 
     <hr class="mobile-nav__divider" />

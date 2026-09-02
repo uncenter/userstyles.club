@@ -51,7 +51,7 @@
   </div>
   <div class="welcome__actions">
     <a href={resolve('/login')} class="btn btn--primary btn--lg">Get started</a>
-    <a href={resolve('/explore')} class="btn btn--outline btn--lg">Explore styles</a>
+    <a href={resolve('/search')} class="btn btn--outline btn--lg">Explore styles</a>
   </div>
 </div>
 

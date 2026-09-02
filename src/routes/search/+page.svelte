@@ -20,13 +20,13 @@
 </script>
 
 <Meta
-  title={query.trim() ? `Search: ${query.trim()}` : 'Search'}
+  title={query.trim() ? [`"${query.trim()}"`, 'Explore'] : 'Explore'}
   description={query.trim()
     ? `Userstyles matching "${query.trim()}" on userstyles.club.`
-    : 'Search userstyles on userstyles.club.'}
+    : 'Discover userstyles shared on userstyles.club.'}
 />
 
 <div class="card">
-  <h1>Search</h1>
+  <h1>Explore</h1>
 </div>
 <UserstyleBrowser bind:query bind:sort initial={data.initial} />

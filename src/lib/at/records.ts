@@ -124,7 +124,7 @@ export async function listRecordsForCollection<NSID extends Nsid>(params: {
 }
 
 export async function getBacklinkedRecords<NSID extends Nsid>(params: {
-  subject: CanonicalResourceUri;
+  subject: CanonicalResourceUri | Did;
   collection: NSID;
   path: string;
   did?: Did[];
